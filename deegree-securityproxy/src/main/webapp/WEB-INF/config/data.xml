@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<server className="net.sf.j2ep.servers.BaseServer" domainName="www.nytimes.com"
+		isRewriting="true">
+		<rule className="net.sf.j2ep.rules.DirectoryRule" directory="/news" />
+	</server>
+	
+	<server className="net.sf.j2ep.servers.BaseServer" domainName="jakarta.apache.org"
+		isRewriting="true">
+		<rule className="net.sf.j2ep.rules.AcceptEverythingRule" />
+	</server>
+</config> 
