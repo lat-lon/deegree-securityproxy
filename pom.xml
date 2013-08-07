@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.deegree</groupId>
+	<artifactId>deegree-securityproxy</artifactId>
+        <packaging>pom</packaging>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Deegree security component</name>
+	<url>https://github.com/lat-lon/deegree-securityproxy</url>
+	
+  <scm>
+    <connection>scm:git:git@github.com:lat-lon/deegree-securityproxy.git</connection>
+    <developerConnection>scm:git:git@github.com:lat-lon/deegree-securityproxy.git</developerConnection>
+    <url>https://github.com/lat-lon/deegree-securityproxy.git</url>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>latlon-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>j2ep-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/j2ep-release/</url>
+    </repository>
+    <repository>
+      <id>j2ep-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/j2ep-snapshots/</url>
+    </repository>
+    <repository>
+      <id>secproxy-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/deegree-securityproxy/</url>
+    </repository>
+    <repository>
+      <id>secproxy-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/deegree-securityproxy-snapshots/</url>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>secproxy-releases</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/deegree-securityproxy/</url>
+    </repository>
+    <snapshotRepository>
+      <id>secproxy-snapshots</id>
+      <url>http://repo.lat-lon/nexus/content/repositories/deegree-securityproxy-snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>latlon-repo</id>
+      <url>http://repo.lat-lon/nexus/content/groups/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <modules>
+    <module>deegree-securityproxy-webservice</module>
+  </modules>
+
+</project>
