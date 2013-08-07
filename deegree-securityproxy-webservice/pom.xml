@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.deegree</groupId>
-	<artifactId>deegree-securityproxy</artifactId>
+	<artifactId>deegree-securityproxy-webservice</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Deegree security component</name>
+	<name>Deegree security webservice component</name>
 	<url>https://github.com/lat-lon/deegree-securityproxy</url>
 	
 	<dependencies>
@@ -29,7 +29,7 @@
 	</dependencies>
 	
 	<build>
-		<finalName>deegree-securityproxy</finalName>
+		<finalName>deegree-securityproxy-webservice</finalName>
 	</build>
 	
 	<properties>
