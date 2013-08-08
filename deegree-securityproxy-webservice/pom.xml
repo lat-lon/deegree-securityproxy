@@ -1,44 +1,44 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>deegree-securityproxy-webservice</artifactId>
-	<packaging>war</packaging>
-	<name>Deegree security webservice component</name>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>deegree-securityproxy-webservice</artifactId>
+  <packaging>war</packaging>
+  <name>Deegree security webservice component</name>
 
-	<parent>
-		<groupId>org.deegree</groupId>
-		<artifactId>deegree-securityproxy</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
+  <parent>
+    <groupId>org.deegree</groupId>
+    <artifactId>deegree-securityproxy</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>de.latlon</groupId>
-			<artifactId>j2ep</artifactId>
-			<version>1.0.0-securityproxy-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>1.9.5</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.latlon</groupId>
+      <artifactId>j2ep</artifactId>
+      <version>1.0.0-securityproxy-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<finalName>deegree-securityproxy-webservice</finalName>
-	</build>
+  <build>
+    <finalName>deegree-securityproxy-webservice</finalName>
+  </build>
 
 </project>
