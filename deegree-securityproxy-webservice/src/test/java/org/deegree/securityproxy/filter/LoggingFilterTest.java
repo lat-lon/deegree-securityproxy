@@ -32,8 +32,8 @@ public class LoggingFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
 
-    private static final String TARGET_HOSTNAME = "devcloud.blackbridge.com";
-
+    private static final String TARGET_URL  = "devcloud.blackbridge.com";
+    
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
                             throws IOException, ServletException {
@@ -44,7 +44,7 @@ public class LoggingFilterTest {
     }
 
     @Test
-    public void testLoggingFilterShouldGenerateReportWithCorrectTargetHostName()
+    public void testLoggingFilterShouldGenerateReportWithCorrectTargetUrl()
                             throws IOException, ServletException {
         ProxyReportLogger logger = mock( ProxyReportLogger.class );
         LoggingFilter loggingFilter = createLoggingFilter( logger );
@@ -73,7 +73,7 @@ public class LoggingFilterTest {
     private HttpServletRequest generateMockRequest() {
         HttpServletRequest mockRequest = mock( HttpServletRequest.class );
         when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
-        when( mockRequest.getServerName() ).thenReturn( TARGET_HOSTNAME );
+        when( mockRequest.getRequestURL() ).thenReturn( new StringBuffer( TARGET_URL ) );
         return mockRequest;
     }
 
@@ -97,7 +97,7 @@ public class LoggingFilterTest {
             }
 
             public void describeTo( Description description ) {
-                description.appendText( "IP address should be " + CLIENT_IP_ADDRESS );
+                description.appendText( "Client IP address should be " + CLIENT_IP_ADDRESS );
             }
         };
     }
@@ -107,11 +107,11 @@ public class LoggingFilterTest {
 
             public boolean matches( Object item ) {
                 ProxyReport report = (ProxyReport) item;
-                return TARGET_HOSTNAME.equals( report.getTargetUri() );
+                return TARGET_URL.equals( report.getTargetUri() );
             }
 
             public void describeTo( Description description ) {
-                description.appendText( "Target hostname should be " + TARGET_HOSTNAME );
+                description.appendText( "Target url should be " + TARGET_URL );
             }
         };
     }

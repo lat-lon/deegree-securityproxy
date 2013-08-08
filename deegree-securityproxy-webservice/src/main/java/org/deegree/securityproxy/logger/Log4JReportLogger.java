@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.logger;
 
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.report.ProxyReport;
 
 /**
@@ -12,10 +13,14 @@ import org.deegree.securityproxy.report.ProxyReport;
  */
 public class Log4JReportLogger implements ProxyReportLogger {
 
+    static Logger log = Logger.getLogger( "ProxyLogger" );
+                            
     @Override
-    public void logProxyReportInfo( ProxyReport report ) throws IllegalArgumentException {
+    public void logProxyReportInfo( ProxyReport report )
+                            throws IllegalArgumentException {
         if ( report == null )
             throw new IllegalArgumentException( "ProxyReport must not be null!" );
+        log.info( report.toString() );
     }
 
 }
