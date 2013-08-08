@@ -46,6 +46,24 @@ public class LoggingFilter implements Filter {
         logger = new Log4JReportLogger();
     }
 
+    @Override
+    public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
+                            throws IOException, ServletException {
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+        StatusExposingServletResponse wrappedResponse = new StatusExposingServletResponse( httpResponse );
+        chain.doFilter( httpRequest, wrappedResponse );
+        generateAndLogProxyReport( httpRequest, wrappedResponse );
+    }
+
+    @Override
+    public void destroy() {
+    }
+
+    protected void setReportLogger( ProxyReportLogger logger ) {
+        this.logger = logger;
+    }
+
     private void configureLogging( FilterConfig filterConfig ) {
         String log4jConfigurationPath = buildLog4JConfigurationPath( filterConfig );
         if ( log4jConfigurationPath != null ) {
@@ -64,24 +82,6 @@ public class LoggingFilter implements Filter {
             return builder.append( LOG4J_FILENAME ).toString();
         }
         return null;
-    }
-
-    @Override
-    public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
-                            throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        StatusExposingServletResponse wrappedResponse = new StatusExposingServletResponse( httpResponse );
-        chain.doFilter( httpRequest, wrappedResponse );
-        generateAndLogProxyReport( httpRequest, wrappedResponse );
-    }
-
-    @Override
-    public void destroy() {
-    }
-
-    protected void setReportLogger( ProxyReportLogger logger ) {
-        this.logger = logger;
     }
 
     private void generateAndLogProxyReport( HttpServletRequest request, StatusExposingServletResponse response ) {
