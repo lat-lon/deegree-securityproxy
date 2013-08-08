@@ -30,7 +30,7 @@
       <dependency>
         <groupId>de.latlon</groupId>
         <artifactId>j2ep</artifactId>
-        <version>1.0.0-securityproxy-SNAPSHOT</version>
+        <version>1.0.0-securityproxy-master-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
