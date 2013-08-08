@@ -1,5 +1,7 @@
 package org.deegree.securityproxy.filter;
 
+import static java.io.File.pathSeparator;
+import static java.lang.System.getenv;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import java.io.IOException;
@@ -45,20 +47,23 @@ public class LoggingFilter implements Filter {
     }
 
     private void configureLogging( FilterConfig filterConfig ) {
-        String path = System.getenv( filterConfig.getInitParameter( PROXY_CONFIG_ENV ) );
-        path = appendLog4JFileName( path );
-        if ( path != null && !"".equals( path ) ) {
-            PropertyConfigurator.configure( path );
+        String log4jConfigurationPath = buildLog4JConfigurationPath( filterConfig );
+        if ( log4jConfigurationPath != null ) {
+            PropertyConfigurator.configure( log4jConfigurationPath );
         } else {
             log.warn( "Could not retrieve log4j.properties from configuration directory. Please set the value of PROXY_CONFIG environment variable and place the log4j.properties in it." );
         }
     }
 
-    private String appendLog4JFileName( String path ) {
-        StringBuilder builder = new StringBuilder( path );
-        if ( !path.endsWith( "/" ) )
-            builder.append( "/" );
-        return builder.append( LOG4J_FILENAME ).toString();
+    private String buildLog4JConfigurationPath( FilterConfig filterConfig ) {
+        String path = getenv( filterConfig.getInitParameter( PROXY_CONFIG_ENV ) );
+        if ( path != null ) {
+            StringBuilder builder = new StringBuilder( path );
+            if ( !path.endsWith( pathSeparator ) )
+                builder.append( pathSeparator );
+            return builder.append( LOG4J_FILENAME ).toString();
+        }
+        return null;
     }
 
     @Override
