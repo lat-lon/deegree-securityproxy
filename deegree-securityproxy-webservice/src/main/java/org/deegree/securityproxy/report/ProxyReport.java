@@ -11,9 +11,9 @@ package org.deegree.securityproxy.report;
 public class ProxyReport {
 
     private final String ipAddressOfRequestingUser;
-    
+
     private final String targetUri;
-    
+
     private final boolean isResponseSuccessfullySent;
 
     public ProxyReport( String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent ) {
@@ -70,8 +70,15 @@ public class ProxyReport {
 
     @Override
     public String toString() {
-        return "RequestReport [ipAddressOfRequestingUser=" + ipAddressOfRequestingUser + ", targetUri=" + targetUri
-               + ", isResponseSuccessfullySent=" + isResponseSuccessfullySent + "]";
+        StringBuilder builder = new StringBuilder();
+        builder.append( "Request sent from IP address: " );
+        builder.append( ipAddressOfRequestingUser );
+        builder.append( ", target URL: " );
+        builder.append( targetUri );
+        builder.append( ", reponse was: " );
+        String sent = isResponseSuccessfullySent ? "successful." : "not successful";
+        builder.append( sent );
+        return builder.toString();
     }
 
 }

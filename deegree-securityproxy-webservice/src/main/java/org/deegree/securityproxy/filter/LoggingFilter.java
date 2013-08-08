@@ -1,6 +1,6 @@
 package org.deegree.securityproxy.filter;
 
-import static java.io.File.pathSeparator;
+import static java.io.File.separator;
 import static java.lang.System.getenv;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
@@ -77,17 +77,20 @@ public class LoggingFilter implements Filter {
         String path = getenv( filterConfig.getInitParameter( PROXY_CONFIG_ENV ) );
         if ( path != null ) {
             StringBuilder builder = new StringBuilder( path );
-            if ( !path.endsWith( pathSeparator ) )
-                builder.append( pathSeparator );
+            if ( !path.endsWith( separator ) )
+                builder.append( separator );
             return builder.append( LOG4J_FILENAME ).toString();
         }
         return null;
     }
 
     private void generateAndLogProxyReport( HttpServletRequest request, StatusExposingServletResponse response ) {
+        
         boolean isRequestSuccessful = SC_OK == response.getStatus() ? true : false;
-        ProxyReport report = new ProxyReport( request.getRemoteAddr(), request.getRequestURL().toString(),
-                                              isRequestSuccessful );
+        String targetURI = request.getRequestURL().toString();
+        String queryString = request.getQueryString();
+        String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
+        ProxyReport report = new ProxyReport( request.getRemoteAddr(), requestURL, isRequestSuccessful );
         logger.logProxyReportInfo( report );
     }
 

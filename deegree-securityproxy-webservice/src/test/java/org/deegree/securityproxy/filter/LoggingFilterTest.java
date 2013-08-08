@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,8 +33,10 @@ public class LoggingFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
 
-    private static final String TARGET_URL  = "devcloud.blackbridge.com";
-    
+    private static final String TARGET_URL = "devcloud.blackbridge.com";
+
+    private static final String QUERY_STRING = "request=GetCapabilities";
+
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
                             throws IOException, ServletException {
@@ -49,7 +52,7 @@ public class LoggingFilterTest {
         ProxyReportLogger logger = mock( ProxyReportLogger.class );
         LoggingFilter loggingFilter = createLoggingFilter( logger );
         loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetHostName() ) );
+        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrl() ) );
     }
 
     @Test
@@ -60,7 +63,7 @@ public class LoggingFilterTest {
         loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectResponse( SC_OK ) ) );
     }
-    
+
     @Test
     public void testLoggingFilterShouldGenerateCorrectReportForNotSuccessfulReponse()
                             throws IOException, ServletException {
@@ -70,10 +73,29 @@ public class LoggingFilterTest {
         verify( logger ).logProxyReportInfo( argThat( hasCorrectResponse( SC_BAD_REQUEST ) ) );
     }
 
+    @Test
+    public void testLoggingFilterShouldGenerateCorrectReportNullQueryString()
+                            throws IOException, ServletException {
+        ProxyReportLogger logger = mock( ProxyReportLogger.class );
+        LoggingFilter loggingFilter = createLoggingFilter( logger );
+        loggingFilter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
+                                new FilterChainTestImpl( SC_BAD_REQUEST ) );
+        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ) );
+    }
+
+    private ServletRequest generateMockRequestNullQueryString() {
+        HttpServletRequest mockRequest = mock( HttpServletRequest.class );
+        when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
+        when( mockRequest.getRequestURL() ).thenReturn( new StringBuffer( TARGET_URL ) );
+        when( mockRequest.getQueryString() ).thenReturn( null );
+        return mockRequest;
+    }
+
     private HttpServletRequest generateMockRequest() {
         HttpServletRequest mockRequest = mock( HttpServletRequest.class );
         when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
         when( mockRequest.getRequestURL() ).thenReturn( new StringBuffer( TARGET_URL ) );
+        when( mockRequest.getQueryString() ).thenReturn( QUERY_STRING );
         return mockRequest;
     }
 
@@ -102,7 +124,23 @@ public class LoggingFilterTest {
         };
     }
 
-    private Matcher<ProxyReport> hasCorrectTargetHostName() {
+    private Matcher<ProxyReport> hasCorrectTargetUrl() {
+        return new BaseMatcher<ProxyReport>() {
+
+            private final String expected = TARGET_URL + "?" + QUERY_STRING;
+
+            public boolean matches( Object item ) {
+                ProxyReport report = (ProxyReport) item;
+                return expected.equals( report.getTargetUri() );
+            }
+
+            public void describeTo( Description description ) {
+                description.appendText( "Target url should be " + TARGET_URL + "?" + QUERY_STRING );
+            }
+        };
+    }
+
+    private Matcher<ProxyReport> hasCorrectTargetUrlWithNullQueryString() {
         return new BaseMatcher<ProxyReport>() {
 
             public boolean matches( Object item ) {
