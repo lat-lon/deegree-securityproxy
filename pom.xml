@@ -8,6 +8,11 @@
   <name>Deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
+  <properties>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+  </properties>
+  
   <dependencyManagement>
     <dependencies>
       <dependency>
