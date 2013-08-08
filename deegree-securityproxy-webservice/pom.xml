@@ -5,12 +5,12 @@
 	<packaging>war</packaging>
 	<name>Deegree security webservice component</name>
 
-  <parent>
-    <groupId>org.deegree</groupId>
-    <artifactId>deegree-securityproxy</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
-	
+	<parent>
+		<groupId>org.deegree</groupId>
+		<artifactId>deegree-securityproxy</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -29,10 +29,16 @@
 			<artifactId>j2ep</artifactId>
 			<version>1.0.0-securityproxy-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<finalName>deegree-securityproxy-webservice</finalName>
 	</build>
-	
+
 </project>
