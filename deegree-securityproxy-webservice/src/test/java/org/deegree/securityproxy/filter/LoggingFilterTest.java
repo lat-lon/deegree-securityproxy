@@ -20,15 +20,26 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Tests for {@link LoggingFilter}
+ * 
+ * Reloads application context on each test method to faciliate verify on mocks.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/testApplicationContext.xml" })
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class LoggingFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
@@ -36,12 +47,19 @@ public class LoggingFilterTest {
     private static final String TARGET_URL = "devcloud.blackbridge.com";
 
     private static final String QUERY_STRING = "request=GetCapabilities";
-
+    
+    @Autowired
+    private LoggingFilter loggingFilter;
+    
+    /**
+     * Autowire a mocked instance of {@link ProxyReportLogger}
+     */
+    @Autowired
+    private ProxyReportLogger logger;
+    
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
                             throws IOException, ServletException {
-        ProxyReportLogger logger = mock( ProxyReportLogger.class );
-        LoggingFilter loggingFilter = createLoggingFilter( logger );
         loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectIpAddress() ) );
     }
@@ -49,8 +67,6 @@ public class LoggingFilterTest {
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectTargetUrl()
                             throws IOException, ServletException {
-        ProxyReportLogger logger = mock( ProxyReportLogger.class );
-        LoggingFilter loggingFilter = createLoggingFilter( logger );
         loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrl() ) );
     }
@@ -58,26 +74,20 @@ public class LoggingFilterTest {
     @Test
     public void testLoggingFilterShouldGenerateCorrectReportForSuccessfulReponse()
                             throws IOException, ServletException {
-        ProxyReportLogger logger = mock( ProxyReportLogger.class );
-        LoggingFilter loggingFilter = createLoggingFilter( logger );
         loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectResponse( SC_OK ) ) );
+        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ) );
     }
 
     @Test
     public void testLoggingFilterShouldGenerateCorrectReportForNotSuccessfulReponse()
                             throws IOException, ServletException {
-        ProxyReportLogger logger = mock( ProxyReportLogger.class );
-        LoggingFilter loggingFilter = createLoggingFilter( logger );
         loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_BAD_REQUEST ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectResponse( SC_BAD_REQUEST ) ) );
+        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_BAD_REQUEST ) ) );
     }
 
     @Test
     public void testLoggingFilterShouldGenerateCorrectReportNullQueryString()
                             throws IOException, ServletException {
-        ProxyReportLogger logger = mock( ProxyReportLogger.class );
-        LoggingFilter loggingFilter = createLoggingFilter( logger );
         loggingFilter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
                                 new FilterChainTestImpl( SC_BAD_REQUEST ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ) );
@@ -102,12 +112,6 @@ public class LoggingFilterTest {
     private HttpServletResponse generateMockResponse() {
         HttpServletResponse mockResponse = mock( HttpServletResponse.class );
         return mockResponse;
-    }
-
-    private LoggingFilter createLoggingFilter( ProxyReportLogger logger ) {
-        LoggingFilter loggingFilter = new LoggingFilter();
-        loggingFilter.setReportLogger( logger );
-        return loggingFilter;
     }
 
     private Matcher<ProxyReport> hasCorrectIpAddress() {
@@ -154,7 +158,7 @@ public class LoggingFilterTest {
         };
     }
 
-    private Matcher<ProxyReport> hasCorrectResponse( final int expected ) {
+    private Matcher<ProxyReport> hasResponse( final int expected ) {
         return new BaseMatcher<ProxyReport>() {
 
             public boolean matches( Object item ) {

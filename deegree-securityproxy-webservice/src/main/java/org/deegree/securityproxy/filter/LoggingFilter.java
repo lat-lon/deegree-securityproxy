@@ -17,9 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.deegree.securityproxy.logger.Log4JReportLogger;
 import org.deegree.securityproxy.logger.ProxyReportLogger;
 import org.deegree.securityproxy.report.ProxyReport;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Servlet Filter that logs all incoming requests and their response
@@ -29,6 +30,7 @@ import org.deegree.securityproxy.report.ProxyReport;
  * 
  * @version $Revision: $, $Date: $
  */
+@Component
 public class LoggingFilter implements Filter {
 
     private final Logger log = Logger.getLogger( LoggingFilter.class );
@@ -37,13 +39,13 @@ public class LoggingFilter implements Filter {
 
     private static final String LOG4J_FILENAME = "log4j.properties";
 
+    @Autowired
     private ProxyReportLogger logger;
 
     @Override
     public void init( FilterConfig filterConfig )
                             throws ServletException {
         configureLogging( filterConfig );
-        logger = new Log4JReportLogger();
     }
 
     @Override
@@ -58,10 +60,6 @@ public class LoggingFilter implements Filter {
 
     @Override
     public void destroy() {
-    }
-
-    protected void setReportLogger( ProxyReportLogger logger ) {
-        this.logger = logger;
     }
 
     private void configureLogging( FilterConfig filterConfig ) {
