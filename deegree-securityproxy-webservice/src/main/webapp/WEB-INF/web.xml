@@ -1,42 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-    version="2.4">
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+  version="2.4">
 
   <display-name>deegree security proxy</display-name>
   <description>
   	Deegree Security Web Application
   </description>
-  
-    <filter>
-        <filter-name>LoggingFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-        <init-param>
-          <param-name>proxyConfigEnv</param-name>
-          <param-value>PROXY_CONFIG</param-value>
-        </init-param>
-    </filter>
 
-    <filter-mapping>
-        <filter-name>LoggingFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath*:applicationContext*.xml</param-value>
+</context-param>
 
-    <filter>
-        <filter-name>Proxy</filter-name>
-        <filter-class>net.sf.j2ep.ProxyFilter</filter-class>
-        <init-param>
-        	<param-name>proxyConfigEnv</param-name>
-        	<param-value>PROXY_CONFIG</param-value>
-        </init-param>
-    </filter>
+<listener>
+   <listener-class>
+        org.springframework.web.context.ContextLoaderListener
+   </listener-class>
+</listener> 
 
-    <filter-mapping>
-        <filter-name>Proxy</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    
+  <filter>
+    <filter-name>LoggingFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>LoggingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>Proxy</filter-name>
+    <filter-class>net.sf.j2ep.ProxyFilter</filter-class>
+    <init-param>
+      <param-name>proxyConfigEnv</param-name>
+      <param-value>PROXY_CONFIG</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>Proxy</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
 
 </web-app>
