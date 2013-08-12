@@ -56,7 +56,6 @@ public class LoggingFilter implements Filter {
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
         ProxyReport report = new ProxyReport( request.getRemoteAddr(), requestURL, isRequestSuccessful );
         proxyReportLogger.logProxyReportInfo( report );
-        System.out.println(report);
     }
 
 }
