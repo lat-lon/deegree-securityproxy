@@ -4,6 +4,7 @@ import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,11 +20,10 @@ import org.deegree.securityproxy.report.ProxyReport;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -39,7 +39,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:/testApplicationContext.xml" })
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class LoggingFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
@@ -56,6 +55,14 @@ public class LoggingFilterTest {
      */
     @Autowired
     private ProxyReportLogger logger;
+    
+    /**
+     * Reset the mocked instance of logger to prevent side effects between tests
+     */
+    @Before
+    public void resetMock() {
+        reset( logger );
+    }
     
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
