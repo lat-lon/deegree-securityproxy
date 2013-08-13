@@ -29,10 +29,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Tests for {@link LoggingFilter}
- * 
- * Reloads application context on each test method to faciliate verify on mocks.
- * 
+ *
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $

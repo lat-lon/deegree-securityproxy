@@ -5,9 +5,11 @@ import org.deegree.securityproxy.logger.ProxyReportLogger;
 import org.junit.Test;
 
 /**
- * Tests for {@link Log4JReportLogger
+ * Tests for {@link Log4JReportLogger}
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $

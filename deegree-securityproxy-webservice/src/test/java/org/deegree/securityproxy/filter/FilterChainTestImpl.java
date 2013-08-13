@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
  * Test implementation for {@link FilterChain}
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $

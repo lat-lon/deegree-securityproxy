@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponseWrapper;
  * Response wrapper that allows access to the response code
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $
@@ -32,7 +34,6 @@ public class StatusExposingServletResponse extends HttpServletResponseWrapper {
         httpStatus = sc;
         super.sendError(sc, msg);
     }
-
 
     @Override
     public void setStatus(int sc) {
