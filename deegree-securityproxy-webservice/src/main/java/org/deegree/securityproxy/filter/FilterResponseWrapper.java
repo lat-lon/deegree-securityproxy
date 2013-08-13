@@ -32,6 +32,13 @@ public class FilterResponseWrapper extends HttpServletResponseWrapper {
     }
     
     @Override
+    public void addHeader( String name, String value ) {
+        if (!"Transfer-Encoding".equals(name)) {
+            super.setHeader( name, value );
+        }
+    }
+    
+    @Override
     public void sendError( int sc )
                             throws IOException {
         httpStatus = sc;
