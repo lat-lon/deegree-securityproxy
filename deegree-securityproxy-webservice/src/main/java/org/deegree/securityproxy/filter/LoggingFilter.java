@@ -42,7 +42,7 @@ public class LoggingFilter implements Filter {
                             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        StatusExposingServletResponse wrappedResponse = new StatusExposingServletResponse( httpResponse );
+        FilterResponseWrapper wrappedResponse = new FilterResponseWrapper( httpResponse );
         chain.doFilter( httpRequest, wrappedResponse );
         generateAndLogProxyReport( httpRequest, wrappedResponse );
     }
@@ -51,7 +51,7 @@ public class LoggingFilter implements Filter {
     public void destroy() {
     }
 
-    private void generateAndLogProxyReport( HttpServletRequest request, StatusExposingServletResponse response ) {
+    private void generateAndLogProxyReport( HttpServletRequest request, FilterResponseWrapper response ) {
         boolean isRequestSuccessful = SC_OK == response.getStatus() ? true : false;
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();

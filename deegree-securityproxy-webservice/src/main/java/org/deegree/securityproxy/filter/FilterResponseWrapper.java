@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- * Response wrapper that allows access to the response code
+ * Custom Response wrapper that allows access to the response code
+ * Deletes the "Transfer Encoding" HTTP Header
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -15,16 +16,24 @@ import javax.servlet.http.HttpServletResponseWrapper;
  * 
  * @version $Revision: $, $Date: $
  */
-public class StatusExposingServletResponse extends HttpServletResponseWrapper {
+public class FilterResponseWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
 
-    public StatusExposingServletResponse(HttpServletResponse response) {
+    public FilterResponseWrapper(HttpServletResponse response) {
         super(response);
     }
 
     @Override
-    public void sendError(int sc) throws IOException {
+    public void setHeader( String name, String value ) {
+        if (!"Transfer-Encoding".equals(name)) {
+            super.setHeader( name, value );
+        }
+    }
+    
+    @Override
+    public void sendError( int sc )
+                            throws IOException {
         httpStatus = sc;
         super.sendError(sc);
     }
