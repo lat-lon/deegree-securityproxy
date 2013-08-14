@@ -8,7 +8,7 @@
 
   <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4JReportLogger">
     <constructor-arg type="String">
-      <value>PROXY_CONF</value>
+      <value>PROXY_CONFIG</value>
     </constructor-arg>
     <constructor-arg type="String">
       <value>log4j.properties</value>
