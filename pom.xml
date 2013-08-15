@@ -11,6 +11,7 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <spring.version>3.2.3.RELEASE</spring.version>
+    <j2ep.version>1.0.1-securityproxy-master</j2ep.version>
   </properties>
 
   <dependencyManagement>
@@ -30,7 +31,7 @@
       <dependency>
         <groupId>de.latlon</groupId>
         <artifactId>j2ep</artifactId>
-        <version>1.1-securityproxy-master-SNAPSHOT</version>
+        <version>${j2ep.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
