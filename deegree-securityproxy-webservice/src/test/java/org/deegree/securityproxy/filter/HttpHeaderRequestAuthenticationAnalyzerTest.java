@@ -13,6 +13,13 @@ import org.deegree.securityproxy.authentication.HttpHeaderRequestAuthenticationA
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="erben@lat-lon.de">Alexander Erben</a>
+ * @author last edited by: $Author: erben $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class HttpHeaderRequestAuthenticationAnalyzerTest {
 
     private static final String VALID_ACCESS_TOKEN_HEADER_VALUE = "00000000001";
