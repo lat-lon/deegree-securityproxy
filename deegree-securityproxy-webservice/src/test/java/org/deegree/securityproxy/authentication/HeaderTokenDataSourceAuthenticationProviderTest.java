@@ -1,14 +1,11 @@
 package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
-import org.deegree.securityproxy.authentication.HeaderAuthenticationToken;
-import org.deegree.securityproxy.authentication.HeaderTokenDataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +13,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -69,24 +67,20 @@ public class HeaderTokenDataSourceAuthenticationProviderTest {
     }
 
     @Test
-    public void testAuthenticateInvalidToken() {
-        Authentication authenticate = provider.authenticate( createHeaderAuthenticationTokenWithInvalidHeader() );
-        assertThat( authenticate.isAuthenticated(), is( false ) );
-        assertThat( (String) authenticate.getCredentials(), nullValue() );
-    }
-
-    @Test
-    public void testAuthenticateMissingToken() {
-        Authentication authenticate = provider.authenticate( createHeaderAuthenticationTokenWithNoHeader() );
-        assertThat( authenticate.isAuthenticated(), is( false ) );
-        assertThat( (String) authenticate.getCredentials(), nullValue() );
-    }
-
-    @Test
     public void testAuthenticateTokenIsStoredInContext() {
         Authentication authenticationProvided = provider.authenticate( createHeaderAuthenticationTokenWithValidHeader() );
         Authentication authenticationFromContext = SecurityContextHolder.getContext().getAuthentication();
         assertThat( authenticationFromContext, is( authenticationProvided ) );
+    }
+    
+    @Test(expected=AuthenticationException.class)
+    public void testAuthenticateInvalidToken() {
+        provider.authenticate( createHeaderAuthenticationTokenWithInvalidHeader() );
+    }
+
+    @Test(expected=AuthenticationException.class)
+    public void testAuthenticateMissingToken() {
+        provider.authenticate( createHeaderAuthenticationTokenWithNoHeader() );
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -4,6 +4,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,7 +34,7 @@ public class HeaderTokenDataSourceAuthenticationProvider implements Authenticati
         HeaderAuthenticationToken token = (HeaderAuthenticationToken) authentication;
         String headerTokenValue = token.getHeaderTokenValue();
         if ( headerTokenValue == null ) {
-            populateTokenWithNoHeaderPresent( token );
+            handleFailedAuthentication( headerTokenValue );
         } else {
             populateTokenWithHeaderPresent( token, headerTokenValue );
         }
@@ -50,12 +51,15 @@ public class HeaderTokenDataSourceAuthenticationProvider implements Authenticati
         UserDetails userDetails = source.loadUserDetailsFromDataSource( headerTokenValue );
         token.setPrincipal( userDetails );
         boolean isAuthenticated = userDetails != null;
-        token.setAuthenticated( isAuthenticated );
-        if ( isAuthenticated )
+        if ( isAuthenticated ) {
+            token.setAuthenticated( true );
             token.setCredentials( headerTokenValue );
+        } else {
+            handleFailedAuthentication( headerTokenValue );
+        }
     }
 
-    private void populateTokenWithNoHeaderPresent( Authentication token ) {
-        token.setAuthenticated( false );
+    private void handleFailedAuthentication( String headerTokenValue ) {
+        throw new AuthenticationServiceException( "Authentication for header value " + headerTokenValue + " failed!" );
     }
 }
