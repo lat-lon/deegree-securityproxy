@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * Authentication token that encapsulates an header value that the client passed to the server.
@@ -19,6 +20,10 @@ public class HeaderAuthenticationToken extends AbstractAuthenticationToken {
 
     private static final long serialVersionUID = -7556696904089860387L;
 
+    private String credentials;
+
+    private UserDetails principal;
+
     /**
      * Set the details of the new instance to the passed value. Grants no authorities.
      * 
@@ -32,14 +37,12 @@ public class HeaderAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getCredentials() {
-        // TODO Auto-generated method stub
-        return null;
+        return credentials;
     }
 
     @Override
     public Object getPrincipal() {
-        // TODO Auto-generated method stub
-        return null;
+        return principal;
     }
 
     @Override
@@ -48,6 +51,22 @@ public class HeaderAuthenticationToken extends AbstractAuthenticationToken {
             super.setDetails( details );
         else
             throw new IllegalArgumentException( "HeaderAuthenticationToken only supports string details!" );
+    }
+
+    /**
+     * @param credentials
+     *            may be <code>null</code>
+     */
+    public void setCredentials( String credentials ) {
+        this.credentials = credentials;
+    }
+
+    /**
+     * @param principal
+     *            may be <code>null</code>
+     */
+    public void setPrincipal( UserDetails principal ) {
+        this.principal = principal;
     }
 
     /**
