@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.filter;
+package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

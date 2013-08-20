@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.filter;
+package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -31,7 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/HeaderTokenDataSourceAuthenticationProviderTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenDataSourceAuthenticationProviderTestContext.xml" })
 public class HeaderTokenDataSourceAuthenticationProviderTest {
 
     private static final String VALID_TOKEN = "VALID";

@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.filter;
+package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -16,6 +16,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+/**
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="erben@lat-lon.de">Alexander Erben</a>
+ * @author last edited by: $Author: erben $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenDataSourceTestContext.xml" })
 public class HeaderTokenDataSourceTest {
