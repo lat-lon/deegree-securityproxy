@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SecurityFilter implements Filter {
+public class LoggingFilter implements Filter {
 
     @Autowired
     private SecurityRequestResposeLogger proxyReportLogger;
@@ -36,7 +36,7 @@ public class SecurityFilter implements Filter {
     public void init( FilterConfig filterConfig )
                             throws ServletException {
     }
-    
+
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
                             throws IOException, ServletException {

@@ -79,7 +79,7 @@ public class HeaderTokenDataSource {
         builder.append( "SELECT " );
         builder.append( userNameColumn ).append( "," ).append( passwordColumn );
         appendFrom( builder );
-        builder.append( " WHERE " ).append( headerColumn ).append( " = ?" );
+        builder.append( " WHERE " ).append( headerColumn ).append( " = ? LIMIT 1" );
         return builder.toString();
     }
 

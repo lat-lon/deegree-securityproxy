@@ -7,7 +7,7 @@
   <bean id="proxyReportLoggerMock" class="org.mockito.Mockito"
     factory-method="mock">
     <constructor-arg
-      value="org.deegree.securityproxy.logger.ProxyReportLogger" />
+      value="org.deegree.securityproxy.logger.SecurityRequestResposeLogger" />
   </bean>
 
   <bean name="LoggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />

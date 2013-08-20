@@ -1,16 +1,16 @@
 package org.deegree.securityproxy.authentication;
 
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
- * Performs verification of an incoming {@link HeaderAuthenticationToken}. Authenticates the token against a
+ * Performs verification of an incoming {@link Authentication}. Authenticates the token against a
  * {@link HeaderTokenDataSource}
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -21,45 +21,36 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class HeaderTokenDataSourceAuthenticationProvider implements AuthenticationProvider {
 
+    private static Logger log = Logger.getLogger( HeaderTokenDataSourceAuthenticationProvider.class );
+
     @Autowired
     private HeaderTokenDataSource source;
 
     @Override
     public Authentication authenticate( Authentication authentication )
                             throws AuthenticationException {
+        log.info( "Authenticating incoming request " + authentication );
         if ( authentication == null )
             throw new IllegalArgumentException( "Passed token must not be null!" );
-        if ( !( authentication instanceof HeaderAuthenticationToken ) )
-            throw new IllegalArgumentException( "Passed token is not an HeaderAuthenticationToken!" );
-        HeaderAuthenticationToken token = (HeaderAuthenticationToken) authentication;
-        String headerTokenValue = token.getHeaderTokenValue();
-        if ( headerTokenValue == null ) {
-            handleFailedAuthentication( headerTokenValue );
-        } else {
-            populateTokenWithHeaderPresent( token, headerTokenValue );
-        }
-        getContext().setAuthentication( token );
-        return token;
+        String headerTokenValue = (String) authentication.getPrincipal();
+        log.info( "Header token " + headerTokenValue );
+        return createVerifiedToken( headerTokenValue );
     }
 
     @Override
     public boolean supports( Class<?> authenticationTokenType ) {
-        return HeaderAuthenticationToken.class.isAssignableFrom( authenticationTokenType );
+        return true;
     }
 
-    private void populateTokenWithHeaderPresent( HeaderAuthenticationToken token, String headerTokenValue ) {
+    private Authentication createVerifiedToken( String headerTokenValue ) {
         UserDetails userDetails = source.loadUserDetailsFromDataSource( headerTokenValue );
-        token.setPrincipal( userDetails );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
-            token.setAuthenticated( true );
-            token.setCredentials( headerTokenValue );
+            return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue,
+                                                            userDetails.getAuthorities() );
         } else {
-            handleFailedAuthentication( headerTokenValue );
+            throw new BadCredentialsException( "No pre-authenticated principal found in request." );
         }
     }
 
-    private void handleFailedAuthentication( String headerTokenValue ) {
-        throw new AuthenticationServiceException( "Authentication for header value " + headerTokenValue + " failed!" );
-    }
 }

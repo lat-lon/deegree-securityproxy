@@ -2,6 +2,7 @@ package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -15,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
@@ -65,22 +65,10 @@ public class HeaderTokenDataSourceAuthenticationProviderTest {
         assertThat( details.getUsername(), is( VALID_USERNAME ) );
         assertThat( details.getPassword(), is( VALID_PASSWORD ) );
     }
-
-    @Test
-    public void testAuthenticateTokenIsStoredInContext() {
-        Authentication authenticationProvided = provider.authenticate( createHeaderAuthenticationTokenWithValidHeader() );
-        Authentication authenticationFromContext = SecurityContextHolder.getContext().getAuthentication();
-        assertThat( authenticationFromContext, is( authenticationProvided ) );
-    }
     
     @Test(expected=AuthenticationException.class)
     public void testAuthenticateInvalidToken() {
         provider.authenticate( createHeaderAuthenticationTokenWithInvalidHeader() );
-    }
-
-    @Test(expected=AuthenticationException.class)
-    public void testAuthenticateMissingToken() {
-        provider.authenticate( createHeaderAuthenticationTokenWithNoHeader() );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,28 +76,17 @@ public class HeaderTokenDataSourceAuthenticationProviderTest {
         provider.authenticate( null );
     }
 
-    @Test
-    public void testSupportsHeaderTokenShouldReturnTrue() {
-        assertThat( provider.supports( HeaderAuthenticationToken.class ), is( true ) );
-    }
-
-    @Test
-    public void testSupportsAllAuthenticationsShouldReturnFalse() {
-        assertThat( provider.supports( Authentication.class ), is( false ) );
-    }
-
-    private Authentication createHeaderAuthenticationTokenWithNoHeader() {
-        return new HeaderAuthenticationToken( null );
-    }
-
     private Authentication createHeaderAuthenticationTokenWithInvalidHeader() {
-        return new HeaderAuthenticationToken( INVALID_TOKEN );
+        Authentication mock = mock(Authentication.class);
+        when(mock.getPrincipal()).thenReturn( INVALID_TOKEN );
+        return mock;
 
     }
 
     private Authentication createHeaderAuthenticationTokenWithValidHeader() {
-        return new HeaderAuthenticationToken( VALID_TOKEN );
-
+        Authentication mock = mock(Authentication.class);
+        when(mock.getPrincipal()).thenReturn( VALID_TOKEN );
+        return mock;
     }
 
 }
