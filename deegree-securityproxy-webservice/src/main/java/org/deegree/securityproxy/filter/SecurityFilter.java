@@ -13,8 +13,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.deegree.securityproxy.logger.ProxyReportLogger;
-import org.deegree.securityproxy.report.ProxyReport;
+import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
+import org.deegree.securityproxy.report.SecurityReport;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -27,10 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LoggingFilter implements Filter {
+public class SecurityFilter implements Filter {
 
     @Autowired
-    private ProxyReportLogger proxyReportLogger;
+    private SecurityRequestResposeLogger proxyReportLogger;
 
     @Override
     public void init( FilterConfig filterConfig )
@@ -56,7 +56,7 @@ public class LoggingFilter implements Filter {
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
-        ProxyReport report = new ProxyReport( request.getRemoteAddr(), requestURL, isRequestSuccessful );
+        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful );
         proxyReportLogger.logProxyReportInfo( report );
     }
 

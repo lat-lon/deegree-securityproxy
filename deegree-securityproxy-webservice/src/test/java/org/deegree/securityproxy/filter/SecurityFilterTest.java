@@ -15,8 +15,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.deegree.securityproxy.logger.ProxyReportLogger;
-import org.deegree.securityproxy.report.ProxyReport;
+import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
+import org.deegree.securityproxy.report.SecurityReport;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Tests for {@link LoggingFilter}
+ * Tests for {@link SecurityFilter}
  *
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:/LoggingFilterTestContext.xml" })
-public class LoggingFilterTest {
+public class SecurityFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
 
@@ -48,13 +48,13 @@ public class LoggingFilterTest {
     private static final String QUERY_STRING = "request=GetCapabilities";
     
     @Autowired
-    private LoggingFilter loggingFilter;
+    private SecurityFilter loggingFilter;
     
     /**
-     * Autowire a mocked instance of {@link ProxyReportLogger}
+     * Autowire a mocked instance of {@link SecurityRequestResposeLogger}
      */
     @Autowired
-    private ProxyReportLogger logger;
+    private SecurityRequestResposeLogger logger;
     
     /**
      * Reset the mocked instance of logger to prevent side effects between tests
@@ -121,11 +121,11 @@ public class LoggingFilterTest {
         return mockResponse;
     }
 
-    private Matcher<ProxyReport> hasCorrectIpAddress() {
-        return new BaseMatcher<ProxyReport>() {
+    private Matcher<SecurityReport> hasCorrectIpAddress() {
+        return new BaseMatcher<SecurityReport>() {
 
             public boolean matches( Object item ) {
-                ProxyReport report = (ProxyReport) item;
+                SecurityReport report = (SecurityReport) item;
                 return CLIENT_IP_ADDRESS.equals( report.getIpAddressOfRequestingUser() );
             }
 
@@ -135,13 +135,13 @@ public class LoggingFilterTest {
         };
     }
 
-    private Matcher<ProxyReport> hasCorrectTargetUrl() {
-        return new BaseMatcher<ProxyReport>() {
+    private Matcher<SecurityReport> hasCorrectTargetUrl() {
+        return new BaseMatcher<SecurityReport>() {
 
             private final String expected = TARGET_URL + "?" + QUERY_STRING;
 
             public boolean matches( Object item ) {
-                ProxyReport report = (ProxyReport) item;
+                SecurityReport report = (SecurityReport) item;
                 return expected.equals( report.getTargetUri() );
             }
 
@@ -151,11 +151,11 @@ public class LoggingFilterTest {
         };
     }
 
-    private Matcher<ProxyReport> hasCorrectTargetUrlWithNullQueryString() {
-        return new BaseMatcher<ProxyReport>() {
+    private Matcher<SecurityReport> hasCorrectTargetUrlWithNullQueryString() {
+        return new BaseMatcher<SecurityReport>() {
 
             public boolean matches( Object item ) {
-                ProxyReport report = (ProxyReport) item;
+                SecurityReport report = (SecurityReport) item;
                 return TARGET_URL.equals( report.getTargetUri() );
             }
 
@@ -165,11 +165,11 @@ public class LoggingFilterTest {
         };
     }
 
-    private Matcher<ProxyReport> hasResponse( final int expected ) {
-        return new BaseMatcher<ProxyReport>() {
+    private Matcher<SecurityReport> hasResponse( final int expected ) {
+        return new BaseMatcher<SecurityReport>() {
 
             public boolean matches( Object item ) {
-                ProxyReport report = (ProxyReport) item;
+                SecurityReport report = (SecurityReport) item;
                 if ( SC_OK == expected )
                     return report.isResponseSuccessfullySent();
                 else
