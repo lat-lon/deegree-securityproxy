@@ -17,6 +17,7 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -30,25 +31,36 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>1.8.0.7</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- J2EP -->
+      <dependency>
         <groupId>de.latlon</groupId>
         <artifactId>j2ep</artifactId>
         <version>1.0-securityproxy-master</version>
       </dependency>
+      <!-- Servlet API -->
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>2.5</version>
       </dependency>
+      <!-- JDBC -->
       <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>9.1-901.jdbc4</version>
       </dependency>
+      <!-- Logging -->
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>1.2.17</version>
       </dependency>
+      <!-- Spring Framework -->
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
@@ -64,6 +76,7 @@
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
       </dependency>
+      <!-- Spring Security -->
       <dependency>
         <groupId>org.springframework.security</groupId>
         <artifactId>spring-security-core</artifactId>
@@ -79,11 +92,16 @@
         <artifactId>spring-security-config</artifactId>
         <version>${spring.security.version}</version>
       </dependency>
+      <!-- Apache Commons -->
       <dependency>
-        <groupId>hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>1.8.0.7</version>
-        <scope>test</scope>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
