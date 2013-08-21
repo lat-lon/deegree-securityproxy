@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:security="http://www.springframework.org/schema/security"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
   <context:annotation-config />
 
-  <bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+  <bean id="http403EntryPoint"
+    class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
     <property name="driverClassName" value="org.postgresql.Driver" />
-    <property name="url" value="jdbc:postgresql://localhost:5432/ows_access_control" />
+    <property name="url"
+      value="jdbc:postgresql://localhost:5432/ows_access_control" />
     <property name="username" value="postgres" />
     <property name="password" value="postgres" />
     <property name="initialSize" value="5" />
     <property name="maxActive" value="10" />
   </bean>
 
-  <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
+  <bean name="log4JReportLogger"
+    class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
     <constructor-arg type="String">
       <value>PROXY_CONFIG</value>
     </constructor-arg>
@@ -26,7 +30,8 @@
     </constructor-arg>
   </bean>
 
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.HeaderTokenDataSource">
+  <bean id="headerTokenDataSource"
+    class="org.deegree.securityproxy.authentication.HeaderTokenDataSource">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
     <constructor-arg value="access_token" />
@@ -37,21 +42,26 @@
   <bean name="authenticationProvider"
     class="org.deegree.securityproxy.authentication.HeaderTokenDataSourceAuthenticationProvider" />
 
-  <security:authentication-manager alias="authenticationManager">
-    <security:authentication-provider ref="authenticationProvider" />
+  <security:authentication-manager
+    alias="authenticationManager">
+    <security:authentication-provider
+      ref="authenticationProvider" />
   </security:authentication-manager>
 
   <bean id="headerFilter"
     class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
     <property name="principalRequestHeader" value="access_token" />
     <property name="authenticationManager" ref="authenticationManager" />
+    <property name="exceptionIfHeaderMissing" value="false" />
   </bean>
 
-  <security:http entry-point-ref="http403EntryPoint" use-expressions="true"
-    create-session="stateless">
+  <security:http entry-point-ref="http403EntryPoint"
+    use-expressions="true" create-session="stateless">
     <!-- Additional http configuration omitted -->
-    <security:intercept-url pattern="/**" access="isAuthenticated()" />
-    <security:custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
+    <security:intercept-url pattern="/**"
+      access="isAuthenticated()" />
+    <security:custom-filter position="PRE_AUTH_FILTER"
+      ref="headerFilter" />
   </security:http>
 
   <bean id="loggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
