@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Loads {@link UserDetails} by header value.
+ * Loads {@link UserDetails} from a {@link DataSource}.
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -39,7 +39,7 @@ public class UserDetailsDao {
     private final String passwordColumn;
 
     public UserDetailsDao( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                                  String passwordColumn ) {
+                           String passwordColumn ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;

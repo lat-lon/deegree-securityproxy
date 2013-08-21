@@ -35,7 +35,7 @@ public class ServiceExceptionEntryPointTest {
     private final HttpServletRequest mockRequest = mock( HttpServletRequest.class );
 
     private final AuthenticationException mockException = mock( AuthenticationException.class );
-    
+
     private HttpServletResponse mockResponse = mockResponse();
 
     @Before
@@ -54,9 +54,10 @@ public class ServiceExceptionEntryPointTest {
     }
 
     @Test
-    public void testCommenceWithCustomException()
+    public void testCommenceWithValidPathToExceptionException()
                             throws IOException, ServletException {
-        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( PATH_TO_EXCEPTION_FILE, DEFAULT_STATUS_CODE );
+        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( PATH_TO_EXCEPTION_FILE,
+                                                                                DEFAULT_STATUS_CODE );
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
         String expectedBody = readResponseBodyFromFile();
@@ -69,6 +70,24 @@ public class ServiceExceptionEntryPointTest {
         ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( PATH_TO_EXCEPTION_FILE, SC_BAD_REQUEST );
         entryPoint.commence( mockRequest, mockResponse, mockException );
         verify( mockResponse ).setStatus( SC_BAD_REQUEST );
+    }
+
+    @Test
+    public void testCommenceWithNullExceptionPathShouldWriteDefaultBody()
+                            throws IOException, ServletException {
+        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( null, DEFAULT_STATUS_CODE );
+        entryPoint.commence( mockRequest, mockResponse, mockException );
+
+        verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
+    }
+
+    @Test
+    public void testCommenceWithEmptyExceptionPathShouldWriteDefaultBody()
+                            throws IOException, ServletException {
+        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( "", DEFAULT_STATUS_CODE );
+        entryPoint.commence( mockRequest, mockResponse, mockException );
+
+        verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
     }
 
     private HttpServletResponse mockResponse() {

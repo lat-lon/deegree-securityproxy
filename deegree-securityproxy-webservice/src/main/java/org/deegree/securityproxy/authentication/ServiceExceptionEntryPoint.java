@@ -36,34 +36,48 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
 
     private int statusCode;
 
+    /**
+     * ServiceExceptionEntryPoint.DEFAULT_BODY and ServiceExceptionEntryPoint.DEFAULT_STATUS_CODE are used as exception
+     * body an status code
+     */
     public ServiceExceptionEntryPoint() {
         exceptionBody = DEFAULT_BODY;
         statusCode = DEFAULT_STATUS_CODE;
     }
 
+    /**
+     * @param pathToExceptionFile
+     *            the path to the exception file relative from this class. If <code>null</code> or empty the
+     *            ServiceExceptionEntryPoint.DEFAULT_BODY is used
+     * @param statusCode
+     *            the status code to set
+     */
     public ServiceExceptionEntryPoint( String pathToExceptionFile, int statusCode ) {
         this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
         this.statusCode = statusCode;
     }
 
-    private String readExceptionBodyFromFile( String pathToExceptionFile ) {
-        InputStream exceptionAsStream = ServiceExceptionEntryPoint.class.getResourceAsStream( pathToExceptionFile );
-        try {
-            if ( exceptionAsStream != null )
-                return IOUtils.toString( exceptionAsStream );
-        } catch ( IOException e ) {
-            LOG.warn( "Could not read exception message from f. Defaulting to " + DEFAULT_BODY );
-        } finally {
-            closeQuietly( exceptionAsStream );
-        }
-        return DEFAULT_BODY;
-    }
-
     @Override
-    public void commence( HttpServletRequest arg0, HttpServletResponse response, AuthenticationException arg2 )
+    public void commence( HttpServletRequest request, HttpServletResponse response,
+                          AuthenticationException authenticationException )
                             throws IOException, ServletException {
         response.setStatus( statusCode );
         response.getWriter().write( exceptionBody );
+    }
+
+    private String readExceptionBodyFromFile( String pathToExceptionFile ) {
+        if ( pathToExceptionFile != null && pathToExceptionFile.length() > 0 ) {
+            InputStream exceptionAsStream = ServiceExceptionEntryPoint.class.getResourceAsStream( pathToExceptionFile );
+            try {
+                if ( exceptionAsStream != null )
+                    return IOUtils.toString( exceptionAsStream );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not read exception message from f. Defaulting to " + DEFAULT_BODY );
+            } finally {
+                closeQuietly( exceptionAsStream );
+            }
+        }
+        return DEFAULT_BODY;
     }
 
 }
