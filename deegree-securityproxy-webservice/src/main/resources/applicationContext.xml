@@ -29,7 +29,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.HeaderTokenDataSource">
+  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.UserDetailsDao">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
     <constructor-arg value="access_token" />
@@ -37,8 +37,7 @@
     <constructor-arg value="password" />
   </bean>
 
-  <bean name="authenticationProvider"
-    class="org.deegree.securityproxy.authentication.HeaderTokenDataSourceAuthenticationProvider" />
+  <bean name="authenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
 
   <security:authentication-manager alias="authenticationManager">
     <security:authentication-provider ref="authenticationProvider" />
