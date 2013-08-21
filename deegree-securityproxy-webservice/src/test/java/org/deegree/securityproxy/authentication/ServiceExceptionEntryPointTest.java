@@ -56,7 +56,7 @@ public class ServiceExceptionEntryPointTest {
     @Test
     public void testCommenceWithValidPathToExceptionException()
                             throws IOException, ServletException {
-        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( PATH_TO_EXCEPTION_FILE,
+        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( getPathToException(),
                                                                                 DEFAULT_STATUS_CODE );
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
@@ -67,7 +67,7 @@ public class ServiceExceptionEntryPointTest {
     @Test
     public void testCommenceWithCustomStatusCode()
                             throws IOException, ServletException {
-        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( PATH_TO_EXCEPTION_FILE, SC_BAD_REQUEST );
+        ServiceExceptionEntryPoint entryPoint = new ServiceExceptionEntryPoint( getPathToException(), SC_BAD_REQUEST );
         entryPoint.commence( mockRequest, mockResponse, mockException );
         verify( mockResponse ).setStatus( SC_BAD_REQUEST );
     }
@@ -88,6 +88,10 @@ public class ServiceExceptionEntryPointTest {
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
+    }
+
+    private String getPathToException() {
+        return ServiceExceptionEntryPointTest.class.getResource( PATH_TO_EXCEPTION_FILE ).getPath();
     }
 
     private HttpServletResponse mockResponse() {

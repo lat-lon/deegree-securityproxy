@@ -3,6 +3,8 @@ package org.deegree.securityproxy.authentication;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -26,7 +28,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  */
 public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
 
-    private static Logger LOG = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
+    private static Logger LOG = Logger.getLogger( ServiceExceptionEntryPoint.class );
 
     public static final String DEFAULT_BODY = "Access Denied";
 
@@ -66,18 +68,22 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
     }
 
     private String readExceptionBodyFromFile( String pathToExceptionFile ) {
+        LOG.info( "Reading exception body from " + pathToExceptionFile );
         if ( pathToExceptionFile != null && pathToExceptionFile.length() > 0 ) {
-            InputStream exceptionAsStream = ServiceExceptionEntryPoint.class.getResourceAsStream( pathToExceptionFile );
+            InputStream exceptionAsStream = null;
             try {
-                if ( exceptionAsStream != null )
+                File exceptionFile = new File( pathToExceptionFile );
+                exceptionAsStream = new FileInputStream( exceptionFile );
+                if ( exceptionAsStream != null ) {
+                    LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY );
                     return IOUtils.toString( exceptionAsStream );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not read exception message from f. Defaulting to " + DEFAULT_BODY );
+                }
+            } catch ( Exception e ) {
+                LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY );
             } finally {
                 closeQuietly( exceptionAsStream );
             }
         }
         return DEFAULT_BODY;
     }
-
 }

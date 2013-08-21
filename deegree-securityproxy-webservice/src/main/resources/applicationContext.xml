@@ -3,12 +3,14 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+  
+  <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
 
   <context:annotation-config />
 
   <bean id="serviceExceptionEntryPoint" class="org.deegree.securityproxy.authentication.ServiceExceptionEntryPoint">
-    <constructor-arg value="/ogc_wcs_100_serviceexception.xml"></constructor-arg>
-    <constructor-arg value="403"></constructor-arg>
+    <constructor-arg value="${exception_file_path}"></constructor-arg>
+    <constructor-arg value="${status_code}"></constructor-arg>
   </bean>
 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
