@@ -2,11 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
-  
-  <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+  <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
   <context:annotation-config />
+  <import resource="securityContext.xml"/>
 
   <bean id="serviceExceptionEntryPoint" class="org.deegree.securityproxy.authentication.ServiceExceptionEntryPoint">
     <constructor-arg value="${exception_file_path}"></constructor-arg>
@@ -40,24 +40,11 @@
   </bean>
 
   <bean name="authenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
-
-  <security:authentication-manager alias="authenticationManager">
-    <security:authentication-provider ref="authenticationProvider" />
-  </security:authentication-manager>
-
-  <bean id="headerFilter"
-    class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+  <bean id="headerFilter" class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
     <property name="principalRequestHeader" value="access_token" />
     <property name="authenticationManager" ref="authenticationManager" />
     <property name="exceptionIfHeaderMissing" value="false" />
   </bean>
-
-  <security:http entry-point-ref="serviceExceptionEntryPoint" use-expressions="true"
-    create-session="stateless">
-    <!-- Additional http configuration omitted -->
-    <security:intercept-url pattern="/**" access="isAuthenticated()" />
-    <security:custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
-  </security:http>
 
   <bean id="loggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
 
