@@ -8,7 +8,10 @@
   <context:annotation-config />
 
   <bean id="http403EntryPoint"
-    class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
+    class="org.deegree.securityproxy.authentication.ServiceExceptionEntryPoint">
+    <constructor-arg value="/ogc_wcs_100_serviceexception.xml"></constructor-arg>
+    <constructor-arg value="403"></constructor-arg>
+  </bean>
 
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
     <property name="driverClassName" value="org.postgresql.Driver" />
