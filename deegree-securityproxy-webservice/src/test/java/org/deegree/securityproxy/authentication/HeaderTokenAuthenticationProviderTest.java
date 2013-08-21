@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
+import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenDataSourceAuthenticationProviderTestContext.xml" })
-public class HeaderTokenDataSourceAuthenticationProviderTest {
+public class HeaderTokenAuthenticationProviderTest {
 
     private static final String VALID_TOKEN = "VALID";
 
@@ -44,7 +45,7 @@ public class HeaderTokenDataSourceAuthenticationProviderTest {
     private AuthenticationProvider provider;
 
     @Autowired
-    private HeaderTokenDataSource source;
+    private UserDetailsDao source;
 
     @SuppressWarnings("unchecked")
     @Before
