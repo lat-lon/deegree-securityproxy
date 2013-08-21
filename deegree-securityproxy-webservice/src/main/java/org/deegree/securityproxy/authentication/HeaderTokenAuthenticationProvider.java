@@ -1,6 +1,7 @@
 package org.deegree.securityproxy.authentication;
 
 import org.apache.log4j.Logger;
+import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,7 +12,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 /**
  * Performs verification of an incoming {@link Authentication}. Authenticates the token against a
- * {@link HeaderTokenDataSource}
+ * {@link UserDetailsDao}
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -19,12 +20,12 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * 
  * @version $Revision: $, $Date: $
  */
-public class HeaderTokenDataSourceAuthenticationProvider implements AuthenticationProvider {
+public class HeaderTokenAuthenticationProvider implements AuthenticationProvider {
 
-    private static Logger log = Logger.getLogger( HeaderTokenDataSourceAuthenticationProvider.class );
+    private static Logger log = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
 
     @Autowired
-    private HeaderTokenDataSource source;
+    private UserDetailsDao dao;
 
     @Override
     public Authentication authenticate( Authentication authentication )
@@ -43,7 +44,7 @@ public class HeaderTokenDataSourceAuthenticationProvider implements Authenticati
     }
 
     private Authentication createVerifiedToken( String headerTokenValue ) {
-        UserDetails userDetails = source.loadUserDetailsFromDataSource( headerTokenValue );
+        UserDetails userDetails = dao.loadUserDetailsFromDataSource( headerTokenValue );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
             return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue,

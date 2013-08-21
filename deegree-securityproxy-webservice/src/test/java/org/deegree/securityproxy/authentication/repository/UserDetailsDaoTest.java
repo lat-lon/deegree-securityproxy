@@ -1,10 +1,10 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.repository;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.deegree.securityproxy.authentication.HeaderTokenDataSource;
+import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,12 +25,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenDataSourceTestContext.xml" })
-public class HeaderTokenDataSourceTest {
+public class UserDetailsDaoTest {
 
     private EmbeddedDatabase db;
 
     @Autowired
-    private HeaderTokenDataSource source;
+    private UserDetailsDao source;
 
     @Before
     public void setUp() {

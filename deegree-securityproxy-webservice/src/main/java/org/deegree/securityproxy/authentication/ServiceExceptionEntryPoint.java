@@ -26,7 +26,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  */
 public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
 
-    private static Logger LOG = Logger.getLogger( HeaderTokenDataSourceAuthenticationProvider.class );
+    private static Logger LOG = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
 
     public static final String DEFAULT_BODY = "Access Denied";
 

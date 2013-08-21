@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public class HeaderTokenDataSource {
+public class UserDetailsDao {
 
     @Autowired
     private DataSource source;
@@ -38,7 +38,7 @@ public class HeaderTokenDataSource {
 
     private final String passwordColumn;
 
-    public HeaderTokenDataSource( String schemaName, String tableName, String headerColumn, String userNameColumn,
+    public UserDetailsDao( String schemaName, String tableName, String headerColumn, String userNameColumn,
                                   String passwordColumn ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
