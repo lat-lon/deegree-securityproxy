@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenDataSourceTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/repository/UserDaoTestContext.xml" })
 public class UserDetailsDaoTest {
 
     private EmbeddedDatabase db;

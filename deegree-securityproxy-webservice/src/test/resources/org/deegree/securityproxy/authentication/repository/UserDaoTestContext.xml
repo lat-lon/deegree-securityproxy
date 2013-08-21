@@ -8,12 +8,12 @@
         http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
 
   <jdbc:embedded-database id="dataSource">
-    <jdbc:script location="classpath*:org/deegree/securityproxy/authentication/test_schema.sql" />
-    <jdbc:script location="classpath*:org/deegree/securityproxy/authentication/test_data.sql" />
+    <jdbc:script location="classpath*:org/deegree/securityproxy/authentication/repository/test_schema.sql" />
+    <jdbc:script location="classpath*:org/deegree/securityproxy/authentication/repository/test_data.sql" />
   </jdbc:embedded-database>
 
   <bean id="headerTokenDataSource"
-    class="org.deegree.securityproxy.authentication.HeaderTokenDataSource">
+    class="org.deegree.securityproxy.authentication.repository.UserDetailsDao">
     <constructor-arg value="" />
     <constructor-arg value="usertable" />
     <constructor-arg value="access_token" />

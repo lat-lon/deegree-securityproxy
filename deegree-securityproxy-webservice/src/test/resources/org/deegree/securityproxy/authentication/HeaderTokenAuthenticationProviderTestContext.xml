@@ -13,11 +13,11 @@
   
   <bean id="dataSource" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg
-      value="org.deegree.securityproxy.authentication.HeaderTokenDataSource" />
+      value="org.deegree.securityproxy.authentication.repository.UserDetailsDao" />
   </bean>
   
 
   <bean id="authenticationProvider"
-    class="org.deegree.securityproxy.authentication.HeaderTokenDataSourceAuthenticationProvider" />
+    class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
 
 </beans>

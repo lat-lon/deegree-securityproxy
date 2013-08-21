@@ -30,7 +30,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenDataSourceAuthenticationProviderTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/HeaderTokenAuthenticationProviderTestContext.xml" })
 public class HeaderTokenAuthenticationProviderTest {
 
     private static final String VALID_TOKEN = "VALID";
