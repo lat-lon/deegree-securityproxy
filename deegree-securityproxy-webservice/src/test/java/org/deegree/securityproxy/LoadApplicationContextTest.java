@@ -60,7 +60,7 @@ public class LoadApplicationContextTest {
         File configPropertiesFile = new File( configDirectory, CONFIG_PROPERTIES_FILE_NAME );
         FileOutputStream fileOutputStream = new FileOutputStream( configPropertiesFile );
 
-        InputStream testConfigProperties = LoadApplicationContextTest.class.getResourceAsStream( "/test_config.properties" );
+        InputStream testConfigProperties = LoadApplicationContextTest.class.getResourceAsStream( "test_config.properties" );
         copy( testConfigProperties, fileOutputStream );
 
         testConfigProperties.close();

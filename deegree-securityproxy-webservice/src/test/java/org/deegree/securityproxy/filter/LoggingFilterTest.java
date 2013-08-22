@@ -38,7 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/LoggingFilterTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/filter/LoggingFilterTestContext.xml" })
 public class LoggingFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
