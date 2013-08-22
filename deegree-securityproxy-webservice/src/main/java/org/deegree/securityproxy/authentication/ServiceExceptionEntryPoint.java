@@ -5,6 +5,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -74,12 +75,12 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
             try {
                 File exceptionFile = new File( pathToExceptionFile );
                 exceptionAsStream = new FileInputStream( exceptionFile );
-                if ( exceptionAsStream != null ) {
-                    LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY );
-                    return IOUtils.toString( exceptionAsStream );
-                }
-            } catch ( Exception e ) {
-                LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY );
+                return IOUtils.toString( exceptionAsStream );
+            } catch ( FileNotFoundException e ) {
+                LOG.warn( "Could not read exception message from file: File not found! Defaulting to " + DEFAULT_BODY );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY + "Reason: "
+                          + e.getMessage() );
             } finally {
                 closeQuietly( exceptionAsStream );
             }
