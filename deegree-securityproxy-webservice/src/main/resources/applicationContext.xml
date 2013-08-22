@@ -6,20 +6,12 @@
 
   <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
   <context:annotation-config />
-  <import resource="securityContext.xml"/>
+  <import resource="securityContext.xml" />
+  <import resource="persistenceContext.xml" />
 
   <bean id="serviceExceptionEntryPoint" class="org.deegree.securityproxy.authentication.ServiceExceptionEntryPoint">
     <constructor-arg value="${exception_file_path}"></constructor-arg>
     <constructor-arg value="${status_code}"></constructor-arg>
-  </bean>
-
-  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
-    <property name="driverClassName" value="org.postgresql.Driver" />
-    <property name="url" value="jdbc:postgresql://localhost:5432/ows_access_control" />
-    <property name="username" value="postgres" />
-    <property name="password" value="postgres" />
-    <property name="initialSize" value="5" />
-    <property name="maxActive" value="10" />
   </bean>
 
   <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
