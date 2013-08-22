@@ -1,10 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
   <name>Deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
@@ -13,6 +12,7 @@
     <maven.compiler.target>1.6</maven.compiler.target>
     <spring.version>3.2.3.RELEASE</spring.version>
     <spring.security.version>3.1.4.RELEASE</spring.security.version>
+    <j2ep.version>1.0.1-securityproxy-master</j2ep.version>
   </properties>
 
   <dependencyManagement>
@@ -40,7 +40,7 @@
       <dependency>
         <groupId>de.latlon</groupId>
         <artifactId>j2ep</artifactId>
-        <version>1.0-securityproxy-master</version>
+        <version>${j2ep.version}</version>
       </dependency>
       <!-- Servlet API -->
       <dependency>
