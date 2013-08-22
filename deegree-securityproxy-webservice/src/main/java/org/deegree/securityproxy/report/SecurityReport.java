@@ -10,7 +10,7 @@ package org.deegree.securityproxy.report;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ProxyReport {
+public class SecurityReport {
 
     private final String ipAddressOfRequestingUser;
 
@@ -18,7 +18,7 @@ public class ProxyReport {
 
     private final boolean isResponseSuccessfullySent;
 
-    public ProxyReport( String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent ) {
+    public SecurityReport( String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent ) {
         this.ipAddressOfRequestingUser = ipAddressOfRequestingUser;
         this.targetUri = targetUri;
         this.isResponseSuccessfullySent = isResponseSuccesfullySent;
@@ -54,7 +54,7 @@ public class ProxyReport {
             return false;
         if ( getClass() != obj.getClass() )
             return false;
-        ProxyReport other = (ProxyReport) obj;
+        SecurityReport other = (SecurityReport) obj;
         if ( ipAddressOfRequestingUser == null ) {
             if ( other.ipAddressOfRequestingUser != null )
                 return false;

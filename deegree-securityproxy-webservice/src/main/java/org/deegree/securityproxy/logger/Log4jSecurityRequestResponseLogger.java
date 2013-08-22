@@ -5,10 +5,10 @@ import static java.lang.System.getenv;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-import org.deegree.securityproxy.report.ProxyReport;
+import org.deegree.securityproxy.report.SecurityReport;
 
 /**
- * This implementation of {@link ProxyReportLogger} uses Apache Log4J as logging framework
+ * This implementation of {@link SecurityRequestResposeLogger} uses Apache Log4J as logging framework
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -17,7 +17,7 @@ import org.deegree.securityproxy.report.ProxyReport;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Log4JReportLogger implements ProxyReportLogger {
+public class Log4jSecurityRequestResponseLogger implements SecurityRequestResposeLogger {
 
     private static Logger log = Logger.getLogger( "ProxyLogger" );
 
@@ -25,20 +25,20 @@ public class Log4JReportLogger implements ProxyReportLogger {
 
     private String log4JFileName;
                           
-    public Log4JReportLogger (String proxyConfEnv, String log4JFileName) {
+    public Log4jSecurityRequestResponseLogger (String proxyConfEnv, String log4JFileName) {
     	this.proxyConfEnv = proxyConfEnv;
     	this.log4JFileName = log4JFileName;
     	configureLogging();
     }
     
-    public Log4JReportLogger () {
+    public Log4jSecurityRequestResponseLogger () {
         this.proxyConfEnv = "PROXY_CONF";
         this.log4JFileName = "log4j.properties";
         configureLogging();
     }
     
     @Override
-    public void logProxyReportInfo( ProxyReport report )
+    public void logProxyReportInfo( SecurityReport report )
                             throws IllegalArgumentException {
         if ( report == null )
             throw new IllegalArgumentException( "ProxyReport must not be null!" );
