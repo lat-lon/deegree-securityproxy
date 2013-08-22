@@ -19,7 +19,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 public class FilterResponseWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
-
+    
     public FilterResponseWrapper(HttpServletResponse response) {
         super(response);
     }
@@ -60,5 +60,5 @@ public class FilterResponseWrapper extends HttpServletResponseWrapper {
     public int getStatus() {
         return httpStatus;
     }
-
+    
 }
