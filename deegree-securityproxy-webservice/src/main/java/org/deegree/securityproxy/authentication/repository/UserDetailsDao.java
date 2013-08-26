@@ -94,8 +94,8 @@ public class UserDetailsDao {
         RowMapper<UserDetails> rowMapper = new RowMapper<UserDetails>() {
             public UserDetails mapRow( ResultSet rs, int rowNum )
                                     throws SQLException {
-                String username = rs.getString( "user_name" );
-                String password = rs.getString( "password" );
+                String username = rs.getString( userNameColumn );
+                String password = rs.getString( passwordColumn );
                 return new User( username, password, Collections.<GrantedAuthority> emptyList() );
             }
         };
