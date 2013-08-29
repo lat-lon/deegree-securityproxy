@@ -2,9 +2,13 @@ package org.deegree.securityproxy.filter;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,18 +22,24 @@ import javax.servlet.http.HttpServletResponse;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.hamcrest.BaseMatcher;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.AssertThrows;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Tests for {@link LoggingFilter}
- *
+ * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
@@ -46,16 +56,16 @@ public class LoggingFilterTest {
     private static final String TARGET_URL = "devcloud.blackbridge.com";
 
     private static final String QUERY_STRING = "request=GetCapabilities";
-    
+
     @Autowired
     private LoggingFilter loggingFilter;
-    
+
     /**
      * Autowire a mocked instance of {@link SecurityRequestResposeLogger}
      */
     @Autowired
     private SecurityRequestResposeLogger logger;
-    
+
     /**
      * Reset the mocked instance of logger to prevent side effects between tests
      */
@@ -63,7 +73,7 @@ public class LoggingFilterTest {
     public void resetMock() {
         reset( logger );
     }
-    
+
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
                             throws IOException, ServletException {
@@ -100,6 +110,24 @@ public class LoggingFilterTest {
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ) );
     }
 
+    @Test
+    @Ignore("Not yet implemented")
+    public void testResponseShouldContainSerialUuidHeader()
+                            throws IOException, ServletException {
+        HttpServletResponse response = generateMockResponse();
+        loggingFilter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
+        loggingFilter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
+
+        ArgumentCaptor<String> uuidArgumentFirstInvocation = ArgumentCaptor.forClass( String.class );
+        verify( response, times( 2 ) ).setHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );
+        verify( response, times( 2 ) ).setHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );
+
+        String firstUuidArgument = uuidArgumentFirstInvocation.getAllValues().get( 0 );
+        String secondUuidArgument = uuidArgumentFirstInvocation.getAllValues().get( 1 );
+
+        assertThat( firstUuidArgument, is( not( secondUuidArgument ) ) );
+    }
+
     private ServletRequest generateMockRequestNullQueryString() {
         HttpServletRequest mockRequest = mock( HttpServletRequest.class );
         when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
@@ -117,8 +145,7 @@ public class LoggingFilterTest {
     }
 
     private HttpServletResponse generateMockResponse() {
-        HttpServletResponse mockResponse = mock( HttpServletResponse.class );
-        return mockResponse;
+        return mock( HttpServletResponse.class );
     }
 
     private Matcher<SecurityReport> hasCorrectIpAddress() {
