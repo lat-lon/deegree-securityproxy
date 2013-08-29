@@ -1,1 +1,2 @@
-INSERT INTO usertable(access_token, user_name, password) VALUES ('VALID_HEADER','USER','PASSWORD');
+INSERT INTO usertable(access_token, user_name, password, layer_service_type_name ) VALUES ('VALID_HEADER','USER','PASSWORD', 'WCS');
+INSERT INTO usertable(access_token, user_name, password, layer_service_type_name ) VALUES ('WMS_VALID_HEADER','WMSUSER','PASSWORD', 'WMS');

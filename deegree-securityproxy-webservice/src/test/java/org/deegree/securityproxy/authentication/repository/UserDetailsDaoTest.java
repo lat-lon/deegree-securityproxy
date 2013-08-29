@@ -49,6 +49,12 @@ public class UserDetailsDaoTest {
         UserDetails details = source.loadUserDetailsFromDataSource( "INVALID_HEADER" );
         assertThat( details, nullValue() );
     }
+    
+    @Test
+    public void testLoadUserDetailsForUserWithNotWcsPermissionFails() {
+        UserDetails details = source.loadUserDetailsFromDataSource( "WMS_VALID_HEADER" );
+        assertThat( details, nullValue() );
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testLoadUserDetailsFromDataSourceShouldThrowExceptionOnEmptyHeader() {
