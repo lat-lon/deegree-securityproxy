@@ -3,6 +3,7 @@ package org.deegree.securityproxy.filter;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -43,6 +44,7 @@ public class LoggingFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         FilterResponseWrapper wrappedResponse = new FilterResponseWrapper( httpResponse );
+        createUuidHeader( wrappedResponse );
         chain.doFilter( httpRequest, wrappedResponse );
         generateAndLogProxyReport( httpRequest, wrappedResponse );
     }
@@ -58,6 +60,11 @@ public class LoggingFilter implements Filter {
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
         SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful );
         proxyReportLogger.logProxyReportInfo( report );
+    }
+
+    private void createUuidHeader( FilterResponseWrapper wrappedResponse ) {
+        String uuid = UUID.randomUUID().toString();
+        wrappedResponse.addHeader( "serial_uuid", uuid );
     }
 
 }

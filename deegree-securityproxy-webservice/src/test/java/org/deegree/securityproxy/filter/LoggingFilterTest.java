@@ -22,18 +22,13 @@ import javax.servlet.http.HttpServletResponse;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.hamcrest.BaseMatcher;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.AssertThrows;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -111,7 +106,6 @@ public class LoggingFilterTest {
     }
 
     @Test
-    @Ignore("Not yet implemented")
     public void testResponseShouldContainSerialUuidHeader()
                             throws IOException, ServletException {
         HttpServletResponse response = generateMockResponse();
