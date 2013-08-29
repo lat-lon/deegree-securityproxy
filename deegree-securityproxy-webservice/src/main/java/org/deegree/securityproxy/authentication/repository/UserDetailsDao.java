@@ -79,7 +79,7 @@ public class UserDetailsDao {
         builder.append( "SELECT " );
         builder.append( userNameColumn ).append( "," ).append( passwordColumn );
         appendFrom( builder );
-        builder.append( " WHERE " ).append( headerColumn ).append( " = ? LIMIT 1" );
+        builder.append( " WHERE " ).append( headerColumn ).append( " = ? AND layer_service_type_name = 'WCS' LIMIT 1" );
         return builder.toString();
     }
 
