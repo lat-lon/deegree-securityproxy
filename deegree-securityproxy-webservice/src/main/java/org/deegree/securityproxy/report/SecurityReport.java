@@ -12,16 +12,24 @@ package org.deegree.securityproxy.report;
  */
 public class SecurityReport {
 
+    private final String serialUuid;
+
     private final String ipAddressOfRequestingUser;
 
     private final String targetUri;
 
     private final boolean isResponseSuccessfullySent;
 
-    public SecurityReport( String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent ) {
+    public SecurityReport( String serialUuid, String ipAddressOfRequestingUser, String targetUri,
+                           boolean isResponseSuccesfullySent ) {
+        this.serialUuid = serialUuid;
         this.ipAddressOfRequestingUser = ipAddressOfRequestingUser;
         this.targetUri = targetUri;
         this.isResponseSuccessfullySent = isResponseSuccesfullySent;
+    }
+
+    public String getSerialUuid() {
+        return serialUuid;
     }
 
     public String getIpAddressOfRequestingUser() {
@@ -42,6 +50,7 @@ public class SecurityReport {
         int result = 1;
         result = prime * result + ( ( ipAddressOfRequestingUser == null ) ? 0 : ipAddressOfRequestingUser.hashCode() );
         result = prime * result + ( isResponseSuccessfullySent ? 1231 : 1237 );
+        result = prime * result + ( ( serialUuid == null ) ? 0 : serialUuid.hashCode() );
         result = prime * result + ( ( targetUri == null ) ? 0 : targetUri.hashCode() );
         return result;
     }
@@ -62,6 +71,11 @@ public class SecurityReport {
             return false;
         if ( isResponseSuccessfullySent != other.isResponseSuccessfullySent )
             return false;
+        if ( serialUuid == null ) {
+            if ( other.serialUuid != null )
+                return false;
+        } else if ( !serialUuid.equals( other.serialUuid ) )
+            return false;
         if ( targetUri == null ) {
             if ( other.targetUri != null )
                 return false;
@@ -73,7 +87,8 @@ public class SecurityReport {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append( "Request sent from IP address: " );
+        builder.append( serialUuid );
+        builder.append( "| Request sent from IP address: " );
         builder.append( ipAddressOfRequestingUser );
         builder.append( ", target URL: " );
         builder.append( targetUri );
