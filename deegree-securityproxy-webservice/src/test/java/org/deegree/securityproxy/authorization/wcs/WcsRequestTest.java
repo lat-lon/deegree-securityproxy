@@ -107,7 +107,6 @@ public class WcsRequestTest {
         new WcsRequest( null );
     }
 
-    @SuppressWarnings("unchecked")
     private HttpServletRequest mockWcsGetRequest() {
         HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
         Map<String, String> parameterMap = new HashMap<String, String>();
@@ -115,7 +114,7 @@ public class WcsRequestTest {
         parameterMap.put( REQUEST_PARAM, OPERATION_TYPE.name() );
         parameterMap.put( LAYER_PARAM, LAYER_NAME );
         when( servletRequest.getParameterMap() ).thenReturn( parameterMap );
-        when( servletRequest.getParameterNames() ).thenReturn( new Vector( parameterMap.keySet() ).elements() );
+        when( servletRequest.getParameterNames() ).thenReturn( new Vector<String>( parameterMap.keySet() ).elements() );
         when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
         when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( new String[] { parameterMap.get( VERSION_PARAM ) } );
         when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM ) );
