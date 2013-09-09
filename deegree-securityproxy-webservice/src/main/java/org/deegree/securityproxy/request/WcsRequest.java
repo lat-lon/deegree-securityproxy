@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authorization.wcs;
+package org.deegree.securityproxy.request;
 
 import javax.servlet.http.HttpServletRequest;
 

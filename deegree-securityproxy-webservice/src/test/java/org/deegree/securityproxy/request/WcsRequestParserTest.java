@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authorization.wcs;
+package org.deegree.securityproxy.request;
 
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
+import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -58,13 +59,17 @@ import org.mockito.Mockito;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsRequestTest {
+public class WcsRequestParserTest {
 
-    private static final String LAYER_PARAM = "LAYER";
+    private WcsRequestParser parser = new WcsRequestParser();
+
+    private static final String COVERAGE_PARAM = "COVERAGE";
 
     private static final String REQUEST_PARAM = "REQUEST";
 
     private static final String VERSION_PARAM = "VERSION";
+
+    private static final String SERVICE_PARAM = "SERVICE";
 
     private static final WcsServiceVersion SERVICE_VERSION = VERSION_100;
 
@@ -75,53 +80,94 @@ public class WcsRequestTest {
     private static final String SERVICE_NAME = "serviceName";
 
     @Test
-    public void testConstructorFromGetRequestShouldParseLayerName() {
+    public void testParseFromGetRequestShouldParseLayerName() {
         HttpServletRequest request = mockWcsGetRequest();
-        WcsRequest wcsRequest = new WcsRequest( request );
+        WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getLayerName(), is( LAYER_NAME ) );
     }
 
     @Test
-    public void testConstructorFromGetRequestShouldParseOperationType() {
+    public void testParseFromGetRequestShouldParseOperationType() {
         HttpServletRequest request = mockWcsGetRequest();
-        WcsRequest wcsRequest = new WcsRequest( request );
+        WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( OPERATION_TYPE ) );
     }
 
     @Test
-    public void testConstructorFromGetRequestShouldParseServiceName() {
+    public void testParseFromGetRequestShouldParseServiceName() {
         HttpServletRequest request = mockWcsGetRequest();
-        WcsRequest wcsRequest = new WcsRequest( request );
+        WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
     }
 
     @Test
-    public void testConstructorFromGetRequestShouldParseServiceVersion() {
+    public void testParseFromGetRequestShouldParseServiceVersion() {
         HttpServletRequest request = mockWcsGetRequest();
-        WcsRequest wcsRequest = new WcsRequest( request );
+        WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getServiceVersion(), is( SERVICE_VERSION ) );
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testConstructorWithNullRequestShouldFail() {
-        new WcsRequest( null );
+    public void testParseWithNullRequestShouldFail() {
+        parser.parse( null );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseWithMissingRequestParameterShouldFail() {
+        parser.parse( mockInvalidWcsRequestMissingRequestParameter( "wcs" ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseWithMissingServiceParameterShouldFail() {
+        parser.parse( mockInvalidWcsRequestMissingServiceParameter( "wcs" ) );
+    }
+
+    @Test(expected = UnsupportedRequestTypeException.class)
+    public void testParseWmsRequestShouldFail() {
+        parser.parse( mockWmsGetRequest() );
     }
 
     private HttpServletRequest mockWcsGetRequest() {
-        HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
+        Map<String, String> parameterMap = createValidParameterMap( "wcs" );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWmsGetRequest() {
+        Map<String, String> parameterMap = createValidParameterMap( "wms" );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter( String serviceType ) {
+        Map<String, String> parameterMap = createValidParameterMap( "wcs" );
+        parameterMap.remove( REQUEST_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter( String serviceType ) {
+        Map<String, String> parameterMap = createValidParameterMap( "wcs" );
+        parameterMap.remove( SERVICE_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private Map<String, String> createValidParameterMap( String serviceType ) {
         Map<String, String> parameterMap = new HashMap<String, String>();
         parameterMap.put( VERSION_PARAM, SERVICE_VERSION.getVersionString() );
         parameterMap.put( REQUEST_PARAM, OPERATION_TYPE.name() );
-        parameterMap.put( LAYER_PARAM, LAYER_NAME );
+        parameterMap.put( COVERAGE_PARAM, LAYER_NAME );
+        parameterMap.put( SERVICE_PARAM, serviceType );
+        return parameterMap;
+    }
+    
+    private HttpServletRequest mockRequest( Map<String, String> parameterMap ) {
+        HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
         when( servletRequest.getParameterMap() ).thenReturn( parameterMap );
         when( servletRequest.getParameterNames() ).thenReturn( new Vector<String>( parameterMap.keySet() ).elements() );
         when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
         when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( new String[] { parameterMap.get( VERSION_PARAM ) } );
         when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM ) );
         when( servletRequest.getParameterValues( REQUEST_PARAM ) ).thenReturn( new String[] { parameterMap.get( REQUEST_PARAM ) } );
-        when( servletRequest.getParameter( LAYER_PARAM ) ).thenReturn( parameterMap.get( LAYER_PARAM ) );
-        when( servletRequest.getParameterValues( LAYER_NAME ) ).thenReturn( new String[] { parameterMap.get( LAYER_PARAM ) } );
-
+        when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
+        when( servletRequest.getParameterValues( LAYER_NAME ) ).thenReturn( new String[] { parameterMap.get( COVERAGE_PARAM ) } );
         when( servletRequest.getPathInfo() ).thenReturn( "/" + SERVICE_NAME );
         return servletRequest;
     }
