@@ -58,7 +58,7 @@ public class SecurityFilter implements Filter {
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
-        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful );
+        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful, "" );
         proxyReportLogger.logProxyReportInfo( report );
     }
 

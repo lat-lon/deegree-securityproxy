@@ -18,10 +18,14 @@ public class SecurityReport {
 
     private final boolean isResponseSuccessfullySent;
 
-    public SecurityReport( String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent ) {
+    private final String errorMessage;
+
+    public SecurityReport( String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent,
+                           String errorMessage ) {
         this.ipAddressOfRequestingUser = ipAddressOfRequestingUser;
         this.targetUri = targetUri;
         this.isResponseSuccessfullySent = isResponseSuccesfullySent;
+        this.errorMessage = errorMessage;
     }
 
     public String getIpAddressOfRequestingUser() {
@@ -34,6 +38,10 @@ public class SecurityReport {
 
     public boolean isResponseSuccessfullySent() {
         return isResponseSuccessfullySent;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     @Override
@@ -78,8 +86,9 @@ public class SecurityReport {
         builder.append( ", target URL: " );
         builder.append( targetUri );
         builder.append( ", reponse was: " );
-        String sent = isResponseSuccessfullySent ? "successful." : "not successful";
+        String sent = isResponseSuccessfullySent ? "successful." : "not successful.";
         builder.append( sent );
+        builder.append( " " + errorMessage );
         return builder.toString();
     }
 

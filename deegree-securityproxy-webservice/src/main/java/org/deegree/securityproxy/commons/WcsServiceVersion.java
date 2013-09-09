@@ -58,6 +58,7 @@ public enum WcsServiceVersion {
         String versionString = stripBooleanOperators( versionToParse );
         versionString = versionString.trim();
         WcsServiceVersion version = parseWithoutOperator( versionString );
+        if (version == null) return Collections.emptyList();
         List<WcsServiceVersion> result = new ArrayList<WcsServiceVersion>();
         switch ( version ) {
         case VERSION_100:
@@ -77,6 +78,7 @@ public enum WcsServiceVersion {
         String versionString = stripBooleanOperators( versionToParse );
         versionString = versionString.trim();
         WcsServiceVersion version = parseWithoutOperator( versionString );
+        if (version == null) return Collections.emptyList();
         List<WcsServiceVersion> result = new ArrayList<WcsServiceVersion>();
         switch ( version ) {
         case VERSION_100:
@@ -96,6 +98,7 @@ public enum WcsServiceVersion {
         String versionString = stripBooleanOperators( versionToParse );
         versionString = versionString.trim();
         WcsServiceVersion version = parseWithoutOperator( versionString );
+        if (version == null) return Collections.emptyList();
         List<WcsServiceVersion> result = new ArrayList<WcsServiceVersion>();
         switch ( version ) {
         case VERSION_100:
@@ -118,6 +121,7 @@ public enum WcsServiceVersion {
         String versionString = stripBooleanOperators( versionToParse );
         versionString = versionString.trim();
         WcsServiceVersion version = parseWithoutOperator( versionString );
+        if (version == null) return Collections.emptyList();
         List<WcsServiceVersion> result = new ArrayList<WcsServiceVersion>();
         switch ( version ) {
         case VERSION_100:
@@ -151,6 +155,7 @@ public enum WcsServiceVersion {
         String versionString = stripBooleanOperators( versionToParse );
         versionString = versionString.trim();
         WcsServiceVersion version = parseWithoutOperator( versionString );
+        if (version == null) return Collections.emptyList();
         switch ( version ) {
         case VERSION_100:
             return Collections.singletonList( VERSION_100 );

@@ -32,12 +32,12 @@ public class WcsRequestParser {
      * Parses an incoming {@link HttpServletRequest} into a {@link WcsRequest}.
      * 
      * @param request
-     *            never <code>null</code>. 
-     *            Must contain the following parameters exactly once ignoring the casing: "request" and "service". 
-     *            Must contain the following parameter not more than once: "coverage". 
-     *            May contain the following parameter not more than once: "version".
+     *            never <code>null</code>. Must contain the following parameters exactly once ignoring the casing:
+     *            "request" and "service". Must contain the following parameter not more than once: "coverage". May
+     *            contain the following parameter not more than once: "version".
      * @return {@link WcsRequest}. Never <code>null</code>
-     * @throws UnsupportedRequestTypeException when the given request does not have the service type "wcs"
+     * @throws UnsupportedRequestTypeException
+     *             when the given request does not have the service type "wcs"
      */
     @SuppressWarnings("unchecked")
     public WcsRequest parse( HttpServletRequest request )
@@ -50,13 +50,13 @@ public class WcsRequestParser {
         WcsOperationType type = evaluateOperationType( normalizedParameterMap );
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String coverageName = evaluateCoverageParameter( normalizedParameterMap );
-        String serviceName = evaluateServiceString( request.getPathInfo() );
+        String serviceName = evaluateServiceString( request.getQueryString() );
         return new WcsRequest( type, version, coverageName, serviceName );
     }
 
     private String evaluateCoverageParameter( Map<String, String[]> normalizedParameterMap ) {
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
-        if ( coverageParameter.length == 0 )
+        if ( coverageParameter == null || coverageParameter.length == 0 )
             return null;
         else
             return coverageParameter[0];
@@ -71,14 +71,19 @@ public class WcsRequestParser {
     }
 
     private WcsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {
-        String value = normalizedParameterMap.get( VERSION )[0];
-        if ( "1.0.0".equalsIgnoreCase( value ) )
-            return WcsServiceVersion.VERSION_100;
-        if ( "1.1.0".equalsIgnoreCase( value ) )
-            return WcsServiceVersion.VERSION_110;
-        if ( "2.0.0".equalsIgnoreCase( value ) )
-            return WcsServiceVersion.VERSION_200;
-        throw new IllegalArgumentException( "Unrecognized version " + value );
+        String[] versionParameters = normalizedParameterMap.get( VERSION );
+        if ( versionParameters == null )
+            return null;
+        else {
+            String value = versionParameters[0];
+            if ( "1.0.0".equalsIgnoreCase( value ) )
+                return WcsServiceVersion.VERSION_100;
+            if ( "1.1.0".equalsIgnoreCase( value ) )
+                return WcsServiceVersion.VERSION_110;
+            if ( "2.0.0".equalsIgnoreCase( value ) )
+                return WcsServiceVersion.VERSION_200;
+            throw new IllegalArgumentException( "Unrecognized version " + value );
+        }
     }
 
     private WcsOperationType evaluateOperationType( Map<String, String[]> normalizedParameterMap ) {
@@ -101,6 +106,8 @@ public class WcsRequestParser {
 
     private void checkCoverageParameter( Map<String, String[]> normalizedParameterMap ) {
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
+        if ( coverageParameter == null )
+            return;
         if ( coverageParameter.length > 1 ) {
             throw new IllegalArgumentException(
                                                 "Request must contain exactly one \"coverage\" parameter, ignoring the casing. Given parameters:"

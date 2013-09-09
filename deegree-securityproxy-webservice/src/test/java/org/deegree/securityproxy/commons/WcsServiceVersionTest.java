@@ -18,7 +18,7 @@ public class WcsServiceVersionTest {
         List<WcsServiceVersion> expected = Collections.singletonList( WcsServiceVersion.VERSION_100 );
         assertThat( parsed, is( expected ) );
     }
-    
+
     @Test
     public void testParseVersions110()
                             throws Exception {
@@ -34,7 +34,7 @@ public class WcsServiceVersionTest {
         List<WcsServiceVersion> expected = Collections.singletonList( WcsServiceVersion.VERSION_100 );
         assertThat( parsed, is( expected ) );
     }
-    
+
     @Test
     public void testParseVersionsSmallerThanMultiple()
                             throws Exception {
@@ -44,7 +44,7 @@ public class WcsServiceVersionTest {
         expected.add( WcsServiceVersion.VERSION_110 );
         assertThat( parsed, is( expected ) );
     }
-    
+
     @Test
     public void testParseVersionsGreaterThanSingle()
                             throws Exception {
@@ -52,7 +52,7 @@ public class WcsServiceVersionTest {
         List<WcsServiceVersion> expected = Collections.singletonList( WcsServiceVersion.VERSION_200 );
         assertThat( parsed, is( expected ) );
     }
-    
+
     @Test
     public void testParseVersionsGreaterThanMultiple()
                             throws Exception {
@@ -62,5 +62,14 @@ public class WcsServiceVersionTest {
         expected.add( WcsServiceVersion.VERSION_110 );
         expected.add( WcsServiceVersion.VERSION_200 );
         assertThat( parsed, is( expected ) );
+    }
+
+    @Test
+    public void testParseWrongVersion() {
+        WcsServiceVersion.parseVersions( "<= 1.3.0" );
+        WcsServiceVersion.parseVersions( "= 1.3.0" );
+        WcsServiceVersion.parseVersions( "1.3.0" );
+        WcsServiceVersion.parseVersions( ">= 1.3.0" );
+
     }
 }

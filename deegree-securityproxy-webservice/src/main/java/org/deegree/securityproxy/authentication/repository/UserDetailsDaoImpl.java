@@ -50,7 +50,7 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     private final String serviceNameColumn;
 
     private final String layerNameColumn;
-
+    
     private final String subscriptionStart;
 
     private final String subscriptionEnd;

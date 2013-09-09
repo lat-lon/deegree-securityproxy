@@ -23,6 +23,10 @@
     </constructor-arg>
   </bean>
 
+  <bean id="wcsRequestAuthorizationManager" class="org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager" />
+
+  <bean id="wcsRequestParser" class="org.deegree.securityproxy.request.WcsRequestParser" />
+
   <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.UserDetailsDaoImpl">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
@@ -45,5 +49,7 @@
   </bean>
 
   <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
+
+  <bean id="authorizationFilter" class="org.deegree.securityproxy.filter.AuthorizationFilter" />
 
 </beans>

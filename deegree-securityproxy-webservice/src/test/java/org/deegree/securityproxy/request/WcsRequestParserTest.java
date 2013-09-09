@@ -141,6 +141,18 @@ public class WcsRequestParserTest {
         parser.parse( mockWmsGetRequest() );
     }
 
+    @Test
+    public void testParseWithMissingVersionParameter()
+                            throws UnsupportedRequestTypeException {
+        parser.parse( mockValidWcsRequestMissingVersionParameter( "wcs" ) );
+    }
+
+    @Test
+    public void testParseWithMissingCoverageParameter()
+                            throws UnsupportedRequestTypeException {
+        parser.parse( mockValidWcsRequestMissingCoverageParameter( "wcs" ) );
+    }
+
     private HttpServletRequest mockWcsGetRequest() {
         Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
         return mockRequest( parameterMap );
@@ -163,6 +175,18 @@ public class WcsRequestParserTest {
         return mockRequest( parameterMap );
     }
 
+    private HttpServletRequest mockValidWcsRequestMissingVersionParameter( String serviceType ) {
+        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        parameterMap.remove( VERSION_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockValidWcsRequestMissingCoverageParameter( String serviceType ) {
+        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        parameterMap.remove( COVERAGE_PARAM );
+        return mockRequest( parameterMap );
+    }
+
     private HttpServletRequest mockInvalidWcsRequestDoubleServiceParameter( String serviceType ) {
         Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
         parameterMap.put( "service", new String[] { serviceType } );
@@ -182,9 +206,13 @@ public class WcsRequestParserTest {
         HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
         when( servletRequest.getParameterMap() ).thenReturn( parameterMap );
         when( servletRequest.getParameterNames() ).thenReturn( new Vector<String>( parameterMap.keySet() ).elements() );
-        when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM )[0] );
-        when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
-        when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM )[0] );
+        if ( parameterMap.get( VERSION_PARAM ) != null ) {
+            when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM )[0] );
+            when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
+        }
+        if ( parameterMap.get( COVERAGE_PARAM ) != null ) {
+            when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM )[0] );
+        }
         when( servletRequest.getParameterValues( LAYER_NAME ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
         if ( parameterMap.get( REQUEST_PARAM ) != null ) {
             when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM )[0] );
@@ -194,7 +222,7 @@ public class WcsRequestParserTest {
             when( servletRequest.getParameter( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM )[0] );
             when( servletRequest.getParameterValues( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM ) );
         }
-        when( servletRequest.getPathInfo() ).thenReturn( "/path/" + SERVICE_NAME );
+        when( servletRequest.getQueryString() ).thenReturn( SERVICE_NAME );
         return servletRequest;
     }
 

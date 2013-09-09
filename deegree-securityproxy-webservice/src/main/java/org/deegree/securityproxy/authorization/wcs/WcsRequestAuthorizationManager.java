@@ -30,6 +30,8 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
     public void decide( Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes )
                             throws AccessDeniedException, InsufficientAuthenticationException {
         WcsRequest wcsRequest = (WcsRequest) object;
+        if ( authentication == null )
+            throw new AccessDeniedException( "Not authenticated!" );
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority authority : authorities ) {
             if ( isAuthorized( authority, wcsRequest ) ) {
@@ -37,13 +39,13 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
             }
         }
         // Shall support Authentication instances that contain WcsPermission(s) as GrantedAuthority(ies)
-        throw new AccessDeniedException( "Unauthorizised" );
+        throw new AccessDeniedException( "Unauthorized" );
     }
 
     private boolean isAuthorized( GrantedAuthority authority, WcsRequest wcsRequest ) {
         if ( authority instanceof WcsPermission ) {
             WcsPermission wcsPermission = (WcsPermission) authority;
-            
+
             if ( isGetCoverageRequest( wcsRequest ) ) {
                 if ( !isLayerNameAuthorized( wcsRequest, wcsPermission ) )
                     return false;

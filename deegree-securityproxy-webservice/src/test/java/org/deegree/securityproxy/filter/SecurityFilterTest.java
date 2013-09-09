@@ -53,7 +53,7 @@ public class SecurityFilterTest {
     private static final String QUERY_STRING = "request=GetCapabilities";
 
     @Autowired
-    private SecurityFilter loggingFilter;
+    private SecurityFilter filter;
 
     /**
      * Autowire a mocked instance of {@link SecurityRequestResposeLogger}
@@ -70,37 +70,37 @@ public class SecurityFilterTest {
     }
 
     @Test
-    public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
+    public void testLoggingShouldGenerateReportWithCorrectIpAddress()
                             throws IOException, ServletException {
-        loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectIpAddress() ) );
     }
 
     @Test
-    public void testLoggingFilterShouldGenerateReportWithCorrectTargetUrl()
+    public void testLoggingShouldGenerateReportWithCorrectTargetUrl()
                             throws IOException, ServletException {
-        loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrl() ) );
     }
 
     @Test
-    public void testLoggingFilterShouldGenerateCorrectReportForSuccessfulReponse()
+    public void testLoggingShouldGenerateCorrectReportForSuccessfulReponse()
                             throws IOException, ServletException {
-        loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ) );
     }
 
     @Test
-    public void testLoggingFilterShouldGenerateCorrectReportForNotSuccessfulReponse()
+    public void testLoggingShouldGenerateCorrectReportForNotSuccessfulReponse()
                             throws IOException, ServletException {
-        loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_BAD_REQUEST ) );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_BAD_REQUEST ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_BAD_REQUEST ) ) );
     }
 
     @Test
-    public void testLoggingFilterShouldGenerateCorrectReportNullQueryString()
+    public void testLoggingShouldGenerateCorrectReportNullQueryString()
                             throws IOException, ServletException {
-        loggingFilter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
+        filter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
                                 new FilterChainTestImpl( SC_BAD_REQUEST ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ) );
     }
@@ -109,8 +109,8 @@ public class SecurityFilterTest {
     public void testResponseShouldContainSerialUuidHeader()
                             throws IOException, ServletException {
         HttpServletResponse response = generateMockResponse();
-        loggingFilter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
-        loggingFilter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
+        filter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
+        filter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
 
         ArgumentCaptor<String> uuidArgumentFirstInvocation = ArgumentCaptor.forClass( String.class );
         verify( response, times( 2 ) ).setHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );

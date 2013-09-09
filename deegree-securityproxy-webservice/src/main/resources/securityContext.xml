@@ -5,6 +5,7 @@
   <http entry-point-ref="serviceExceptionEntryPoint" use-expressions="true" create-session="stateless">
     <intercept-url pattern="/**" access="isAuthenticated()" />
     <custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
+    <custom-filter position="LAST" ref="authorizationFilter" />
   </http>
 
   <authentication-manager alias="authenticationManager">
