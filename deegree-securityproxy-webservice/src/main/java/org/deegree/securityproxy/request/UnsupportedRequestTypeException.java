@@ -16,4 +16,8 @@ public class UnsupportedRequestTypeException extends Exception {
     public UnsupportedRequestTypeException() {
         super();
     }
+
+    public UnsupportedRequestTypeException( String string ) {
+        super( string );
+    }
 }

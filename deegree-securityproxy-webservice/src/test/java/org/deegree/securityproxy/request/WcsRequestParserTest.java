@@ -80,95 +80,121 @@ public class WcsRequestParserTest {
     private static final String SERVICE_NAME = "serviceName";
 
     @Test
-    public void testParseFromGetRequestShouldParseLayerName() {
+    public void testParseFromGetRequestShouldParseLayerName()
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetRequest();
         WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getLayerName(), is( LAYER_NAME ) );
     }
 
     @Test
-    public void testParseFromGetRequestShouldParseOperationType() {
+    public void testParseFromGetRequestShouldParseOperationType()
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetRequest();
         WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( OPERATION_TYPE ) );
     }
 
     @Test
-    public void testParseFromGetRequestShouldParseServiceName() {
+    public void testParseFromGetRequestShouldParseServiceName()
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetRequest();
         WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
     }
 
     @Test
-    public void testParseFromGetRequestShouldParseServiceVersion() {
+    public void testParseFromGetRequestShouldParseServiceVersion()
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetRequest();
         WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getServiceVersion(), is( SERVICE_VERSION ) );
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testParseWithNullRequestShouldFail() {
+    public void testParseWithNullRequestShouldFail()
+                            throws UnsupportedRequestTypeException {
         parser.parse( null );
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testParseWithMissingRequestParameterShouldFail() {
+    public void testParseWithMissingRequestParameterShouldFail()
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockInvalidWcsRequestMissingRequestParameter( "wcs" ) );
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testParseWithMissingServiceParameterShouldFail() {
+    public void testParseWithMissingServiceParameterShouldFail()
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockInvalidWcsRequestMissingServiceParameter( "wcs" ) );
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseWithDoubleServiceParameterShouldFail()
+                            throws UnsupportedRequestTypeException {
+        parser.parse( mockInvalidWcsRequestDoubleServiceParameter( "wcs" ) );
+    }
+
     @Test(expected = UnsupportedRequestTypeException.class)
-    public void testParseWmsRequestShouldFail() {
+    public void testParseWmsRequestShouldFail()
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockWmsGetRequest() );
     }
 
     private HttpServletRequest mockWcsGetRequest() {
-        Map<String, String> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockWmsGetRequest() {
-        Map<String, String> parameterMap = createValidParameterMap( "wms" );
+        Map<String, String[]> parameterMap = createValidParameterMap( "wms" );
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter( String serviceType ) {
-        Map<String, String> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
         parameterMap.remove( REQUEST_PARAM );
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter( String serviceType ) {
-        Map<String, String> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
         parameterMap.remove( SERVICE_PARAM );
         return mockRequest( parameterMap );
     }
 
-    private Map<String, String> createValidParameterMap( String serviceType ) {
-        Map<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put( VERSION_PARAM, SERVICE_VERSION.getVersionString() );
-        parameterMap.put( REQUEST_PARAM, OPERATION_TYPE.name() );
-        parameterMap.put( COVERAGE_PARAM, LAYER_NAME );
-        parameterMap.put( SERVICE_PARAM, serviceType );
+    private HttpServletRequest mockInvalidWcsRequestDoubleServiceParameter( String serviceType ) {
+        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        parameterMap.put( "service", new String[] { serviceType } );
+        return mockRequest( parameterMap );
+    }
+
+    private Map<String, String[]> createValidParameterMap( String serviceType ) {
+        Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+        parameterMap.put( VERSION_PARAM, new String[] { SERVICE_VERSION.getVersionString() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { OPERATION_TYPE.name() } );
+        parameterMap.put( COVERAGE_PARAM, new String[] { LAYER_NAME } );
+        parameterMap.put( SERVICE_PARAM, new String[] { serviceType } );
         return parameterMap;
     }
-    
-    private HttpServletRequest mockRequest( Map<String, String> parameterMap ) {
+
+    private HttpServletRequest mockRequest( Map<String, String[]> parameterMap ) {
         HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
         when( servletRequest.getParameterMap() ).thenReturn( parameterMap );
         when( servletRequest.getParameterNames() ).thenReturn( new Vector<String>( parameterMap.keySet() ).elements() );
-        when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
-        when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( new String[] { parameterMap.get( VERSION_PARAM ) } );
-        when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM ) );
-        when( servletRequest.getParameterValues( REQUEST_PARAM ) ).thenReturn( new String[] { parameterMap.get( REQUEST_PARAM ) } );
-        when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
-        when( servletRequest.getParameterValues( LAYER_NAME ) ).thenReturn( new String[] { parameterMap.get( COVERAGE_PARAM ) } );
-        when( servletRequest.getPathInfo() ).thenReturn( "/" + SERVICE_NAME );
+        when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM )[0] );
+        when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
+        when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM )[0] );
+        when( servletRequest.getParameterValues( LAYER_NAME ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
+        if ( parameterMap.get( REQUEST_PARAM ) != null ) {
+            when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM )[0] );
+            when( servletRequest.getParameterValues( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM ) );
+        }
+        if ( parameterMap.get( SERVICE_PARAM ) != null ) {
+            when( servletRequest.getParameter( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM )[0] );
+            when( servletRequest.getParameterValues( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM ) );
+        }
+        when( servletRequest.getPathInfo() ).thenReturn( "/path/" + SERVICE_NAME );
         return servletRequest;
     }
 

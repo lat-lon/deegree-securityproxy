@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
 
@@ -58,10 +56,12 @@ public class WcsRequest {
 
     private String serviceName;
 
-    public WcsRequest( HttpServletRequest request ) {
-        /*
-         * TODO Parse request here.
-         */
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String layerName,
+                       String serviceName ) {
+        this.operationType = operationType;
+        this.serviceVersion = serviceVersion;
+        this.layerName = layerName;
+        this.serviceName = serviceName;
     }
 
     /**

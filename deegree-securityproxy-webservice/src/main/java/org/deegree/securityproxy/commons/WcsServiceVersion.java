@@ -6,7 +6,7 @@ package org.deegree.securityproxy.commons;
  */
 public enum WcsServiceVersion {
 
-    VERSION_100( "1.0.0" ), VERSION_110( "1.1.0" ), VERSION_130( "1.3.0" );
+    VERSION_100( "1.0.0" ), VERSION_110( "1.1.0" ), VERSION_200( "2.0.0" );
 
     private final String versionString;
 
