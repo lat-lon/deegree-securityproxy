@@ -86,7 +86,7 @@ public class UserDetailsDaoImplTest {
     public void testLoadUserDetailsFromDataSourceValidHeaderShouldReturnUserDetailWithOnePermissionsButMultipleVersions() {
         UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_MULTIPLE_VERSIONS" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 2 ) );
+        assertThat( authorities.size(), is( 3 ) );
     }
 
     @Test
