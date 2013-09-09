@@ -1,5 +1,8 @@
 package org.deegree.securityproxy.commons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Discriminates WCS service versions. All entries shall be prefixed with "VERSION_" and end with the service version
  * number without dots.
@@ -18,4 +21,12 @@ public enum WcsServiceVersion {
         return versionString;
     }
 
+    public static List<WcsServiceVersion> parseVersions( String versionToParse ) {
+        List<WcsServiceVersion> parsedVersions = new ArrayList<WcsServiceVersion>();
+        if ( versionToParse != null ) {
+
+        }
+        return parsedVersions;
+    }
+    
 }
