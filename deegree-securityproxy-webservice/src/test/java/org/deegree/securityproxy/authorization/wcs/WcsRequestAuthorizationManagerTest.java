@@ -39,7 +39,7 @@ import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAG
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_130;
+import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_200;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -158,11 +158,11 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
-        return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION_130 );
+        return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION_200 );
     }
 
     private WcsRequest mockRequestWithUnsupportedVersion() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_130 );
+        return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_200 );
     }
 
     private WcsRequest mockRequestWithUnsupportedServiceName() {
