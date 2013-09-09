@@ -5,5 +5,17 @@ package org.deegree.securityproxy.commons;
  * number without dots.
  */
 public enum WcsServiceVersion {
-    VERSION_100, VERSION_110, VERSION_130;
+
+    VERSION_100( "1.0.0" ), VERSION_110( "1.1.0" ), VERSION_130( "1.3.0" );
+
+    private final String versionString;
+
+    private WcsServiceVersion( String versionString ) {
+        this.versionString = versionString;
+    }
+
+    public String getVersionString() {
+        return versionString;
+    }
+
 }
