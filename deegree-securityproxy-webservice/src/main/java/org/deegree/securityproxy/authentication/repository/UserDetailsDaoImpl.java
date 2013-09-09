@@ -1,16 +1,21 @@
 package org.deegree.securityproxy.authentication.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
+import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.commons.WcsOperationType;
+import org.deegree.securityproxy.commons.WcsServiceVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,27 +43,45 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
 
     private final String passwordColumn;
 
+    private final String serviceVersionColumn;
+
+    private final String operationTypeColumn;
+
+    private final String serviceNameColumn;
+
+    private final String layerNameColumn;
+
+    private final String subscriptionStart;
+
+    private final String subscriptionEnd;
+
     public UserDetailsDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                           String passwordColumn ) {
+                               String passwordColumn, String serviceVersionColumn, String operationTypeColumn,
+                               String serviceNameColumn, String layerNameColumn, String subscriptionStart,
+                               String subscriptionEnd ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
         this.userNameColumn = userNameColumn;
         this.passwordColumn = passwordColumn;
+        this.serviceVersionColumn = serviceVersionColumn;
+        this.operationTypeColumn = operationTypeColumn;
+        this.serviceNameColumn = serviceNameColumn;
+        this.layerNameColumn = layerNameColumn;
+        this.subscriptionStart = subscriptionStart;
+        this.subscriptionEnd = subscriptionEnd;
     }
 
-    /* (non-Javadoc)
-     * @see org.deegree.securityproxy.authentication.repository.UserDao#loadUserDetailsFromDataSource(java.lang.String)
-     */
     @Override
     public UserDetails loadUserDetailsFromDataSource( String headerValue )
                             throws IllegalArgumentException {
         checkParameter( headerValue );
         JdbcTemplate template = new JdbcTemplate( source );
-        RowMapper<UserDetails> rowMapper = createUserDetailsRowMapper();
         String jdbcString = generateSqlQuery();
         try {
-            return (UserDetails) template.queryForObject( jdbcString, new Object[] { headerValue }, rowMapper );
+            Date now = new Date();
+            List<Map<String, Object>> rows = template.queryForList( jdbcString, new Object[] { headerValue, now } );
+            return createUserForRows( rows );
         } catch ( DataAccessException e ) {
             return null;
         }
@@ -72,9 +95,17 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     private String generateSqlQuery() {
         StringBuilder builder = new StringBuilder();
         builder.append( "SELECT " );
-        builder.append( userNameColumn ).append( "," ).append( passwordColumn );
+        builder.append( userNameColumn ).append( "," );
+        builder.append( passwordColumn ).append( "," );
+        builder.append( serviceNameColumn ).append( "," );
+        builder.append( serviceVersionColumn ).append( "," );
+        builder.append( operationTypeColumn ).append( "," );
+        builder.append( layerNameColumn );
         appendFrom( builder );
-        builder.append( " WHERE " ).append( headerColumn ).append( " = ? AND layer_service_type_name = 'WCS' LIMIT 1" );
+        builder.append( " WHERE " );
+        builder.append( headerColumn ).append( " = ? AND layer_service_type_name = 'WCS' AND ? BETWEEN " );
+        builder.append( subscriptionStart ).append( " AND " );
+        builder.append( subscriptionEnd );
         return builder.toString();
     }
 
@@ -85,15 +116,44 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         builder.append( tableName );
     }
 
-    private RowMapper<UserDetails> createUserDetailsRowMapper() {
-        RowMapper<UserDetails> rowMapper = new RowMapper<UserDetails>() {
-            public UserDetails mapRow( ResultSet rs, int rowNum )
-                                    throws SQLException {
-                String username = rs.getString( userNameColumn );
-                String password = rs.getString( passwordColumn );
-                return new User( username, password, Collections.<GrantedAuthority> emptyList() );
-            }
-        };
-        return rowMapper;
+    private UserDetails createUserForRows( List<Map<String, Object>> rows ) {
+        String username = null;
+        String password = null;
+        Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
+        for ( Map<String, Object> row : rows ) {
+            username = getAsString( row, userNameColumn );
+            password = getAsString( row, passwordColumn );
+            addAuthorities( authorities, row );
+        }
+        if ( username != null && password != null )
+            return new User( username, password, authorities );
+        return null;
     }
+
+    private void addAuthorities( Collection<WcsPermission> authorities, Map<String, Object> row ) {
+        String serviceName = getAsString( row, serviceNameColumn );
+        List<WcsServiceVersion> serviceVersions = getServiceVersions( row );
+        WcsOperationType operationType = getOperationType( row );
+        String layerName = getAsString( row, layerNameColumn );
+        for ( WcsServiceVersion serviceVersion : serviceVersions ) {
+            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName ) );
+        }
+    }
+
+    private WcsOperationType getOperationType( Map<String, Object> row ) {
+        String operationType = getAsString( row, operationTypeColumn );
+        if ( operationType != null )
+            return WcsOperationType.valueOf( operationType.toUpperCase() );
+        return null;
+    }
+
+    private List<WcsServiceVersion> getServiceVersions( Map<String, Object> row ) {
+        String serviceVersion = getAsString( row, serviceVersionColumn );
+        return parseVersions( serviceVersion );
+    }
+
+    private String getAsString( Map<String, Object> row, String columnName ) {
+        return row.get( columnName ) != null ? (String) row.get( columnName ) : null;
+    }
+
 }

@@ -19,6 +19,12 @@
     <constructor-arg value="access_token" />
     <constructor-arg value="user_name" />
     <constructor-arg value="password" />
+    <constructor-arg value="serviceVersion" />
+    <constructor-arg value="operationType" />
+    <constructor-arg value="serviceName" />
+    <constructor-arg value="layerName" />
+    <constructor-arg value="subscription_start" />
+    <constructor-arg value="subscription_end" />
   </bean>
 
 </beans>
