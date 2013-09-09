@@ -27,6 +27,7 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
                             throws AccessDeniedException, InsufficientAuthenticationException {
         // HttpServletRequest req = (HttpServletRequest) object;
         // Shall support Authentication instances that contain WcsPermission(s) as GrantedAuthority(ies)
+        throw new UnsupportedOperationException();
     }
 
     @Override
