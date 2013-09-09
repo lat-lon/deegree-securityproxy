@@ -33,7 +33,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Tests for {@link LoggingFilter}
+ * Tests for {@link SecurityFilter}
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -43,8 +43,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/filter/LoggingFilterTestContext.xml" })
-public class LoggingFilterTest {
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/filter/SecurityFilterTestContext.xml" })
+public class SecurityFilterTest {
 
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
 
@@ -53,7 +53,7 @@ public class LoggingFilterTest {
     private static final String QUERY_STRING = "request=GetCapabilities";
 
     @Autowired
-    private LoggingFilter loggingFilter;
+    private SecurityFilter loggingFilter;
 
     /**
      * Autowire a mocked instance of {@link SecurityRequestResposeLogger}

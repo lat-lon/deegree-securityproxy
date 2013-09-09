@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LoggingFilter implements Filter {
+public class SecurityFilter implements Filter {
 
     @Autowired
     private SecurityRequestResposeLogger proxyReportLogger;

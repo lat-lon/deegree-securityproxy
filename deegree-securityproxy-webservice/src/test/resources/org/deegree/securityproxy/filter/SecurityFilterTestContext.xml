@@ -10,6 +10,6 @@
       value="org.deegree.securityproxy.logger.SecurityRequestResposeLogger" />
   </bean>
 
-  <bean name="LoggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
+  <bean name="SecurityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
 
 </beans>
