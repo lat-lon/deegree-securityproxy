@@ -42,13 +42,14 @@
   </bean>
 
   <bean name="authenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
+  
   <bean id="headerFilter" class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
     <property name="principalRequestHeader" value="access_token" />
     <property name="authenticationManager" ref="authenticationManager" />
     <property name="exceptionIfHeaderMissing" value="false" />
   </bean>
 
-  <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
+  <bean id="loggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
 
   <bean id="authorizationFilter" class="org.deegree.securityproxy.filter.AuthorizationFilter" />
 

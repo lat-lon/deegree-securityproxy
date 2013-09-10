@@ -16,6 +16,6 @@
     <constructor-arg value="org.deegree.securityproxy.request.WcsRequestParser" />
   </bean>
 
-  <bean name="SecurityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
+  <bean name="LogggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
 
 </beans>

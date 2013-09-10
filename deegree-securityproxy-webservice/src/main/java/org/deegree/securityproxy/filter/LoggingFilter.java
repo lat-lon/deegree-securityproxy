@@ -14,9 +14,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.WcsRequest;
+import org.deegree.securityproxy.request.WcsRequestParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Servlet Filter that logs all incoming requests and their response
@@ -28,7 +33,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @version $Revision: $, $Date: $
  */
-public class SecurityFilter implements Filter {
+public class LoggingFilter implements Filter {
+
+    @Autowired
+    private WcsRequestAuthorizationManager requestAuthorizationManager;
+
+    @Autowired
+    private WcsRequestParser parser;
 
     @Autowired
     private SecurityRequestResposeLogger proxyReportLogger;
