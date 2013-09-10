@@ -2,6 +2,7 @@ package org.deegree.securityproxy.authentication;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
+import org.deegree.securityproxy.authentication.repository.UserDetailsDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +13,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 /**
  * Performs verification of an incoming {@link Authentication}. Authenticates the token against a
- * {@link UserDetailsDao}
+ * {@link UserDetailsDaoImpl}
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>

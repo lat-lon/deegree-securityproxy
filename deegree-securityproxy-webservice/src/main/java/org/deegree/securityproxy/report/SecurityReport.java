@@ -20,12 +20,15 @@ public class SecurityReport {
 
     private final boolean isResponseSuccessfullySent;
 
-    public SecurityReport( String serialUuid, String ipAddressOfRequestingUser, String targetUri,
-                           boolean isResponseSuccesfullySent ) {
+    private final String message;
+
+    public SecurityReport( String serialUuid,  String ipAddressOfRequestingUser, String targetUri, boolean isResponseSuccesfullySent,
+                           String message ) {
         this.serialUuid = serialUuid;
         this.ipAddressOfRequestingUser = ipAddressOfRequestingUser;
         this.targetUri = targetUri;
         this.isResponseSuccessfullySent = isResponseSuccesfullySent;
+        this.message = message;
     }
 
     public String getSerialUuid() {
@@ -42,6 +45,10 @@ public class SecurityReport {
 
     public boolean isResponseSuccessfullySent() {
         return isResponseSuccessfullySent;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     @Override
@@ -93,8 +100,9 @@ public class SecurityReport {
         builder.append( ", target URL: " );
         builder.append( targetUri );
         builder.append( ", reponse was: " );
-        String sent = isResponseSuccessfullySent ? "successful." : "not successful";
+        String sent = isResponseSuccessfullySent ? "successful." : "not successful.";
         builder.append( sent );
+        builder.append( " " + message );
         return builder.toString();
     }
 
