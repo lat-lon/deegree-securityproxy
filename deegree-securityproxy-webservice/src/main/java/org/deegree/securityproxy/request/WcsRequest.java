@@ -52,12 +52,12 @@ public class WcsRequest {
 
     private WcsServiceVersion serviceVersion;
 
-    private String layerName;
+    private String coverageName;
 
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String layerName ) {
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
-        this.layerName = layerName;
+        this.coverageName = coverageName;
     }
 
     /**
@@ -77,8 +77,8 @@ public class WcsRequest {
     /**
      * @return the layerName
      */
-    public String getLayerName() {
-        return layerName;
+    public String getCoverageName() {
+        return coverageName;
     }
 
 }

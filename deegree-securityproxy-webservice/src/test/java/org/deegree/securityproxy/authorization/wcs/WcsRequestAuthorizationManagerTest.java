@@ -168,7 +168,7 @@ public class WcsRequestAuthorizationManagerTest {
     private WcsRequest mockRequest( String layerName, WcsOperationType operationType, String serviceName,
                                     WcsServiceVersion version ) {
         WcsRequest mock = mock( WcsRequest.class );
-        when( mock.getLayerName() ).thenReturn( layerName );
+        when( mock.getCoverageName() ).thenReturn( layerName );
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
         return mock;

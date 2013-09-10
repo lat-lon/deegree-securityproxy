@@ -46,8 +46,8 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
         if ( authority instanceof WcsPermission ) {
             WcsPermission wcsPermission = (WcsPermission) authority;
 
-            if ( isGetCoverageRequest( wcsRequest ) ) {
-                if ( !isLayerNameAuthorized( wcsRequest, wcsPermission ) )
+            if ( isGetCoverageRequest( wcsRequest ) || isDescribeCoverageRequest( wcsRequest ) ) {
+                if ( !isCoverageNameAuthorized( wcsRequest, wcsPermission ) )
                     return false;
             }
             if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
@@ -57,6 +57,11 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
 
         }
         return false;
+    }
+
+    private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {
+        return WcsOperationType.DESCRIBECOVERAGE.equals( wcsRequest.getOperationType() );
+
     }
 
     private boolean isGetCoverageRequest( WcsRequest wcsRequest ) {
@@ -77,9 +82,9 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
             return false;
     }
 
-    private boolean isLayerNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getLayerName() != null )
-            return wcsRequest.getLayerName().equals( wcsPermission.getLayerName() );
+    private boolean isCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
+        if ( wcsRequest.getCoverageName() != null )
+            return wcsRequest.getCoverageName().equals( wcsPermission.getLayerName() );
         else
             return false;
     }

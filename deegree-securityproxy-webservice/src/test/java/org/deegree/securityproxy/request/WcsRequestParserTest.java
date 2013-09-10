@@ -84,7 +84,7 @@ public class WcsRequestParserTest {
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetRequest();
         WcsRequest wcsRequest = parser.parse( request );
-        assertThat( wcsRequest.getLayerName(), is( LAYER_NAME ) );
+        assertThat( wcsRequest.getCoverageName(), is( LAYER_NAME ) );
     }
 
     @Test
