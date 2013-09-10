@@ -13,12 +13,18 @@
   </jdbc:embedded-database>
 
   <bean id="headerTokenDataSource"
-    class="org.deegree.securityproxy.authentication.repository.UserDetailsDao">
+    class="org.deegree.securityproxy.authentication.repository.UserDetailsDaoImpl">
     <constructor-arg value="" />
     <constructor-arg value="usertable" />
     <constructor-arg value="access_token" />
     <constructor-arg value="user_name" />
     <constructor-arg value="password" />
+    <constructor-arg value="serviceVersion" />
+    <constructor-arg value="operationType" />
+    <constructor-arg value="serviceName" />
+    <constructor-arg value="layerName" />
+    <constructor-arg value="subscription_start" />
+    <constructor-arg value="subscription_end" />
   </bean>
 
 </beans>

@@ -14,8 +14,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.WcsRequestParser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -29,6 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @version $Revision: $, $Date: $
  */
 public class LoggingFilter implements Filter {
+
+    @Autowired
+    private WcsRequestAuthorizationManager requestAuthorizationManager;
+
+    @Autowired
+    private WcsRequestParser parser;
 
     @Autowired
     private SecurityRequestResposeLogger proxyReportLogger;
@@ -46,20 +54,48 @@ public class LoggingFilter implements Filter {
         FilterResponseWrapper wrappedResponse = new FilterResponseWrapper( httpResponse );
         String uuid = createUuidHeader( wrappedResponse );
         chain.doFilter( httpRequest, wrappedResponse );
-        generateAndLogProxyReport( httpRequest, wrappedResponse, uuid );
+        generateAndLogProxyReport( uuid, httpRequest, wrappedResponse );
     }
 
     @Override
     public void destroy() {
     }
 
-    private void generateAndLogProxyReport( HttpServletRequest request, FilterResponseWrapper response, String uuid ) {
-        boolean isRequestSuccessful = SC_OK == response.getStatus() ? true : false;
+    private void generateAndLogProxyReport( String uuid, HttpServletRequest request, FilterResponseWrapper response ) {
+        int statusCode = response.getStatus();
+        boolean isRequestSuccessful = SC_OK == statusCode ? true : false;
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
-        SecurityReport report = new SecurityReport( uuid, request.getRemoteAddr(), requestURL, isRequestSuccessful );
+        String message = generateMessage( statusCode );
+        SecurityReport report = new SecurityReport( uuid, request.getRemoteAddr(), requestURL, isRequestSuccessful, message );
         proxyReportLogger.logProxyReportInfo( report );
+    }
+
+    private String generateMessage( int statusCode ) {
+        StringBuilder builder = new StringBuilder( "Status code is " );
+        builder.append( statusCode );
+        switch ( statusCode ) {
+        case 200:
+            builder.append( ": OK" );
+            break;
+        case 400:
+            builder.append( ": Bad request" );
+            break;
+        case 401:
+            builder.append( ": Unauthorized" );
+            break;
+        case 403:
+            builder.append( ": Forbidden" );
+            break;
+        case 404:
+            builder.append( ": Not found" );
+            break;
+        case 500:
+            builder.append( ": Internal server error" );
+            break;
+        }
+        return builder.toString();
     }
 
     private String createUuidHeader( FilterResponseWrapper wrappedResponse ) {
