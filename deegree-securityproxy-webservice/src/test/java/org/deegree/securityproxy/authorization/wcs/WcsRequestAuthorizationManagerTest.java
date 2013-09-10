@@ -126,14 +126,6 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     @Test(expected = AccessDeniedException.class)
-    public void testDecideSingleAuthorizationShouldBeRefusedCauseOfServiceName()
-                            throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
-        WcsRequest request = mockRequestWithUnsupportedServiceName();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
-    }
-
-    @Test(expected = AccessDeniedException.class)
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfOperationType()
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
@@ -165,10 +157,6 @@ public class WcsRequestAuthorizationManagerTest {
         return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_200 );
     }
 
-    private WcsRequest mockRequestWithUnsupportedServiceName() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, "unknown", VERSION );
-    }
-
     private WcsRequest mockRequestWithUnsupportedOperationType() {
         return mockRequest( LAYER_NAME, DESCRIBECOVERAGE, SERVICE_NAME, VERSION );
     }
@@ -182,7 +170,6 @@ public class WcsRequestAuthorizationManagerTest {
         WcsRequest mock = mock( WcsRequest.class );
         when( mock.getLayerName() ).thenReturn( layerName );
         when( mock.getOperationType() ).thenReturn( operationType );
-        when( mock.getServiceName() ).thenReturn( serviceName );
         when( mock.getServiceVersion() ).thenReturn( version );
         return mock;
     }

@@ -2,7 +2,8 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-  <http entry-point-ref="serviceExceptionEntryPoint" use-expressions="true" create-session="stateless">
+  <http entry-point-ref="serviceExceptionHandler"  use-expressions="true" create-session="stateless">
+    <access-denied-handler ref="serviceExceptionHandler"/>
     <intercept-url pattern="/**" access="isAuthenticated()" />
     <custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
     <custom-filter position="LAST" ref="authorizationFilter" />

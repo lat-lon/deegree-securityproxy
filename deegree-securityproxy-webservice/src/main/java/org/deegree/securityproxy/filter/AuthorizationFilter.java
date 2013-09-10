@@ -40,8 +40,9 @@ public class AuthorizationFilter implements Filter {
                                                 null );
         } catch ( UnsupportedRequestTypeException e ) {
             throw new AccessDeniedException( "Unsupported service type!" );
+        } catch ( IllegalArgumentException e ) {
+            throw new AccessDeniedException( "Unauthorized!" );
         }
-
     }
 
     @Override

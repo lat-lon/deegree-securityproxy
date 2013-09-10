@@ -54,14 +54,10 @@ public class WcsRequest {
 
     private String layerName;
 
-    private String serviceName;
-
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String layerName,
-                       String serviceName ) {
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String layerName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.layerName = layerName;
-        this.serviceName = serviceName;
     }
 
     /**
@@ -85,10 +81,4 @@ public class WcsRequest {
         return layerName;
     }
 
-    /**
-     * @return the serviceName
-     */
-    public String getServiceName() {
-        return serviceName;
-    }
 }

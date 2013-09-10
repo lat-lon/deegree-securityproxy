@@ -50,8 +50,7 @@ public class WcsRequestParser {
         WcsOperationType type = evaluateOperationType( normalizedParameterMap );
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String coverageName = evaluateCoverageParameter( normalizedParameterMap );
-        String serviceName = evaluateServiceString( request.getQueryString() );
-        return new WcsRequest( type, version, coverageName, serviceName );
+        return new WcsRequest( type, version, coverageName );
     }
 
     private String evaluateCoverageParameter( Map<String, String[]> normalizedParameterMap ) {
@@ -60,14 +59,6 @@ public class WcsRequestParser {
             return null;
         else
             return coverageParameter[0];
-    }
-
-    private String evaluateServiceString( String path ) {
-        String[] pathStrings = path.split( "/" );
-        if ( pathStrings.length == 0 ) {
-            return "";
-        }
-        return pathStrings[pathStrings.length - 1];
     }
 
     private WcsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {

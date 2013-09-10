@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * Custom Entry Point to put a configurable exception message and status code into the http response.
@@ -27,9 +29,9 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
+public class ServiceExceptionHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 
-    private static Logger LOG = Logger.getLogger( ServiceExceptionEntryPoint.class );
+    private static Logger LOG = Logger.getLogger( ServiceExceptionHandler.class );
 
     public static final String DEFAULT_BODY = "Access Denied";
 
@@ -43,7 +45,7 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
      * ServiceExceptionEntryPoint.DEFAULT_BODY and ServiceExceptionEntryPoint.DEFAULT_STATUS_CODE are used as exception
      * body an status code
      */
-    public ServiceExceptionEntryPoint() {
+    public ServiceExceptionHandler() {
         exceptionBody = DEFAULT_BODY;
         statusCode = DEFAULT_STATUS_CODE;
     }
@@ -55,7 +57,7 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
      * @param statusCode
      *            the status code to set
      */
-    public ServiceExceptionEntryPoint( String pathToExceptionFile, int statusCode ) {
+    public ServiceExceptionHandler( String pathToExceptionFile, int statusCode ) {
         this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
         this.statusCode = statusCode;
     }
@@ -63,6 +65,15 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence( HttpServletRequest request, HttpServletResponse response,
                           AuthenticationException authenticationException )
+                            throws IOException, ServletException {
+        response.setStatus( statusCode );
+        response.getWriter().write( exceptionBody );
+    }
+    
+
+    @Override
+    public void handle( HttpServletRequest request, HttpServletResponse response,
+                        AccessDeniedException accessDeniedException )
                             throws IOException, ServletException {
         response.setStatus( statusCode );
         response.getWriter().write( exceptionBody );
@@ -87,4 +98,5 @@ public class ServiceExceptionEntryPoint implements AuthenticationEntryPoint {
         }
         return DEFAULT_BODY;
     }
+
 }

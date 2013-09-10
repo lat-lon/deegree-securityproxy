@@ -9,7 +9,7 @@
   <import resource="securityContext.xml" />
   <import resource="persistenceContext.xml" />
 
-  <bean id="serviceExceptionEntryPoint" class="org.deegree.securityproxy.authentication.ServiceExceptionEntryPoint">
+  <bean id="serviceExceptionHandler" class="org.deegree.securityproxy.authentication.ServiceExceptionHandler">
     <constructor-arg value="${exception_file_path}"></constructor-arg>
     <constructor-arg value="${status_code}"></constructor-arg>
   </bean>

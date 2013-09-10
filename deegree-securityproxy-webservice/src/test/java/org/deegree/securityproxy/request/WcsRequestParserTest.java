@@ -96,14 +96,6 @@ public class WcsRequestParserTest {
     }
 
     @Test
-    public void testParseFromGetRequestShouldParseServiceName()
-                            throws UnsupportedRequestTypeException {
-        HttpServletRequest request = mockWcsGetRequest();
-        WcsRequest wcsRequest = parser.parse( request );
-        assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
-    }
-
-    @Test
     public void testParseFromGetRequestShouldParseServiceVersion()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetRequest();

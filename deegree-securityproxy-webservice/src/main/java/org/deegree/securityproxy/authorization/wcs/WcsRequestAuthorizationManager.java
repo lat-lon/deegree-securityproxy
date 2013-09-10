@@ -51,8 +51,7 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
                     return false;
             }
             if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                 && isServiceVersionAuthorized( wcsRequest, wcsPermission )
-                 && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
+                 && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
                 return true;
             }
 
@@ -74,13 +73,6 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
         if ( wcsRequest.getServiceVersion() != null )
             return wcsRequest.getServiceVersion().equals( wcsPermission.getServiceVersion() );
-        else
-            return false;
-    }
-
-    private boolean isServiceNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getServiceName() != null )
-            return wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
         else
             return false;
     }
