@@ -1,6 +1,8 @@
 package org.deegree.securityproxy.authorization.wcs;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,39 +35,77 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
         if ( authentication == null )
             throw new AccessDeniedException( "Not authenticated!" );
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        for ( GrantedAuthority authority : authorities ) {
-            if ( isAuthorized( authority, wcsRequest ) ) {
-                return;
-            }
+
+        boolean authorized = false;
+        if ( isGetCoverageRequest( wcsRequest ) ) {
+            authorized = isAuthorizedGetCoverage( wcsRequest, authorities );
+        } else if ( isDescribeCoverageRequest( wcsRequest ) ) {
+            authorized = isAuthorizedDescribeCoverage( wcsRequest, authorities );
+        } else if ( isGetCapabilitiesRequest( wcsRequest ) ) {
+            authorized = isAuthorizedGetCapabilities( wcsRequest, authorities );
         }
-        // Shall support Authentication instances that contain WcsPermission(s) as GrantedAuthority(ies)
-        throw new AccessDeniedException( "Unauthorized" );
+        if ( !authorized )
+            throw new AccessDeniedException( "Unauthorized" );
     }
 
-    private boolean isAuthorized( GrantedAuthority authority, WcsRequest wcsRequest ) {
-        if ( authority instanceof WcsPermission ) {
-            WcsPermission wcsPermission = (WcsPermission) authority;
-
-            if ( isGetCoverageRequest( wcsRequest ) || isDescribeCoverageRequest( wcsRequest ) ) {
-                if ( !isCoverageNameAuthorized( wcsRequest, wcsPermission ) )
-                    return false;
+    private boolean isAuthorizedDescribeCoverage( WcsRequest wcsRequest,
+                                                  Collection<? extends GrantedAuthority> authorities ) {
+        List<String> grantedCoverages = new ArrayList<String>();
+        for ( GrantedAuthority authority : authorities ) {
+            if ( authority instanceof WcsPermission ) {
+                WcsPermission wcsPermission = (WcsPermission) authority;
+                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                    grantedCoverages.add( wcsPermission.getCoverageName() );
+                }
             }
-            if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                 && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                return true;
-            }
+        }
+        for ( String coverageName : wcsRequest.getCoverageNames() ) {
+            if ( !grantedCoverages.contains( coverageName ) )
+                return false;
+        }
+        return true;
+    }
 
+    private boolean isAuthorizedGetCoverage( WcsRequest wcsRequest, Collection<? extends GrantedAuthority> authorities ) {
+        for ( GrantedAuthority authority : authorities ) {
+            if ( authority instanceof WcsPermission ) {
+                WcsPermission wcsPermission = (WcsPermission) authority;
+                if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
+                     && isOperationTypeAuthorized( wcsRequest, wcsPermission )
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isAuthorizedGetCapabilities( WcsRequest wcsRequest,
+                                                 Collection<? extends GrantedAuthority> authorities ) {
+        for ( GrantedAuthority authority : authorities ) {
+            if ( authority instanceof WcsPermission ) {
+                WcsPermission wcsPermission = (WcsPermission) authority;
+                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                    return true;
+                }
+            }
         }
         return false;
     }
 
     private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {
         return WcsOperationType.DESCRIBECOVERAGE.equals( wcsRequest.getOperationType() );
-
     }
 
     private boolean isGetCoverageRequest( WcsRequest wcsRequest ) {
         return WcsOperationType.GETCOVERAGE.equals( wcsRequest.getOperationType() );
+    }
+
+    private boolean isGetCapabilitiesRequest( WcsRequest wcsRequest ) {
+        return WcsOperationType.GETCAPABILITIES.equals( wcsRequest.getOperationType() );
+
     }
 
     private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
@@ -80,10 +120,13 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
         return false;
     }
 
-    private boolean isCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getCoverageName() != null )
-            return wcsRequest.getCoverageName().equals( wcsPermission.getLayerName() );
+    private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
+        if ( wcsRequest.getCoverageNames() != null ) {
+            String firstCoverage = wcsRequest.getCoverageNames().get( 0 );
+            return firstCoverage.equals( wcsPermission.getCoverageName() );
+        }
         return false;
+
     }
 
     @Override

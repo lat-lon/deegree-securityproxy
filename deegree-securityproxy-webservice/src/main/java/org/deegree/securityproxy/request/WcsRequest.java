@@ -35,6 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
 
@@ -52,12 +55,24 @@ public class WcsRequest {
 
     private WcsServiceVersion serviceVersion;
 
-    private String coverageName;
+    private List<String> coverageNames;
 
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames ) {
+        this.operationType = operationType;
+        this.serviceVersion = serviceVersion;
+        this.coverageNames = coverageNames;
+    }
+    
     public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
-        this.coverageName = coverageName;
+        this.coverageNames = Collections.singletonList( coverageName );
+    }
+    
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion ) {
+        this.operationType = operationType;
+        this.serviceVersion = serviceVersion;
+        this.coverageNames = Collections.emptyList();
     }
 
     /**
@@ -77,8 +92,8 @@ public class WcsRequest {
     /**
      * @return the layerName
      */
-    public String getCoverageName() {
-        return coverageName;
+    public List<String> getCoverageNames() {
+        return Collections.unmodifiableList( coverageNames );
     }
-
+    
 }

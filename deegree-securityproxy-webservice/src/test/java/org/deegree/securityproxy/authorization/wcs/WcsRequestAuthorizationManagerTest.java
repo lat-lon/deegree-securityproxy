@@ -75,12 +75,12 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final String SERVICE_NAME = "serviceName";
 
-    private static final String LAYER_NAME = "layerName";
+    private static final String COVERAGE_NAME = "layerName";
 
     private WcsRequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 
     @Test
-    public void testSupportsWcsRequestShouldBeSupoorted()
+    public void testSupportsWcsRequestShouldBeSupported()
                             throws Exception {
         boolean isSupported = authorizationManager.supports( WcsRequest.class );
         assertThat( isSupported, is( true ) );
@@ -94,7 +94,7 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     @Test
-    public void testDecideWithSingleAuthorizations()
+    public void testDecideWithSingleAuthorization()
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockDefaultRequest();
@@ -134,7 +134,7 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     @Test(expected = AccessDeniedException.class)
-    public void testDecideSingleAuthorizationShouldBeRefusedCauseOfLayerName()
+    public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfLayerName()
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedLayerName();
@@ -142,7 +142,7 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockDefaultRequest() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION );
+        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION );
     }
 
     private WcsRequest mockGetCapabilitiesRequest() {
@@ -154,11 +154,11 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockRequestWithUnsupportedVersion() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_200 );
+        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_200 );
     }
 
     private WcsRequest mockRequestWithUnsupportedOperationType() {
-        return mockRequest( LAYER_NAME, DESCRIBECOVERAGE, SERVICE_NAME, VERSION );
+        return mockRequest( COVERAGE_NAME, DESCRIBECOVERAGE, SERVICE_NAME, VERSION );
     }
 
     private WcsRequest mockRequestWithUnsupportedLayerName() {
@@ -168,7 +168,7 @@ public class WcsRequestAuthorizationManagerTest {
     private WcsRequest mockRequest( String layerName, WcsOperationType operationType, String serviceName,
                                     WcsServiceVersion version ) {
         WcsRequest mock = mock( WcsRequest.class );
-        when( mock.getCoverageName() ).thenReturn( layerName );
+        when( mock.getCoverageNames() ).thenReturn( Collections.singletonList( layerName ) );
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
         return mock;
@@ -177,7 +177,7 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, LAYER_NAME, SERVICE_NAME ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -185,7 +185,7 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, LAYER_NAME, SERVICE_NAME ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME ) );
         authorities.add( new WcsPermission( GETCAPABILITIES, VERSION, null, SERVICE_NAME ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
