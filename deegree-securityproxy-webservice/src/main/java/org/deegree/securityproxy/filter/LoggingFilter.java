@@ -52,23 +52,23 @@ public class LoggingFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         FilterResponseWrapper wrappedResponse = new FilterResponseWrapper( httpResponse );
-        createUuidHeader( wrappedResponse );
+        String uuid = createUuidHeader( wrappedResponse );
         chain.doFilter( httpRequest, wrappedResponse );
-        generateAndLogProxyReport( httpRequest, wrappedResponse );
+        generateAndLogProxyReport( uuid, httpRequest, wrappedResponse );
     }
 
     @Override
     public void destroy() {
     }
 
-    private void generateAndLogProxyReport( HttpServletRequest request, FilterResponseWrapper response ) {
+    private void generateAndLogProxyReport( String uuid, HttpServletRequest request, FilterResponseWrapper response ) {
         int statusCode = response.getStatus();
         boolean isRequestSuccessful = SC_OK == statusCode ? true : false;
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
         String message = generateMessage( statusCode );
-        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful, message );
+        SecurityReport report = new SecurityReport( uuid, request.getRemoteAddr(), requestURL, isRequestSuccessful, message );
         proxyReportLogger.logProxyReportInfo( report );
     }
 
@@ -98,9 +98,10 @@ public class LoggingFilter implements Filter {
         return builder.toString();
     }
 
-    private void createUuidHeader( FilterResponseWrapper wrappedResponse ) {
+    private String createUuidHeader( FilterResponseWrapper wrappedResponse ) {
         String uuid = UUID.randomUUID().toString();
         wrappedResponse.addHeader( "serial_uuid", uuid );
+        return uuid;
     }
 
 }
