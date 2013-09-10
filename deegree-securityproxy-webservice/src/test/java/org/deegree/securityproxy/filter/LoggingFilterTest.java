@@ -46,6 +46,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/filter/LoggingFilterTestContext.xml" })
 public class LoggingFilterTest {
 
+    private static final int SERIAL_UUID_LENGTH = 36;
+
     private static final String CLIENT_IP_ADDRESS = "127.0.0.1";
 
     private static final String TARGET_URL = "devcloud.blackbridge.com";
@@ -67,6 +69,13 @@ public class LoggingFilterTest {
     @Before
     public void resetMock() {
         reset( logger );
+    }
+
+    @Test
+    public void testLoggingFilterShouldGenerateReportWithSerialUuid()
+                            throws IOException, ServletException {
+        loggingFilter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        verify( logger ).logProxyReportInfo( argThat( hasCorrectSerialUuid() ) );
     }
 
     @Test
@@ -140,6 +149,20 @@ public class LoggingFilterTest {
 
     private HttpServletResponse generateMockResponse() {
         return mock( HttpServletResponse.class );
+    }
+
+    private Matcher<SecurityReport> hasCorrectSerialUuid() {
+        return new BaseMatcher<SecurityReport>() {
+
+            public boolean matches( Object item ) {
+                SecurityReport report = (SecurityReport) item;
+                return SERIAL_UUID_LENGTH == report.getSerialUuid().length();
+            }
+
+            public void describeTo( Description description ) {
+                description.appendText( "Length of serial uuid should be " + SERIAL_UUID_LENGTH );
+            }
+        };
     }
 
     private Matcher<SecurityReport> hasCorrectIpAddress() {
