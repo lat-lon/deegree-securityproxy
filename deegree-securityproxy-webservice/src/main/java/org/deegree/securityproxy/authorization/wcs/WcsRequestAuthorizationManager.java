@@ -65,19 +65,31 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
     }
 
     private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getOperationType().equals( wcsPermission.getOperationType() );
+        if ( wcsRequest.getOperationType() != null )
+            return wcsRequest.getOperationType().equals( wcsPermission.getOperationType() );
+        else
+            return false;
     }
 
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getServiceVersion().equals( wcsPermission.getServiceVersion() );
+        if ( wcsRequest.getServiceVersion() != null )
+            return wcsRequest.getServiceVersion().equals( wcsPermission.getServiceVersion() );
+        else
+            return false;
     }
 
     private boolean isServiceNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
+        if ( wcsRequest.getServiceName() != null )
+            return wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
+        else
+            return false;
     }
 
     private boolean isLayerNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getLayerName().equals( wcsPermission.getLayerName() );
+        if ( wcsRequest.getLayerName() != null )
+            return wcsRequest.getLayerName().equals( wcsPermission.getLayerName() );
+        else
+            return false;
     }
 
     @Override
