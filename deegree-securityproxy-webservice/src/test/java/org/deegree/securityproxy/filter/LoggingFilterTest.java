@@ -2,6 +2,7 @@ package org.deegree.securityproxy.filter;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -91,10 +92,10 @@ public class LoggingFilterTest {
     }
 
     @Test
-    public void testLoggingShouldGenerateCorrectReportForNotSuccessfulReponse()
+    public void testLoggingShouldGenerateCorrectReportForUnauthenticatedReponse()
                             throws IOException, ServletException {
-        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_BAD_REQUEST ) );
-        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_BAD_REQUEST ) ) );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
+        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ) );
     }
 
     @Test

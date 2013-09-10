@@ -62,12 +62,40 @@ public class LoggingFilter implements Filter {
     }
 
     private void generateAndLogProxyReport( HttpServletRequest request, FilterResponseWrapper response ) {
-        boolean isRequestSuccessful = SC_OK == response.getStatus() ? true : false;
+        int statusCode = response.getStatus();
+        boolean isRequestSuccessful = SC_OK == statusCode ? true : false;
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
-        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful, "" );
+        String message = generateMessage( statusCode );
+        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful, message );
         proxyReportLogger.logProxyReportInfo( report );
+    }
+
+    private String generateMessage( int statusCode ) {
+        StringBuilder builder = new StringBuilder( "Status code is " );
+        builder.append( statusCode );
+        switch ( statusCode ) {
+        case 200:
+            builder.append( ": OK" );
+            break;
+        case 400:
+            builder.append( ": Bad request" );
+            break;
+        case 401:
+            builder.append( ": Unauthorized" );
+            break;
+        case 403:
+            builder.append( ": Forbidden" );
+            break;
+        case 404:
+            builder.append( ": Not found" );
+            break;
+        case 500:
+            builder.append( ": Internal server error" );
+            break;
+        }
+        return builder.toString();
     }
 
     private void createUuidHeader( FilterResponseWrapper wrappedResponse ) {

@@ -1,8 +1,9 @@
 package org.deegree.securityproxy.authentication;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
+import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
 import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_BODY;
-import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_STATUS_CODE;
+import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -49,7 +50,7 @@ public class ServiceExceptionHandlerTest {
                             throws IOException, ServletException {
         ServiceExceptionHandler entryPoint = new ServiceExceptionHandler();
         entryPoint.commence( mockRequest, mockResponse, mockException );
-        verify( mockResponse ).setStatus( DEFAULT_STATUS_CODE );
+        verify( mockResponse ).setStatus( DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE );
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
     }
 
@@ -57,7 +58,7 @@ public class ServiceExceptionHandlerTest {
     public void testCommenceWithValidPathToExceptionException()
                             throws IOException, ServletException {
         ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( getPathToException(),
-                                                                                DEFAULT_STATUS_CODE );
+                                                                                DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
         String expectedBody = readResponseBodyFromFile();
@@ -67,7 +68,7 @@ public class ServiceExceptionHandlerTest {
     @Test
     public void testCommenceWithCustomStatusCode()
                             throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( getPathToException(), SC_BAD_REQUEST );
+        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( getPathToException(), SC_BAD_REQUEST, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
         entryPoint.commence( mockRequest, mockResponse, mockException );
         verify( mockResponse ).setStatus( SC_BAD_REQUEST );
     }
@@ -75,7 +76,7 @@ public class ServiceExceptionHandlerTest {
     @Test
     public void testCommenceWithNullExceptionPathShouldWriteDefaultBody()
                             throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( null, DEFAULT_STATUS_CODE );
+        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( null, DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
@@ -84,7 +85,7 @@ public class ServiceExceptionHandlerTest {
     @Test
     public void testCommenceWithEmptyExceptionPathShouldWriteDefaultBody()
                             throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( "", DEFAULT_STATUS_CODE );
+        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( "", DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );

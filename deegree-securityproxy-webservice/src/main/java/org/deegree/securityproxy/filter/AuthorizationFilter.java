@@ -43,6 +43,7 @@ public class AuthorizationFilter implements Filter {
         } catch ( IllegalArgumentException e ) {
             throw new AccessDeniedException( "Unauthorized!" );
         }
+        chain.doFilter( request, response );
     }
 
     @Override
