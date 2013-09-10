@@ -47,10 +47,10 @@ public class WcsRequestParser {
         Map<String, String[]> normalizedParameterMap = normalizeKvpMap( request.getParameterMap() );
         checkParameters( normalizedParameterMap );
 
-        WcsOperationType type = evaluateOperationType( normalizedParameterMap );
+        WcsOperationType operationType = evaluateOperationType( normalizedParameterMap );
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String coverageName = evaluateCoverageParameter( normalizedParameterMap );
-        return new WcsRequest( type, version, coverageName );
+        return new WcsRequest( operationType, version, coverageName );
     }
 
     private String evaluateCoverageParameter( Map<String, String[]> normalizedParameterMap ) {

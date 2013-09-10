@@ -75,7 +75,7 @@ public class WcsPermission implements GrantedAuthority {
         // Spring Security requires the return value null in this case
         return null;
     }
-    
+
     /**
      * @return the operationType
      */
@@ -103,6 +103,5 @@ public class WcsPermission implements GrantedAuthority {
     public String getServiceName() {
         return serviceName;
     }
-
 
 }

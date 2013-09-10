@@ -34,6 +34,7 @@
     <constructor-arg value="access_token" />
     <constructor-arg value="user_name" />
     <constructor-arg value="password" />
+    <constructor-arg value="layer_service_type_name" />
     <constructor-arg value="layer_service_type_version_hint" />
     <constructor-arg value="ogc_layer_service_operation_type_name" />
     <constructor-arg value="service_name" />

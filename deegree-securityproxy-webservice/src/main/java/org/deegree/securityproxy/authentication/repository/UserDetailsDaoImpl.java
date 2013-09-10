@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.commons.ServiceType;
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,8 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
 
     private final String passwordColumn;
 
+    private final String serviceTypeColumn;
+
     private final String serviceVersionColumn;
 
     private final String operationTypeColumn;
@@ -50,20 +53,21 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     private final String serviceNameColumn;
 
     private final String layerNameColumn;
-    
+
     private final String subscriptionStart;
 
     private final String subscriptionEnd;
 
     public UserDetailsDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                               String passwordColumn, String serviceVersionColumn, String operationTypeColumn,
-                               String serviceNameColumn, String layerNameColumn, String subscriptionStart,
-                               String subscriptionEnd ) {
+                               String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
+                               String operationTypeColumn, String serviceNameColumn, String layerNameColumn,
+                               String subscriptionStart, String subscriptionEnd ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
         this.userNameColumn = userNameColumn;
         this.passwordColumn = passwordColumn;
+        this.serviceTypeColumn = serviceTypeColumn;
         this.serviceVersionColumn = serviceVersionColumn;
         this.operationTypeColumn = operationTypeColumn;
         this.serviceNameColumn = serviceNameColumn;
@@ -97,13 +101,14 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         builder.append( "SELECT " );
         builder.append( userNameColumn ).append( "," );
         builder.append( passwordColumn ).append( "," );
+        builder.append( serviceTypeColumn ).append( "," );
         builder.append( serviceNameColumn ).append( "," );
         builder.append( serviceVersionColumn ).append( "," );
         builder.append( operationTypeColumn ).append( "," );
         builder.append( layerNameColumn );
         appendFrom( builder );
         builder.append( " WHERE " );
-        builder.append( headerColumn ).append( " = ? AND layer_service_type_name = 'WCS' AND ? BETWEEN " );
+        builder.append( headerColumn ).append( " = ? AND ? BETWEEN " );
         builder.append( subscriptionStart ).append( " AND " );
         builder.append( subscriptionEnd );
         return builder.toString();
@@ -121,9 +126,11 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         String password = null;
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
         for ( Map<String, Object> row : rows ) {
-            username = getAsString( row, userNameColumn );
-            password = getAsString( row, passwordColumn );
-            addAuthorities( authorities, row );
+            if ( checkIfWcsServiceType( row ) ) {
+                username = getAsString( row, userNameColumn );
+                password = getAsString( row, passwordColumn );
+                addAuthorities( authorities, row );
+            }
         }
         if ( username != null && password != null )
             return new User( username, password, authorities );
@@ -138,6 +145,13 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
             authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName ) );
         }
+    }
+
+    private boolean checkIfWcsServiceType( Map<String, Object> row ) {
+        String serviceType = getAsString( row, serviceTypeColumn );
+        if ( ServiceType.WCS.toString().equals( serviceType.toUpperCase() ) )
+            return true;
+        return false;
     }
 
     private WcsOperationType getOperationType( Map<String, Object> row ) {
