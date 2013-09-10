@@ -53,6 +53,6 @@
 
   <bean id="loggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
 
-  <bean id="authorizationFilter" class="org.deegree.securityproxy.filter.AuthorizationFilter" />
+  <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
 
 </beans>

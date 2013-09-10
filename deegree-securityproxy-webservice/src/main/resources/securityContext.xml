@@ -6,7 +6,7 @@
     <access-denied-handler ref="serviceExceptionHandler"/>
     <intercept-url pattern="/**" access="isAuthenticated()" />
     <custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
-    <custom-filter position="LAST" ref="authorizationFilter" />
+    <custom-filter position="LAST" ref="securityFilter" />
   </http>
 
   <authentication-manager alias="authenticationManager">

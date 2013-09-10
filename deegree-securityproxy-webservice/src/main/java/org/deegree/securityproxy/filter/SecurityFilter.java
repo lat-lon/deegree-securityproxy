@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class AuthorizationFilter implements Filter {
+public class SecurityFilter implements Filter {
 
     @Autowired
     private WcsRequestAuthorizationManager requestAuthorizationManager;
