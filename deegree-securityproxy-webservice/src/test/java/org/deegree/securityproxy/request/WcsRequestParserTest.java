@@ -35,21 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
+import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.commons.WcsOperationType;
-import org.deegree.securityproxy.commons.WcsServiceVersion;
-import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -71,36 +71,61 @@ public class WcsRequestParserTest {
 
     private static final String SERVICE_PARAM = "SERVICE";
 
-    private static final WcsServiceVersion SERVICE_VERSION = VERSION_100;
-
-    private static final WcsOperationType OPERATION_TYPE = GETCAPABILITIES;
-
-    private static final String LAYER_NAME = "layerName";
+    private static final String COVERAGE_NAME = "layerName";
 
     private static final String SERVICE_NAME = "serviceName";
 
+    /* Tests for valid requests for WCS GetCapabilities */
     @Test
-    public void testParseFromGetRequestShouldParseLayerName()
+    public void testParseFromGetCapabilitiesRequestShouldIgnoreCoverageName()
                             throws UnsupportedRequestTypeException {
-        HttpServletRequest request = mockWcsGetRequest();
+        HttpServletRequest request = mockWcsGetCapabilitiesRequest();
         WcsRequest wcsRequest = parser.parse( request );
-        assertThat( wcsRequest.getCoverageName(), is( LAYER_NAME ) );
+        assertThat( wcsRequest.getCoverageNames().isEmpty(), is( true ) );
     }
 
     @Test
-    public void testParseFromGetRequestShouldParseOperationType()
+    public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersion()
                             throws UnsupportedRequestTypeException {
-        HttpServletRequest request = mockWcsGetRequest();
+        HttpServletRequest request = mockWcsGetCapabilitiesRequest();
         WcsRequest wcsRequest = parser.parse( request );
-        assertThat( wcsRequest.getOperationType(), is( OPERATION_TYPE ) );
+        assertThat( wcsRequest.getOperationType(), is( GETCAPABILITIES ) );
+        assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
     }
 
+    /* Test for valid requests for WCS GetCoverage */
     @Test
-    public void testParseFromGetRequestShouldParseServiceVersion()
+    public void testParseFromGetCoverageRequestShouldParseCoverageOperationTypeAndServiceVersion()
                             throws UnsupportedRequestTypeException {
-        HttpServletRequest request = mockWcsGetRequest();
+        HttpServletRequest request = mockWcsGetCoverageRequest();
         WcsRequest wcsRequest = parser.parse( request );
-        assertThat( wcsRequest.getServiceVersion(), is( SERVICE_VERSION ) );
+        List<String> coverageNames = wcsRequest.getCoverageNames();
+        assertThat( coverageNames.get( 0 ), is( COVERAGE_NAME ) );
+        assertThat( coverageNames.size(), is( 1 ) );
+        assertThat( wcsRequest.getOperationType(), is( GETCOVERAGE ) );
+        assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
+    }
+
+    /* Test for valid requests for WCS DescribeCoverage */
+    @Test
+    public void testParseFromDescribeCoverageRequestShouldParseCoverageOperationTypeAndServiceVersion()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsDescribeCoverageRequest();
+        WcsRequest wcsRequest = parser.parse( request );
+        List<String> coverageNames = wcsRequest.getCoverageNames();
+        assertThat( coverageNames.get( 0 ), is( COVERAGE_NAME ) );
+        assertThat( coverageNames.get( 1 ), is( COVERAGE_NAME ) );
+        assertThat( coverageNames.size(), is( 2 ) );
+        assertThat( wcsRequest.getOperationType(), is( DESCRIBECOVERAGE ) );
+        assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
+    }
+
+    /* Test for invalid requests */
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestMultipleCoveragesShouldFail()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestMultipleCoverageParameter();
+        parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -139,58 +164,87 @@ public class WcsRequestParserTest {
         parser.parse( mockValidWcsRequestMissingVersionParameter( "wcs" ) );
     }
 
-    @Test
-    public void testParseWithMissingCoverageParameter()
-                            throws UnsupportedRequestTypeException {
-        parser.parse( mockValidWcsRequestMissingCoverageParameter( "wcs" ) );
+    private HttpServletRequest mockWcsGetCapabilitiesRequest() {
+        Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
+        return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockWcsGetRequest() {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+    private HttpServletRequest mockWcsGetCoverageRequest() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestMultipleCoverageParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME + "," + COVERAGE_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsDescribeCoverageRequest() {
+        Map<String, String[]> parameterMap = createValidDescribeCoverageParameterMap();
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockWmsGetRequest() {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wms" );
+        Map<String, String[]> parameterMap = createWmsParameterMap();
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter( String serviceType ) {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( REQUEST_PARAM );
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter( String serviceType ) {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( SERVICE_PARAM );
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockValidWcsRequestMissingVersionParameter( String serviceType ) {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( VERSION_PARAM );
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockValidWcsRequestMissingCoverageParameter( String serviceType ) {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
-        parameterMap.remove( COVERAGE_PARAM );
-        return mockRequest( parameterMap );
-    }
-
     private HttpServletRequest mockInvalidWcsRequestDoubleServiceParameter( String serviceType ) {
-        Map<String, String[]> parameterMap = createValidParameterMap( "wcs" );
+        Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.put( "service", new String[] { serviceType } );
         return mockRequest( parameterMap );
     }
 
-    private Map<String, String[]> createValidParameterMap( String serviceType ) {
+    private Map<String, String[]> createWmsParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
-        parameterMap.put( VERSION_PARAM, new String[] { SERVICE_VERSION.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { OPERATION_TYPE.name() } );
-        parameterMap.put( COVERAGE_PARAM, new String[] { LAYER_NAME } );
-        parameterMap.put( SERVICE_PARAM, new String[] { serviceType } );
+        parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES.name() } );
+        parameterMap.put( SERVICE_PARAM, new String[] { "wms" } );
+        return parameterMap;
+    }
+
+    private Map<String, String[]> createValidDescribeCoverageParameterMap() {
+        Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+        parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { DESCRIBECOVERAGE.name() } );
+        parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME + "," + COVERAGE_NAME } );
+        parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
+        return parameterMap;
+    }
+
+    private Map<String, String[]> createValidGetCapabilitiesParameterMap() {
+        Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+        parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES.name() } );
+        parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
+        return parameterMap;
+    }
+
+    private Map<String, String[]> createValidGetCoverageParameterMap() {
+        Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+        parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE.name() } );
+        parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME } );
+        parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         return parameterMap;
     }
 
@@ -205,7 +259,7 @@ public class WcsRequestParserTest {
         if ( parameterMap.get( COVERAGE_PARAM ) != null ) {
             when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM )[0] );
         }
-        when( servletRequest.getParameterValues( LAYER_NAME ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
+        when( servletRequest.getParameterValues( COVERAGE_NAME ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
         if ( parameterMap.get( REQUEST_PARAM ) != null ) {
             when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM )[0] );
             when( servletRequest.getParameterValues( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM ) );

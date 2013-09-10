@@ -57,15 +57,15 @@ public class WcsPermission implements GrantedAuthority {
 
     private final WcsServiceVersion serviceVersion;
 
-    private final String layerName;
+    private final String coverageName;
 
     private final String serviceName;
 
-    public WcsPermission( WcsOperationType operationType, WcsServiceVersion serviceVersion, String layerName,
+    public WcsPermission( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
                           String serviceName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
-        this.layerName = layerName;
+        this.coverageName = coverageName;
         this.serviceName = serviceName;
     }
 
@@ -93,8 +93,8 @@ public class WcsPermission implements GrantedAuthority {
     /**
      * @return the layerName
      */
-    public String getLayerName() {
-        return layerName;
+    public String getCoverageName() {
+        return coverageName;
     }
 
     /**

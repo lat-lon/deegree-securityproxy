@@ -60,7 +60,7 @@ public class UserDetailsDaoImplTest {
         assertThat( firstAuthority.getOperationType(), is( GETCAPABILITIES ) );
         assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
-        assertThat( firstAuthority.getLayerName(), is( nullValue() ) );
+        assertThat( firstAuthority.getCoverageName(), is( nullValue() ) );
     }
 
     @Test
@@ -72,7 +72,7 @@ public class UserDetailsDaoImplTest {
         assertThat( firstAuthority.getOperationType(), is( GETCOVERAGE ) );
         assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
-        assertThat( firstAuthority.getLayerName(), is( "layerName" ) );
+        assertThat( firstAuthority.getCoverageName(), is( "layerName" ) );
     }
 
     @Test

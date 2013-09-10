@@ -1,8 +1,14 @@
 package org.deegree.securityproxy.request;
 
+import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,19 +52,52 @@ public class WcsRequestParser {
             throw new IllegalArgumentException( "Request must not be null!" );
         Map<String, String[]> normalizedParameterMap = normalizeKvpMap( request.getParameterMap() );
         checkParameters( normalizedParameterMap );
-
         WcsOperationType type = evaluateOperationType( normalizedParameterMap );
-        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
-        String coverageName = evaluateCoverageParameter( normalizedParameterMap );
-        return new WcsRequest( type, version, coverageName );
+        switch ( type ) {
+        case GETCAPABILITIES:
+            return parseGetCapabilitiesRequest( normalizedParameterMap );
+        case DESCRIBECOVERAGE:
+            return parseDescribeCoverageRequest( normalizedParameterMap );
+        case GETCOVERAGE:
+            return parseGetCoverageRequest( normalizedParameterMap );
+        }
+        throw new IllegalArgumentException( "Unrecognized operation type: "+type);
     }
 
-    private String evaluateCoverageParameter( Map<String, String[]> normalizedParameterMap ) {
+    private WcsRequest parseGetCoverageRequest( Map<String, String[]> normalizedParameterMap ) {
+        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
         if ( coverageParameter == null || coverageParameter.length == 0 )
-            return null;
-        else
-            return coverageParameter[0];
+            return new WcsRequest( GETCOVERAGE, version );
+        else {
+            List<String> separatedCoverages = extractCoverages( coverageParameter );
+            if ( ( separatedCoverages ).size() != 1 )
+                throw new IllegalArgumentException( "GetCoverage requires exactly one coverage parameter!" );
+            return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ) );
+        }
+    }
+
+    private WcsRequest parseDescribeCoverageRequest( Map<String, String[]> normalizedParameterMap ) {
+        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
+        if ( coverageParameter == null || coverageParameter.length == 0 )
+            return new WcsRequest( DESCRIBECOVERAGE, version );
+        else {
+            List<String> separatedCoverages = extractCoverages( coverageParameter );
+            return new WcsRequest( DESCRIBECOVERAGE, version, separatedCoverages );
+        }
+    }
+
+    private List<String> extractCoverages( String[] coverageParameter ) {
+        String firstCoverageParameter = coverageParameter[0];
+        List<String> separatedCoverages = new ArrayList<String>();
+        Collections.addAll( separatedCoverages, firstCoverageParameter.split( "," ) );
+        return separatedCoverages;
+    }
+
+    private WcsRequest parseGetCapabilitiesRequest( Map<String, String[]> normalizedParameterMap ) {
+        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        return new WcsRequest( GETCAPABILITIES, version );
     }
 
     private WcsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {
