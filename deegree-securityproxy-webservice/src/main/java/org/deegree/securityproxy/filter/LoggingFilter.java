@@ -94,6 +94,9 @@ public class LoggingFilter implements Filter {
         case 500:
             builder.append( ": Internal server error" );
             break;
+        default:
+            builder.append( ": Unexpected error - Unknown status code" );
+            break;
         }
         return builder.toString();
     }

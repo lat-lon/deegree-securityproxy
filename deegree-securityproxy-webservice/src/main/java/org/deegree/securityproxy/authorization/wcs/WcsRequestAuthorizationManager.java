@@ -121,7 +121,7 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
     }
 
     private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getCoverageNames() != null ) {
+        if ( !wcsRequest.getCoverageNames().isEmpty() ) {
             String firstCoverage = wcsRequest.getCoverageNames().get( 0 );
             return firstCoverage.equals( wcsPermission.getCoverageName() );
         }
