@@ -12,6 +12,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 import java.io.IOException;
 
@@ -20,6 +21,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
+import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.hamcrest.BaseMatcher;
@@ -30,11 +33,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Tests for {@link LoggingFilter}
+ * Tests for {@link SecurityFilterTest}
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -44,8 +49,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/filter/LoggingFilterTestContext.xml" })
-public class LoggingFilterTest {
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/filter/SecurityFilterTestContext.xml" })
+@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
+public class SecurityFilterTest {
 
     private static final int SERIAL_UUID_LENGTH = 36;
 
@@ -56,7 +62,7 @@ public class LoggingFilterTest {
     private static final String QUERY_STRING = "request=GetCapabilities";
 
     @Autowired
-    private LoggingFilter filter;
+    private SecurityFilter filter;
 
     /**
      * Autowire a mocked instance of {@link SecurityRequestResposeLogger}
@@ -100,19 +106,31 @@ public class LoggingFilterTest {
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ) );
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportForUnauthenticatedReponse()
                             throws IOException, ServletException {
+        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
+        filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ) );
     }
 
-    @Test
+    @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportNullQueryString()
                             throws IOException, ServletException {
+        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
+        filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
-                                new FilterChainTestImpl( SC_BAD_REQUEST ) );
+                         new FilterChainTestImpl( SC_BAD_REQUEST ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ) );
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testFilterShouldThrowExceptionOnUnauthorized()
+                            throws IOException, ServletException {
+        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
+        filter.setRequestAuthorizationManager( requestAuthorizationManager );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
     }
 
     @Test

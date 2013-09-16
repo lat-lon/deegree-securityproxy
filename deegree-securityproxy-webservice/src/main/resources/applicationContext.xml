@@ -51,8 +51,6 @@
     <property name="exceptionIfHeaderMissing" value="false" />
   </bean>
 
-  <bean id="loggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
-
   <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
 
 </beans>

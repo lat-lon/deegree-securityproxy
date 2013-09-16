@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.authorization.wcs;
 
+import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.AUTHORIZED;
+import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.NOT_AUTHORIZED;
 import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
@@ -53,12 +55,11 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -77,7 +78,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final String COVERAGE_NAME = "layerName";
 
-    private WcsRequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
+    private RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 
     @Test
     public void testSupportsWcsRequestShouldBeSupported()
@@ -98,7 +99,8 @@ public class WcsRequestAuthorizationManagerTest {
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockDefaultRequest();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( AUTHORIZED ) );
     }
 
     @Test
@@ -106,39 +108,48 @@ public class WcsRequestAuthorizationManagerTest {
                             throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithMultiplePermissions();
         WcsRequest request = mockGetCapabilitiesRequest();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( AUTHORIZED ) );
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void testDecideMultipleAuthorizationsShouldBeRefusedCauseOfVersion()
                             throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithMultiplePermissions();
         WcsRequest request = mockGetCapabilitiesRequestWithUnsupportedVersion();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.VERSION_UNAUTHORIZED_MSG ) );
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfVersion()
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedVersion();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.VERSION_UNAUTHORIZED_MSG ) );
+
     }
 
-    @Test(expected = AccessDeniedException.class)
+    @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfOperationType()
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedOperationType();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
     }
 
-    @Test(expected = AccessDeniedException.class)
-    public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfLayerName()
+    @Test
+    public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfCovName()
                             throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedLayerName();
-        authorizationManager.decide( authentication, request, Collections.<ConfigAttribute> emptyList() );
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.COVERAGENAME_UNAUTHORIZED_MSG ) );
     }
 
     private WcsRequest mockDefaultRequest() {

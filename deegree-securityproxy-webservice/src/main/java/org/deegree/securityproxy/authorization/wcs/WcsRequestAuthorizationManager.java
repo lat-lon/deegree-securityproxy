@@ -7,12 +7,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.request.WcsRequest;
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -26,30 +23,48 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsRequestAuthorizationManager implements AccessDecisionManager {
+public class WcsRequestAuthorizationManager implements RequestAuthorizationManager {
+
+    public static final boolean NOT_AUTHORIZED = false;
+
+    public static final boolean AUTHORIZED = true;
+
+    public static final String VERSION_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested version.";
+
+    public static final String OPTYPE_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested operation type.";
+
+    public static final String COVERAGENAME_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested coverage.";
+
+    public static final String ACCESS_GRANTED_MSG = "Access granted.";
+
+    private static final String UNKNOWN_ERROR = "Unknown error. See application log for details.";
 
     @Override
-    public void decide( Authentication authentication, Object object, Collection<ConfigAttribute> configAttributes )
-                            throws AccessDeniedException, InsufficientAuthenticationException {
-        WcsRequest wcsRequest = (WcsRequest) object;
-        if ( authentication == null )
-            throw new AccessDeniedException( "Not authenticated!" );
+    public AuthorizationReport decide( Authentication authentication, Object securedObject ) {
+        WcsRequest wcsRequest = (WcsRequest) securedObject;
+        if ( authentication == null ) {
+            return new AuthorizationReport( "Error while retrieving authentication! User could not be authenticated.",
+                                            NOT_AUTHORIZED );
+        }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        boolean authorized = false;
         if ( isGetCoverageRequest( wcsRequest ) ) {
-            authorized = isAuthorizedGetCoverage( wcsRequest, authorities );
+            return authorizeGetCoverage( wcsRequest, authorities );
         } else if ( isDescribeCoverageRequest( wcsRequest ) ) {
-            authorized = isAuthorizedDescribeCoverage( wcsRequest, authorities );
+            return authorizeDescribeCoverage( wcsRequest, authorities );
         } else if ( isGetCapabilitiesRequest( wcsRequest ) ) {
-            authorized = isAuthorizedGetCapabilities( wcsRequest, authorities );
+            return authorizeGetCapabilities( wcsRequest, authorities );
         }
-        if ( !authorized )
-            throw new AccessDeniedException( "Unauthorized" );
+        return new AuthorizationReport( UNKNOWN_ERROR, NOT_AUTHORIZED );
     }
 
-    private boolean isAuthorizedDescribeCoverage( WcsRequest wcsRequest,
-                                                  Collection<? extends GrantedAuthority> authorities ) {
+    @Override
+    public boolean supports( Class<?> clazz ) {
+        return WcsRequest.class.equals( clazz );
+    }
+
+    private AuthorizationReport authorizeDescribeCoverage( WcsRequest wcsRequest,
+                                                           Collection<? extends GrantedAuthority> authorities ) {
         List<String> grantedCoverages = new ArrayList<String>();
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
@@ -62,37 +77,48 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
         }
         for ( String coverageName : wcsRequest.getCoverageNames() ) {
             if ( !grantedCoverages.contains( coverageName ) )
-                return false;
+                return new AuthorizationReport( COVERAGENAME_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
+
         }
-        return true;
+        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
     }
 
-    private boolean isAuthorizedGetCoverage( WcsRequest wcsRequest, Collection<? extends GrantedAuthority> authorities ) {
+    private AuthorizationReport authorizeGetCoverage( WcsRequest wcsRequest,
+                                                      Collection<? extends GrantedAuthority> authorities ) {
+        String message = UNKNOWN_ERROR;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
-                if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
-                     && isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                    return true;
+                if ( !isFirstCoverageNameAuthorized( wcsRequest, wcsPermission ) ) {
+                    message = COVERAGENAME_UNAUTHORIZED_MSG;
+                } else if ( !isOperationTypeAuthorized( wcsRequest, wcsPermission ) ) {
+                    message = OPTYPE_UNAUTHORIZED_MSG;
+                } else if ( !isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                    message = VERSION_UNAUTHORIZED_MSG;
+                } else {
+                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
                 }
             }
         }
-        return false;
+        return new AuthorizationReport( message, NOT_AUTHORIZED );
     }
 
-    private boolean isAuthorizedGetCapabilities( WcsRequest wcsRequest,
-                                                 Collection<? extends GrantedAuthority> authorities ) {
+    private AuthorizationReport authorizeGetCapabilities( WcsRequest wcsRequest,
+                                                          Collection<? extends GrantedAuthority> authorities ) {
+        String message = UNKNOWN_ERROR;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
-                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                    return true;
+                if ( !isOperationTypeAuthorized( wcsRequest, wcsPermission ) ) {
+                    message = OPTYPE_UNAUTHORIZED_MSG;
+                } else if ( !isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                    message = VERSION_UNAUTHORIZED_MSG;
+                } else {
+                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
                 }
             }
         }
-        return false;
+        return new AuthorizationReport( message, NOT_AUTHORIZED );
     }
 
     private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {
@@ -127,17 +153,6 @@ public class WcsRequestAuthorizationManager implements AccessDecisionManager {
         }
         return false;
 
-    }
-
-    @Override
-    public boolean supports( ConfigAttribute attribute ) {
-        // Not needed in this implementation.
-        return true;
-    }
-
-    @Override
-    public boolean supports( Class<?> clazz ) {
-        return WcsRequest.class.equals( clazz );
     }
 
 }

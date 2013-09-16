@@ -8,14 +8,12 @@
     <constructor-arg value="org.deegree.securityproxy.logger.SecurityRequestResposeLogger" />
   </bean>
 
-  <bean id="requestAuthorizationManagerMock" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager" />
-  </bean>
+  <bean id="requestAuthorizationManagerMock" class="org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager"  />
   
   <bean id="wcsRequestParser" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="org.deegree.securityproxy.request.WcsRequestParser" />
   </bean>
 
-  <bean name="LogggingFilter" class="org.deegree.securityproxy.filter.LoggingFilter" />
+  <bean name="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
 
 </beans>
