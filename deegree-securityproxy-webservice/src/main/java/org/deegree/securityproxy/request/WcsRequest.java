@@ -42,14 +42,14 @@ import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
 
 /**
- * TODO add class documentation here
+ * Encapulates a WCS request.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsRequest {
+public class WcsRequest implements OwsRequest {
 
     private WcsOperationType operationType;
 
@@ -62,13 +62,13 @@ public class WcsRequest {
         this.serviceVersion = serviceVersion;
         this.coverageNames = coverageNames;
     }
-    
+
     public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageNames = Collections.singletonList( coverageName );
     }
-    
+
     public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
@@ -95,5 +95,5 @@ public class WcsRequest {
     public List<String> getCoverageNames() {
         return Collections.unmodifiableList( coverageNames );
     }
-    
+
 }

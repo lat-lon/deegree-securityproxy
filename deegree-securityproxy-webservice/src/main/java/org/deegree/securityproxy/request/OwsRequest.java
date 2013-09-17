@@ -33,39 +33,18 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.wcs;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.WcsRequest;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.springframework.security.core.Authentication;
+package org.deegree.securityproxy.request;
 
 /**
- * Provides filtering of {@link WcsRequest}s.
+ * Encapulates OWS request.
  * 
- * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
- * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsResponseFilterManager implements ResponseFilterManager {
+public interface OwsRequest {
 
-    @Override
-    public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
-                                                Authentication auth ) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean supports( Class<OwsRequest> clazz ) {
-        // TODO Auto-generated method stub
-        return false;
-    }
+    // TODO: provide methods to access service and operation name
 
 }

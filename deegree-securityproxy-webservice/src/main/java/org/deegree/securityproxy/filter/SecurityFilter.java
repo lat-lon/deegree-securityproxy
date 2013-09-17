@@ -18,8 +18,8 @@ import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.request.WcsRequestParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -64,7 +64,7 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
         try {
-            WcsRequest wcsRequest = parser.parse( httpRequest );
+            OwsRequest wcsRequest = parser.parse( httpRequest );
             authorizationReport = requestAuthorizationManager.decide( SecurityContextHolder.getContext().getAuthentication(),
                                                                       wcsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
