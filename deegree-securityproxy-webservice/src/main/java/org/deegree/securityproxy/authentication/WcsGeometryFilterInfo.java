@@ -47,20 +47,55 @@ package org.deegree.securityproxy.authentication;
  */
 public class WcsGeometryFilterInfo {
 
+    private final String coverageName;
+
+    private String geometry;
+
+    /**
+     * Instantiates a new {@link WcsGeometryFilterInfo} with full extend (null geometry)
+     * 
+     * @param coverageName
+     *            neither <code>null</code> nor empty
+     * @throws IllegalArgumentException
+     *             if coverageName is <code>null</code>
+     */
+    public WcsGeometryFilterInfo( String coverageName ) throws IllegalArgumentException {
+        this( coverageName, null );
+    }
+
+    /**
+     * @param coverageName
+     *            neither <code>null</code> nor empty
+     * @param geometry
+     *            the geometry limiting the visibility of the coverage, if <code>null</code> the extend is not limited
+     * @throws IllegalArgumentException
+     *             if coverageName is <code>null</code>
+     */
+    public WcsGeometryFilterInfo( String coverageName, String geometry ) throws IllegalArgumentException {
+        checkRequiredParameter( coverageName );
+        this.coverageName = coverageName;
+        this.geometry = geometry;
+
+    }
+
     /**
      * @return the name of the coverage, never <code>null</code>
      */
-    public String getCoverage() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getCoverageName() {
+        return coverageName;
     }
 
     /**
      * @return the geometry limiting the coverage, may be <code>null</code> if the whole extend is visible
      */
     public String getGeometryString() {
-        // TODO Auto-generated method stub
-        return null;
+        return geometry;
     }
 
+    private void checkRequiredParameter( String coverageName ) {
+        // TODO Auto-generated method stub
+        if ( coverageName == null || coverageName.isEmpty() )
+            throw new IllegalArgumentException( "Required parameter coverage name is " + coverageName == null ? "null"
+                                                                                                             : "empty" );
+    }
 }
