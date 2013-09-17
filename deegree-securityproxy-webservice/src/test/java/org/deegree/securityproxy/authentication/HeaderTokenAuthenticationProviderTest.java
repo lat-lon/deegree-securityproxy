@@ -9,7 +9,6 @@ import java.util.Collections;
 
 import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
-import org.deegree.securityproxy.responsefilter.ResponseFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +52,7 @@ public class HeaderTokenAuthenticationProviderTest {
         Mockito.reset( source );
         when( source.retrieveUserDetailsById( INVALID_TOKEN ) ).thenReturn( null );
         WcsUser validUser = new WcsUser( VALID_USERNAME, VALID_PASSWORD, Collections.<WcsPermission> emptyList(),
-                                         Collections.<ResponseFilter> emptyList() );
+                                         Collections.<WcsGeometryFilterInfo> emptyList() );
         when( source.retrieveUserDetailsById( VALID_TOKEN ) ).thenReturn( validUser );
         when( source.retrieveUserDetailsById( null ) ).thenThrow( IllegalArgumentException.class );
     }

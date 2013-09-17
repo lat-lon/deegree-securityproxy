@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
-import org.deegree.securityproxy.responsefilter.ResponseFilter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,7 +11,7 @@ public class WcsUser implements UserDetails {
 
     private static final long serialVersionUID = 1264359266739783359L;
 
-    private final Collection<ResponseFilter> filters;
+    private final Collection<WcsGeometryFilterInfo> filters;
 
     private final String username;
 
@@ -21,14 +20,14 @@ public class WcsUser implements UserDetails {
     private final Collection<WcsPermission> authorities;
 
     public WcsUser( String username, String password, Collection<WcsPermission> authorities,
-                    Collection<ResponseFilter> filters ) {
+                    Collection<WcsGeometryFilterInfo> filters ) {
         this.username = username;
         this.password = password;
         this.authorities = authorities;
         this.filters = filters;
     }
 
-    public Collection<ResponseFilter> getFilters() {
+    public Collection<WcsGeometryFilterInfo> getFilters() {
         return Collections.unmodifiableCollection( filters );
     }
 
@@ -71,7 +70,7 @@ public class WcsUser implements UserDetails {
         return authorities;
     }
 
-    public Collection<ResponseFilter> getResponseFilters() {
+    public Collection<WcsGeometryFilterInfo> getResponseFilters() {
         return Collections.unmodifiableCollection( filters );
     }
 
