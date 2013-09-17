@@ -1,14 +1,11 @@
 package org.deegree.securityproxy.authentication;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.responsefilter.ResponseFilter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class WcsUser implements UserDetails {
@@ -69,13 +66,13 @@ public class WcsUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
     public Collection<WcsPermission> getWcsPermissions() {
         return authorities;
     }
-    
+
     public Collection<ResponseFilter> getResponseFilters() {
         return Collections.unmodifiableCollection( filters );
     }
-    
+
 }
