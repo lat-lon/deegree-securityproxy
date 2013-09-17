@@ -1,8 +1,8 @@
 package org.deegree.securityproxy.authentication;
 
 import org.apache.log4j.Logger;
-import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
-import org.deegree.securityproxy.authentication.repository.UserDetailsDaoImpl;
+import org.deegree.securityproxy.authentication.repository.WcsUserDao;
+import org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 /**
  * Performs verification of an incoming {@link Authentication}. Authenticates the token against a
- * {@link UserDetailsDaoImpl}
+ * {@link WcsUserDaoImpl}
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -26,7 +26,7 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     private static Logger log = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
 
     @Autowired
-    private UserDetailsDao dao;
+    private WcsUserDao dao;
 
     @Override
     public Authentication authenticate( Authentication authentication )
@@ -45,7 +45,7 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     }
 
     private Authentication createVerifiedToken( String headerTokenValue ) {
-        UserDetails userDetails = dao.retrieveUserDetailsById( headerTokenValue );
+        UserDetails userDetails = dao.retrieveWcsUserById( headerTokenValue );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
             return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue,
