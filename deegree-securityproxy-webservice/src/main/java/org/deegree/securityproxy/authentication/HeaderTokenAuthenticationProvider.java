@@ -45,7 +45,7 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     }
 
     private Authentication createVerifiedToken( String headerTokenValue ) {
-        UserDetails userDetails = dao.loadUserDetailsFromDataSource( headerTokenValue );
+        UserDetails userDetails = dao.retrieveUserDetailsById( headerTokenValue );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
             return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue,

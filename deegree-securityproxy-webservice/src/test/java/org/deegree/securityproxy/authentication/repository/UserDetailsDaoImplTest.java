@@ -45,83 +45,83 @@ public class UserDetailsDaoImplTest {
     }
 
     @Test
-    public void testLoadUserDetailsFromDataSourceValidHeaderShouldReturnUserDetails() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER" );
-        assertThat( details.getUsername(), is( "USER" ) );
-        assertThat( details.getPassword(), is( "PASSWORD" ) );
-    }
+        public void testRetrieveUserDetailsByIdValidHeaderShouldReturnUserDetails() {
+            UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER" );
+            assertThat( details.getUsername(), is( "USER" ) );
+            assertThat( details.getPassword(), is( "PASSWORD" ) );
+        }
 
     @Test
-    public void testLoadUserDetailsFromDataSourceValidHeaderShouldReturnUserDetailWithGetCapabilitiesPermission() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_GETCAPABILITIES" );
-        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 1 ) );
-        WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
-        assertThat( firstAuthority.getOperationType(), is( GETCAPABILITIES ) );
-        assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
-        assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
-        assertThat( firstAuthority.getCoverageName(), is( nullValue() ) );
-    }
+        public void testRetrieveUserDetailsByIdValidHeaderShouldReturnUserDetailWithGetCapabilitiesPermission() {
+            UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER_GETCAPABILITIES" );
+            Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+            assertThat( authorities.size(), is( 1 ) );
+            WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
+            assertThat( firstAuthority.getOperationType(), is( GETCAPABILITIES ) );
+            assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
+            assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
+            assertThat( firstAuthority.getCoverageName(), is( nullValue() ) );
+        }
 
     @Test
-    public void testLoadUserDetailsFromDataSourceValidHeaderShouldReturnUserDetailWithGetCoveragePermission() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_GETCOVERAGE" );
-        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 1 ) );
-        WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
-        assertThat( firstAuthority.getOperationType(), is( GETCOVERAGE ) );
-        assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
-        assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
-        assertThat( firstAuthority.getCoverageName(), is( "layerName" ) );
-    }
+        public void testRetrieveUserDetailsByIdValidHeaderShouldReturnUserDetailWithGetCoveragePermission() {
+            UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER_GETCOVERAGE" );
+            Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+            assertThat( authorities.size(), is( 1 ) );
+            WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
+            assertThat( firstAuthority.getOperationType(), is( GETCOVERAGE ) );
+            assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
+            assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
+            assertThat( firstAuthority.getCoverageName(), is( "layerName" ) );
+        }
 
     @Test
-    public void testLoadUserDetailsFromDataSourceValidHeaderShouldReturnUserDetailWithMultiplePermissions() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_MULTIPLE" );
-        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 2 ) );
-    }
+        public void testRetrieveUserDetailsByIdValidHeaderShouldReturnUserDetailWithMultiplePermissions() {
+            UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER_MULTIPLE" );
+            Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+            assertThat( authorities.size(), is( 2 ) );
+        }
 
     @Test
-    public void testLoadUserDetailsFromDataSourceValidHeaderShouldReturnUserDetailWithOnePermissionsButMultipleVersions() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_MULTIPLE_VERSIONS" );
-        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 3 ) );
-    }
+        public void testRetrieveUserDetailsByIdValidHeaderShouldReturnUserDetailWithOnePermissionsButMultipleVersions() {
+            UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER_MULTIPLE_VERSIONS" );
+            Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+            assertThat( authorities.size(), is( 3 ) );
+        }
 
     @Test
-    public void testLoadUserDetailsFromDataSourceInvalidHeaderShouldReturnNull() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "INVALID_HEADER" );
-        assertThat( details, nullValue() );
-    }
+        public void testRetrieveUserDetailsByIdInvalidHeaderShouldReturnNull() {
+            UserDetails details = source.retrieveUserDetailsById( "INVALID_HEADER" );
+            assertThat( details, nullValue() );
+        }
 
     @Test
     public void testLoadUserDetailsForUserWithNotWcsPermissionFails() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "WMS_VALID_HEADER" );
+        UserDetails details = source.retrieveUserDetailsById( "WMS_VALID_HEADER" );
         assertThat( details, nullValue() );
     }
 
     @Test
     public void testLoadUserDetailsForUserSubscriptionOk() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_SUBSCRIPTION_OK" );
+        UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER_SUBSCRIPTION_OK" );
         assertThat( details, notNullValue() );
     }
 
     @Test
     public void testLoadUserDetailsForUserSubscriptionExpired() {
-        UserDetails details = source.loadUserDetailsFromDataSource( "VALID_HEADER_SUBSCRIPTION_EXPIRED" );
+        UserDetails details = source.retrieveUserDetailsById( "VALID_HEADER_SUBSCRIPTION_EXPIRED" );
         assertThat( details, nullValue() );
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testLoadUserDetailsFromDataSourceShouldThrowExceptionOnEmptyHeader() {
-        source.loadUserDetailsFromDataSource( "" );
-    }
+        public void testRetrieveUserDetailsByIdShouldThrowExceptionOnEmptyHeader() {
+            source.retrieveUserDetailsById( "" );
+        }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testLoadUserDetailsFromDataSourceShouldThrowExceptionOnNullArgument() {
-        source.loadUserDetailsFromDataSource( null );
-    }
+        public void testRetrieveUserDetailsByIdShouldThrowExceptionOnNullArgument() {
+            source.retrieveUserDetailsById( null );
+        }
 
     @After
     public void tearDown() {

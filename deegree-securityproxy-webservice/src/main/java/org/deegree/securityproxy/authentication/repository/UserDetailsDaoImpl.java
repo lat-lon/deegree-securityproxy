@@ -77,7 +77,7 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     }
 
     @Override
-    public UserDetails loadUserDetailsFromDataSource( String headerValue )
+    public UserDetails retrieveUserDetailsById( String headerValue )
                             throws IllegalArgumentException {
         checkParameter( headerValue );
         JdbcTemplate template = new JdbcTemplate( source );

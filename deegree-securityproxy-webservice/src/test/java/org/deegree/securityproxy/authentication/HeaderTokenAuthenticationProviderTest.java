@@ -51,10 +51,10 @@ public class HeaderTokenAuthenticationProviderTest {
     @Before
     public void setupDatasource() {
         Mockito.reset( source );
-        when( source.loadUserDetailsFromDataSource( INVALID_TOKEN ) ).thenReturn( null );
+        when( source.retrieveUserDetailsById( INVALID_TOKEN ) ).thenReturn( null );
         User validUser = new User( VALID_USERNAME, VALID_PASSWORD, Collections.<GrantedAuthority> emptyList() );
-        when( source.loadUserDetailsFromDataSource( VALID_TOKEN ) ).thenReturn( validUser );
-        when( source.loadUserDetailsFromDataSource( null ) ).thenThrow( IllegalArgumentException.class );
+        when( source.retrieveUserDetailsById( VALID_TOKEN ) ).thenReturn( validUser );
+        when( source.retrieveUserDetailsById( null ) ).thenThrow( IllegalArgumentException.class );
     }
 
     @Test

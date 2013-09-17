@@ -24,7 +24,7 @@ public interface UserDetailsDao {
      * @throws IllegalArgumentException
      *             on <code>null</code> or empty argument
      */
-    UserDetails loadUserDetailsFromDataSource( String headerValue )
+    UserDetails retrieveUserDetailsById( String headerValue )
                             throws IllegalArgumentException;
 
 }
