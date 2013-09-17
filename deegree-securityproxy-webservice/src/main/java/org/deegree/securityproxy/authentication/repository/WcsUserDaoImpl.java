@@ -154,12 +154,12 @@ public class WcsUserDaoImpl implements WcsUserDao {
         }
     }
 
-    private void createGeometryFilter( List<WcsGeometryFilterInfo> geometrieFilter, Map<String, Object> row ) {
+    private void createGeometryFilter( List<WcsGeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
         String coverageName = getAsString( row, serviceNameColumn );
         String geometryLimit = getAsString( row, geometryLimitColumn );
         if ( coverageName != null && !coverageName.isEmpty() ) {
             WcsGeometryFilterInfo wcsGeometryFilter = new WcsGeometryFilterInfo( coverageName, geometryLimit );
-            geometrieFilter.add( wcsGeometryFilter );
+            geometryFilter.add( wcsGeometryFilter );
         }
     }
 
