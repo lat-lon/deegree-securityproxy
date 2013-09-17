@@ -35,38 +35,42 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
-import javax.servlet.http.HttpServletResponse;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.springframework.security.core.Authentication;
+import org.junit.Test;
 
 /**
- * Provides filtering of {@link WcsRequest}s.
- * 
- * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
- * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsResponseFilterManager implements ResponseFilterManager {
+public class WcsResponseFilterManagerTest {
 
-    @Override
-    public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
-                                                Authentication auth ) {
-        // TODO Auto-generated method stub
-        return null;
+    private WcsResponseFilterManager wcsResponseFilterManager = new WcsResponseFilterManager();
+
+    @Test
+    public void testSupportsShouldSupportWcsRequests()
+                            throws Exception {
+        boolean isSupported = wcsResponseFilterManager.supports( WcsRequest.class );
+        assertThat( isSupported, is( true ) );
     }
 
-    @Override
-    public <T extends OwsRequest> boolean supports( Class<T> clazz ) {
-        if ( WcsRequest.class.equals( clazz ) )
-            return true;
-        return false;
+    @Test
+    public void testSupportsShouldNotSupportOwsRequests()
+                            throws Exception {
+        boolean isSupported = wcsResponseFilterManager.supports( OwsRequest.class );
+        assertThat( isSupported, is( false ) );
+    }
+
+    @Test
+    public void testSupportsShouldNotSupportNull()
+                            throws Exception {
+        boolean isSupported = wcsResponseFilterManager.supports( null );
+        assertThat( isSupported, is( false ) );
     }
 
 }

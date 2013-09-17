@@ -65,7 +65,8 @@ public interface ResponseFilterManager {
      *            may be <code>null</code>
      * @return the report containing detailed information about the filtering, never <code>null</code>
      * @throws IllegalArgumentException
-     *             if one of the passed arguments is <code>null</code>
+     *             if one of the required arguments is <code>null</code> or the passed {@link OwsRequest} is not
+     *             supported
      */
     ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request, Authentication auth )
                             throws IllegalArgumentException;
@@ -74,10 +75,10 @@ public interface ResponseFilterManager {
      * Checks if the passed class can be filtered or not.
      * 
      * @param clazz
-     *            never <code>null</code>
+     *            to check if can handled by this {@link ResponseFilterManager}
      * @return true if the {@link ResponseFilterManager} can handle {@link OwsRequest} implementations of the passed
-     *         class, false otherwise
+     *         class, false otherwise or if clazz parameter is <code>null</code>
      */
-    boolean supports( Class<OwsRequest> clazz );
+    <T extends OwsRequest> boolean supports( Class<T> clazz );
 
 }
