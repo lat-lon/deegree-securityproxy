@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface UserDetailsDao {
+public interface WcsUserDao {
 
     /**
      * Verify an header value against the encapsulated data source.
@@ -25,7 +25,7 @@ public interface UserDetailsDao {
      * @throws IllegalArgumentException
      *             on <code>null</code> or empty argument
      */
-    WcsUser retrieveUserDetailsById( String headerValue )
+    WcsUser retrieveWcsUserById( String headerValue )
                             throws IllegalArgumentException;
 
 }

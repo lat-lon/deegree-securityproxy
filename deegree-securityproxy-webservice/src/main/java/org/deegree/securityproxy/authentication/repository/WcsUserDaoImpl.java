@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.commons.ServiceType;
@@ -18,7 +19,6 @@ import org.deegree.securityproxy.commons.WcsServiceVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -30,7 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public class UserDetailsDaoImpl implements UserDetailsDao {
+public class WcsUserDaoImpl implements WcsUserDao {
 
     @Autowired
     private DataSource source;
@@ -59,10 +59,12 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
 
     private final String subscriptionEnd;
 
-    public UserDetailsDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                               String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
-                               String operationTypeColumn, String serviceNameColumn, String layerNameColumn,
-                               String subscriptionStart, String subscriptionEnd ) {
+    private final String geometryLimitColumn;
+
+    public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
+                           String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
+                           String operationTypeColumn, String serviceNameColumn, String layerNameColumn,
+                           String subscriptionStart, String subscriptionEnd, String geometryLimitColumn ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
@@ -75,10 +77,11 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         this.layerNameColumn = layerNameColumn;
         this.subscriptionStart = subscriptionStart;
         this.subscriptionEnd = subscriptionEnd;
+        this.geometryLimitColumn = geometryLimitColumn;
     }
 
     @Override
-    public WcsUser retrieveUserDetailsById( String headerValue )
+    public WcsUser retrieveWcsUserById( String headerValue )
                             throws IllegalArgumentException {
         checkParameter( headerValue );
         JdbcTemplate template = new JdbcTemplate( source );
@@ -106,7 +109,8 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         builder.append( serviceNameColumn ).append( "," );
         builder.append( serviceVersionColumn ).append( "," );
         builder.append( operationTypeColumn ).append( "," );
-        builder.append( layerNameColumn );
+        builder.append( layerNameColumn ).append( "," );
+        builder.append( geometryLimitColumn );
         appendFrom( builder );
         builder.append( " WHERE " );
         builder.append( headerColumn ).append( " = ? AND ? BETWEEN " );
@@ -125,16 +129,18 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     private WcsUser createUserForRows( List<Map<String, Object>> rows ) {
         String username = null;
         String password = null;
-        Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
+        List<WcsPermission> authorities = new ArrayList<WcsPermission>();
+        List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
                 addAuthorities( authorities, row );
+                createGeometryFilter( geometrieFilter, row );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, null );
+            return new WcsUser( username, password, authorities, geometrieFilter );
         return null;
     }
 
@@ -145,6 +151,15 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         String layerName = getAsString( row, layerNameColumn );
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
             authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName ) );
+        }
+    }
+
+    private void createGeometryFilter( List<WcsGeometryFilterInfo> geometrieFilter, Map<String, Object> row ) {
+        String coverageName = getAsString( row, serviceNameColumn );
+        String geometryLimit = getAsString( row, geometryLimitColumn );
+        if ( coverageName != null && !coverageName.isEmpty() ) {
+            WcsGeometryFilterInfo wcsGeometryFilter = new WcsGeometryFilterInfo( coverageName, geometryLimit );
+            geometrieFilter.add( wcsGeometryFilter );
         }
     }
 
