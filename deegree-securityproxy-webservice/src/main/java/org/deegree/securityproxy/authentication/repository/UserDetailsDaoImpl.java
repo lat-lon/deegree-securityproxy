@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.commons.ServiceType;
 import org.deegree.securityproxy.commons.WcsOperationType;
@@ -77,7 +78,7 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     }
 
     @Override
-    public UserDetails retrieveUserDetailsById( String headerValue )
+    public WcsUser retrieveUserDetailsById( String headerValue )
                             throws IllegalArgumentException {
         checkParameter( headerValue );
         JdbcTemplate template = new JdbcTemplate( source );
@@ -121,7 +122,7 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         builder.append( tableName );
     }
 
-    private UserDetails createUserForRows( List<Map<String, Object>> rows ) {
+    private WcsUser createUserForRows( List<Map<String, Object>> rows ) {
         String username = null;
         String password = null;
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
@@ -133,7 +134,7 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
             }
         }
         if ( username != null && password != null )
-            return new User( username, password, authorities );
+            return new WcsUser( username, password, authorities, null );
         return null;
     }
 

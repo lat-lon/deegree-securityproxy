@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
+import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.responsefilter.ResponseFilter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -52,7 +52,8 @@ public class HeaderTokenAuthenticationProviderTest {
     public void setupDatasource() {
         Mockito.reset( source );
         when( source.retrieveUserDetailsById( INVALID_TOKEN ) ).thenReturn( null );
-        User validUser = new User( VALID_USERNAME, VALID_PASSWORD, Collections.<GrantedAuthority> emptyList() );
+        WcsUser validUser = new WcsUser( VALID_USERNAME, VALID_PASSWORD, Collections.<WcsPermission> emptyList(),
+                                         Collections.<ResponseFilter> emptyList() );
         when( source.retrieveUserDetailsById( VALID_TOKEN ) ).thenReturn( validUser );
         when( source.retrieveUserDetailsById( null ) ).thenThrow( IllegalArgumentException.class );
     }
@@ -66,8 +67,8 @@ public class HeaderTokenAuthenticationProviderTest {
         assertThat( details.getUsername(), is( VALID_USERNAME ) );
         assertThat( details.getPassword(), is( VALID_PASSWORD ) );
     }
-    
-    @Test(expected=AuthenticationException.class)
+
+    @Test(expected = AuthenticationException.class)
     public void testAuthenticateInvalidToken() {
         provider.authenticate( createHeaderAuthenticationTokenWithInvalidHeader() );
     }
@@ -78,15 +79,15 @@ public class HeaderTokenAuthenticationProviderTest {
     }
 
     private Authentication createHeaderAuthenticationTokenWithInvalidHeader() {
-        Authentication mock = mock(Authentication.class);
-        when(mock.getPrincipal()).thenReturn( INVALID_TOKEN );
+        Authentication mock = mock( Authentication.class );
+        when( mock.getPrincipal() ).thenReturn( INVALID_TOKEN );
         return mock;
 
     }
 
     private Authentication createHeaderAuthenticationTokenWithValidHeader() {
-        Authentication mock = mock(Authentication.class);
-        when(mock.getPrincipal()).thenReturn( VALID_TOKEN );
+        Authentication mock = mock( Authentication.class );
+        when( mock.getPrincipal() ).thenReturn( VALID_TOKEN );
         return mock;
     }
 
