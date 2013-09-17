@@ -13,7 +13,7 @@
   
   <bean id="dataSource" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg
-      value="org.deegree.securityproxy.authentication.repository.UserDetailsDao" />
+      value="org.deegree.securityproxy.authentication.repository.WcsUserDao" />
   </bean>
   
 

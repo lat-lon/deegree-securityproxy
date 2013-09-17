@@ -13,7 +13,7 @@
   </jdbc:embedded-database>
 
   <bean id="headerTokenDataSource"
-    class="org.deegree.securityproxy.authentication.repository.UserDetailsDaoImpl">
+    class="org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl">
     <constructor-arg value="" />
     <constructor-arg value="usertable" />
     <constructor-arg value="access_token" />
@@ -26,6 +26,7 @@
     <constructor-arg value="layerName" />
     <constructor-arg value="subscription_start" />
     <constructor-arg value="subscription_end" />
+    <constructor-arg value="user_layer_limited_to" />
   </bean>
 
 </beans>
