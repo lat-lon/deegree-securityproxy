@@ -28,7 +28,7 @@
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.request.WcsRequestParser" />
 
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.UserDetailsDaoImpl">
+  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
     <constructor-arg value="access_token" />
@@ -41,6 +41,7 @@
     <constructor-arg value="service_layer_name" />
     <constructor-arg value="subscription_start_date" />
     <constructor-arg value="subscription_end_date" />
+    <constructor-arg value="user_layer_limited_to" />
   </bean>
 
   <bean name="authenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
