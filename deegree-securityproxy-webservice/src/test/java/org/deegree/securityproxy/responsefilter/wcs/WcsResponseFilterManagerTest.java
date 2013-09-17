@@ -37,10 +37,14 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
+import org.springframework.security.core.Authentication;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -71,6 +75,40 @@ public class WcsResponseFilterManagerTest {
                             throws Exception {
         boolean isSupported = wcsResponseFilterManager.supports( null );
         assertThat( isSupported, is( false ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterResponseWithNullResponseShouldFail()
+                            throws Exception {
+        wcsResponseFilterManager.filterResponse( null, mockWcsRequest(), mockAuthentication() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterResponseWithNullRequestShouldFail()
+                            throws Exception {
+        wcsResponseFilterManager.filterResponse( mockServletResponse(), null, mockAuthentication() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterResponseWithUnsupportedRequestShouldFail()
+                            throws Exception {
+        wcsResponseFilterManager.filterResponse( mockServletResponse(), mockOwsRequest(), mockAuthentication() );
+    }
+
+    private OwsRequest mockOwsRequest() {
+        return mock( OwsRequest.class );
+    }
+
+    private Authentication mockAuthentication() {
+        return mock( Authentication.class );
+    }
+
+    private WcsRequest mockWcsRequest() {
+        return mock( WcsRequest.class );
+    }
+
+    private HttpServletResponse mockServletResponse() {
+        return mock( HttpServletResponse.class );
     }
 
 }

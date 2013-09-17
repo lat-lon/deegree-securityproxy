@@ -58,6 +58,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     @Override
     public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
                                                 Authentication auth ) {
+        checkParameters( servletResponse, request );
         // TODO Auto-generated method stub
         return null;
     }
@@ -67,6 +68,16 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         if ( WcsRequest.class.equals( clazz ) )
             return true;
         return false;
+    }
+
+    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
+        if ( servletResponse == null )
+            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
+        if ( request == null )
+            throw new IllegalArgumentException( "Parameter request may not be null!" );
+        if ( !supports( request.getClass() ) )
+            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
+                                                + " is not supported!" );
     }
 
 }
