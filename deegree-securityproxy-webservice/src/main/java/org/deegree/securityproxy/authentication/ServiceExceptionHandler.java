@@ -106,4 +106,5 @@ public class ServiceExceptionHandler implements AuthenticationEntryPoint, Access
         return DEFAULT_BODY;
     }
 
+
 }

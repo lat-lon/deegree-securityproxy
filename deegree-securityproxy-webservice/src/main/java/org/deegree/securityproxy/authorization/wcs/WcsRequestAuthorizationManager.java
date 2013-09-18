@@ -10,6 +10,7 @@ import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.request.WcsRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -29,25 +30,25 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     public static final boolean AUTHORIZED = true;
 
-    public static final String VERSION_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested version.";
-
-    public static final String OPTYPE_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested operation type.";
-
-    public static final String COVERAGENAME_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested coverage.";
+    public static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
 
     public static final String ACCESS_GRANTED_MSG = "Access granted.";
 
-    private static final String UNKNOWN_ERROR = "Unknown error. See application log for details.";
+    public static final String UNKNOWN_ERROR_MSG = "Unknown error. See application log for details.";
+
+    public static final String DESCRIBECOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation DescribeCoverage with the given parameters";
+
+    public static final String GETCOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCoverage with the given parameters";
+
+    public static final String GETCAPABILITIES_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCapabilities with the given parameters";
 
     @Override
     public AuthorizationReport decide( Authentication authentication, Object securedObject ) {
-        WcsRequest wcsRequest = (WcsRequest) securedObject;
-        if ( authentication == null ) {
-            return new AuthorizationReport( "Error while retrieving authentication! User could not be authenticated.",
-                                            NOT_AUTHORIZED );
+        if ( !checkAuthentication( authentication ) ) {
+            return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG, NOT_AUTHORIZED );
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
+        WcsRequest wcsRequest = (WcsRequest) securedObject;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             return authorizeGetCoverage( wcsRequest, authorities );
         } else if ( isDescribeCoverageRequest( wcsRequest ) ) {
@@ -55,7 +56,11 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         } else if ( isGetCapabilitiesRequest( wcsRequest ) ) {
             return authorizeGetCapabilities( wcsRequest, authorities );
         }
-        return new AuthorizationReport( UNKNOWN_ERROR, NOT_AUTHORIZED );
+        return new AuthorizationReport( UNKNOWN_ERROR_MSG, NOT_AUTHORIZED );
+    }
+
+    private boolean checkAuthentication( Authentication authentication ) {
+        return !( authentication instanceof AnonymousAuthenticationToken );
     }
 
     @Override
@@ -77,7 +82,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         }
         for ( String coverageName : wcsRequest.getCoverageNames() ) {
             if ( !grantedCoverages.contains( coverageName ) )
-                return new AuthorizationReport( COVERAGENAME_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
+                return new AuthorizationReport( DESCRIBECOVERAGE_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
 
         }
         return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
@@ -85,40 +90,30 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     private AuthorizationReport authorizeGetCoverage( WcsRequest wcsRequest,
                                                       Collection<? extends GrantedAuthority> authorities ) {
-        String message = UNKNOWN_ERROR;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
-                if ( !isFirstCoverageNameAuthorized( wcsRequest, wcsPermission ) ) {
-                    message = COVERAGENAME_UNAUTHORIZED_MSG;
-                } else if ( !isOperationTypeAuthorized( wcsRequest, wcsPermission ) ) {
-                    message = OPTYPE_UNAUTHORIZED_MSG;
-                } else if ( !isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                    message = VERSION_UNAUTHORIZED_MSG;
-                } else {
+                if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
+                     && isOperationTypeAuthorized( wcsRequest, wcsPermission )
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
                 }
             }
         }
-        return new AuthorizationReport( message, NOT_AUTHORIZED );
+        return new AuthorizationReport( GETCOVERAGE_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
     }
 
     private AuthorizationReport authorizeGetCapabilities( WcsRequest wcsRequest,
                                                           Collection<? extends GrantedAuthority> authorities ) {
-        String message = UNKNOWN_ERROR;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
-                if ( !isOperationTypeAuthorized( wcsRequest, wcsPermission ) ) {
-                    message = OPTYPE_UNAUTHORIZED_MSG;
-                } else if ( !isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                    message = VERSION_UNAUTHORIZED_MSG;
-                } else {
+                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission ) && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
                 }
             }
         }
-        return new AuthorizationReport( message, NOT_AUTHORIZED );
+        return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
     }
 
     private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {

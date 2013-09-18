@@ -61,7 +61,7 @@ public class WcsRequestParser {
         case GETCOVERAGE:
             return parseGetCoverageRequest( normalizedParameterMap );
         }
-        throw new IllegalArgumentException( "Unrecognized operation type: "+type);
+        throw new IllegalArgumentException( "Unrecognized operation type: " + type );
     }
 
     private WcsRequest parseGetCoverageRequest( Map<String, String[]> normalizedParameterMap ) {

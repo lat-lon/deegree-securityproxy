@@ -14,9 +14,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -67,14 +67,15 @@ public class HeaderTokenAuthenticationProviderTest {
         assertThat( details.getPassword(), is( VALID_PASSWORD ) );
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test
     public void testAuthenticateInvalidToken() {
         provider.authenticate( createHeaderAuthenticationTokenWithInvalidHeader() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAuthenticateShouldThrowExceptionOnNullParameter() {
-        provider.authenticate( null );
+        Authentication authenticate = provider.authenticate( null );
+        assertThat( authenticate instanceof AnonymousAuthenticationToken, is( true ) );
     }
 
     private Authentication createHeaderAuthenticationTokenWithInvalidHeader() {

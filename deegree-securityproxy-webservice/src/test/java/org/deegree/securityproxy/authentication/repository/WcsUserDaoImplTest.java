@@ -117,14 +117,16 @@ public class WcsUserDaoImplTest {
         assertThat( details, nullValue() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRetrieveWcsUserByIdShouldThrowExceptionOnEmptyHeader() {
-        source.retrieveWcsUserById( "" );
+        WcsUser wcsUser = source.retrieveWcsUserById( "" );
+        assertThat( wcsUser, nullValue() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testRetrieveWcsUserByIdShouldThrowExceptionOnNullArgument() {
-        source.retrieveWcsUserById( null );
+        WcsUser wcsUser = source.retrieveWcsUserById( null );
+        assertThat( wcsUser, nullValue() );
     }
 
     @Test

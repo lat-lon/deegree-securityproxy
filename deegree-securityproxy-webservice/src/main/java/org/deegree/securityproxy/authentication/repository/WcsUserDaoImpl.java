@@ -83,7 +83,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
     @Override
     public WcsUser retrieveWcsUserById( String headerValue )
                             throws IllegalArgumentException {
-        checkParameter( headerValue );
+        if (!checkParameter( headerValue )) return null;
         JdbcTemplate template = new JdbcTemplate( source );
         String jdbcString = generateSqlQuery();
         try {
@@ -95,9 +95,10 @@ public class WcsUserDaoImpl implements WcsUserDao {
         }
     }
 
-    private void checkParameter( String headerValue ) {
+    private boolean checkParameter( String headerValue ) {
         if ( headerValue == null || "".equals( headerValue ) )
-            throw new IllegalArgumentException( "Header value may not be null or empty!" );
+            return false;
+        return true;
     }
 
     private String generateSqlQuery() {

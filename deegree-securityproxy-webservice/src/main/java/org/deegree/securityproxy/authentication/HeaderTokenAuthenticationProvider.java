@@ -1,13 +1,16 @@
 package org.deegree.securityproxy.authentication;
 
+import java.util.Collections;
+
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.repository.WcsUserDao;
 import org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
@@ -33,7 +36,7 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
                             throws AuthenticationException {
         log.info( "Authenticating incoming request " + authentication );
         if ( authentication == null )
-            throw new IllegalArgumentException( "Passed token must not be null!" );
+            return generateAnonymousAuthenticationToken();
         String headerTokenValue = (String) authentication.getPrincipal();
         log.info( "Header token " + headerTokenValue );
         return createVerifiedToken( headerTokenValue );
@@ -48,11 +51,18 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
         UserDetails userDetails = dao.retrieveWcsUserById( headerTokenValue );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
-            return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue,
-                                                            userDetails.getAuthorities() );
+            return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue, userDetails.getAuthorities() );
         } else {
-            throw new BadCredentialsException( "No pre-authenticated principal found in request." );
+            return generateAnonymousAuthenticationToken();
         }
     }
 
+    private AnonymousAuthenticationToken generateAnonymousAuthenticationToken() {
+        SimpleGrantedAuthority grantedAuthorityImpl = new SimpleGrantedAuthority(
+                                                              "ROLE_ANONYMOUS" );
+        return new AnonymousAuthenticationToken(
+                                                 "Anonymous User",
+                                                 "Anonymous User",
+                                                 Collections.singletonList( grantedAuthorityImpl ) );
+    }
 }
