@@ -4,6 +4,7 @@ import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -11,13 +12,17 @@ import static org.junit.Assert.assertThat;
 import java.util.Collection;
 
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
@@ -113,14 +118,16 @@ public class UserDetailsDaoImplTest {
         assertThat( details, nullValue() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testLoadUserDetailsFromDataSourceShouldThrowExceptionOnEmptyHeader() {
-        source.loadUserDetailsFromDataSource( "" );
+        UserDetails details = source.loadUserDetailsFromDataSource( "" );
+        assertThat( details, nullValue() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testLoadUserDetailsFromDataSourceShouldThrowExceptionOnNullArgument() {
-        source.loadUserDetailsFromDataSource( null );
+        UserDetails details = source.loadUserDetailsFromDataSource( null );
+        assertThat( details, nullValue() );
     }
 
     @After

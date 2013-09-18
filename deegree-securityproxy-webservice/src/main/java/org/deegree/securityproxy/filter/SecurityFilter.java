@@ -1,6 +1,7 @@
 package org.deegree.securityproxy.filter;
 
 import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.request.WcsRequestParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 /**
  * Servlet Filter that logs all incoming requests and their response and performs access decision.
@@ -63,10 +64,10 @@ public class SecurityFilter implements Filter {
         FilterResponseWrapper wrappedResponse = new FilterResponseWrapper( httpResponse );
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
+        Authentication authentication = getContext().getAuthentication();
         try {
             WcsRequest wcsRequest = parser.parse( httpRequest );
-            authorizationReport = requestAuthorizationManager.decide( SecurityContextHolder.getContext().getAuthentication(),
-                                                                      wcsRequest );
+            authorizationReport = requestAuthorizationManager.decide( authentication, wcsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false );
         } catch ( IllegalArgumentException e ) {
@@ -102,15 +103,21 @@ public class SecurityFilter implements Filter {
 
     private void generateAndLogProxyReport( AuthorizationReport authorizationReport, String uuid,
                                             HttpServletRequest request, FilterResponseWrapper response ) {
+
+        String message = "";
+        if ( authorizationReport.getMessage() != null ) {
+            message = authorizationReport.getMessage();
+        }
+        generateAndLogProxyReport( message, uuid, request, response );
+    }
+
+    private void generateAndLogProxyReport( String message, String uuid, HttpServletRequest request,
+                                            FilterResponseWrapper response ) {
         int statusCode = response.getStatus();
         boolean isRequestSuccessful = SC_OK == statusCode ? true : false;
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
-        String message = "";
-        if ( authorizationReport.getMessage() != null ) {
-            message = authorizationReport.getMessage();
-        }
         SecurityReport report = new SecurityReport( uuid, request.getRemoteAddr(), requestURL, isRequestSuccessful,
                                                     message );
         proxyReportLogger.logProxyReportInfo( report );

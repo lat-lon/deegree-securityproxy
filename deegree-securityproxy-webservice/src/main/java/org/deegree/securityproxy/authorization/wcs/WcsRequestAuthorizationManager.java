@@ -10,6 +10,7 @@ import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.request.WcsRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -29,6 +30,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     public static final boolean AUTHORIZED = true;
 
+    private static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
+
     public static final String VERSION_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested version.";
 
     public static final String OPTYPE_UNAUTHORIZED_MSG = "User not permitted to access the service with the requested operation type.";
@@ -41,13 +44,11 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     @Override
     public AuthorizationReport decide( Authentication authentication, Object securedObject ) {
-        WcsRequest wcsRequest = (WcsRequest) securedObject;
-        if ( authentication == null ) {
-            return new AuthorizationReport( "Error while retrieving authentication! User could not be authenticated.",
-                                            NOT_AUTHORIZED );
+        if ( !checkAuthentication( authentication ) ) {
+            return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG, NOT_AUTHORIZED );
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-
+        WcsRequest wcsRequest = (WcsRequest) securedObject;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             return authorizeGetCoverage( wcsRequest, authorities );
         } else if ( isDescribeCoverageRequest( wcsRequest ) ) {
@@ -56,6 +57,10 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
             return authorizeGetCapabilities( wcsRequest, authorities );
         }
         return new AuthorizationReport( UNKNOWN_ERROR, NOT_AUTHORIZED );
+    }
+
+    private boolean checkAuthentication( Authentication authentication ) {
+        return !(authentication instanceof AnonymousAuthenticationToken);
     }
 
     @Override

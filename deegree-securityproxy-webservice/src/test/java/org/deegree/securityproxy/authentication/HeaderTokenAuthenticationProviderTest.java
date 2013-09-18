@@ -1,6 +1,8 @@
 package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.isA;
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -8,14 +10,16 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,27 +70,28 @@ public class HeaderTokenAuthenticationProviderTest {
         assertThat( details.getUsername(), is( VALID_USERNAME ) );
         assertThat( details.getPassword(), is( VALID_PASSWORD ) );
     }
-    
-    @Test(expected=AuthenticationException.class)
+
+    @Test
     public void testAuthenticateInvalidToken() {
         provider.authenticate( createHeaderAuthenticationTokenWithInvalidHeader() );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testAuthenticateShouldThrowExceptionOnNullParameter() {
-        provider.authenticate( null );
+        Authentication authenticate = provider.authenticate( null );
+        assertThat( authenticate instanceof AnonymousAuthenticationToken, is( true ) );
     }
 
     private Authentication createHeaderAuthenticationTokenWithInvalidHeader() {
-        Authentication mock = mock(Authentication.class);
-        when(mock.getPrincipal()).thenReturn( INVALID_TOKEN );
+        Authentication mock = mock( Authentication.class );
+        when( mock.getPrincipal() ).thenReturn( INVALID_TOKEN );
         return mock;
 
     }
 
     private Authentication createHeaderAuthenticationTokenWithValidHeader() {
-        Authentication mock = mock(Authentication.class);
-        when(mock.getPrincipal()).thenReturn( VALID_TOKEN );
+        Authentication mock = mock( Authentication.class );
+        when( mock.getPrincipal() ).thenReturn( VALID_TOKEN );
         return mock;
     }
 

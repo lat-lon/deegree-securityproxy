@@ -79,7 +79,7 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
     @Override
     public UserDetails loadUserDetailsFromDataSource( String headerValue )
                             throws IllegalArgumentException {
-        checkParameter( headerValue );
+        if (!checkParameter( headerValue )) return null;
         JdbcTemplate template = new JdbcTemplate( source );
         String jdbcString = generateSqlQuery();
         try {
@@ -91,9 +91,10 @@ public class UserDetailsDaoImpl implements UserDetailsDao {
         }
     }
 
-    private void checkParameter( String headerValue ) {
+    private boolean checkParameter( String headerValue ) {
         if ( headerValue == null || "".equals( headerValue ) )
-            throw new IllegalArgumentException( "Header value may not be null or empty!" );
+            return false;
+        return true;
     }
 
     private String generateSqlQuery() {

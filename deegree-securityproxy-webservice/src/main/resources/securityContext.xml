@@ -4,7 +4,7 @@
 
   <http entry-point-ref="serviceExceptionHandler"  use-expressions="true" create-session="stateless">
     <access-denied-handler ref="serviceExceptionHandler"/>
-    <intercept-url pattern="/**" access="isAuthenticated()" />
+    <intercept-url pattern="/**" access="isAuthenticated() or isAnonymous()" />
     <custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
     <custom-filter position="LAST" ref="securityFilter" />
   </http>
