@@ -36,18 +36,28 @@
 package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.util.Collections;
+
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -58,6 +68,8 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @version $Revision: $, $Date: $
  */
 public class WcsResponseFilterManagerTest {
+
+    private static final String COVERAGE_NAME = "coverageName";
 
     private WcsResponseFilterManager wcsResponseFilterManager = new WcsResponseFilterManager();
 
@@ -82,10 +94,24 @@ public class WcsResponseFilterManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
+    /*
+     * #filterResponse()
+     */
+
+    @Test
+    public void testFilterResponseWithWcsCapabilitiesResponseShouldDoNothing()
+                            throws Exception {
+        HttpServletResponse mockedServletResponse = mockServletResponse();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCapabilitiesRequest(),
+                                                 mockAuthentication );
+        verifyZeroInteractions( mockedServletResponse );
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithNullResponseShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( null, createWcsRequest(), mockAuthentication() );
+        wcsResponseFilterManager.filterResponse( null, createWcsGetCoverageRequest(), mockAuthentication() );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -103,20 +129,50 @@ public class WcsResponseFilterManagerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithAuthenticationWithoutWcsUserShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( mockServletResponse(), createWcsRequest(),
+        wcsResponseFilterManager.filterResponse( mockServletResponse(), createWcsGetCoverageRequest(),
                                                  mockAuthenticationWithoutWcsUserPrincipal() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterResponseWithWcsRequestWithoutCoverageShouldFail()
+                            throws Exception {
+        wcsResponseFilterManager.filterResponse( mockServletResponse(),
+                                                 createWcsGetCoverageRequestWithoutCoverageName(), mockAuthentication() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterResponseWithWcsRequestWithNullCoverageShouldFail()
+                            throws Exception {
+        wcsResponseFilterManager.filterResponse( mockServletResponse(),
+                                                 createWcsGetCoverageRequestWithNullCoverageName(),
+                                                 mockAuthentication() );
     }
 
     private OwsRequest mockOwsRequest() {
         return mock( OwsRequest.class );
     }
 
-    private WcsRequest createWcsRequest() {
+    private WcsRequest createWcsGetCoverageRequest() {
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME ) );
+    }
+
+    private WcsRequest createWcsGetCoverageRequestWithoutCoverageName() {
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> emptyList() );
+    }
+
+    private WcsRequest createWcsGetCoverageRequestWithNullCoverageName() {
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> singletonList( null ) );
+    }
+
+    private WcsRequest createWcsGetCapabilitiesRequest() {
         return new WcsRequest( GETCAPABILITIES, VERSION_110 );
     }
 
-    private HttpServletResponse mockServletResponse() {
-        return mock( HttpServletResponse.class );
+    private HttpServletResponse mockServletResponse()
+                            throws IOException {
+        HttpServletResponse mockedServletResponse = mock( HttpServletResponse.class );
+        when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        return mockedServletResponse;
     }
 
     private Authentication mockAuthentication() {
