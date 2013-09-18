@@ -68,7 +68,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     private GeometryRetrieverImpl geometryRetriever;
 
     @Autowired
-    private ImageClipper geotiffClipper;
+    private ImageClipper imageClipper;
 
     @Override
     public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
@@ -79,8 +79,8 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             String clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
             try {
                 OutputStream imageAsStream = servletResponse.getOutputStream();
-                OutputStream calulateClippedImage = geotiffClipper.calulateClippedImage( imageAsStream, wcsRequest,
-                                                                                         clippingGeometry );
+                OutputStream calulateClippedImage = imageClipper.calulateClippedImage( imageAsStream, wcsRequest,
+                                                                                       clippingGeometry );
             } catch ( IOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();

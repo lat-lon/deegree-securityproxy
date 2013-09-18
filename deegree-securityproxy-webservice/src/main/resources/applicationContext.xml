@@ -30,6 +30,10 @@
 
   <bean name="responseFilterManager" class="org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager" />
 
+  <bean name="geometryRetriever" class="org.deegree.securityproxy.responsefilter.wcs.GeometryRetrieverImpl" />
+
+  <bean name="imageClipper" class="org.deegree.securityproxy.responsefilter.wcs.GeotiffClipper" />
+
   <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
