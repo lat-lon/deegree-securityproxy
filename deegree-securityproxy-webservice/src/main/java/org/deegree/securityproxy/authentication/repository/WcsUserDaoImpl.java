@@ -83,7 +83,8 @@ public class WcsUserDaoImpl implements WcsUserDao {
     @Override
     public WcsUser retrieveWcsUserById( String headerValue )
                             throws IllegalArgumentException {
-        if (!checkParameter( headerValue )) return null;
+        if ( !checkParameter( headerValue ) )
+            return null;
         JdbcTemplate template = new JdbcTemplate( source );
         String jdbcString = generateSqlQuery();
         try {
@@ -157,8 +158,8 @@ public class WcsUserDaoImpl implements WcsUserDao {
 
     private void createGeometryFilter( List<WcsGeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
         String coverageName = getAsString( row, serviceNameColumn );
-        String geometryLimit = getAsString( row, geometryLimitColumn );
         if ( coverageName != null && !coverageName.isEmpty() ) {
+            String geometryLimit = getAsString( row, geometryLimitColumn );
             WcsGeometryFilterInfo wcsGeometryFilter = new WcsGeometryFilterInfo( coverageName, geometryLimit );
             geometryFilter.add( wcsGeometryFilter );
         }
