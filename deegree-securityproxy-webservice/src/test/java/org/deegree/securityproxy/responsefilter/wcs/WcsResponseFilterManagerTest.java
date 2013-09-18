@@ -35,16 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -80,7 +85,7 @@ public class WcsResponseFilterManagerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithNullResponseShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( null, mockWcsRequest(), mockAuthentication() );
+        wcsResponseFilterManager.filterResponse( null, createWcsRequest(), mockAuthentication() );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -95,20 +100,35 @@ public class WcsResponseFilterManagerTest {
         wcsResponseFilterManager.filterResponse( mockServletResponse(), mockOwsRequest(), mockAuthentication() );
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFilterResponseWithAuthenticationWithoutWcsUserShouldFail()
+                            throws Exception {
+        wcsResponseFilterManager.filterResponse( mockServletResponse(), createWcsRequest(),
+                                                 mockAuthenticationWithoutWcsUserPrincipal() );
+    }
+
     private OwsRequest mockOwsRequest() {
         return mock( OwsRequest.class );
     }
 
-    private Authentication mockAuthentication() {
-        return mock( Authentication.class );
-    }
-
-    private WcsRequest mockWcsRequest() {
-        return mock( WcsRequest.class );
+    private WcsRequest createWcsRequest() {
+        return new WcsRequest( GETCAPABILITIES, VERSION_110 );
     }
 
     private HttpServletResponse mockServletResponse() {
         return mock( HttpServletResponse.class );
+    }
+
+    private Authentication mockAuthentication() {
+        Authentication mockedAuthentication = mock( Authentication.class );
+        when( mockedAuthentication.getPrincipal() ).thenReturn( mock( WcsUser.class ) );
+        return mockedAuthentication;
+    }
+
+    private Authentication mockAuthenticationWithoutWcsUserPrincipal() {
+        Authentication mockedAuthentication = mock( Authentication.class );
+        when( mockedAuthentication.getPrincipal() ).thenReturn( mock( UserDetails.class ) );
+        return mockedAuthentication;
     }
 
 }

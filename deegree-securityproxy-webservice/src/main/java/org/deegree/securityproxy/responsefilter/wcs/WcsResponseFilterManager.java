@@ -37,6 +37,7 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
@@ -59,8 +60,17 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
                                                 Authentication auth ) {
         checkParameters( servletResponse, request );
+        WcsUser wcsUser = convertToWcsUser( auth );
         // TODO Auto-generated method stub
         return null;
+    }
+
+    private WcsUser convertToWcsUser( Authentication auth ) {
+        Object principal = auth.getPrincipal();
+        if ( !( principal instanceof WcsUser ) ) {
+            throw new IllegalArgumentException( "Principal is not a WcsUser!" );
+        }
+        return (WcsUser) principal;
     }
 
     @Override
