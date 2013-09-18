@@ -6,7 +6,9 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -25,6 +27,10 @@ import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.WcsRequest;
+import org.deegree.securityproxy.request.WcsRequestParser;
+import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -34,6 +40,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -70,12 +77,22 @@ public class SecurityFilterTest {
     @Autowired
     private SecurityRequestResposeLogger logger;
 
+    @Autowired
+    private WcsRequestParser requestParserMock;
+
+    @Autowired
+    private ResponseFilterManager responseFilterManagerMock;
+
     /**
      * Reset the mocked instance of logger to prevent side effects between tests
      */
     @Before
-    public void resetMock() {
-        reset( logger );
+    public void resetMock()
+                            throws Exception {
+        reset( logger, requestParserMock, responseFilterManagerMock );
+        WcsRequest wcsRequestMockToReturn = mock( WcsRequest.class );
+        doReturn( wcsRequestMockToReturn ).when( requestParserMock ).parse( (HttpServletRequest) anyObject() );
+        doReturn( true ).when( responseFilterManagerMock ).supports( wcsRequestMockToReturn.getClass() );
     }
 
     @Test
@@ -148,6 +165,16 @@ public class SecurityFilterTest {
         String secondUuidArgument = uuidArgumentFirstInvocation.getAllValues().get( 1 );
 
         assertThat( firstUuidArgument, is( not( secondUuidArgument ) ) );
+    }
+
+    @Test
+    public void testResponseShouldInvokeResponseFilterManager()
+                            throws IOException, ServletException {
+        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( true );
+        filter.setRequestAuthorizationManager( requestAuthorizationManager );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        verify( responseFilterManagerMock ).filterResponse( (HttpServletResponse) anyObject(),
+                                                            (OwsRequest) anyObject(), (Authentication) anyObject() );
     }
 
     private ServletRequest generateMockRequestNullQueryString() {

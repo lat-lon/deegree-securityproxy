@@ -28,6 +28,8 @@
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.request.WcsRequestParser" />
 
+  <bean name="responseFilterManager" class="org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager" />
+
   <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
@@ -46,7 +48,8 @@
 
   <bean name="authenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
 
-  <bean id="headerFilter" class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+  <bean id="headerFilter"
+    class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
     <property name="principalRequestHeader" value="access_token" />
     <property name="authenticationManager" ref="authenticationManager" />
     <property name="exceptionIfHeaderMissing" value="false" />
