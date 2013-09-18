@@ -41,7 +41,7 @@ public class WcsUserTest {
                             throws Exception {
         List<WcsGeometryFilterInfo> insertedFilterList = createFilterList();
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), insertedFilterList );
-        List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeomtryFilterInfos();
+        List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
     }
 
@@ -57,7 +57,7 @@ public class WcsUserTest {
     public void testGetPermissionsShouldReturnUnmodifiableFilterList()
                             throws Exception {
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList() );
-        List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeomtryFilterInfos();
+        List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         filters.add( mockFilter() );
     }
 

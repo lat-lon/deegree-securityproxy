@@ -35,8 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
@@ -60,17 +63,11 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
                                                 Authentication auth ) {
         checkParameters( servletResponse, request );
-        WcsUser wcsUser = convertToWcsUser( auth );
+        WcsUser wcsUser = retrieveToWcsUser( auth );
+        List<WcsGeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
+
         // TODO Auto-generated method stub
         return null;
-    }
-
-    private WcsUser convertToWcsUser( Authentication auth ) {
-        Object principal = auth.getPrincipal();
-        if ( !( principal instanceof WcsUser ) ) {
-            throw new IllegalArgumentException( "Principal is not a WcsUser!" );
-        }
-        return (WcsUser) principal;
     }
 
     @Override
@@ -88,6 +85,14 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         if ( !supports( request.getClass() ) )
             throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
                                                 + " is not supported!" );
+    }
+
+    private WcsUser retrieveToWcsUser( Authentication auth ) {
+        Object principal = auth.getPrincipal();
+        if ( !( principal instanceof WcsUser ) ) {
+            throw new IllegalArgumentException( "Principal is not a WcsUser!" );
+        }
+        return (WcsUser) principal;
     }
 
 }

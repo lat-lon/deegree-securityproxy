@@ -99,7 +99,7 @@ public class WcsUser implements UserDetails {
     /**
      * @return all {@link WcsGeometryFilterInfo}s in a unmodifiable list, never <code>null</code>
      */
-    public List<WcsGeometryFilterInfo> getWcsGeomtryFilterInfos() {
+    public List<WcsGeometryFilterInfo> getWcsGeometryFilterInfos() {
         return filters;
     }
 
