@@ -119,7 +119,7 @@ public class WcsRequestAuthorizationManagerTest {
         WcsRequest request = mockGetCapabilitiesRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
-        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.VERSION_UNAUTHORIZED_MSG ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCAPABILITIES_UNAUTHORIZED_MSG ) );
     }
 
     @Test
@@ -129,7 +129,7 @@ public class WcsRequestAuthorizationManagerTest {
         WcsRequest request = mockRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
-        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.VERSION_UNAUTHORIZED_MSG ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
 
     }
 
@@ -149,7 +149,7 @@ public class WcsRequestAuthorizationManagerTest {
         WcsRequest request = mockRequestWithUnsupportedLayerName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
-        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.COVERAGENAME_UNAUTHORIZED_MSG ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
     }
 
     private WcsRequest mockDefaultRequest() {

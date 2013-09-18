@@ -1,8 +1,6 @@
 package org.deegree.securityproxy.authentication;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -10,8 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.deegree.securityproxy.authentication.repository.UserDetailsDao;
-import org.hamcrest.CoreMatchers;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

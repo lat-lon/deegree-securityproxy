@@ -40,8 +40,6 @@ public class SecurityFilter implements Filter {
 
     private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
 
-    private static final String UNKNOWN_ERROR_MSG = "Unknown error. See application log for details.";
-
     @Autowired
     private RequestAuthorizationManager requestAuthorizationManager;
 
@@ -71,7 +69,7 @@ public class SecurityFilter implements Filter {
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false );
         } catch ( IllegalArgumentException e ) {
-            authorizationReport = new AuthorizationReport( UNKNOWN_ERROR_MSG, false );
+            authorizationReport = new AuthorizationReport( e.getMessage(), false );
         }
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
