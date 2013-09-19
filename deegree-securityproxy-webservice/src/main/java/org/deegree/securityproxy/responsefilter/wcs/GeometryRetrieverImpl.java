@@ -82,10 +82,17 @@ public class GeometryRetrieverImpl implements GeometryRetriever {
         return null;
     }
 
-    private Geometry parseGeometry( String geometryAsString )
+    private Geometry parseGeometry( String geometryFromDb )
                             throws ParseException {
+        String wkt = normaliseWkt( geometryFromDb );
         WKTReader wktReader = new WKTReader();
-        return wktReader.read( geometryAsString );
+        return wktReader.read( wkt );
+    }
+
+    String normaliseWkt( String geometryAsString ) {
+        if ( geometryAsString.startsWith( "SRID" ) )
+            geometryAsString = geometryAsString.substring( geometryAsString.indexOf( ";" ) + 1 );
+        return geometryAsString;
     }
 
 }
