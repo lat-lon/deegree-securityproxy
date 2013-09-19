@@ -1,13 +1,15 @@
 package org.deegree.securityproxy.filter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- * Custom Response wrapper that allows access to the response code
- * Deletes the "Transfer Encoding" HTTP Header
+ * Custom Response wrapper that allows access to the response code Deletes the "Transfer Encoding" HTTP Header
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -19,46 +21,97 @@ import javax.servlet.http.HttpServletResponseWrapper;
 public class FilterResponseWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
-    
-    public FilterResponseWrapper(HttpServletResponse response) {
-        super(response);
+
+    private boolean isWriterUsed = false;
+
+    private boolean isStreamUsed = false;
+
+    private CopyPrintWriter bufferingWriter;
+
+    private ServletOutputStream servletOutputStream;
+
+    private ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
+
+    public FilterResponseWrapper( HttpServletResponse response ) {
+        super( response );
     }
 
     @Override
     public void setHeader( String name, String value ) {
-        if (!"Transfer-Encoding".equals(name)) {
+        if ( !"Transfer-Encoding".equals( name ) ) {
             super.setHeader( name, value );
         }
     }
-    
+
     @Override
     public void addHeader( String name, String value ) {
-        if (!"Transfer-Encoding".equals(name)) {
+        if ( !"Transfer-Encoding".equals( name ) ) {
             super.setHeader( name, value );
         }
     }
-    
+
     @Override
     public void sendError( int sc )
                             throws IOException {
         httpStatus = sc;
-        super.sendError(sc);
+        super.sendError( sc );
     }
 
     @Override
-    public void sendError(int sc, String msg) throws IOException {
+    public void sendError( int sc, String msg )
+                            throws IOException {
         httpStatus = sc;
-        super.sendError(sc, msg);
+        super.sendError( sc, msg );
     }
 
     @Override
-    public void setStatus(int sc) {
+    public void setStatus( int sc ) {
         httpStatus = sc;
-        super.setStatus(sc);
+        super.setStatus( sc );
     }
 
+    @Override
+    public ServletOutputStream getOutputStream() {
+        isStreamUsed = true;
+        servletOutputStream = new ServletOutputStream() {
+
+            public void write( int b )
+                                    throws IOException {
+                bufferingStream.write( b );
+            }
+        };
+        return servletOutputStream;
+    }
+
+    @Override
+    public PrintWriter getWriter()
+                            throws IOException {
+        isWriterUsed = true;
+        this.bufferingWriter = new CopyPrintWriter( super.getWriter() );
+        return bufferingWriter;
+    }
+
+    /**
+     * Retrieves the buffered response body;
+     * 
+     * @return buffered content as byte array. may be empty.
+     */
+    public byte[] getBufferedBody() {
+        if ( isWriterUsed )
+            return bufferingWriter.getCopy();
+        if ( isStreamUsed ) {
+            return bufferingStream.toByteArray();
+        }
+        return new byte[0];
+    }
+
+    /**
+     * Retrieve the http status code of the response.
+     * 
+     * @return an http status code.
+     */
     public int getStatus() {
         return httpStatus;
     }
-    
+
 }
