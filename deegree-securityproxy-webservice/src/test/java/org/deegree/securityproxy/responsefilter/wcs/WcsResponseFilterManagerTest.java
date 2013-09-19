@@ -48,9 +48,9 @@ import java.io.IOException;
 import java.util.Collections;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
 import org.deegree.securityproxy.authentication.WcsUser;
+import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
@@ -102,7 +102,7 @@ public class WcsResponseFilterManagerTest {
     @Test
     public void testFilterResponseWithWcsCapabilitiesResponseShouldDoNothing()
                             throws Exception {
-        HttpServletResponse mockedServletResponse = mockServletResponse();
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
         Authentication mockAuthentication = mockAuthentication();
         wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCapabilitiesRequest(),
                                                  mockAuthentication );
@@ -118,33 +118,33 @@ public class WcsResponseFilterManagerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithNullRequestShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( mockServletResponse(), null, mockAuthentication() );
+        wcsResponseFilterManager.filterResponse( mockResponseWrapper(), null, mockAuthentication() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithUnsupportedRequestShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( mockServletResponse(), mockOwsRequest(), mockAuthentication() );
+        wcsResponseFilterManager.filterResponse( mockResponseWrapper(), mockOwsRequest(), mockAuthentication() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithAuthenticationWithoutWcsUserShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( mockServletResponse(), createWcsGetCoverageRequest(),
+        wcsResponseFilterManager.filterResponse( mockResponseWrapper(), createWcsGetCoverageRequest(),
                                                  mockAuthenticationWithoutWcsUserPrincipal() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithWcsRequestWithoutCoverageShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( mockServletResponse(),
+        wcsResponseFilterManager.filterResponse( mockResponseWrapper(),
                                                  createWcsGetCoverageRequestWithoutCoverageName(), mockAuthentication() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithWcsRequestWithNullCoverageShouldFail()
                             throws Exception {
-        wcsResponseFilterManager.filterResponse( mockServletResponse(),
+        wcsResponseFilterManager.filterResponse( mockResponseWrapper(),
                                                  createWcsGetCoverageRequestWithNullCoverageName(),
                                                  mockAuthentication() );
     }
@@ -169,9 +169,9 @@ public class WcsResponseFilterManagerTest {
         return new WcsRequest( GETCAPABILITIES, VERSION_110 );
     }
 
-    private HttpServletResponse mockServletResponse()
+    private StatusCodeResponseBodyWrapper mockResponseWrapper()
                             throws IOException {
-        HttpServletResponse mockedServletResponse = mock( HttpServletResponse.class );
+        StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
         when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
         return mockedServletResponse;
     }

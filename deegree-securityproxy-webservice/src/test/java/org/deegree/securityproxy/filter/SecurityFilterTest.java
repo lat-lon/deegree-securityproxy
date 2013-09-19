@@ -173,7 +173,7 @@ public class SecurityFilterTest {
         RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( true );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( responseFilterManagerMock ).filterResponse( (HttpServletResponse) anyObject(),
+        verify( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
                                                             (OwsRequest) anyObject(), (Authentication) anyObject() );
     }
 
