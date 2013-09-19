@@ -38,7 +38,8 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
-import org.opengis.geometry.Geometry;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Concrete implementation to clip geotiffs.

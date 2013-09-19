@@ -35,17 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
-import org.geotools.geometry.GeometryBuilder;
-import org.geotools.geometry.text.WKTParser;
-import org.geotools.referencing.CRS;
-import org.opengis.geometry.Geometry;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s. If multiple
@@ -61,7 +57,7 @@ public class GeometryRetrieverImpl implements GeometryRetriever {
 
     @Override
     public Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
-                            throws ParsingException, IllegalArgumentException {
+                            throws IllegalArgumentException, ParseException {
         checkParameters( coverageName, geometryFilterInfos );
 
         String geometryAsString = retrieveGeometryFromList( coverageName, geometryFilterInfos );
@@ -87,19 +83,9 @@ public class GeometryRetrieverImpl implements GeometryRetriever {
     }
 
     private Geometry parseGeometry( String geometryAsString )
-                            throws ParsingException {
-        try {
-            CoordinateReferenceSystem crs = CRS.decode( "EPSG:4326" );
-            GeometryBuilder geometryBuilder = new GeometryBuilder( crs );
-            WKTParser wktParser = new WKTParser( geometryBuilder );
-            return wktParser.parse( geometryAsString );
-        } catch ( NoSuchAuthorityCodeException e ) {
-            throw new ParsingException( e );
-        } catch ( FactoryException e ) {
-            throw new ParsingException( e );
-        } catch ( ParseException e ) {
-            throw new ParsingException( e );
-        }
+                            throws ParseException {
+        WKTReader wktReader = new WKTReader();
+        return wktReader.read( geometryAsString );
     }
 
 }

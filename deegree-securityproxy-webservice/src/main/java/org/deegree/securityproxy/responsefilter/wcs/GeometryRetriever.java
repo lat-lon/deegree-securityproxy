@@ -38,7 +38,9 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
-import org.opengis.geometry.Geometry;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Contains method to retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s
@@ -66,6 +68,6 @@ public interface GeometryRetriever {
      *             if the geometry could not be parsed or calculated
      */
     Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
-                            throws IllegalArgumentException, ParsingException;
+                            throws IllegalArgumentException, ParseException;
 
 }

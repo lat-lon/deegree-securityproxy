@@ -46,7 +46,8 @@ import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.junit.Test;
-import org.opengis.geometry.Geometry;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>

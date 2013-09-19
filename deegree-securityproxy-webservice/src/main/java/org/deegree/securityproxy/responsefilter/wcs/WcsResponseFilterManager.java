@@ -50,9 +50,11 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.opengis.geometry.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Provides filtering of {@link WcsRequest}s.
@@ -84,10 +86,10 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 OutputStream imageAsStream = servletResponse.getOutputStream();
                 OutputStream calculatedClippedImage = imageClipper.calulateClippedImage( imageAsStream, wcsRequest,
-                                                                                       clippingGeometry );
+                                                                                         clippingGeometry );
             } catch ( IOException e ) {
                 LOG.error( "Could not retrieve response as stream!", e );
-            } catch ( ParsingException e ) {
+            } catch ( ParseException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -114,7 +116,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     }
 
     private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
-                            throws ParsingException {
+                            throws IllegalArgumentException, ParseException {
         WcsUser wcsUser = retrieveWcsUser( auth );
         List<WcsGeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
         String coverageName = retrieveCoverageName( wcsRequest );

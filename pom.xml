@@ -14,7 +14,6 @@
     <spring.version>3.2.3.RELEASE</spring.version>
     <spring.security.version>3.1.4.RELEASE</spring.security.version>
     <j2ep.version>1.0.1-securityproxy-master</j2ep.version>
-    <geotools.version>9.5</geotools.version>
   </properties>
 
   <dependencyManagement>
@@ -122,16 +121,11 @@
         <artifactId>joda-time</artifactId>
         <version>2.3</version>
       </dependency>
-      <!-- geotools -->
+      <!-- JTS -->
       <dependency>
-        <groupId>org.geotools</groupId>
-        <artifactId>gt-geotiff</artifactId>
-        <version>${geotools.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geotools</groupId>
-        <artifactId>gt-epsg-hsql</artifactId>
-        <version>${geotools.version}</version>
+        <groupId>com.vividsolutions</groupId>
+        <artifactId>jts</artifactId>
+        <version>1.13</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -162,10 +156,6 @@
     <repository>
       <id>secproxy-snapshots</id>
       <url>http://repo.lat-lon/nexus/content/repositories/deegree-securityproxy-snapshots/</url>
-    </repository>
-    <repository>
-      <id>opengeo</id>
-      <url>http://repo.opengeo.org/</url>
     </repository>
   </repositories>
 
