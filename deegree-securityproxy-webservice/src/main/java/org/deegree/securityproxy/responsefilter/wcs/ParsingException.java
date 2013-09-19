@@ -35,25 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
-import java.io.OutputStream;
-
-import org.deegree.securityproxy.request.WcsRequest;
-import org.opengis.geometry.Geometry;
-
 /**
- * Concrete implementation to clip geotiffs.
+ * Indicates that an exception occurred during parsing a geometry.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GeotiffClipper implements ImageClipper {
+public class ParsingException extends Exception {
 
-    @Override
-    public OutputStream calulateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry ) {
-        // TODO
-        return imageToClip;
+    private static final long serialVersionUID = -4059362131801392948L;
+
+    public ParsingException( Throwable t ) {
+        super( t );
     }
 
 }

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
@@ -13,6 +14,7 @@
     <spring.version>3.2.3.RELEASE</spring.version>
     <spring.security.version>3.1.4.RELEASE</spring.security.version>
     <j2ep.version>1.0.1-securityproxy-master</j2ep.version>
+    <geotools.version>9.5</geotools.version>
   </properties>
 
   <dependencyManagement>
@@ -120,10 +122,16 @@
         <artifactId>joda-time</artifactId>
         <version>2.3</version>
       </dependency>
+      <!-- geotools -->
       <dependency>
         <groupId>org.geotools</groupId>
         <artifactId>gt-geotiff</artifactId>
-        <version>8.3</version>
+        <version>${geotools.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-epsg-hsql</artifactId>
+        <version>${geotools.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -154,6 +162,10 @@
     <repository>
       <id>secproxy-snapshots</id>
       <url>http://repo.lat-lon/nexus/content/repositories/deegree-securityproxy-snapshots/</url>
+    </repository>
+    <repository>
+      <id>opengeo</id>
+      <url>http://repo.opengeo.org/</url>
     </repository>
   </repositories>
 

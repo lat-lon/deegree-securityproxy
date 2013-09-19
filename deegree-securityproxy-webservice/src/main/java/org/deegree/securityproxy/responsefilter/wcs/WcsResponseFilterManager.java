@@ -43,12 +43,14 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.opengis.geometry.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
@@ -64,6 +66,8 @@ import org.springframework.security.core.Authentication;
  */
 public class WcsResponseFilterManager implements ResponseFilterManager {
 
+    private static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
+
     @Autowired
     private GeometryRetrieverImpl geometryRetriever;
 
@@ -76,12 +80,14 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
-            String clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
             try {
+                Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 OutputStream imageAsStream = servletResponse.getOutputStream();
-                OutputStream calulateClippedImage = imageClipper.calulateClippedImage( imageAsStream, wcsRequest,
+                OutputStream calculatedClippedImage = imageClipper.calulateClippedImage( imageAsStream, wcsRequest,
                                                                                        clippingGeometry );
             } catch ( IOException e ) {
+                LOG.error( "Could not retrieve response as stream!", e );
+            } catch ( ParsingException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -107,7 +113,8 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                                                 + " is not supported!" );
     }
 
-    private String retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest ) {
+    private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
+                            throws ParsingException {
         WcsUser wcsUser = retrieveWcsUser( auth );
         List<WcsGeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
         String coverageName = retrieveCoverageName( wcsRequest );

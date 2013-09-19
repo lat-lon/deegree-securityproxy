@@ -38,6 +38,7 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
+import org.opengis.geometry.Geometry;
 
 /**
  * Contains methods to clip images.
@@ -63,6 +64,6 @@ public interface ImageClipper {
      *             TODO if clipping failed
      */
     public abstract OutputStream calulateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
-                                                       String clippingGeometry );
+                                                       Geometry clippingGeometry );
 
 }

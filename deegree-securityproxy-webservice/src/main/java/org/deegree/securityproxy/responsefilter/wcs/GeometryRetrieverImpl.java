@@ -35,12 +35,22 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import org.geotools.geometry.GeometryBuilder;
+import org.geotools.geometry.text.WKTParser;
+import org.geotools.referencing.CRS;
+import org.opengis.geometry.Geometry;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
- * Retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s. TODO
+ * Retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s. If multiple
+ * {@link WcsGeometryFilterInfo} for one coverage exist the first one is parsed as geometry. There is no mechanism to
+ * detect inconsistent data.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -50,9 +60,46 @@ import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 public class GeometryRetrieverImpl implements GeometryRetriever {
 
     @Override
-    public String retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
-        // TODO
+    public Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
+                            throws ParsingException, IllegalArgumentException {
+        checkParameters( coverageName, geometryFilterInfos );
+
+        String geometryAsString = retrieveGeometryFromList( coverageName, geometryFilterInfos );
+        if ( geometryAsString != null )
+            return parseGeometry( geometryAsString );
         return null;
+    }
+
+    private void checkParameters( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
+        if ( coverageName == null )
+            throw new IllegalArgumentException( "Coverage name must not be null!" );
+        if ( geometryFilterInfos == null )
+            throw new IllegalArgumentException( "GeometryFilterInfos name must not be null!" );
+    }
+
+    private String retrieveGeometryFromList( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
+        for ( WcsGeometryFilterInfo wcsGeometryFilterInfo : geometryFilterInfos ) {
+            if ( coverageName.equals( wcsGeometryFilterInfo.getCoverageName() ) ) {
+                return wcsGeometryFilterInfo.getGeometryString();
+            }
+        }
+        return null;
+    }
+
+    private Geometry parseGeometry( String geometryAsString )
+                            throws ParsingException {
+        try {
+            CoordinateReferenceSystem crs = CRS.decode( "EPSG:4326" );
+            GeometryBuilder geometryBuilder = new GeometryBuilder( crs );
+            WKTParser wktParser = new WKTParser( geometryBuilder );
+            return wktParser.parse( geometryAsString );
+        } catch ( NoSuchAuthorityCodeException e ) {
+            throw new ParsingException( e );
+        } catch ( FactoryException e ) {
+            throw new ParsingException( e );
+        } catch ( ParseException e ) {
+            throw new ParsingException( e );
+        }
     }
 
 }
