@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
@@ -52,15 +53,15 @@ import com.vividsolutions.jts.geom.Geometry;
 public class GeotiffClipper implements ImageClipper {
 
     @Override
-    public OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
-                                               Geometry clippingGeometry )
+    public OutputStream calculateClippedImage( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
                             throws IllegalArgumentException {
         checkRequiredParameters( imageToClip, wcsRequest, clippingGeometry );
+
         // TODO
-        return imageToClip;
+        return null;
     }
 
-    private void checkRequiredParameters( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+    private void checkRequiredParameters( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
                             throws IllegalArgumentException {
         if ( imageToClip == null )
             throw new IllegalArgumentException( "Image to clip must not be null!" );

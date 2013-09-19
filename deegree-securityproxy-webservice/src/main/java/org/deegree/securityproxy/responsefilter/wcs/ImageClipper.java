@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
@@ -66,7 +67,7 @@ public interface ImageClipper {
      * @throws Exception
      *             TODO if clipping failed
      */
-    OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+    OutputStream calculateClippedImage( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
                             throws IllegalArgumentException;
 
 }

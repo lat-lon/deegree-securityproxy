@@ -37,7 +37,7 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.mockito.Mockito.mock;
 
-import java.io.OutputStream;
+import java.io.InputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
@@ -72,8 +72,8 @@ public class GeotiffClipperTest {
         geotoClipper.calculateClippedImage( mockInputStream(), mockWcsRequest(), null );
     }
 
-    private OutputStream mockInputStream() {
-        return mock( OutputStream.class );
+    private InputStream mockInputStream() {
+        return mock( InputStream.class );
     }
 
     private WcsRequest mockWcsRequest() {

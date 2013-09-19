@@ -98,6 +98,11 @@
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
     </dependency>
+    <!-- geotools -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geotiff</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
