@@ -35,39 +35,53 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
+import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Concrete implementation to clip geotiffs.
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GeotiffClipper implements ImageClipper {
+public class GeotiffClipperTest {
 
-    @Override
-    public OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
-                                               Geometry clippingGeometry )
-                            throws IllegalArgumentException {
-        checkRequiredParameters( imageToClip, wcsRequest, clippingGeometry );
-        // TODO
-        return imageToClip;
+    private GeotiffClipper geotoClipper = new GeotiffClipper();
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullImageStreamShouldFail()
+                            throws Exception {
+        geotoClipper.calculateClippedImage( null, mockWcsRequest(), mockClippingGeometry() );
     }
 
-    private void checkRequiredParameters( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
-                            throws IllegalArgumentException {
-        if ( imageToClip == null )
-            throw new IllegalArgumentException( "Image to clip must not be null!" );
-        if ( wcsRequest == null )
-            throw new IllegalArgumentException( "Wcs request must not be null!" );
-        if ( clippingGeometry == null )
-            throw new IllegalArgumentException( "Clipping geometry must not be null!" );
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullWcsRequestShouldFail()
+                            throws Exception {
+        geotoClipper.calculateClippedImage( mockInputStream(), null, mockClippingGeometry() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullClippingGeometryShouldFail()
+                            throws Exception {
+        geotoClipper.calculateClippedImage( mockInputStream(), mockWcsRequest(), null );
+    }
+
+    private OutputStream mockInputStream() {
+        return mock( OutputStream.class );
+    }
+
+    private WcsRequest mockWcsRequest() {
+        return mock( WcsRequest.class );
+    }
+
+    private Geometry mockClippingGeometry() {
+        return mock( Geometry.class );
     }
 
 }

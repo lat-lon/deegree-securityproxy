@@ -61,10 +61,12 @@ public interface ImageClipper {
      * @param clippingGeometry
      *            never <code>null</code>
      * @return the clipped image or the incoming image if clipping is not required, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if one one the parameter is <code>null</code>
      * @throws Exception
      *             TODO if clipping failed
      */
-    public abstract OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
-                                                       Geometry clippingGeometry );
+    OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+                            throws IllegalArgumentException;
 
 }
