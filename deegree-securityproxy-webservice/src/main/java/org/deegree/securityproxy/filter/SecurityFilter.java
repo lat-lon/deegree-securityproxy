@@ -63,7 +63,7 @@ public class SecurityFilter implements Filter {
                             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        FilterResponseWrapper wrappedResponse = new FilterResponseWrapper( httpResponse );
+        StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
@@ -99,7 +99,7 @@ public class SecurityFilter implements Filter {
     }
 
     private void handleAuthorizationReport( String uuid, HttpServletRequest httpRequest,
-                                            FilterResponseWrapper wrappedResponse,
+                                            StatusCodeResponseBodyWrapper wrappedResponse,
                                             AuthorizationReport authorizationReport ) {
         generateAndLogProxyReport( authorizationReport, uuid, httpRequest, wrappedResponse );
         if ( !authorizationReport.isAuthorized() ) {
@@ -108,7 +108,7 @@ public class SecurityFilter implements Filter {
     }
 
     private void generateAndLogProxyReport( AuthorizationReport authorizationReport, String uuid,
-                                            HttpServletRequest request, FilterResponseWrapper response ) {
+                                            HttpServletRequest request, StatusCodeResponseBodyWrapper response ) {
 
         String message = "";
         if ( authorizationReport.getMessage() != null ) {
@@ -118,7 +118,7 @@ public class SecurityFilter implements Filter {
     }
 
     private void generateAndLogProxyReport( String message, String uuid, HttpServletRequest request,
-                                            FilterResponseWrapper response ) {
+                                            StatusCodeResponseBodyWrapper response ) {
         int statusCode = response.getStatus();
         boolean isRequestSuccessful = SC_OK == statusCode ? true : false;
         String targetURI = request.getRequestURL().toString();
@@ -129,7 +129,7 @@ public class SecurityFilter implements Filter {
         proxyReportLogger.logProxyReportInfo( report );
     }
 
-    private String createUuidHeader( FilterResponseWrapper wrappedResponse ) {
+    private String createUuidHeader( StatusCodeResponseBodyWrapper wrappedResponse ) {
         String uuid = UUID.randomUUID().toString();
         wrappedResponse.addHeader( "serial_uuid", uuid );
         return uuid;

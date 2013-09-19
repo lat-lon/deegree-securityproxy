@@ -22,13 +22,13 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FilterResponseWrapperTest {
+public class StatusCodeResponseBodyWrapperTest {
 
     @Test
     public void testGetBufferBodyForWriter()
                             throws Exception {
         HttpServletResponse mockResponse = mockResponse();
-        FilterResponseWrapper wrapper = new FilterResponseWrapper( mockResponse );
+        StatusCodeResponseBodyWrapper wrapper = new StatusCodeResponseBodyWrapper( mockResponse );
         PrintWriter writer = wrapper.getWriter();
         writer.write( 1 );
         assertThat( (int) wrapper.getBufferedBody()[0], is( 1 ) );
@@ -38,7 +38,7 @@ public class FilterResponseWrapperTest {
     public void testgetBufferBodyForOutputStream()
                             throws Exception {
         HttpServletResponse mockResponse = mockResponse();
-        FilterResponseWrapper wrapper = new FilterResponseWrapper( mockResponse );
+        StatusCodeResponseBodyWrapper wrapper = new StatusCodeResponseBodyWrapper( mockResponse );
         ServletOutputStream outputStream = wrapper.getOutputStream();
         outputStream.write( 1 );
         assertThat( (int) wrapper.getBufferedBody()[0], is( 1 ) );

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FilterResponseWrapper extends HttpServletResponseWrapper {
+public class StatusCodeResponseBodyWrapper extends HttpServletResponseWrapper {
 
     private int httpStatus;
 
@@ -32,7 +32,7 @@ public class FilterResponseWrapper extends HttpServletResponseWrapper {
 
     private ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
 
-    public FilterResponseWrapper( HttpServletResponse response ) {
+    public StatusCodeResponseBodyWrapper( HttpServletResponse response ) {
         super( response );
     }
 
