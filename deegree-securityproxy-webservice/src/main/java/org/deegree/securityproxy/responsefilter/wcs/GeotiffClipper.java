@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class GeotiffClipper implements ImageClipper {
 
     @Override
-    public OutputStream calulateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry ) {
+    public OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry ) {
         // TODO
         return imageToClip;
     }

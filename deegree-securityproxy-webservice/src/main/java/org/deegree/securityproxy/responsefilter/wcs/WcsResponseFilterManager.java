@@ -85,7 +85,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             try {
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 OutputStream imageAsStream = servletResponse.getOutputStream();
-                OutputStream calculatedClippedImage = imageClipper.calulateClippedImage( imageAsStream, wcsRequest,
+                OutputStream calculatedClippedImage = imageClipper.calculateClippedImage( imageAsStream, wcsRequest,
                                                                                          clippingGeometry );
             } catch ( IOException e ) {
                 LOG.error( "Could not retrieve response as stream!", e );

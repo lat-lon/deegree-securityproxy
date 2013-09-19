@@ -64,7 +64,7 @@ public interface ImageClipper {
      * @throws Exception
      *             TODO if clipping failed
      */
-    public abstract OutputStream calulateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
+    public abstract OutputStream calculateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
                                                        Geometry clippingGeometry );
 
 }
