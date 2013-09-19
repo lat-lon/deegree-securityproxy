@@ -37,6 +37,7 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
+import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
@@ -77,17 +79,20 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     private ImageClipper imageClipper;
 
     @Override
-    public ResponseFilterReport filterResponse( HttpServletResponse servletResponse, OwsRequest request,
+    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                 Authentication auth ) {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             try {
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
-                InputStream imageAsStream = null; // servletResponse.getOutputStream();
-                OutputStream calculatedClippedImage = imageClipper.calculateClippedImage( imageAsStream, wcsRequest,
-                                                                                          clippingGeometry );
+                InputStream imageAsStream = servletResponse.getBufferedStream();
+                OutputStream destination = servletResponse.getRealOutputStream();
+                imageClipper.calculateClippedImage( imageAsStream, clippingGeometry, destination );
             } catch ( ParseException e ) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch ( IOException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }

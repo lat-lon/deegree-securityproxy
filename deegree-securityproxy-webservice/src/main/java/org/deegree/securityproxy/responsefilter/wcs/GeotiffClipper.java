@@ -35,10 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.deegree.securityproxy.request.WcsRequest;
+import org.geotools.data.DataSourceException;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.gce.geotiff.GeoTiffWriter;
+import org.geotools.geometry.GeneralEnvelope;
+import org.opengis.coverage.grid.GridCoverage;
+import org.opengis.parameter.GeneralParameterValue;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -53,22 +59,45 @@ import com.vividsolutions.jts.geom.Geometry;
 public class GeotiffClipper implements ImageClipper {
 
     @Override
-    public OutputStream calculateClippedImage( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+    public void calculateClippedImage( InputStream imageToClip, Geometry visibleArea, OutputStream destination )
                             throws IllegalArgumentException {
-        checkRequiredParameters( imageToClip, wcsRequest, clippingGeometry );
+        checkRequiredParameters( imageToClip, visibleArea, destination );
 
-        // TODO
-        return null;
+        // / TODO: check if exception was thrown!
+        try {
+            GeoTiffReader reader = new GeoTiffReader( imageToClip );
+            GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
+
+            if ( isClippingRequired( imageEnvelope, visibleArea ) ) {
+                GeoTiffWriter writer = new GeoTiffWriter( destination );
+                GridCoverage gc = null;
+                GeneralParameterValue[] params = null;
+
+                writer.write( gc, params );
+            }
+        } catch ( DataSourceException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
-    private void checkRequiredParameters( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+    private void checkRequiredParameters( InputStream imageToClip, Geometry visibleArea, OutputStream toWriteImage )
                             throws IllegalArgumentException {
         if ( imageToClip == null )
             throw new IllegalArgumentException( "Image to clip must not be null!" );
-        if ( wcsRequest == null )
+        if ( visibleArea == null )
             throw new IllegalArgumentException( "Wcs request must not be null!" );
-        if ( clippingGeometry == null )
-            throw new IllegalArgumentException( "Clipping geometry must not be null!" );
+        if ( toWriteImage == null )
+            throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
     }
 
+    private boolean isClippingRequired( GeneralEnvelope originalEnvelope, Geometry clippingGeometry ) {
+        System.out.println( originalEnvelope );
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

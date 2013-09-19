@@ -38,8 +38,6 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.deegree.securityproxy.request.WcsRequest;
-
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
@@ -56,18 +54,17 @@ public interface ImageClipper {
      * Clips the passed image as defined in the clipping area...
      * 
      * @param imageToClip
-     *            never <code>null</code>
-     * @param wcsRequest
-     *            never <code>null</code>
-     * @param clippingGeometry
-     *            never <code>null</code>
-     * @return the clipped image or the incoming image if clipping is not required, never <code>null</code>
+     *            contains the image to clip, never <code>null</code>
+     * @param visibleArea
+     *            the geometry covering the area visible for the user, never <code>null</code>
+     * @param destination
+     *            {@link OutputStream} to write image, never <code>null</code>
      * @throws IllegalArgumentException
      *             if one one the parameter is <code>null</code>
      * @throws Exception
      *             TODO if clipping failed
      */
-    OutputStream calculateClippedImage( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+    void calculateClippedImage( InputStream imageToClip, Geometry visibleArea, OutputStream destination )
                             throws IllegalArgumentException;
 
 }

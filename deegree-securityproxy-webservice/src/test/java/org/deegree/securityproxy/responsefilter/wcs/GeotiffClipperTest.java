@@ -37,12 +37,16 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 
-import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -52,36 +56,57 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class GeotiffClipperTest {
 
-    private GeotiffClipper geotoClipper = new GeotiffClipper();
+    private GeotiffClipper geotiffClipper = new GeotiffClipper();
 
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullImageStreamShouldFail()
                             throws Exception {
-        geotoClipper.calculateClippedImage( null, mockWcsRequest(), mockClippingGeometry() );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testCalculateClippedImageWithNullWcsRequestShouldFail()
-                            throws Exception {
-        geotoClipper.calculateClippedImage( mockInputStream(), null, mockClippingGeometry() );
+        geotiffClipper.calculateClippedImage( null, mockClippingGeometry(), mockOutputStream() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullClippingGeometryShouldFail()
                             throws Exception {
-        geotoClipper.calculateClippedImage( mockInputStream(), mockWcsRequest(), null );
+        geotiffClipper.calculateClippedImage( mockInputStream(), null, mockOutputStream() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullOutputStreamShouldFail()
+                            throws Exception {
+        geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null );
+    }
+
+    @Test
+    public void testCalculateClippedImageInsideVisibleArea()
+                            throws Exception {
+        geotiffClipper.calculateClippedImage( createInputStreamFrom( "dem30_geotiff_tiled.tiff" ),
+                                              createWholeWorldVisibleGeometry(), createOutputStream() );
+
     }
 
     private InputStream mockInputStream() {
         return mock( InputStream.class );
     }
 
-    private WcsRequest mockWcsRequest() {
-        return mock( WcsRequest.class );
+    private InputStream createInputStreamFrom( String resourceName ) {
+        return GeotiffClipperTest.class.getResourceAsStream( resourceName );
+    }
+
+    private OutputStream mockOutputStream() {
+        return mock( OutputStream.class );
+    }
+
+    private OutputStream createOutputStream()
+                            throws Exception {
+        return new FileOutputStream( File.createTempFile( GeotiffClipperTest.class.getSimpleName(), "tif" ) );
     }
 
     private Geometry mockClippingGeometry() {
         return mock( Geometry.class );
     }
 
+    private Geometry createWholeWorldVisibleGeometry() {
+        Envelope wholeWorld = new Envelope( -180, 180, -90, 90 );
+        return new GeometryFactory().toGeometry( wholeWorld );
+    }
 }

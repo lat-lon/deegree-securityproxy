@@ -1,7 +1,10 @@
 package org.deegree.securityproxy.filter;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletOutputStream;
@@ -103,6 +106,25 @@ public class StatusCodeResponseBodyWrapper extends HttpServletResponseWrapper {
             return bufferingStream.toByteArray();
         }
         return new byte[0];
+    }
+
+    /**
+     * Retrieves the buffered response as {@link InputStream};
+     * 
+     * @return buffered content as {@link InputStream} array. may be empty, never <code>null</code>
+     */
+    public InputStream getBufferedStream() {
+        return new ByteArrayInputStream( getBufferedBody() );
+    }
+
+    /**
+     * @return {@link OutputStream} from the wrapped {@link HttpServletResponse}
+     * @throws IOException
+     *             if an input or output exception occurred
+     */
+    public ServletOutputStream getRealOutputStream()
+                            throws IOException {
+        return super.getOutputStream();
     }
 
     /**

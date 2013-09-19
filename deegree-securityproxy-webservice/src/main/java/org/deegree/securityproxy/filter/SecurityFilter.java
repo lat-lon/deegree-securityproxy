@@ -79,7 +79,7 @@ public class SecurityFilter implements Filter {
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
             if ( filterManager.supports( wcsRequest.getClass() ) ) {
-                filterManager.filterResponse( httpResponse, wcsRequest, authentication );
+                filterManager.filterResponse( wrappedResponse, wcsRequest, authentication );
             }
         }
         handleAuthorizationReport( uuid, httpRequest, wrappedResponse, authorizationReport );
