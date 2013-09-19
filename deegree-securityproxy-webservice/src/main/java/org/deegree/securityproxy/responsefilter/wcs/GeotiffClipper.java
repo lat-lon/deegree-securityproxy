@@ -35,15 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
-import org.opengis.coverage.grid.GridCoverage;
 import org.opengis.parameter.GeneralParameterValue;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -59,21 +63,24 @@ import com.vividsolutions.jts.geom.Geometry;
 public class GeotiffClipper implements ImageClipper {
 
     @Override
-    public void calculateClippedImage( InputStream imageToClip, Geometry visibleArea, OutputStream destination )
+    public void calculateClippedImage( InputStream coverageToClip, Geometry visibleArea, OutputStream destination )
                             throws IllegalArgumentException {
-        checkRequiredParameters( imageToClip, visibleArea, destination );
+        checkRequiredParameters( coverageToClip, visibleArea, destination );
 
         // / TODO: check if exception was thrown!
         try {
-            GeoTiffReader reader = new GeoTiffReader( imageToClip );
+            File coverageToClipAsFile = writeToTempFile( coverageToClip );
+
+            GeoTiffReader reader = new GeoTiffReader( coverageToClipAsFile );
             GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
 
             if ( isClippingRequired( imageEnvelope, visibleArea ) ) {
                 GeoTiffWriter writer = new GeoTiffWriter( destination );
-                GridCoverage gc = null;
+
+                GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
                 GeneralParameterValue[] params = null;
 
-                writer.write( gc, params );
+                writer.write( coverageToWrite, params );
             }
         } catch ( DataSourceException e ) {
             // TODO Auto-generated catch block
@@ -82,7 +89,17 @@ public class GeotiffClipper implements ImageClipper {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
 
+    // TODO: dirty hack! coverage should be read from input stream directly
+    private File writeToTempFile( InputStream coverageToClip )
+                            throws IOException, FileNotFoundException {
+        File tempFile = File.createTempFile( "imageToClip", ".tif" );
+        FileOutputStream output = new FileOutputStream( tempFile );
+        IOUtils.copy( coverageToClip, output );
+        output.close();
+
+        return tempFile;
     }
 
     private void checkRequiredParameters( InputStream imageToClip, Geometry visibleArea, OutputStream toWriteImage )
@@ -98,6 +115,6 @@ public class GeotiffClipper implements ImageClipper {
     private boolean isClippingRequired( GeneralEnvelope originalEnvelope, Geometry clippingGeometry ) {
         System.out.println( originalEnvelope );
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 }

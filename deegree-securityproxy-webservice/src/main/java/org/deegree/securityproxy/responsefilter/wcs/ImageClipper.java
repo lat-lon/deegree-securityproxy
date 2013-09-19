@@ -53,8 +53,8 @@ public interface ImageClipper {
     /**
      * Clips the passed image as defined in the clipping area...
      * 
-     * @param imageToClip
-     *            contains the image to clip, never <code>null</code>
+     * @param coverageToClip
+     *            contains the coverage to clip, never <code>null</code>
      * @param visibleArea
      *            the geometry covering the area visible for the user, never <code>null</code>
      * @param destination
@@ -64,7 +64,7 @@ public interface ImageClipper {
      * @throws Exception
      *             TODO if clipping failed
      */
-    void calculateClippedImage( InputStream imageToClip, Geometry visibleArea, OutputStream destination )
+    void calculateClippedImage( InputStream coverageToClip, Geometry visibleArea, OutputStream destination )
                             throws IllegalArgumentException;
 
 }
