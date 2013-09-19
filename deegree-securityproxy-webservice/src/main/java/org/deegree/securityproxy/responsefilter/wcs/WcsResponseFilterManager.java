@@ -37,7 +37,6 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -85,11 +84,9 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         if ( isGetCoverageRequest( wcsRequest ) ) {
             try {
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
-                InputStream imageAsStream = null; //servletResponse.getOutputStream();
+                InputStream imageAsStream = null; // servletResponse.getOutputStream();
                 OutputStream calculatedClippedImage = imageClipper.calculateClippedImage( imageAsStream, wcsRequest,
-                                                                                         clippingGeometry );
-            } catch ( IOException e ) {
-                LOG.error( "Could not retrieve response as stream!", e );
+                                                                                          clippingGeometry );
             } catch ( ParseException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
