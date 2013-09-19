@@ -39,8 +39,14 @@ import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
 /**
- * Retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s. TODO
+ * Retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s. If multiple
+ * {@link WcsGeometryFilterInfo} for one coverage exist the first one is parsed as geometry. There is no mechanism to
+ * detect inconsistent data.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -50,9 +56,43 @@ import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 public class GeometryRetrieverImpl implements GeometryRetriever {
 
     @Override
-    public String retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
-        // TODO
+    public Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
+                            throws IllegalArgumentException, ParseException {
+        checkParameters( coverageName, geometryFilterInfos );
+
+        String geometryAsString = retrieveGeometryFromList( coverageName, geometryFilterInfos );
+        if ( geometryAsString != null )
+            return parseGeometry( geometryAsString );
         return null;
+    }
+
+    private void checkParameters( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
+        if ( coverageName == null )
+            throw new IllegalArgumentException( "Coverage name must not be null!" );
+        if ( geometryFilterInfos == null )
+            throw new IllegalArgumentException( "GeometryFilterInfos name must not be null!" );
+    }
+
+    private String retrieveGeometryFromList( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
+        for ( WcsGeometryFilterInfo wcsGeometryFilterInfo : geometryFilterInfos ) {
+            if ( coverageName.equals( wcsGeometryFilterInfo.getCoverageName() ) ) {
+                return wcsGeometryFilterInfo.getGeometryString();
+            }
+        }
+        return null;
+    }
+
+    private Geometry parseGeometry( String geometryFromDb )
+                            throws ParseException {
+        String wkt = normaliseWkt( geometryFromDb );
+        WKTReader wktReader = new WKTReader();
+        return wktReader.read( wkt );
+    }
+
+    String normaliseWkt( String geometryAsString ) {
+        if ( geometryAsString.startsWith( "SRID" ) )
+            geometryAsString = geometryAsString.substring( geometryAsString.indexOf( ";" ) + 1 );
+        return geometryAsString;
     }
 
 }

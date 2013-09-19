@@ -35,9 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.request.WcsRequest;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Contains methods to clip images.
@@ -59,10 +62,12 @@ public interface ImageClipper {
      * @param clippingGeometry
      *            never <code>null</code>
      * @return the clipped image or the incoming image if clipping is not required, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if one one the parameter is <code>null</code>
      * @throws Exception
      *             TODO if clipping failed
      */
-    public abstract OutputStream calulateClippedImage( OutputStream imageToClip, WcsRequest wcsRequest,
-                                                       String clippingGeometry );
+    OutputStream calculateClippedImage( InputStream imageToClip, WcsRequest wcsRequest, Geometry clippingGeometry )
+                            throws IllegalArgumentException;
 
 }

@@ -37,12 +37,13 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -51,6 +52,9 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
  * Provides filtering of {@link WcsRequest}s.
@@ -64,6 +68,8 @@ import org.springframework.security.core.Authentication;
  */
 public class WcsResponseFilterManager implements ResponseFilterManager {
 
+    private static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
+
     @Autowired
     private GeometryRetrieverImpl geometryRetriever;
 
@@ -76,12 +82,12 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
-            String clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
             try {
-                OutputStream imageAsStream = servletResponse.getOutputStream();
-                OutputStream calulateClippedImage = imageClipper.calulateClippedImage( imageAsStream, wcsRequest,
-                                                                                       clippingGeometry );
-            } catch ( IOException e ) {
+                Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
+                InputStream imageAsStream = null; // servletResponse.getOutputStream();
+                OutputStream calculatedClippedImage = imageClipper.calculateClippedImage( imageAsStream, wcsRequest,
+                                                                                          clippingGeometry );
+            } catch ( ParseException e ) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -107,7 +113,8 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                                                 + " is not supported!" );
     }
 
-    private String retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest ) {
+    private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
+                            throws IllegalArgumentException, ParseException {
         WcsUser wcsUser = retrieveWcsUser( auth );
         List<WcsGeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
         String coverageName = retrieveCoverageName( wcsRequest );

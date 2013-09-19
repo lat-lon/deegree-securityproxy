@@ -35,39 +35,53 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
-import java.util.List;
+import static org.mockito.Mockito.mock;
 
-import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import java.io.InputStream;
+
+import org.deegree.securityproxy.request.WcsRequest;
+import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Contains method to retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface GeometryRetriever {
+public class GeotiffClipperTest {
 
-    /**
-     * Retrieves or calculates the parsed geometry to use from the list of {@link WcsGeometryFilterInfo}s identified by
-     * the given coverage name. The algorithm to detect or calculate the geometry is left to the implementations.
-     * 
-     * @param coverageName
-     *            the name of the coverage the geometries should be retrieved for, never <code>null</code>
-     * @param geometryFilterInfos
-     *            the list of {@link WcsGeometryFilterInfo}s containing the geometries, never <code>null</code> may be
-     *            empty
-     * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
-     * @throws IllegalArgumentException
-     *             if one of the parameters <code>null</code>
-     * @throws ParsingException
-     *             if the geometry could not be parsed or calculated
-     */
-    Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
-                            throws IllegalArgumentException, ParseException;
+    private GeotiffClipper geotoClipper = new GeotiffClipper();
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullImageStreamShouldFail()
+                            throws Exception {
+        geotoClipper.calculateClippedImage( null, mockWcsRequest(), mockClippingGeometry() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullWcsRequestShouldFail()
+                            throws Exception {
+        geotoClipper.calculateClippedImage( mockInputStream(), null, mockClippingGeometry() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateClippedImageWithNullClippingGeometryShouldFail()
+                            throws Exception {
+        geotoClipper.calculateClippedImage( mockInputStream(), mockWcsRequest(), null );
+    }
+
+    private InputStream mockInputStream() {
+        return mock( InputStream.class );
+    }
+
+    private WcsRequest mockWcsRequest() {
+        return mock( WcsRequest.class );
+    }
+
+    private Geometry mockClippingGeometry() {
+        return mock( Geometry.class );
+    }
 
 }
