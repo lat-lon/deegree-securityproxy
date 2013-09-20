@@ -35,13 +35,21 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.imageio.ImageIO;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -79,26 +87,66 @@ public class GeotiffClipperTest {
     @Test
     public void testCalculateClippedImageInsideVisibleArea()
                             throws Exception {
-        geotiffClipper.calculateClippedImage( createInputStreamFrom( "dem30_geotiff_tiled.tiff" ),
-                                              createWholeWorldVisibleGeometry(), createOutputStream() );
+        File originalFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File newFile = createNewTempFile();
 
+        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ), createWholeWorldVisibleGeometry(),
+                                              createOutputStreamFrom( newFile ) );
+
+        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
+        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
+        int heightNewImage = ImageIO.read( newFile ).getHeight();
+        int widthNewImage = ImageIO.read( newFile ).getWidth();
+
+        assertThat( heightNewImage, is( heightOriginalImage ) );
+        assertThat( widthNewImage, is( widthOriginalImage ) );
+    }
+
+    @Ignore
+    @Test
+    public void testCalculateClippedImageInsideVisibleAreaAndOutsideVisibleArea()
+                            throws Exception {
+        File originalFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File newFile = createNewTempFile();
+
+        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
+                                              createGeometryWithImageInsideAndOutside(),
+                                              createOutputStreamFrom( newFile ) );
+
+        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
+        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
+        int heightNewImage = ImageIO.read( newFile ).getHeight();
+        int widthNewImage = ImageIO.read( newFile ).getWidth();
+
+        assertThat( heightNewImage, not( heightOriginalImage ) );
+        assertThat( widthNewImage, not( widthOriginalImage ) );
+    }
+
+    private File createNewFile( String resourceName ) {
+        return new File( GeotiffClipperTest.class.getResource( resourceName ).getPath() );
+    }
+
+    private File createNewTempFile()
+                            throws IOException {
+        return File.createTempFile( GeotiffClipperTest.class.getSimpleName(), "tif" );
+    }
+
+    private InputStream createInputStreamFrom( File file )
+                            throws Exception {
+        return new FileInputStream( file );
+    }
+
+    private OutputStream createOutputStreamFrom( File file )
+                            throws Exception {
+        return new FileOutputStream( file );
     }
 
     private InputStream mockInputStream() {
         return mock( InputStream.class );
     }
 
-    private InputStream createInputStreamFrom( String resourceName ) {
-        return GeotiffClipperTest.class.getResourceAsStream( resourceName );
-    }
-
     private OutputStream mockOutputStream() {
         return mock( OutputStream.class );
-    }
-
-    private OutputStream createOutputStream()
-                            throws Exception {
-        return new FileOutputStream( File.createTempFile( GeotiffClipperTest.class.getSimpleName(), "tif" ) );
     }
 
     private Geometry mockClippingGeometry() {
@@ -108,5 +156,10 @@ public class GeotiffClipperTest {
     private Geometry createWholeWorldVisibleGeometry() {
         Envelope wholeWorld = new Envelope( -180, 180, -90, 90 );
         return new GeometryFactory().toGeometry( wholeWorld );
+    }
+
+    private Geometry createGeometryWithImageInsideAndOutside() {
+        Envelope smallEnvelope = new Envelope( 446592, 4427836, 457330, 4441814 );
+        return new GeometryFactory().toGeometry( smallEnvelope );
     }
 }
