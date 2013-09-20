@@ -44,23 +44,36 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
-import org.opengis.parameter.GeneralParameterValue;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * Concrete implementation to clip geotiffs.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="mailto:goltz@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
 public class GeotiffClipper implements ImageClipper {
+
+    private static final String VISIBLE_AREA_CRS = "EPSG:4326";
 
     @Override
     public void calculateClippedImage( InputStream coverageToClip, Geometry visibleArea, OutputStream destination )
@@ -70,22 +83,33 @@ public class GeotiffClipper implements ImageClipper {
         // / TODO: check if exception was thrown!
         try {
             File coverageToClipAsFile = writeToTempFile( coverageToClip );
-
             GeoTiffReader reader = new GeoTiffReader( coverageToClipAsFile );
+
+            Geometry transformedVisibleArea = transformVisibleAreaToImageCrs( visibleArea, reader );
+
+            GeoTiffWriter writer = new GeoTiffWriter( destination );
+            GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
+
             GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
-
-            if ( isClippingRequired( imageEnvelope, visibleArea ) ) {
-                GeoTiffWriter writer = new GeoTiffWriter( destination );
-
-                GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
-                GeneralParameterValue[] params = null;
-
-                writer.write( coverageToWrite, params );
+            if ( isClippingRequired( imageEnvelope, transformedVisibleArea ) ) {
+                GridCoverage2D croppedCoverageToWrite = executeCropping( coverageToWrite, transformedVisibleArea );
+                writer.write( croppedCoverageToWrite, null );
+            } else {
+                writer.write( coverageToWrite, null );
             }
         } catch ( DataSourceException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch ( IOException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( NoSuchAuthorityCodeException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( FactoryException e ) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch ( TransformException e ) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
@@ -112,9 +136,32 @@ public class GeotiffClipper implements ImageClipper {
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
     }
 
-    private boolean isClippingRequired( GeneralEnvelope originalEnvelope, Geometry clippingGeometry ) {
-        System.out.println( originalEnvelope );
-        // TODO Auto-generated method stub
-        return true;
+    private Geometry transformVisibleAreaToImageCrs( Geometry visibleArea, GeoTiffReader reader )
+                            throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+        CoordinateReferenceSystem visibleAreaCRS = CRS.decode( VISIBLE_AREA_CRS );
+        CoordinateReferenceSystem imageCRS = reader.getCrs();
+
+        MathTransform transformVisibleAreaToImageCrs = CRS.findMathTransform( visibleAreaCRS, imageCRS );
+        Geometry transformedVisibleArea = JTS.transform( visibleArea, transformVisibleAreaToImageCrs );
+        return transformedVisibleArea;
+    }
+
+    private boolean isClippingRequired( GeneralEnvelope imageEnvelope, Geometry clippingGeometry ) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Geometry imageGeometry = geometryFactory.toGeometry( new ReferencedEnvelope( imageEnvelope ) );
+
+        System.out.println( "imageGeometry: " + imageGeometry );
+        System.out.println( "clippingGeometry: " + clippingGeometry );
+
+        return imageGeometry.intersects( clippingGeometry );
+    }
+
+    private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry transformedVisibleArea ) {
+        Crop crop = new Crop();
+        ParameterValueGroup cropParameters = crop.getParameters();
+        cropParameters.parameter( "Source" ).setValue( coverageToWrite );
+        cropParameters.parameter( "ROI" ).setValue( transformedVisibleArea );
+        GridCoverage2D croppedCoverageToWrite = (GridCoverage2D) crop.doOperation( cropParameters, null );
+        return croppedCoverageToWrite;
     }
 }
