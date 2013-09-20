@@ -49,7 +49,6 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -102,7 +101,6 @@ public class GeotiffClipperTest {
         assertThat( widthNewImage, is( widthOriginalImage ) );
     }
 
-    @Ignore
     @Test
     public void testCalculateClippedImageInsideVisibleAreaAndOutsideVisibleArea()
                             throws Exception {
@@ -159,7 +157,7 @@ public class GeotiffClipperTest {
     }
 
     private Geometry createGeometryWithImageInsideAndOutside() {
-        Envelope smallEnvelope = new Envelope( 446592, 4427836, 457330, 4441814 );
+        Envelope smallEnvelope = new Envelope( 40, 40.1, -111.57, -111.53 );
         return new GeometryFactory().toGeometry( smallEnvelope );
     }
 }
