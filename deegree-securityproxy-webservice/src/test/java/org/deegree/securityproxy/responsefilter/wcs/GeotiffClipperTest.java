@@ -61,6 +61,8 @@ import org.junit.Test;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -99,7 +101,7 @@ public class GeotiffClipperTest {
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, createWholeWorldVisibleGeometry(), outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, createWholeWorldVisibleGeometryInWgs84(), outputStream );
 
         inputStream.close();
         outputStream.close();
@@ -115,7 +117,7 @@ public class GeotiffClipperTest {
         File newFile = createNewTempFile();
 
         geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
-                                              createGeometryWithImageInsideAndOutside(),
+                                              createGeometryWithImageInsideAndOutsideInWgs84(),
                                               createOutputStreamFrom( newFile ) );
 
         // Should have the same dimension! But with 'no data' areas!
@@ -137,7 +139,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutside(), outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutsideInWgs84(), outputStream );
 
         inputStream.close();
         outputStream.close();
@@ -146,15 +148,19 @@ public class GeotiffClipperTest {
         // Should have the same dimension! But all pixels are 'no data'!
     }
 
+    /*
+     * #isClippingRequired()
+     */
+
     @Test
     public void testIsClippingRequiredWhenImageIsInsideVisibleArea()
                             throws Exception {
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
         boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createWholeImageVisibleGeometryInImageCrs() );
+                                                                        createWholeImageVisibleEnvelopeInImageCrs() );
 
-        assertThat( isClippingRequired, is( true ) );
+        assertThat( isClippingRequired, is( false ) );
     }
 
     @Test
@@ -163,20 +169,42 @@ public class GeotiffClipperTest {
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
         boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createWholeImageInvisibleGeometryInImageCrs() );
+                                                                        createWholeImageInvisibleEnvelopeInImageCrs() );
 
         assertThat( isClippingRequired, is( true ) );
     }
 
     @Test
-    public void testIsClippingRequiredWhenImageIsInAndOutsideVisibleArea()
+    public void testIsClippingRequiredWhenImageIntersectsVisibleArea()
                             throws Exception {
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
         boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createImageVisibleAndInvisibleGeometryInImageCrs() );
+                                                                        createImageInsersectsEnvelopeInImageCrs() );
 
         assertThat( isClippingRequired, is( true ) );
+    }
+
+    @Test
+    public void testIsClippingRequiredWhenImageIntersectsVisibleAreaOfMultipolygon()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
+                                                                        createImageInHoleMultipolygonInImageCrs() );
+
+        assertThat( isClippingRequired, is( true ) );
+    }
+
+    @Test
+    public void testIsClippingRequiredWhenImageInVisibleAreaOfMultipolygon()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
+                                                                        createImageIntersectsMultipolygonInImageCrs() );
+
+        assertThat( isClippingRequired, is( false ) );
     }
 
     private GeoTiffReader createGeoTiffReader( File tiff )
@@ -215,32 +243,49 @@ public class GeotiffClipperTest {
         return mock( Geometry.class );
     }
 
-    private Geometry createWholeImageVisibleGeometryInImageCrs() {
-        Envelope wholeWorld = new Envelope( 446580.945, 457351.945, 4427805.000, 4441915.000 );
+    private Geometry createWholeImageVisibleEnvelopeInImageCrs() {
+        Envelope wholeWorld = new Envelope( 446580.945, 457531.945, 4427805.000, 4441915.000 );
         return new GeometryFactory().toGeometry( wholeWorld );
     }
 
-    private Geometry createWholeImageInvisibleGeometryInImageCrs() {
+    private Geometry createWholeImageInvisibleEnvelopeInImageCrs() {
         Envelope wholeWorld = new Envelope( 446580.945, 446581.945, 4427805.000, 4427806.000 );
         return new GeometryFactory().toGeometry( wholeWorld );
     }
 
-    private Geometry createImageVisibleAndInvisibleGeometryInImageCrs() {
+    private Geometry createImageInsersectsEnvelopeInImageCrs() {
         Envelope wholeWorld = new Envelope( 446580.945, 457351.945, 4437805.000, 4441915.000 );
         return new GeometryFactory().toGeometry( wholeWorld );
     }
 
-    private Geometry createWholeWorldVisibleGeometry() {
+    private Geometry createImageInHoleMultipolygonInImageCrs()
+                            throws ParseException {
+        String wktPolygon = "MULTIPOLYGON (((446580.945 4427805, 446580.945 4427806, 446581.945 4427806, 446581.945 4427805, 446580.945 4427805)),"
+                            + "((436491.94453 4327825, 436491.94453 4541825, 467431.94453 4541825, 467431.94453 4327825, 436491.94453 4327825),"
+                            + "(446491.94453 4427825, 446491.94453 4441825, 457431.94453 4441825, 457431.94453 4427825, 446491.94453 4427825)))";
+        WKTReader reader = new WKTReader();
+        return reader.read( wktPolygon );
+    }
+
+    private Geometry createImageIntersectsMultipolygonInImageCrs()
+                            throws ParseException {
+        String wktPolygon = "MULTIPOLYGON (((446580.945 4427805, 446580.945 4427806, 446581.945 4427806, 446581.945 4427805, 446580.945 4427805)),"
+                            + "((446491.94453 4427825, 446491.94453 4441825, 457431.94453 4441825, 457431.94453 4427825, 446491.94453 4427825)))";
+        WKTReader reader = new WKTReader();
+        return reader.read( wktPolygon );
+    }
+
+    private Geometry createWholeWorldVisibleGeometryInWgs84() {
         Envelope wholeWorld = new Envelope( -180, 180, -90, 90 );
         return new GeometryFactory().toGeometry( wholeWorld );
     }
 
-    private Geometry createGeometryWithImageInsideAndOutside() {
+    private Geometry createGeometryWithImageInsideAndOutsideInWgs84() {
         Envelope smallEnvelope = new Envelope( 40, 40.1, -111.57, -111.53 );
         return new GeometryFactory().toGeometry( smallEnvelope );
     }
 
-    private Geometry createGeometryWithImageOutside() {
+    private Geometry createGeometryWithImageOutsideInWgs84() {
         Envelope smallEnvelope = new Envelope( 5, 5.1, 48.57, 48.93 );
         return new GeometryFactory().toGeometry( smallEnvelope );
     }

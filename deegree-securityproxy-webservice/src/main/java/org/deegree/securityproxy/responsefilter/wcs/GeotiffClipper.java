@@ -149,11 +149,10 @@ public class GeotiffClipper implements ImageClipper {
         GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
         GeometryFactory geometryFactory = new GeometryFactory();
         Geometry imageGeometry = geometryFactory.toGeometry( new ReferencedEnvelope( imageEnvelope ) );
-
         System.out.println( "imageGeometry: " + imageGeometry );
         System.out.println( "clippingGeometry: " + clippingGeometry );
 
-        return clippingGeometry.intersects( imageGeometry );
+        return !clippingGeometry.contains( imageGeometry );
     }
 
     private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry transformedVisibleArea ) {
