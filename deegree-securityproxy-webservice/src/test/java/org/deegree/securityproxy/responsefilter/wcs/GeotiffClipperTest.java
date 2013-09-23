@@ -456,9 +456,9 @@ public class GeotiffClipperTest {
 
     private Geometry createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84() {
         GeometryFactory geometryFactory = new GeometryFactory();
-        Coordinate coordShell1 = new Coordinate( -112.57, 42 );
-        Coordinate coordShell2 = new Coordinate( -112.53, 42 );
-        Coordinate coordShell3 = new Coordinate( -112.53, 42.1 );
+        Coordinate coordShell1 = new Coordinate( -111.57, 40.0 );
+        Coordinate coordShell2 = new Coordinate( -111.53, 40.0 );
+        Coordinate coordShell3 = new Coordinate( -111.53, 40.3 );
         Coordinate[] coordShellArray = { coordShell1, coordShell2, coordShell3, coordShell1 };
         LinearRing shell = geometryFactory.createLinearRing( coordShellArray );
 
