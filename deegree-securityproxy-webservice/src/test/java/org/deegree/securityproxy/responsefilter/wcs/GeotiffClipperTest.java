@@ -58,6 +58,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -146,6 +147,26 @@ public class GeotiffClipperTest {
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
         // Should have the same dimension! But all pixels are 'no data'!
+    }
+
+    @Test
+    public void testCalculateClippedImageInsideVisiblePolygonAndOutsideVisiblePolygon()
+                            throws Exception {
+        File originalFile = createNewFile( "dem90_geotiff_tiled.tiff" );
+        File newFile = createNewTempFile();
+
+        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
+                                              createPolygonGeometryWithImageInsideAndOutside(),
+                                              createOutputStreamFrom( newFile ) );
+
+        // Should have the same dimension! But with 'no data' areas!
+        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
+        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
+        int heightNewImage = ImageIO.read( newFile ).getHeight();
+        int widthNewImage = ImageIO.read( newFile ).getWidth();
+
+        assertThat( heightNewImage, not( heightOriginalImage ) );
+        assertThat( widthNewImage, not( widthOriginalImage ) );
     }
 
     /*
@@ -288,6 +309,14 @@ public class GeotiffClipperTest {
     private Geometry createGeometryWithImageOutsideInWgs84() {
         Envelope smallEnvelope = new Envelope( 5, 5.1, 48.57, 48.93 );
         return new GeometryFactory().toGeometry( smallEnvelope );
+    }
+
+    private Geometry createPolygonGeometryWithImageInsideAndOutside() {
+        Coordinate coord1 = new Coordinate( 40, -111.57 );
+        Coordinate coord2 = new Coordinate( 40, -111.53 );
+        Coordinate coord3 = new Coordinate( 40.1, -111.53 );
+        Coordinate[] coordArray = { coord1, coord2, coord3, coord1 };
+        return new GeometryFactory().createPolygon( coordArray );
     }
 
     private Matcher<File> hasSameDimension( File sourceFile )
