@@ -463,9 +463,9 @@ public class GeotiffClipperTest {
         Coordinate[] coordShellArray = { coordShell1, coordShell2, coordShell3, coordShell1 };
         LinearRing shell = geometryFactory.createLinearRing( coordShellArray );
 
-        Coordinate coordHole1 = new Coordinate( 40.03, -111.56 );
-        Coordinate coordHole2 = new Coordinate( 40.03, -111.54 );
-        Coordinate coordHole3 = new Coordinate( 40.07, -111.54 );
+        Coordinate coordHole1 = new Coordinate( 40.04, -111.55 );
+        Coordinate coordHole2 = new Coordinate( 40.04, -111.54 );
+        Coordinate coordHole3 = new Coordinate( 40.06, -111.54 );
         Coordinate[] coordHoleArray = { coordHole1, coordHole2, coordHole3, coordHole1 };
         LinearRing hole = geometryFactory.createLinearRing( coordHoleArray );
         LinearRing holes[] = { hole };
