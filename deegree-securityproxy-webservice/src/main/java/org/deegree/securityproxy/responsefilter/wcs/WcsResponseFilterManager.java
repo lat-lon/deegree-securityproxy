@@ -70,35 +70,42 @@ import com.vividsolutions.jts.io.ParseException;
  */
 public class WcsResponseFilterManager implements ResponseFilterManager {
 
+    static final String NOT_A_COVERAGE_REQUEST_MSG = "Request was not a GetCoverage-Request - clipping not required.";
+
+    static final String NO_LIMITING_GEOMETRY_MSG = "No limiting geometry defined!";
+
     private static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
 
     @Autowired
-    private GeometryRetrieverImpl geometryRetriever;
+    private GeometryRetriever geometryRetriever;
 
     @Autowired
     private ImageClipper imageClipper;
 
     @Override
     public ResponseClippingReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
-                                                Authentication auth ) {
+                                                  Authentication auth ) {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             try {
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
+                if ( clippingGeometry == null ) {
+                    return new ResponseClippingReport( NO_LIMITING_GEOMETRY_MSG );
+                }
                 InputStream imageAsStream = servletResponse.getBufferedStream();
                 OutputStream destination = servletResponse.getRealOutputStream();
-                imageClipper.calculateClippedImage( imageAsStream, clippingGeometry, destination );
+                return imageClipper.calculateClippedImage( imageAsStream, clippingGeometry, destination );
             } catch ( ParseException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error( "Calculating clipped result image failed!", e );
+                return new ResponseClippingReport( e.getMessage() );
             } catch ( IOException e ) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOG.error( "Calculating clipped result image failed!", e );
+                return new ResponseClippingReport( e.getMessage() );
             }
 
         }
-        return null;
+        return new ResponseClippingReport( NOT_A_COVERAGE_REQUEST_MSG );
     }
 
     @Override

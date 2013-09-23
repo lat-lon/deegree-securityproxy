@@ -38,27 +38,42 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
+import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
+import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
+import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -70,9 +85,29 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/responsefilter/wcs/WcsResponseFilterManagerTestContext.xml" })
 public class WcsResponseFilterManagerTest {
 
+    private static final String MOCKED_REPORT = "mockedReport";
+
     private static final String COVERAGE_NAME = "coverageName";
 
-    private WcsResponseFilterManager wcsResponseFilterManager = new WcsResponseFilterManager();
+    private static final String GEOMETRY_SIMPLE = "SRID=4326;POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))";
+
+    @Autowired
+    private WcsResponseFilterManager wcsResponseFilterManager;
+
+    @Autowired
+    private GeometryRetriever geometryRetriever;
+
+    @Autowired
+    private ImageClipper imageClipper;
+
+    @Before
+    public void resetMocks() {
+        reset( imageClipper );
+        when(
+              imageClipper.calculateClippedImage( (InputStream) anyObject(), (Geometry) anyObject(),
+                                                  (OutputStream) anyObject() ) ).thenReturn( new ResponseClippingReport(
+                                                                                                                         MOCKED_REPORT ) );
+    }
 
     @Test
     public void testSupportsShouldSupportWcsRequests()
@@ -100,7 +135,7 @@ public class WcsResponseFilterManagerTest {
      */
 
     @Test
-    public void testFilterResponseWithWcsCapabilitiesResponseShouldDoNothing()
+    public void testFilterResponseWithCapabilitiesResponseShouldDoNothing()
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
         Authentication mockAuthentication = mockAuthentication();
@@ -108,6 +143,34 @@ public class WcsResponseFilterManagerTest {
                                                  mockAuthentication );
         verifyZeroInteractions( mockedServletResponse );
     }
+
+    @Test
+    public void testFilterResponseWithCapabilitiesResponseShouldReturnCorrectReport()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
+        Authentication mockAuthentication = mockAuthentication();
+        ResponseClippingReport filterResponse = wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                         createWcsGetCapabilitiesRequest(),
+                                                                                         mockAuthentication );
+        assertThat( filterResponse.isFiltered(), is( false ) );
+        assertThat( filterResponse.getFailure(), is( NOT_A_COVERAGE_REQUEST_MSG ) );
+        assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testFilterResponseWithCoverageResponseShouldReturnCorrectReport()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
+        Authentication mockAuthentication = mockAuthentication();
+        ResponseClippingReport filterResponse = wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                         createWcsGetCoverageRequest(),
+                                                                                         mockAuthentication );
+        assertThat( filterResponse.getFailure(), is( MOCKED_REPORT ) );
+    }
+
+    /*
+     * #filterResponse() - Exceptions
+     */
 
     @Test(expected = IllegalArgumentException.class)
     public void testFilterResponseWithNullResponseShouldFail()
@@ -178,7 +241,10 @@ public class WcsResponseFilterManagerTest {
 
     private Authentication mockAuthentication() {
         Authentication mockedAuthentication = mock( Authentication.class );
-        when( mockedAuthentication.getPrincipal() ).thenReturn( mock( WcsUser.class ) );
+        List<WcsGeometryFilterInfo> filters = new ArrayList<WcsGeometryFilterInfo>();
+        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY_SIMPLE ) );
+        WcsUser wcsUser = new WcsUser( "user", "password", Collections.<WcsPermission> emptyList(), filters );
+        when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
     }
 
