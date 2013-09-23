@@ -194,7 +194,9 @@ public class GeotiffClipper implements ImageClipper {
     }
 
     private boolean isClippingRequired( Geometry imageGeometry, Geometry clippingGeometry ) {
-        return !clippingGeometry.contains( imageGeometry );
+        if ( imageGeometry.intersects( clippingGeometry ) )
+            return !clippingGeometry.contains( imageGeometry );
+        return false;
     }
 
 }
