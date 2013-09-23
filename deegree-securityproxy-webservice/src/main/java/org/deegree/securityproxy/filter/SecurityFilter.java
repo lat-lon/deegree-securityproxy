@@ -67,10 +67,10 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
-        OwsRequest wcsRequest = null;
+        OwsRequest owsRequest = null;
         try {
-            wcsRequest = parser.parse( httpRequest );
-            authorizationReport = requestAuthorizationManager.decide( authentication, wcsRequest );
+            owsRequest = parser.parse( httpRequest );
+            authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false );
         } catch ( IllegalArgumentException e ) {
@@ -78,8 +78,8 @@ public class SecurityFilter implements Filter {
         }
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
-            if ( filterManager.supports( wcsRequest.getClass() ) ) {
-                filterManager.filterResponse( wrappedResponse, wcsRequest, authentication );
+            if ( filterManager.supports( owsRequest.getClass() ) ) {
+                filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
             }
         }
         handleAuthorizationReport( uuid, httpRequest, wrappedResponse, authorizationReport );
