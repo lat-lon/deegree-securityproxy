@@ -103,7 +103,7 @@ public class GeotiffClipper implements ImageClipper {
                 writer.write( croppedCoverageToWrite, null );
                 Geometry visibleAreaAfterClipping = calculateGeometryVisibleAfterClipping( reader,
                                                                                            visibleAreaInImageCrs );
-                return new ResponseClippingReport( visibleAreaAfterClipping, false );
+                return new ResponseClippingReport( visibleAreaAfterClipping, true );
             } else {
                 writer.write( geotiffToWrite, null );
                 return new ResponseClippingReport( imageEnvelope, false );

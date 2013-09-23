@@ -113,7 +113,7 @@ public class GeotiffClipperTest {
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, createWholeWorldVisibleGeometryInWgs84(), outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, createEnvelopeWithImageInsideInWgs84(), outputStream );
 
         inputStream.close();
         outputStream.close();
@@ -194,7 +194,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
 
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
-                                                                              createWholeWorldVisibleGeometryInWgs84(),
+                                                                              createEnvelopeWithImageInsideInWgs84(),
                                                                               outputStream );
 
         inputStream.close();
@@ -415,9 +415,9 @@ public class GeotiffClipperTest {
         return reader.read( wktPolygon );
     }
 
-    private Geometry createWholeWorldVisibleGeometryInWgs84() {
-        Envelope wholeWorld = new Envelope( -180, 180, -90, 90 );
-        return new GeometryFactory().toGeometry( wholeWorld );
+    private Geometry createEnvelopeWithImageInsideInWgs84() {
+        Envelope envelope = new Envelope( -47.74, 167.65, 14.93, 86.45 );
+        return new GeometryFactory().toGeometry( envelope );
     }
 
     private Geometry createGeometryWithImageInsideAndOutsideInWgs84() {
@@ -426,8 +426,8 @@ public class GeotiffClipperTest {
     }
 
     private Geometry createGeometryWithImageOutsideInWgs84() {
-        Envelope smallEnvelope = new Envelope( 5, 5.1, 48.57, 48.93 );
-        return new GeometryFactory().toGeometry( smallEnvelope );
+        Envelope envelope = new Envelope( 5, 5.1, 48.57, 48.93 );
+        return new GeometryFactory().toGeometry( envelope );
     }
 
     private Geometry createPolygonGeometryWithImageInsideAndOutside() {
