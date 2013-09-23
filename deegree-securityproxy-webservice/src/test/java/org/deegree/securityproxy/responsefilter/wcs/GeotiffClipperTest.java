@@ -37,7 +37,6 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static javax.imageio.ImageIO.read;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -50,8 +49,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import javax.imageio.ImageIO;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.data.DataSourceException;
@@ -126,21 +123,20 @@ public class GeotiffClipperTest {
     @Test
     public void testCalculateClippedImageInsideAndOutsideVisibleArea()
                             throws Exception {
-        File originalFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        File newFile = createNewTempFile();
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
 
-        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
-                                              createGeometryWithImageInsideAndOutsideInWgs84(),
-                                              createOutputStreamFrom( newFile ) );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
+        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
+                                              outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
         // Should have the same dimension! But with 'no data' areas!
-        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
-        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
-        int heightNewImage = ImageIO.read( newFile ).getHeight();
-        int widthNewImage = ImageIO.read( newFile ).getWidth();
-
-        assertThat( heightNewImage, not( heightOriginalImage ) );
-        assertThat( widthNewImage, not( widthOriginalImage ) );
     }
 
     @Test
@@ -164,41 +160,40 @@ public class GeotiffClipperTest {
     @Test
     public void testCalculateClippedImageInsideAndOutsideVisiblePolygon()
                             throws Exception {
-        File originalFile = createNewFile( "dem90_geotiff_tiled.tiff" );
-        File newFile = createNewTempFile();
+        File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
 
-        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
-                                              createPolygonGeometryWithImageInsideAndOutsideInWgs84(),
-                                              createOutputStreamFrom( newFile ) );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
 
+        geotiffClipper.calculateClippedImage( inputStream, createPolygonGeometryWithImageInsideAndOutsideInWgs84(),
+                                              outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
         // Should have the same dimension! But with 'no data' areas!
-        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
-        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
-        int heightNewImage = ImageIO.read( newFile ).getHeight();
-        int widthNewImage = ImageIO.read( newFile ).getWidth();
-
-        assertThat( heightNewImage, not( heightOriginalImage ) );
-        assertThat( widthNewImage, not( widthOriginalImage ) );
     }
 
     @Test
     public void testCalculateClippedImageInsideAndOutsideVisiblePolygonWithHole()
                             throws Exception {
-        File originalFile = createNewFile( "dem90_geotiff_tiled.tiff" );
-        File newFile = createNewTempFile();
+        File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
 
-        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+
+        geotiffClipper.calculateClippedImage( inputStream,
                                               createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84(),
-                                              createOutputStreamFrom( newFile ) );
+                                              outputStream );
 
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
         // Should have the same dimension! But with 'no data' areas!
-        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
-        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
-        int heightNewImage = ImageIO.read( newFile ).getHeight();
-        int widthNewImage = ImageIO.read( newFile ).getWidth();
-
-        assertThat( heightNewImage, not( heightOriginalImage ) );
-        assertThat( widthNewImage, not( widthOriginalImage ) );
     }
 
     /*
@@ -221,8 +216,8 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.isFiltered(), is( false ) );
         assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFiltered(), is( false ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
 
@@ -243,8 +238,8 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
 
@@ -265,8 +260,8 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
 
