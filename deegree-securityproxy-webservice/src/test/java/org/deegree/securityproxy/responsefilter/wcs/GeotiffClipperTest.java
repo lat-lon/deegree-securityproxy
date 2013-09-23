@@ -35,11 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static javax.imageio.ImageIO.read;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,6 +51,11 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
+import org.geotools.data.DataSourceException;
+import org.geotools.gce.geotiff.GeoTiffReader;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -86,19 +93,19 @@ public class GeotiffClipperTest {
     @Test
     public void testCalculateClippedImageInsideVisibleArea()
                             throws Exception {
-        File originalFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        File newFile = createNewTempFile();
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
 
-        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ), createWholeWorldVisibleGeometry(),
-                                              createOutputStreamFrom( newFile ) );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
 
-        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
-        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
-        int heightNewImage = ImageIO.read( newFile ).getHeight();
-        int widthNewImage = ImageIO.read( newFile ).getWidth();
+        geotiffClipper.calculateClippedImage( inputStream, createWholeWorldVisibleGeometry(), outputStream );
 
-        assertThat( heightNewImage, is( heightOriginalImage ) );
-        assertThat( widthNewImage, is( widthOriginalImage ) );
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
+        // TODO: pixels should be the same!
     }
 
     @Test
@@ -111,6 +118,7 @@ public class GeotiffClipperTest {
                                               createGeometryWithImageInsideAndOutside(),
                                               createOutputStreamFrom( newFile ) );
 
+        // Should have the same dimension! But with 'no data' areas!
         int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
         int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
         int heightNewImage = ImageIO.read( newFile ).getHeight();
@@ -118,6 +126,62 @@ public class GeotiffClipperTest {
 
         assertThat( heightNewImage, not( heightOriginalImage ) );
         assertThat( widthNewImage, not( widthOriginalImage ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageOutsideVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutside(), outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
+        // Should have the same dimension! But all pixels are 'no data'!
+    }
+
+    @Test
+    public void testIsClippingRequiredWhenImageIsInsideVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
+                                                                        createWholeImageVisibleGeometryInImageCrs() );
+
+        assertThat( isClippingRequired, is( true ) );
+    }
+
+    @Test
+    public void testIsClippingRequiredWhenImageIsOutsideVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
+                                                                        createWholeImageInvisibleGeometryInImageCrs() );
+
+        assertThat( isClippingRequired, is( true ) );
+    }
+
+    @Test
+    public void testIsClippingRequiredWhenImageIsInAndOutsideVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
+                                                                        createImageVisibleAndInvisibleGeometryInImageCrs() );
+
+        assertThat( isClippingRequired, is( true ) );
+    }
+
+    private GeoTiffReader createGeoTiffReader( File tiff )
+                            throws DataSourceException {
+        return new GeoTiffReader( tiff );
     }
 
     private File createNewFile( String resourceName ) {
@@ -151,6 +215,21 @@ public class GeotiffClipperTest {
         return mock( Geometry.class );
     }
 
+    private Geometry createWholeImageVisibleGeometryInImageCrs() {
+        Envelope wholeWorld = new Envelope( 446580.945, 457351.945, 4427805.000, 4441915.000 );
+        return new GeometryFactory().toGeometry( wholeWorld );
+    }
+
+    private Geometry createWholeImageInvisibleGeometryInImageCrs() {
+        Envelope wholeWorld = new Envelope( 446580.945, 446581.945, 4427805.000, 4427806.000 );
+        return new GeometryFactory().toGeometry( wholeWorld );
+    }
+
+    private Geometry createImageVisibleAndInvisibleGeometryInImageCrs() {
+        Envelope wholeWorld = new Envelope( 446580.945, 457351.945, 4437805.000, 4441915.000 );
+        return new GeometryFactory().toGeometry( wholeWorld );
+    }
+
     private Geometry createWholeWorldVisibleGeometry() {
         Envelope wholeWorld = new Envelope( -180, 180, -90, 90 );
         return new GeometryFactory().toGeometry( wholeWorld );
@@ -160,4 +239,61 @@ public class GeotiffClipperTest {
         Envelope smallEnvelope = new Envelope( 40, 40.1, -111.57, -111.53 );
         return new GeometryFactory().toGeometry( smallEnvelope );
     }
+
+    private Geometry createGeometryWithImageOutside() {
+        Envelope smallEnvelope = new Envelope( 5, 5.1, 48.57, 48.93 );
+        return new GeometryFactory().toGeometry( smallEnvelope );
+    }
+
+    private Matcher<File> hasSameDimension( File sourceFile )
+                            throws IOException {
+
+        BufferedImage sourceImage = read( sourceFile );
+        final int heightSource = sourceImage.getHeight();
+        final int widthSource = sourceImage.getWidth();
+
+        return new BaseMatcher<File>() {
+
+            @Override
+            public boolean matches( Object item ) {
+                BufferedImage destinationImage;
+                try {
+                    destinationImage = read( (File) item );
+                    int heightDestination = destinationImage.getHeight();
+                    int widthDestination = destinationImage.getWidth();
+
+                    return heightDestination == heightSource && widthDestination == widthSource;
+                } catch ( IOException e ) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo( Description description ) {
+                description.appendText( "Should have the same width and heigth as the source ( " + widthSource + " * "
+                                        + heightSource + ")!" );
+            }
+        };
+    }
+
+    // private int[] getPixels( File file )
+    // throws InterruptedException, IOException {
+    // BufferedImage image = read( file );
+    //
+    // int imageWidth = image.getWidth() ;
+    // int imageHeight = image.getHeight();
+    //
+    // int[] pix = new int[imageWidth * imageHeight];
+    // PixelGrabber pixelGrabber = new PixelGrabber( image, 0, 0, imageHeight, imageHeight, pix, 0, imageWidth);
+    // int[] pixels = null;
+    // if ( pixelGrabber.grabPixels() ) {
+    // int width = pixelGrabber.getWidth();
+    // int height = pixelGrabber.getHeight();
+    // pixels = new int[width * height];
+    // pixels = (int[]) pixelGrabber.getPixels();
+    // }
+    // return pixels;
+    // }
+
 }

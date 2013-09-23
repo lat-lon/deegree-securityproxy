@@ -90,8 +90,7 @@ public class GeotiffClipper implements ImageClipper {
             GeoTiffWriter writer = new GeoTiffWriter( destination );
             GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
 
-            GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
-            if ( isClippingRequired( imageEnvelope, transformedVisibleArea ) ) {
+            if ( isClippingRequired( reader, transformedVisibleArea ) ) {
                 GridCoverage2D croppedCoverageToWrite = executeCropping( coverageToWrite, transformedVisibleArea );
                 writer.write( croppedCoverageToWrite, null );
             } else {
@@ -146,14 +145,15 @@ public class GeotiffClipper implements ImageClipper {
         return transformedVisibleArea;
     }
 
-    private boolean isClippingRequired( GeneralEnvelope imageEnvelope, Geometry clippingGeometry ) {
+    boolean isClippingRequired( GeoTiffReader reader, Geometry clippingGeometry ) {
+        GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
         GeometryFactory geometryFactory = new GeometryFactory();
         Geometry imageGeometry = geometryFactory.toGeometry( new ReferencedEnvelope( imageEnvelope ) );
 
         System.out.println( "imageGeometry: " + imageGeometry );
         System.out.println( "clippingGeometry: " + clippingGeometry );
 
-        return imageGeometry.intersects( clippingGeometry );
+        return clippingGeometry.intersects( imageGeometry );
     }
 
     private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry transformedVisibleArea ) {
