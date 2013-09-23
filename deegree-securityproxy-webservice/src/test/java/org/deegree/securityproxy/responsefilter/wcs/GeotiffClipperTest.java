@@ -447,25 +447,24 @@ public class GeotiffClipperTest {
     }
 
     private Geometry createPolygonGeometryWithImageInsideAndOutsideInWgs84() {
-        Coordinate coord1 = new Coordinate( 40, -111.57 );
-        Coordinate coord2 = new Coordinate( 40, -111.53 );
-        Coordinate coord3 = new Coordinate( 40.1, -111.53 );
+        Coordinate coord1 = new Coordinate( -111.57, 40 );
+        Coordinate coord2 = new Coordinate( -111.53, 40 );
+        Coordinate coord3 = new Coordinate( -111.53, 40.1 );
         Coordinate[] coordArray = { coord1, coord2, coord3, coord1 };
         return new GeometryFactory().createPolygon( coordArray );
     }
 
     private Geometry createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84() {
         GeometryFactory geometryFactory = new GeometryFactory();
-
-        Coordinate coordShell1 = new Coordinate( 40, -111.57 );
-        Coordinate coordShell2 = new Coordinate( 40, -111.53 );
-        Coordinate coordShell3 = new Coordinate( 40.1, -111.53 );
+        Coordinate coordShell1 = new Coordinate( -112.57, 42 );
+        Coordinate coordShell2 = new Coordinate( -112.53, 42 );
+        Coordinate coordShell3 = new Coordinate( -112.53, 42.1 );
         Coordinate[] coordShellArray = { coordShell1, coordShell2, coordShell3, coordShell1 };
         LinearRing shell = geometryFactory.createLinearRing( coordShellArray );
 
-        Coordinate coordHole1 = new Coordinate( 40.04, -111.55 );
-        Coordinate coordHole2 = new Coordinate( 40.04, -111.54 );
-        Coordinate coordHole3 = new Coordinate( 40.06, -111.54 );
+        Coordinate coordHole1 = new Coordinate( -111.55, 40.04 );
+        Coordinate coordHole2 = new Coordinate( -111.54, 40.04 );
+        Coordinate coordHole3 = new Coordinate( -111.54, 40.06 );
         Coordinate[] coordHoleArray = { coordHole1, coordHole2, coordHole3, coordHole1 };
         LinearRing hole = geometryFactory.createLinearRing( coordHoleArray );
         LinearRing holes[] = { hole };
