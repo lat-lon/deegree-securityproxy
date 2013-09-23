@@ -33,41 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.wcs;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-
-import com.vividsolutions.jts.geom.Geometry;
+package org.deegree.securityproxy.responsefilter.logging;
 
 /**
- * Contains methods to clip images.
+ * Encapsulates information about the filtering step
  * 
- * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ImageClipper {
+public interface ResponseFilterReport {
 
     /**
-     * Clips the passed image as defined in the clipping area...
-     * 
-     * @param coverageToClip
-     *            contains the coverage to clip, never <code>null</code>
-     * @param visibleArea
-     *            the geometry covering the area visible for the user, never <code>null</code>
-     * @param destination
-     *            {@link OutputStream} to write image, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if one one the parameter is <code>null</code>
-     * @throws Exception
-     *             TODO if clipping failed
+     * @return <code>true</code> if filtering was applied, <code>false</code> otherwise
      */
-    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
-                                                  OutputStream destination )
-                            throws IllegalArgumentException;
+    boolean isFiltered();
+
+    /**
+     * @return the message containing details about the filtering or error messages
+     */
+    String getMessage();
 
 }

@@ -51,7 +51,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
@@ -79,7 +79,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     private ImageClipper imageClipper;
 
     @Override
-    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+    public ResponseClippingReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                 Authentication auth ) {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
