@@ -168,7 +168,7 @@ public class GeotiffClipperTest {
         File newFile = createNewTempFile();
 
         geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
-                                              createPolygonGeometryWithImageInsideAndOutside(),
+                                              createPolygonGeometryWithImageInsideAndOutsideInWgs84(),
                                               createOutputStreamFrom( newFile ) );
 
         // Should have the same dimension! But with 'no data' areas!
@@ -188,7 +188,7 @@ public class GeotiffClipperTest {
         File newFile = createNewTempFile();
 
         geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
-                                              createPolygonWithHoleGeometryWithImageInsideAndOutside(),
+                                              createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84(),
                                               createOutputStreamFrom( newFile ) );
 
         // Should have the same dimension! But with 'no data' areas!
@@ -451,7 +451,7 @@ public class GeotiffClipperTest {
         return new GeometryFactory().toGeometry( envelope );
     }
 
-    private Geometry createPolygonGeometryWithImageInsideAndOutside() {
+    private Geometry createPolygonGeometryWithImageInsideAndOutsideInWgs84() {
         Coordinate coord1 = new Coordinate( 40, -111.57 );
         Coordinate coord2 = new Coordinate( 40, -111.53 );
         Coordinate coord3 = new Coordinate( 40.1, -111.53 );
@@ -459,7 +459,7 @@ public class GeotiffClipperTest {
         return new GeometryFactory().createPolygon( coordArray );
     }
 
-    private Geometry createPolygonWithHoleGeometryWithImageInsideAndOutside() {
+    private Geometry createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84() {
         GeometryFactory geometryFactory = new GeometryFactory();
 
         Coordinate coordShell1 = new Coordinate( 40, -111.57 );
@@ -509,23 +509,5 @@ public class GeotiffClipperTest {
             }
         };
     }
-    // private int[] getPixels( File file )
-    // throws InterruptedException, IOException {
-    // BufferedImage image = read( file );
-    //
-    // int imageWidth = image.getWidth() ;
-    // int imageHeight = image.getHeight();
-    //
-    // int[] pix = new int[imageWidth * imageHeight];
-    // PixelGrabber pixelGrabber = new PixelGrabber( image, 0, 0, imageHeight, imageHeight, pix, 0, imageWidth);
-    // int[] pixels = null;
-    // if ( pixelGrabber.grabPixels() ) {
-    // int width = pixelGrabber.getWidth();
-    // int height = pixelGrabber.getHeight();
-    // pixels = new int[width * height];
-    // pixels = (int[]) pixelGrabber.getPixels();
-    // }
-    // return pixels;
-    // }
 
 }
