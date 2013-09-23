@@ -98,16 +98,16 @@ public class GeotiffClipper implements ImageClipper {
             GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
 
             Geometry imageGeometry = convertImageEnvelopeToGeometry( reader );
+            Geometry geometryVisibleAfterClipping;
             if ( isClippingRequired( imageGeometry, transformedVisibleArea ) ) {
                 GridCoverage2D croppedCoverageToWrite = executeCropping( coverageToWrite, transformedVisibleArea );
                 writer.write( croppedCoverageToWrite, null );
-                Geometry geometryVisibleAfterClipping = calculateGeometryVisibleAfterClipping( reader,
-                                                                                               transformedVisibleArea );
-                return new ResponseClippingReport( geometryVisibleAfterClipping, true );
+                geometryVisibleAfterClipping = calculateGeometryVisibleAfterClipping( reader, transformedVisibleArea );
             } else {
                 writer.write( coverageToWrite, null );
-                return new ResponseClippingReport( imageGeometry, true );
+                geometryVisibleAfterClipping = imageGeometry;
             }
+            return new ResponseClippingReport( geometryVisibleAfterClipping, true );
         } catch ( Exception e ) {
             LOG.error( "An error occured during clipping the returned image!", e );
             return new ResponseClippingReport( e.getMessage() );
