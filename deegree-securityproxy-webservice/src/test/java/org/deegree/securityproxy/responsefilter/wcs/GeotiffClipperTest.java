@@ -228,6 +228,45 @@ public class GeotiffClipperTest {
         assertThat( isClippingRequired, is( false ) );
     }
 
+    /*
+     * #calculateGeometryVisibleAfterClipping()
+     */
+    @Test
+    public void testCalculateGeometryVisibleAfterClippingCompleteOutsideVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateGeometryVisibleAfterClipping( geoTiffReader,
+                                                                                                      createWholeImageInvisibleEnvelopeInImageCrs() );
+        double area = geometryVisibleAfterClipping.getArea();
+        assertThat( area, is( 0d ) );
+    }
+
+    @Test
+    public void testCalculateGeometryVisibleAfterClippingCompleteInsideVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateGeometryVisibleAfterClipping( geoTiffReader,
+                                                                                                      createWholeImageVisibleEnvelopeInImageCrs() );
+        double area = geometryVisibleAfterClipping.getArea();
+        assertThat( area, is( 1.501452E8 ) );
+    }
+
+    @Test
+    public void testCalculateGeometryVisibleAfterClippingIntersectingVisbleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateGeometryVisibleAfterClipping( geoTiffReader,
+                                                                                                      createImageInsersectsEnvelopeInImageCrs() );
+        double area = geometryVisibleAfterClipping.getArea();
+
+        // Expected 4.30674E7
+        double expectedArea = new Envelope( 446591.945, 457331.945, 4437805.000, 4441815.000 ).getArea();
+        assertThat( area, is( expectedArea ) );
+    }
+
     private GeoTiffReader createGeoTiffReader( File tiff )
                             throws DataSourceException {
         return new GeoTiffReader( tiff );
@@ -350,7 +389,6 @@ public class GeotiffClipperTest {
             }
         };
     }
-
     // private int[] getPixels( File file )
     // throws InterruptedException, IOException {
     // BufferedImage image = read( file );

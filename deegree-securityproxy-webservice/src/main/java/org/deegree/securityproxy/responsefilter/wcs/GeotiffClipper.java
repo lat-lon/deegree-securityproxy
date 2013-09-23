@@ -62,6 +62,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
@@ -96,7 +97,8 @@ public class GeotiffClipper implements ImageClipper {
             GeoTiffWriter writer = new GeoTiffWriter( destination );
             GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
 
-            if ( isClippingRequired( reader, transformedVisibleArea ) ) {
+            Geometry imageGeometry = convertImageEnvelopeToGeometry( reader );
+            if ( isClippingRequired( imageGeometry, transformedVisibleArea ) ) {
                 GridCoverage2D croppedCoverageToWrite = executeCropping( coverageToWrite, transformedVisibleArea );
                 writer.write( croppedCoverageToWrite, null );
                 Geometry geometryVisibleAfterClipping = calculateGeometryVisibleAfterClipping( reader,
@@ -104,7 +106,7 @@ public class GeotiffClipper implements ImageClipper {
                 return new ResponseClippingReport( geometryVisibleAfterClipping, true );
             } else {
                 writer.write( coverageToWrite, null );
-                return new ResponseClippingReport( convertImageEnvelopeToGeometry( reader ), true );
+                return new ResponseClippingReport( imageGeometry, true );
             }
         } catch ( Exception e ) {
             LOG.error( "An error occured during clipping the returned image!", e );
@@ -118,13 +120,32 @@ public class GeotiffClipper implements ImageClipper {
      * @param reader
      *            never <code>null</code>
      * @param clippingGeometry
-     *            never <code>null</code>
+     *            in image crs, never <code>null</code>
      * @return <code>true</code> if the image boundary is not completely inside the clippingGeometry, <code>false</code>
      *         otherwise
      */
     boolean isClippingRequired( GeoTiffReader reader, Geometry clippingGeometry ) {
         Geometry imageGeometry = convertImageEnvelopeToGeometry( reader );
-        return !clippingGeometry.contains( imageGeometry );
+        return isClippingRequired( imageGeometry, clippingGeometry );
+    }
+
+    /**
+     * Calculates the geometry visible after clipping
+     * 
+     * @param reader
+     *            never <code>null</code>
+     * @param visibleArea
+     *            in image crs, never <code>null</code>
+     * @return the geometry visible after clipping
+     */
+    Geometry calculateGeometryVisibleAfterClipping( GeoTiffReader reader, Geometry visibleArea ) {
+        Geometry imageGeometry = convertImageEnvelopeToGeometry( reader );
+        if ( visibleArea.contains( imageGeometry ) ) {
+            return imageGeometry;
+        } else if ( visibleArea.intersects( imageGeometry ) ) {
+            return visibleArea.intersection( imageGeometry );
+        }
+        return new GeometryFactory().toGeometry( new Envelope() );
     }
 
     // TODO: dirty hack! coverage should be read from input stream directly
@@ -137,12 +158,6 @@ public class GeotiffClipper implements ImageClipper {
         return tempFile;
     }
 
-    Geometry calculateGeometryVisibleAfterClipping( GeoTiffReader reader, Geometry transformedVisibleArea ) {
-
-        // TODO Auto-generated method stub
-        return transformedVisibleArea;
-    }
-
     private void checkRequiredParameters( InputStream imageToClip, Geometry visibleArea, OutputStream toWriteImage )
                             throws IllegalArgumentException {
         if ( imageToClip == null )
@@ -151,6 +166,15 @@ public class GeotiffClipper implements ImageClipper {
             throw new IllegalArgumentException( "Wcs request must not be null!" );
         if ( toWriteImage == null )
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
+    }
+
+    private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry transformedVisibleArea ) {
+        Crop crop = new Crop();
+        ParameterValueGroup cropParameters = crop.getParameters();
+        cropParameters.parameter( "Source" ).setValue( coverageToWrite );
+        cropParameters.parameter( "ROI" ).setValue( transformedVisibleArea );
+        GridCoverage2D croppedCoverageToWrite = (GridCoverage2D) crop.doOperation( cropParameters, null );
+        return croppedCoverageToWrite;
     }
 
     private Geometry transformVisibleAreaToImageCrs( Geometry visibleArea, GeoTiffReader reader )
@@ -169,13 +193,8 @@ public class GeotiffClipper implements ImageClipper {
         return geometryFactory.toGeometry( envelope );
     }
 
-    private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry transformedVisibleArea ) {
-        Crop crop = new Crop();
-        ParameterValueGroup cropParameters = crop.getParameters();
-        cropParameters.parameter( "Source" ).setValue( coverageToWrite );
-        cropParameters.parameter( "ROI" ).setValue( transformedVisibleArea );
-        GridCoverage2D croppedCoverageToWrite = (GridCoverage2D) crop.doOperation( cropParameters, null );
-        return croppedCoverageToWrite;
+    private boolean isClippingRequired( Geometry imageGeometry, Geometry clippingGeometry ) {
+        return !clippingGeometry.contains( imageGeometry );
     }
 
 }
