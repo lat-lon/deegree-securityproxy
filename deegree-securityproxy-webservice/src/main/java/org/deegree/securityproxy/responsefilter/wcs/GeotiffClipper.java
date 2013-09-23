@@ -148,6 +148,27 @@ public class GeotiffClipper implements ImageClipper {
         return new GeometryFactory().toGeometry( new Envelope() );
     }
 
+    /**
+     * Transforms the passed geometry into the CRS of the reader
+     * 
+     * @param geometryToTransform
+     *            in WGS84 (axis order: longitude/latitude), never <code>null</code>
+     * @param reader
+     *            never <code>null</code>
+     * @return the transformed geometry, never <code>null</code>
+     * @throws NoSuchAuthorityCodeException
+     * @throws FactoryException
+     * @throws TransformException
+     */
+    Geometry transformVisibleAreaToImageCrs( Geometry geometryToTransform, GeoTiffReader reader )
+                            throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+        CoordinateReferenceSystem visibleAreaCRS = decode( VISIBLE_AREA_CRS, true );
+        CoordinateReferenceSystem imageCRS = reader.getCrs();
+
+        MathTransform transformVisibleAreaToImageCrs = findMathTransform( visibleAreaCRS, imageCRS );
+        return transform( geometryToTransform, transformVisibleAreaToImageCrs );
+    }
+
     // TODO: dirty hack! coverage should be read from input stream directly
     private File writeToTempFile( InputStream coverageToClip )
                             throws IOException, FileNotFoundException {
@@ -175,15 +196,6 @@ public class GeotiffClipper implements ImageClipper {
         cropParameters.parameter( "ROI" ).setValue( transformedVisibleArea );
         GridCoverage2D croppedCoverageToWrite = (GridCoverage2D) crop.doOperation( cropParameters, null );
         return croppedCoverageToWrite;
-    }
-
-    private Geometry transformVisibleAreaToImageCrs( Geometry visibleArea, GeoTiffReader reader )
-                            throws NoSuchAuthorityCodeException, FactoryException, TransformException {
-        CoordinateReferenceSystem visibleAreaCRS = decode( VISIBLE_AREA_CRS );
-        CoordinateReferenceSystem imageCRS = reader.getCrs();
-
-        MathTransform transformVisibleAreaToImageCrs = findMathTransform( visibleAreaCRS, imageCRS );
-        return transform( visibleArea, transformVisibleAreaToImageCrs );
     }
 
     private Geometry convertImageEnvelopeToGeometry( GeoTiffReader reader ) {

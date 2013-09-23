@@ -56,6 +56,7 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -363,6 +364,26 @@ public class GeotiffClipperTest {
         assertThat( area, is( expectedArea ) );
     }
 
+    /*
+     * #transformVisibleAreaToImageCrs()
+     */
+
+    @Ignore("why does this not work???")
+    @Test
+    public void testTransformVisibleAreaToImageCrs()
+                            throws Exception {
+
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+
+        Geometry geometryToTransform = createEnvelopeWithImageInsideInWgs84();
+        Geometry transformedGeometry = geotiffClipper.transformVisibleAreaToImageCrs( geometryToTransform,
+                                                                                      geoTiffReader );
+        Geometry expectedGeometry = new GeometryFactory().toGeometry( new Envelope( 214532.475581639, 3470063.34743009,
+                                                                                    534994.655061707, 9329005.18235732 ) );
+        assertThat( transformedGeometry, is( expectedGeometry ) );
+    }
+
     private GeoTiffReader createGeoTiffReader( File tiff )
                             throws DataSourceException {
         return new GeoTiffReader( tiff );
@@ -432,17 +453,17 @@ public class GeotiffClipperTest {
     }
 
     private Geometry createEnvelopeWithImageInsideInWgs84() {
-        Envelope envelope = new Envelope( -47.74, 167.65, 14.93, 86.45 );
+        Envelope envelope = new Envelope( -114, -108, 31.33, 84 );
         return new GeometryFactory().toGeometry( envelope );
     }
 
     private Geometry createGeometryWithImageInsideAndOutsideInWgs84() {
-        Envelope smallEnvelope = new Envelope( 40, 40.1, -111.57, -111.53 );
+        Envelope smallEnvelope = new Envelope( -111.57, -111.53, 40, 40.1 );
         return new GeometryFactory().toGeometry( smallEnvelope );
     }
 
     private Geometry createGeometryWithImageOutsideInWgs84() {
-        Envelope envelope = new Envelope( 5, 5.1, 48.57, 48.93 );
+        Envelope envelope = new Envelope( -111.57, -111.53, 43.57, 43.93 );
         return new GeometryFactory().toGeometry( envelope );
     }
 
