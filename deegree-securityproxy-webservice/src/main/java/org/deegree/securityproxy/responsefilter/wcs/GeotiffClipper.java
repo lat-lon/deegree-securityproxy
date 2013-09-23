@@ -82,34 +82,34 @@ public class GeotiffClipper implements ImageClipper {
     private static final String VISIBLE_AREA_CRS = "EPSG:4326";
 
     @Override
-    public ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
+    public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination )
                             throws IllegalArgumentException {
-        checkRequiredParameters( coverageToClip, visibleArea, destination );
+        checkRequiredParameters( imageToClip, visibleArea, destination );
 
         // / TODO: check if exception was thrown!
         try {
-            File coverageToClipAsFile = writeToTempFile( coverageToClip );
-            GeoTiffReader reader = new GeoTiffReader( coverageToClipAsFile );
+            File imageToClipAsFile = writeToTempFile( imageToClip );
+            GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
-            Geometry transformedVisibleArea = transformVisibleAreaToImageCrs( visibleArea, reader );
+            Geometry visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
 
             GeoTiffWriter writer = new GeoTiffWriter( destination );
-            GridCoverage2D coverageToWrite = (GridCoverage2D) reader.read( null );
+            GridCoverage2D geotiffToWrite = (GridCoverage2D) reader.read( null );
 
-            Geometry imageGeometry = convertImageEnvelopeToGeometry( reader );
-            Geometry geometryVisibleAfterClipping;
-            if ( isClippingRequired( imageGeometry, transformedVisibleArea ) ) {
-                GridCoverage2D croppedCoverageToWrite = executeCropping( coverageToWrite, transformedVisibleArea );
+            Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
+            if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
+                GridCoverage2D croppedCoverageToWrite = executeCropping( geotiffToWrite, visibleAreaInImageCrs );
                 writer.write( croppedCoverageToWrite, null );
-                geometryVisibleAfterClipping = calculateGeometryVisibleAfterClipping( reader, transformedVisibleArea );
+                Geometry visibleAreaAfterClipping = calculateGeometryVisibleAfterClipping( reader,
+                                                                                           visibleAreaInImageCrs );
+                return new ResponseClippingReport( visibleAreaAfterClipping, false );
             } else {
-                writer.write( coverageToWrite, null );
-                geometryVisibleAfterClipping = imageGeometry;
+                writer.write( geotiffToWrite, null );
+                return new ResponseClippingReport( imageEnvelope, false );
             }
-            return new ResponseClippingReport( geometryVisibleAfterClipping, true );
         } catch ( Exception e ) {
-            LOG.error( "An error occured during clipping the returned image!", e );
+            LOG.error( "An error occured during clipping the image!", e );
             return new ResponseClippingReport( e.getMessage() );
         }
     }

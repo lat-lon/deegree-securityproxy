@@ -38,6 +38,8 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import static javax.imageio.ImageIO.read;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -51,6 +53,7 @@ import java.io.OutputStream;
 
 import javax.imageio.ImageIO;
 
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.hamcrest.BaseMatcher;
@@ -75,6 +78,10 @@ public class GeotiffClipperTest {
 
     private GeotiffClipper geotiffClipper = new GeotiffClipper();
 
+    /*
+     * #calculateClippedImage() - Exceptions
+     */
+
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullImageStreamShouldFail()
                             throws Exception {
@@ -92,6 +99,10 @@ public class GeotiffClipperTest {
                             throws Exception {
         geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null );
     }
+
+    /*
+     * #calculateClippedImage() - Dimension
+     */
 
     @Test
     public void testCalculateClippedImageInsideVisibleArea()
@@ -167,6 +178,75 @@ public class GeotiffClipperTest {
 
         assertThat( heightNewImage, not( heightOriginalImage ) );
         assertThat( widthNewImage, not( widthOriginalImage ) );
+    }
+
+    /*
+     * #calculateClippedImage() - ReponseClippingReport
+     */
+    @Test
+    public void testCalculateClippedImageInsideVisibleShouldReturnReport()
+                            throws Exception {
+
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
+
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+
+        ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
+                                                                              createWholeWorldVisibleGeometryInWgs84(),
+                                                                              outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( report.isFiltered(), is( false ) );
+        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageOutsideVisibleShouldReturnReport()
+                            throws Exception {
+
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
+
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+
+        ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
+                                                                              createGeometryWithImageOutsideInWgs84(),
+                                                                              outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( report.isFiltered(), is( true ) );
+        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageIntersectingVisibleShouldReturnReport()
+                            throws Exception {
+
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
+
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+
+        ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
+                                                                              createGeometryWithImageInsideAndOutsideInWgs84(),
+                                                                              outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( report.isFiltered(), is( true ) );
+        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
 
     /*
@@ -278,7 +358,7 @@ public class GeotiffClipperTest {
 
     private File createNewTempFile()
                             throws IOException {
-        return File.createTempFile( GeotiffClipperTest.class.getSimpleName(), "tif" );
+        return File.createTempFile( GeotiffClipperTest.class.getSimpleName(), ".tif" );
     }
 
     private InputStream createInputStreamFrom( File file )
