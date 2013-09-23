@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static org.geotools.geometry.jts.JTS.transform;
+import static org.geotools.referencing.CRS.decode;
+import static org.geotools.referencing.CRS.findMathTransform;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -49,9 +53,7 @@ import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.referencing.CRS;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -121,7 +123,6 @@ public class GeotiffClipper implements ImageClipper {
         FileOutputStream output = new FileOutputStream( tempFile );
         IOUtils.copy( coverageToClip, output );
         output.close();
-
         return tempFile;
     }
 
@@ -137,23 +138,18 @@ public class GeotiffClipper implements ImageClipper {
 
     private Geometry transformVisibleAreaToImageCrs( Geometry visibleArea, GeoTiffReader reader )
                             throws NoSuchAuthorityCodeException, FactoryException, TransformException {
-        CoordinateReferenceSystem visibleAreaCRS = CRS.decode( VISIBLE_AREA_CRS );
+        CoordinateReferenceSystem visibleAreaCRS = decode( VISIBLE_AREA_CRS );
         CoordinateReferenceSystem imageCRS = reader.getCrs();
 
-        MathTransform transformVisibleAreaToImageCrs = CRS.findMathTransform( visibleAreaCRS, imageCRS );
-        Geometry transformedVisibleArea = JTS.transform( visibleArea, transformVisibleAreaToImageCrs );
-        return transformedVisibleArea;
+        MathTransform transformVisibleAreaToImageCrs = findMathTransform( visibleAreaCRS, imageCRS );
+        return transform( visibleArea, transformVisibleAreaToImageCrs );
     }
 
     boolean isClippingRequired( GeoTiffReader reader, Geometry clippingGeometry ) {
         GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
         GeometryFactory geometryFactory = new GeometryFactory();
         Geometry imageGeometry = geometryFactory.toGeometry( new ReferencedEnvelope( imageEnvelope ) );
-
-        System.out.println( "imageGeometry: " + imageGeometry );
-        System.out.println( "clippingGeometry: " + clippingGeometry );
-
-        return clippingGeometry.intersects( imageGeometry );
+        return !clippingGeometry.contains( imageGeometry );
     }
 
     private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry transformedVisibleArea ) {
