@@ -65,6 +65,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -123,7 +124,7 @@ public class GeotiffClipperTest {
     }
 
     @Test
-    public void testCalculateClippedImageInsideVisibleAreaAndOutsideVisibleArea()
+    public void testCalculateClippedImageInsideAndOutsideVisibleArea()
                             throws Exception {
         File originalFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         File newFile = createNewTempFile();
@@ -161,13 +162,33 @@ public class GeotiffClipperTest {
     }
 
     @Test
-    public void testCalculateClippedImageInsideVisiblePolygonAndOutsideVisiblePolygon()
+    public void testCalculateClippedImageInsideAndOutsideVisiblePolygon()
                             throws Exception {
         File originalFile = createNewFile( "dem90_geotiff_tiled.tiff" );
         File newFile = createNewTempFile();
 
         geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
                                               createPolygonGeometryWithImageInsideAndOutside(),
+                                              createOutputStreamFrom( newFile ) );
+
+        // Should have the same dimension! But with 'no data' areas!
+        int heightOriginalImage = ImageIO.read( originalFile ).getHeight();
+        int widthOriginalImage = ImageIO.read( originalFile ).getWidth();
+        int heightNewImage = ImageIO.read( newFile ).getHeight();
+        int widthNewImage = ImageIO.read( newFile ).getWidth();
+
+        assertThat( heightNewImage, not( heightOriginalImage ) );
+        assertThat( widthNewImage, not( widthOriginalImage ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageInsideAndOutsideVisiblePolygonWithHole()
+                            throws Exception {
+        File originalFile = createNewFile( "dem90_geotiff_tiled.tiff" );
+        File newFile = createNewTempFile();
+
+        geotiffClipper.calculateClippedImage( createInputStreamFrom( originalFile ),
+                                              createPolygonWithHoleGeometryWithImageInsideAndOutside(),
                                               createOutputStreamFrom( newFile ) );
 
         // Should have the same dimension! But with 'no data' areas!
@@ -436,6 +457,25 @@ public class GeotiffClipperTest {
         Coordinate coord3 = new Coordinate( 40.1, -111.53 );
         Coordinate[] coordArray = { coord1, coord2, coord3, coord1 };
         return new GeometryFactory().createPolygon( coordArray );
+    }
+
+    private Geometry createPolygonWithHoleGeometryWithImageInsideAndOutside() {
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        Coordinate coordShell1 = new Coordinate( 40, -111.57 );
+        Coordinate coordShell2 = new Coordinate( 40, -111.53 );
+        Coordinate coordShell3 = new Coordinate( 40.1, -111.53 );
+        Coordinate[] coordShellArray = { coordShell1, coordShell2, coordShell3, coordShell1 };
+        LinearRing shell = geometryFactory.createLinearRing( coordShellArray );
+
+        Coordinate coordHole1 = new Coordinate( 40.03, -111.56 );
+        Coordinate coordHole2 = new Coordinate( 40.03, -111.54 );
+        Coordinate coordHole3 = new Coordinate( 40.07, -111.54 );
+        Coordinate[] coordHoleArray = { coordHole1, coordHole2, coordHole3, coordHole1 };
+        LinearRing hole = geometryFactory.createLinearRing( coordHoleArray );
+        LinearRing holes[] = { hole };
+
+        return geometryFactory.createPolygon( shell, holes );
     }
 
     private Matcher<File> hasSameDimension( File sourceFile )
