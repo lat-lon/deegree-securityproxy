@@ -40,6 +40,7 @@ import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
+import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -53,6 +54,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -240,7 +242,30 @@ public class WcsResponseFilterManagerTest {
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
         Authentication mockAuthentication = mockAuthentication();
-        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequestInvokeFailure(),
+        wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                 createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
+        verify( mockedServletResponse, times( 0 ) ).addHeader( eq( REQUEST_AREA_HEADER_KEY ), anyString() );
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionShouldReturnCorrectResponse()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithException();
+        Authentication mockAuthentication = mockAuthentication();
+        ResponseClippingReport filterResponse = wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                         createWcsGetCoverageRequest(),
+                                                                                         mockAuthentication );
+        assertThat( filterResponse.isFiltered(), is( false ) );
+        assertThat( filterResponse.getFailure(), is( SERVICE_EXCEPTION_MSG ) );
+        assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionShouldNotAddHeader()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithException();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
                                                  mockAuthentication );
         verify( mockedServletResponse, times( 0 ) ).addHeader( eq( REQUEST_AREA_HEADER_KEY ), anyString() );
     }
@@ -305,7 +330,7 @@ public class WcsResponseFilterManagerTest {
         return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> emptyList() );
     }
 
-    private WcsRequest createWcsGetCoverageRequestInvokeFailure() {
+    private WcsRequest createWcsGetCoverageRequestInvokeFailureResponse() {
         return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_FAILURE ) );
     }
 
@@ -320,6 +345,15 @@ public class WcsResponseFilterManagerTest {
     private StatusCodeResponseBodyWrapper mockResponseWrapper()
                             throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
+        when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        return mockedServletResponse;
+    }
+
+    private StatusCodeResponseBodyWrapper mockResponseWrapperWithException()
+                            throws IOException {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( parseServiceException() );
         when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
         return mockedServletResponse;
     }
@@ -339,6 +373,10 @@ public class WcsResponseFilterManagerTest {
         Authentication mockedAuthentication = mock( Authentication.class );
         when( mockedAuthentication.getPrincipal() ).thenReturn( mock( UserDetails.class ) );
         return mockedAuthentication;
+    }
+
+    private InputStream parseServiceException() {
+        return WcsResponseFilterManagerTest.class.getResourceAsStream( "service_exception.xml" );
     }
 
 }

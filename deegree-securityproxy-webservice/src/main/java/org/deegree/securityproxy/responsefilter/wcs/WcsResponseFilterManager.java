@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
@@ -75,6 +77,8 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     static final String NOT_A_COVERAGE_REQUEST_MSG = "Request was not a GetCoverage-Request - clipping not required.";
 
+    static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
+
     static final String NO_LIMITING_GEOMETRY_MSG = "No limiting geometry defined!";
 
     private static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
@@ -92,18 +96,14 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             try {
+                if ( isException( servletResponse ) ) {
+                    return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
+                }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 if ( clippingGeometry == null ) {
                     return new ResponseClippingReport( NO_LIMITING_GEOMETRY_MSG );
                 }
-                InputStream imageAsStream = servletResponse.getBufferedStream();
-                OutputStream destination = servletResponse.getRealOutputStream();
-                ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
-                                                                                                clippingGeometry,
-                                                                                                destination );
-
-                addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
-                return clippedImageReport;
+                return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
                 return new ResponseClippingReport( e.getMessage() );
@@ -131,6 +131,29 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         if ( !supports( request.getClass() ) )
             throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
                                                 + " is not supported!" );
+    }
+
+    private boolean isException( StatusCodeResponseBodyWrapper servletResponse )
+                            throws IOException {
+        InputStream bufferedStream = servletResponse.getBufferedStream();
+        try {
+            String bodyAsString = IOUtils.toString( bufferedStream );
+            return bodyAsString.contains( "ServiceExceptionReport" );
+        } finally {
+            closeQuietly( bufferedStream );
+        }
+    }
+
+    private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
+                                                                    Geometry clippingGeometry )
+                            throws IOException {
+        InputStream imageAsStream = servletResponse.getBufferedStream();
+        OutputStream destination = servletResponse.getRealOutputStream();
+        ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
+                                                                                        clippingGeometry, destination );
+
+        addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
+        return clippedImageReport;
     }
 
     private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
