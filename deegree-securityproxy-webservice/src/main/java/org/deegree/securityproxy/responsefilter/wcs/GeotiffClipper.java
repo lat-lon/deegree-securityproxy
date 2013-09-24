@@ -101,12 +101,15 @@ public class GeotiffClipper implements ImageClipper {
             Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
             if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
                 GridCoverage2D resampledCoverageToWrite;
+                
                 if ( visibleAreaInImageCrs.intersects( imageEnvelope ) ) {
                     GridCoverage2D croppedCoverageToWrite = executeCropping( geotiffToWrite, visibleAreaInImageCrs );
                     resampledCoverageToWrite = executeResampling( croppedCoverageToWrite, geotiffToWrite );
                 } else {
                     resampledCoverageToWrite = executeResampling( geotiffToWrite, geotiffToWrite );
                 }
+                
+                
                 writer.write( resampledCoverageToWrite, null );
                 Geometry visibleAreaAfterClipping = calculateGeometryVisibleAfterClipping( reader,
                                                                                            visibleAreaInImageCrs );

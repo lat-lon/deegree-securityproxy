@@ -92,6 +92,18 @@ public class ResponseClippingReportTest {
         assertThat( clippingReport.isFiltered(), is( IS_NOT_FILTERED ) );
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorWithNullGeometryShouldFail()
+                            throws Exception {
+        new ResponseClippingReport( null, true );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorWithFailureShouldFail()
+                            throws Exception {
+        new ResponseClippingReport( null );
+    }
+
     private Geometry createGeometry() {
         Envelope smallEnvelope = new Envelope( 5, 5.1, 48.57, 48.93 );
         return new GeometryFactory().toGeometry( smallEnvelope );
