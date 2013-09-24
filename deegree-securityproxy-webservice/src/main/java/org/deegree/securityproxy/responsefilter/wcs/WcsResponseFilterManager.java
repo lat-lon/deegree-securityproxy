@@ -36,6 +36,7 @@
 package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.copy;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -97,6 +99,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         if ( isGetCoverageRequest( wcsRequest ) ) {
             try {
                 if ( isException( servletResponse ) ) {
+                    copyExceptionToResponse( servletResponse );
                     return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
@@ -135,6 +138,8 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     private boolean isException( StatusCodeResponseBodyWrapper servletResponse )
                             throws IOException {
+        if ( servletResponse.getStatus() != 200 )
+            return true;
         InputStream bufferedStream = servletResponse.getBufferedStream();
         try {
             String bodyAsString = IOUtils.toString( bufferedStream );
@@ -142,6 +147,13 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         } finally {
             closeQuietly( bufferedStream );
         }
+    }
+
+    private void copyExceptionToResponse( StatusCodeResponseBodyWrapper servletResponse )
+                            throws IOException {
+        InputStream bufferedInputStream = servletResponse.getBufferedStream();
+        ServletOutputStream outputStream = servletResponse.getRealOutputStream();
+        copy( bufferedInputStream, outputStream );
     }
 
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
