@@ -57,6 +57,7 @@ import org.springframework.security.core.Authentication;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Provides filtering of {@link WcsRequest}s.
@@ -69,6 +70,8 @@ import com.vividsolutions.jts.io.ParseException;
  * @version $Revision: $, $Date: $
  */
 public class WcsResponseFilterManager implements ResponseFilterManager {
+
+    static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
     static final String NOT_A_COVERAGE_REQUEST_MSG = "Request was not a GetCoverage-Request - clipping not required.";
 
@@ -95,7 +98,12 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                 }
                 InputStream imageAsStream = servletResponse.getBufferedStream();
                 OutputStream destination = servletResponse.getRealOutputStream();
-                return imageClipper.calculateClippedImage( imageAsStream, clippingGeometry, destination );
+                ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
+                                                                                                clippingGeometry,
+                                                                                                destination );
+
+                addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
+                return clippedImageReport;
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
                 return new ResponseClippingReport( e.getMessage() );
@@ -149,6 +157,19 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         if ( coverageName == null )
             throw new IllegalArgumentException( "coverage is null!" );
         return coverageName;
+    }
+
+    private void addHeaderInfoIfNoFailureOccurred( StatusCodeResponseBodyWrapper servletResponse,
+                                                   ResponseClippingReport clippedImageReport ) {
+        if ( noFailureOccured( clippedImageReport ) ) {
+            WKTWriter writer = new WKTWriter();
+            String requestAreaWkt = writer.write( clippedImageReport.getReturnedVisibleArea() );
+            servletResponse.addHeader( REQUEST_AREA_HEADER_KEY, requestAreaWkt );
+        }
+    }
+
+    private boolean noFailureOccured( ResponseClippingReport clippedImageReport ) {
+        return clippedImageReport.getFailure() == null && clippedImageReport.getReturnedVisibleArea() != null;
     }
 
     private boolean isGetCoverageRequest( WcsRequest wcsRequest ) {

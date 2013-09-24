@@ -24,8 +24,12 @@ public class ResponseClippingReport implements ResponseFilterReport {
      * 
      * @param failure
      *            the error message, may not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if required parameter is null
      */
     public ResponseClippingReport( String failure ) {
+        if ( failure == null )
+            throw new IllegalArgumentException( "failure must not be null!" );
         this.failure = failure;
         this.isFiltered = false;
         this.returnedVisibleArea = null;
@@ -39,8 +43,12 @@ public class ResponseClippingReport implements ResponseFilterReport {
      *            never <code>null</code>
      * @param isFiltered
      *            if clipping was required or not
+     * @throws IllegalArgumentException
+     *             if required parameter is null
      */
     public ResponseClippingReport( Geometry returnedVisibleArea, boolean isFiltered ) {
+        if ( returnedVisibleArea == null )
+            throw new IllegalArgumentException( "returnedVisbleArea must not be null!" );
         this.failure = null;
         this.isFiltered = isFiltered;
         this.returnedVisibleArea = returnedVisibleArea;
