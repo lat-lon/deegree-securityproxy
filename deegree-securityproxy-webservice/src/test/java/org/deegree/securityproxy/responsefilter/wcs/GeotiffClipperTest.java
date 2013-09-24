@@ -43,12 +43,16 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
+
+import javax.imageio.ImageIO;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.data.DataSourceException;
@@ -106,7 +110,7 @@ public class GeotiffClipperTest {
     @Test
     public void testCalculateClippedImageInsideVisibleArea()
                             throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
         File destinationFile = createNewTempFile();
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
@@ -118,13 +122,13 @@ public class GeotiffClipperTest {
         outputStream.close();
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
-        // TODO: pixels should be the same!
+        assertThat( destinationFile, hasSamePixels( sourceFile ) );
     }
 
     @Test
     public void testCalculateClippedImageInsideAndOutsideVisibleArea()
                             throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
         File destinationFile = createNewTempFile();
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
@@ -137,13 +141,13 @@ public class GeotiffClipperTest {
         outputStream.close();
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
-        // Should have the same dimension! But with 'no data' areas!
+        assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
     }
 
     @Test
     public void testCalculateClippedImageOutsideVisibleArea()
                             throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
         File destinationFile = createNewTempFile();
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
@@ -155,7 +159,7 @@ public class GeotiffClipperTest {
         outputStream.close();
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
-        // Should have the same dimension! But all pixels are 'no data'!
+        assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
     }
 
     @Test
@@ -174,7 +178,7 @@ public class GeotiffClipperTest {
         outputStream.close();
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
-        // Should have the same dimension! But with 'no data' areas!
+        assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
     }
 
     @Test
@@ -194,7 +198,7 @@ public class GeotiffClipperTest {
         outputStream.close();
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
-        // Should have the same dimension! But with 'no data' areas!
+        assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
     }
 
     /*
@@ -521,6 +525,98 @@ public class GeotiffClipperTest {
             public void describeTo( Description description ) {
                 description.appendText( "Should have the same width and heigth as the source ( " + widthSource + " * "
                                         + heightSource + ")!" );
+            }
+        };
+    }
+
+    private Matcher<File> hasSamePixels( File sourceFile )
+                            throws Exception {
+
+        BufferedImage sourceImage = ImageIO.read( sourceFile );
+        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
+
+        int[] sourcePixels = null;
+        if ( sourceGrabber.grabPixels() ) {
+            int width = sourceGrabber.getWidth();
+            int height = sourceGrabber.getHeight();
+            sourcePixels = new int[width * height];
+            sourcePixels = (int[]) sourceGrabber.getPixels();
+        }
+        final int[] sourcePixelsToCompare = sourcePixels;
+
+        return new BaseMatcher<File>() {
+
+            @Override
+            public boolean matches( Object item ) {
+                BufferedImage destinationImage;
+                try {
+                    destinationImage = read( (File) item );
+                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
+
+                    int[] destinationPixels = null;
+                    if ( destinationGrabber.grabPixels() ) {
+                        int width = destinationGrabber.getWidth();
+                        int height = destinationGrabber.getHeight();
+                        destinationPixels = new int[width * height];
+                        destinationPixels = (int[]) destinationGrabber.getPixels();
+                    }
+
+                    return Arrays.equals( destinationPixels, sourcePixelsToCompare );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo( Description description ) {
+                description.appendText( "Should contain the same pixels as the source!" );
+            }
+        };
+    }
+
+    private Matcher<File> hasNotSamePixels( File sourceFile )
+                            throws Exception {
+
+        BufferedImage sourceImage = ImageIO.read( sourceFile );
+        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
+
+        int[] sourcePixels = null;
+        if ( sourceGrabber.grabPixels() ) {
+            int width = sourceGrabber.getWidth();
+            int height = sourceGrabber.getHeight();
+            sourcePixels = new int[width * height];
+            sourcePixels = (int[]) sourceGrabber.getPixels();
+        }
+        final int[] sourcePixelsToCompare = sourcePixels;
+
+        return new BaseMatcher<File>() {
+
+            @Override
+            public boolean matches( Object item ) {
+                BufferedImage destinationImage;
+                try {
+                    destinationImage = read( (File) item );
+                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
+
+                    int[] destinationPixels = null;
+                    if ( destinationGrabber.grabPixels() ) {
+                        int width = destinationGrabber.getWidth();
+                        int height = destinationGrabber.getHeight();
+                        destinationPixels = new int[width * height];
+                        destinationPixels = (int[]) destinationGrabber.getPixels();
+                    }
+
+                    return !Arrays.equals( destinationPixels, sourcePixelsToCompare );
+                } catch ( Exception e ) {
+                    e.printStackTrace();
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo( Description description ) {
+                description.appendText( "Should not contain the same pixels as the source!" );
             }
         };
     }
