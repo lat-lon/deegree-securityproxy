@@ -43,7 +43,7 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Contains methods to clip images.
+ * Contains method to clip images.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -53,18 +53,20 @@ import com.vividsolutions.jts.geom.Geometry;
 public interface ImageClipper {
 
     /**
-     * Clips the passed image as defined in the clipping area...
+     * Clips the passed image as defined in the clipping area. If an error occurred a ServiceExecption is written in the
+     * {@link OutputStream}.
      * 
      * @param coverageToClip
-     *            contains the coverage to clip, never <code>null</code>
+     *            contains the coverage to clip - must contain an image! never <code>null</code>
      * @param visibleArea
      *            the geometry covering the area visible for the user, never <code>null</code>
      * @param destination
-     *            {@link OutputStream} to write image, never <code>null</code>
+     *            {@link OutputStream} to write the image or ServiceException if an error occurred during clipping,
+     *            never <code>null</code>
      * @throws IllegalArgumentException
      *             if one one the parameter is <code>null</code>
-     * @throws Exception
-     *             TODO if clipping failed
+     * @return a {@link ResponseClippingReport} containing the information if clipping was required, the visible
+     *         geometry or a failure message if something failed
      */
     ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
                                                   OutputStream destination )

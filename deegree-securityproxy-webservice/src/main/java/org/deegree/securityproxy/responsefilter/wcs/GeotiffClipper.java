@@ -69,7 +69,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
- * Concrete implementation to clip geotiffs.
+ * Concrete implementation to clip geotiffs. The image dimension is kept as in the original image as well as the geotiff
+ * header values. Invisible areas are cropped and in the image stored as no data values.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="mailto:goltz@lat-lon.de">Dirk Stenger</a>
@@ -89,7 +90,6 @@ public class GeotiffClipper implements ImageClipper {
                             throws IllegalArgumentException {
         checkRequiredParameters( imageToClip, visibleArea, destination );
 
-        // / TODO: check if exception was thrown!
         try {
             File imageToClipAsFile = writeToTempFile( imageToClip );
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
@@ -97,23 +97,16 @@ public class GeotiffClipper implements ImageClipper {
             Geometry visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
 
             GeoTiffWriter writer = new GeoTiffWriter( destination );
-            GridCoverage2D geotiffToWrite = (GridCoverage2D) reader.read( null );
+            GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
 
             Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
             if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
-                GridCoverage2D modifiedCoverageToWrite;
-                if ( visibleAreaInImageCrs.intersects( imageEnvelope ) ) {
-                    modifiedCoverageToWrite = executeCropping( geotiffToWrite, visibleAreaInImageCrs );
-                } else {
-                    modifiedCoverageToWrite = executeRescalingToNull( geotiffToWrite );
-                }
-                GridCoverage2D resampledCoverageToWrite = executeResampling( modifiedCoverageToWrite, geotiffToWrite );
-                writer.write( resampledCoverageToWrite, null );
-                Geometry visibleAreaAfterClipping = calculateGeometryVisibleAfterClipping( reader,
-                                                                                           visibleAreaInImageCrs );
+                GridCoverage2D clippedGeotiff = calculateClippedGeotiff( visibleAreaInImageCrs, geotiff, imageEnvelope );
+                writer.write( clippedGeotiff, null );
+                Geometry visibleAreaAfterClipping = calculateAreaVisibleAfterClipping( reader, visibleAreaInImageCrs );
                 return new ResponseClippingReport( visibleAreaAfterClipping, true );
             } else {
-                writer.write( geotiffToWrite, null );
+                writer.write( geotiff, null );
                 return new ResponseClippingReport( imageEnvelope, false );
             }
         } catch ( Exception e ) {
@@ -146,7 +139,7 @@ public class GeotiffClipper implements ImageClipper {
      *            in image crs, never <code>null</code>
      * @return the geometry visible after clipping
      */
-    Geometry calculateGeometryVisibleAfterClipping( GeoTiffReader reader, Geometry visibleArea ) {
+    Geometry calculateAreaVisibleAfterClipping( GeoTiffReader reader, Geometry visibleArea ) {
         Geometry imageGeometry = convertImageEnvelopeToGeometry( reader );
         if ( visibleArea.contains( imageGeometry ) ) {
             return imageGeometry;
@@ -197,13 +190,24 @@ public class GeotiffClipper implements ImageClipper {
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
     }
 
+    private GridCoverage2D calculateClippedGeotiff( Geometry visibleAreaInImageCrs, GridCoverage2D geotiffToWrite,
+                                                    Geometry imageEnvelope ) {
+        GridCoverage2D modifiedCoverageToWrite;
+        if ( visibleAreaInImageCrs.intersects( imageEnvelope ) ) {
+            modifiedCoverageToWrite = executeCropping( geotiffToWrite, visibleAreaInImageCrs );
+        } else {
+            modifiedCoverageToWrite = executeRescalingToNull( geotiffToWrite );
+        }
+        GridCoverage2D resampledCoverageToWrite = executeResampling( modifiedCoverageToWrite, geotiffToWrite );
+        return resampledCoverageToWrite;
+    }
+
     private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry croppingArea ) {
         Crop crop = new Crop();
         ParameterValueGroup cropParameters = crop.getParameters();
         cropParameters.parameter( "Source" ).setValue( coverageToWrite );
         cropParameters.parameter( "ROI" ).setValue( croppingArea );
-        GridCoverage2D croppedCoverageToWrite = (GridCoverage2D) crop.doOperation( cropParameters, null );
-        return croppedCoverageToWrite;
+        return (GridCoverage2D) crop.doOperation( cropParameters, null );
     }
 
     private GridCoverage2D executeResampling( GridCoverage2D coverageToWrite, GridCoverage2D coverageToGetGeometry ) {
@@ -211,8 +215,7 @@ public class GeotiffClipper implements ImageClipper {
         ParameterValueGroup resampleParameters = resample.getParameters();
         resampleParameters.parameter( "Source" ).setValue( coverageToWrite );
         resampleParameters.parameter( "GridGeometry" ).setValue( coverageToGetGeometry.getGridGeometry() );
-        GridCoverage2D resampledCoverageToWrite = (GridCoverage2D) resample.doOperation( resampleParameters, null );
-        return resampledCoverageToWrite;
+        return (GridCoverage2D) resample.doOperation( resampleParameters, null );
     }
 
     private GridCoverage2D executeRescalingToNull( GridCoverage2D coverageToWrite ) {
@@ -220,8 +223,7 @@ public class GeotiffClipper implements ImageClipper {
         ParameterValueGroup rescaleParameters = rescale.getParameters();
         rescaleParameters.parameter( "Source" ).setValue( coverageToWrite );
         rescaleParameters.parameter( "constants" ).setValue( new double[] { 0 } );
-        GridCoverage2D rescaledCoverageToWrite = (GridCoverage2D) rescale.doOperation( rescaleParameters, null );
-        return rescaledCoverageToWrite;
+        return (GridCoverage2D) rescale.doOperation( rescaleParameters, null );
     }
 
     private Geometry convertImageEnvelopeToGeometry( GeoTiffReader reader ) {

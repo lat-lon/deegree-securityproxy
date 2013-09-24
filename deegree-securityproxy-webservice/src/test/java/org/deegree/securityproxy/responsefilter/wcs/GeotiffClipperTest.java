@@ -337,8 +337,8 @@ public class GeotiffClipperTest {
                             throws Exception {
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateGeometryVisibleAfterClipping( geoTiffReader,
-                                                                                                      createWholeImageInvisibleEnvelopeInImageCrs() );
+        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateAreaVisibleAfterClipping( geoTiffReader,
+                                                                                                  createWholeImageInvisibleEnvelopeInImageCrs() );
         double area = geometryVisibleAfterClipping.getArea();
         assertThat( area, is( 0d ) );
     }
@@ -348,8 +348,8 @@ public class GeotiffClipperTest {
                             throws Exception {
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateGeometryVisibleAfterClipping( geoTiffReader,
-                                                                                                      createWholeImageVisibleEnvelopeInImageCrs() );
+        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateAreaVisibleAfterClipping( geoTiffReader,
+                                                                                                  createWholeImageVisibleEnvelopeInImageCrs() );
         double area = geometryVisibleAfterClipping.getArea();
         assertThat( area, is( 1.501452E8 ) );
     }
@@ -359,8 +359,8 @@ public class GeotiffClipperTest {
                             throws Exception {
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateGeometryVisibleAfterClipping( geoTiffReader,
-                                                                                                      createImageInsersectsEnvelopeInImageCrs() );
+        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateAreaVisibleAfterClipping( geoTiffReader,
+                                                                                                  createImageInsersectsEnvelopeInImageCrs() );
         double area = geometryVisibleAfterClipping.getArea();
 
         // Expected 4.30674E7
