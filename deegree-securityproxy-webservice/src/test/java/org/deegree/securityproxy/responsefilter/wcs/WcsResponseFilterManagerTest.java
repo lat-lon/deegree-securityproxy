@@ -248,9 +248,9 @@ public class WcsResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithExceptionShouldReturnCorrectResponse()
+    public void testFilterResponseWithExceptionShouldReturnExceptiontResponse()
                             throws Exception {
-        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithException();
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithExceptionAndStatusCode200();
         Authentication mockAuthentication = mockAuthentication();
         ResponseClippingReport filterResponse = wcsResponseFilterManager.filterResponse( mockedServletResponse,
                                                                                          createWcsGetCoverageRequest(),
@@ -263,11 +263,54 @@ public class WcsResponseFilterManagerTest {
     @Test
     public void testFilterResponseWithExceptionShouldNotAddHeader()
                             throws Exception {
-        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithException();
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithExceptionAndStatusCode200();
         Authentication mockAuthentication = mockAuthentication();
         wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
                                                  mockAuthentication );
         verify( mockedServletResponse, times( 0 ) ).addHeader( eq( REQUEST_AREA_HEADER_KEY ), anyString() );
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionShouldReturnCopyException()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithExceptionAndStatusCode200();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
+                                                 mockAuthentication );
+        verify( mockedServletResponse ).getRealOutputStream();
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionStatusCodeShouldReturnExceptionResponse()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithoutExceptionAndStatusCode400();
+        Authentication mockAuthentication = mockAuthentication();
+        ResponseClippingReport filterResponse = wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                         createWcsGetCoverageRequest(),
+                                                                                         mockAuthentication );
+        assertThat( filterResponse.isFiltered(), is( false ) );
+        assertThat( filterResponse.getFailure(), is( SERVICE_EXCEPTION_MSG ) );
+        assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionStatusCodeShouldNotAddHeader()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithoutExceptionAndStatusCode400();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
+                                                 mockAuthentication );
+        verify( mockedServletResponse, times( 0 ) ).addHeader( eq( REQUEST_AREA_HEADER_KEY ), anyString() );
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionStatusCodeShouldReturnCopyException()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithoutExceptionAndStatusCode400();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
+                                                 mockAuthentication );
+        verify( mockedServletResponse ).getRealOutputStream();
     }
 
     /*
@@ -345,15 +388,27 @@ public class WcsResponseFilterManagerTest {
     private StatusCodeResponseBodyWrapper mockResponseWrapper()
                             throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
+        when( mockedServletResponse.getStatus() ).thenReturn( 200 );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
         when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
         return mockedServletResponse;
     }
 
-    private StatusCodeResponseBodyWrapper mockResponseWrapperWithException()
+    private StatusCodeResponseBodyWrapper mockResponseWrapperWithExceptionAndStatusCode200()
                             throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
-        when( mockedServletResponse.getBufferedStream() ).thenReturn( parseServiceException() );
+        when( mockedServletResponse.getStatus() ).thenReturn( 200 );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( parseServiceException(), parseServiceException() );
+        when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        when( mockedServletResponse.getRealOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        return mockedServletResponse;
+    }
+
+    private StatusCodeResponseBodyWrapper mockResponseWrapperWithoutExceptionAndStatusCode400()
+                            throws IOException {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
+        when( mockedServletResponse.getStatus() ).thenReturn( 400 );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
         when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
         return mockedServletResponse;
     }
