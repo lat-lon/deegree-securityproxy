@@ -74,7 +74,6 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -271,7 +270,8 @@ public class WcsResponseFilterManagerTest {
         Authentication mockAuthentication = mockAuthentication();
         wcsResponseFilterManager.filterResponse( mockedServletResponse,
                                                  createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
-        assertThat( bufferingStream.toString(), CoreMatchers.is( DEFAULT_BODY ) );
+
+        assertThat( bufferingStream.toString(), is( DEFAULT_BODY ) );
     }
 
     @Test

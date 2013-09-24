@@ -91,7 +91,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     static final int DEFAULT_STATUS_CODE = 500;
 
-    static final String DEFAULT_BODY = "Clipping failed: ${EXCEPTION}";
+    static final String DEFAULT_BODY = "Clipping failed!";
 
     private final String exceptionBody;
 
