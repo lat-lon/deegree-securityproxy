@@ -38,6 +38,8 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
+import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_BODY;
+import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
@@ -55,6 +57,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -71,6 +74,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -112,13 +116,11 @@ public class WcsResponseFilterManagerTest {
 
     private static Geometry geometrySimple;
 
-    private static Geometry geometry;
+    private static Geometry geometryFailure;
 
     private static Geometry geometryEmpty;
 
     private static ResponseClippingReport mockReport;
-
-    private static ResponseClippingReport mockFailureReport;
 
     private static ResponseClippingReport mockEmptyReport;
 
@@ -138,21 +140,24 @@ public class WcsResponseFilterManagerTest {
         geometrySimple = wktReader.read( GEOMETRY_SIMPLE );
         mockReport = new ResponseClippingReport( geometrySimple, true );
 
-        geometry = wktReader.read( GEOMETRY_FAILURE );
-        mockFailureReport = new ResponseClippingReport( REPORT_FAILURE );
+        geometryFailure = wktReader.read( GEOMETRY_FAILURE );
 
         geometryEmpty = new GeometryFactory().toGeometry( new Envelope() );
         mockEmptyReport = new ResponseClippingReport( geometryEmpty, true );
     }
 
     @Before
-    public void resetMocks() {
+    public void resetMocks()
+                            throws Exception, ClippingException {
         reset( imageClipper );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometrySimple ),
                                                   (OutputStream) anyObject() ) ).thenReturn( mockReport );
+        ClippingException exception = mock( ClippingException.class );
+        when( exception.getMessage() ).thenReturn( REPORT_FAILURE );
         when(
-              imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometry ), (OutputStream) anyObject() ) ).thenReturn( mockFailureReport );
+              imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometryFailure ),
+                                                  (OutputStream) anyObject() ) ).thenThrow( exception );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometryEmpty ),
                                                   (OutputStream) anyObject() ) ).thenReturn( mockEmptyReport );
@@ -245,6 +250,28 @@ public class WcsResponseFilterManagerTest {
         wcsResponseFilterManager.filterResponse( mockedServletResponse,
                                                  createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
         verify( mockedServletResponse, times( 0 ) ).addHeader( eq( REQUEST_AREA_HEADER_KEY ), anyString() );
+    }
+
+    @Test
+    public void testFilterResponseWithFailureResponseShouldSetStatusCode()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                 createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
+        verify( mockedServletResponse, times( 1 ) ).setStatus( DEFAULT_STATUS_CODE );
+    }
+
+    @Test
+    public void testFilterResponseWithFailureResponseShouldWriteException()
+                            throws Exception {
+        final ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
+        ServletOutputStream stream = createStream( bufferingStream );
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithOutputStream( stream );
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                 createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
+        assertThat( bufferingStream.toString(), CoreMatchers.is( DEFAULT_BODY ) );
     }
 
     @Test
@@ -391,7 +418,30 @@ public class WcsResponseFilterManagerTest {
         when( mockedServletResponse.getStatus() ).thenReturn( 200 );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
         when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        when( mockedServletResponse.getRealOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
         return mockedServletResponse;
+    }
+
+    private StatusCodeResponseBodyWrapper mockResponseWrapperWithOutputStream( ServletOutputStream stream )
+                            throws IOException {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
+        when( mockedServletResponse.getStatus() ).thenReturn( 200 );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
+        when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        when( mockedServletResponse.getRealOutputStream() ).thenReturn( stream );
+        return mockedServletResponse;
+    }
+
+    private ServletOutputStream createStream( final ByteArrayOutputStream bufferingStream ) {
+        ServletOutputStream stream = new ServletOutputStream() {
+
+            @Override
+            public void write( int b )
+                                    throws IOException {
+                bufferingStream.write( b );
+            }
+        };
+        return stream;
     }
 
     private StatusCodeResponseBodyWrapper mockResponseWrapperWithExceptionAndStatusCode200()

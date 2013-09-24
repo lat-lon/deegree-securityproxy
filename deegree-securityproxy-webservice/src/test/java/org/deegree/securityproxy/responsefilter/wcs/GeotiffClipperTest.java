@@ -271,6 +271,24 @@ public class GeotiffClipperTest {
     }
 
     /*
+     * #calculateClippedImage() - ExceptionHandling
+     */
+    @Test(expected = ClippingException.class)
+    public void testCalculateClippedImageThrowingExceptionShouldReturnExceptionReport()
+                            throws Exception {
+
+        File sourceFile = createExceptionFile();
+        File destinationFile = createNewTempFile();
+
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+
+        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
+                                              outputStream );
+
+    }
+
+    /*
      * #isClippingRequired()
      */
 
@@ -400,6 +418,10 @@ public class GeotiffClipperTest {
     private File createNewTempFile()
                             throws IOException {
         return File.createTempFile( GeotiffClipperTest.class.getSimpleName(), ".tif" );
+    }
+
+    private File createExceptionFile() {
+        return new File( GeotiffClipperTest.class.getResource( "service_exception.xml" ).getPath() );
     }
 
     private InputStream createInputStreamFrom( File file )

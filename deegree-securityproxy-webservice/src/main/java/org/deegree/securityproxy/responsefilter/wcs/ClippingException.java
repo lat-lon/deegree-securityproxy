@@ -35,41 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-
-import com.vividsolutions.jts.geom.Geometry;
-
 /**
- * Contains method to clip images.
+ * Indicates that an error occurred during clipping.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ImageClipper {
+public class ClippingException extends Exception {
 
-    /**
-     * Clips the passed image as defined in the clipping area.
-     * 
-     * @param coverageToClip
-     *            contains the coverage to clip - must contain an image! never <code>null</code>
-     * @param visibleArea
-     *            the geometry covering the area visible for the user, never <code>null</code>
-     * @param destination
-     *            {@link OutputStream} to write the image, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if one one the parameter is <code>null</code>
-     * @throws ClippingException
-     *             if an error occurred during clipping
-     * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
-     *         geometry
-     */
-    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
-                                                  OutputStream destination )
-                            throws IllegalArgumentException, ClippingException;
+    private static final long serialVersionUID = -2684310743504404279L;
+
+    public ClippingException( Exception e ) {
+        super( e );
+    }
 
 }

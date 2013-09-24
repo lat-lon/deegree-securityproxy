@@ -37,8 +37,12 @@ package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.copy;
+import static org.apache.commons.io.IOUtils.write;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -75,6 +79,8 @@ import com.vividsolutions.jts.io.WKTWriter;
  */
 public class WcsResponseFilterManager implements ResponseFilterManager {
 
+    private final static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
+
     static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
     static final String NOT_A_COVERAGE_REQUEST_MSG = "Request was not a GetCoverage-Request - clipping not required.";
@@ -83,7 +89,35 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     static final String NO_LIMITING_GEOMETRY_MSG = "No limiting geometry defined!";
 
-    private static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
+    static final int DEFAULT_STATUS_CODE = 500;
+
+    static final String DEFAULT_BODY = "Clipping failed: ${EXCEPTION}";
+
+    private final String exceptionBody;
+
+    private final int exceptionStatusCode;
+
+    /**
+     * Instantiates a new {@link GeotiffClipper} with default exception body (DEFAULT_BODY) and status code
+     * (DEFAULT_STATUS_CODE).
+     */
+    public WcsResponseFilterManager() {
+        this.exceptionBody = DEFAULT_BODY;
+        this.exceptionStatusCode = DEFAULT_STATUS_CODE;
+    }
+
+    /**
+     * Instantiates a new {@link GeotiffClipper} with the passed exception body and status code.
+     * 
+     * @param pathToExceptionFile
+     *            if null or not available, the default exception body (DEFAULT_BODY) is used
+     * @param exceptionStatusCode
+     *            the exception status code
+     */
+    public WcsResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode ) {
+        this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
+        this.exceptionStatusCode = exceptionStatusCode;
+    }
 
     @Autowired
     private GeometryRetriever geometryRetriever;
@@ -161,11 +195,18 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                             throws IOException {
         InputStream imageAsStream = servletResponse.getBufferedStream();
         OutputStream destination = servletResponse.getRealOutputStream();
-        ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
-                                                                                        clippingGeometry, destination );
+        ResponseClippingReport clippedImageReport;
+        try {
+            clippedImageReport = imageClipper.calculateClippedImage( imageAsStream, clippingGeometry, destination );
 
-        addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
-        return clippedImageReport;
+            addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
+            return clippedImageReport;
+        } catch ( ClippingException e ) {
+            servletResponse.setStatus( exceptionStatusCode );
+            write( exceptionBody, destination );
+            return new ResponseClippingReport( e.getMessage() );
+        }
+
     }
 
     private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
@@ -209,6 +250,26 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     private boolean isGetCoverageRequest( WcsRequest wcsRequest ) {
         return GETCOVERAGE.equals( wcsRequest.getOperationType() );
+    }
+
+    private String readExceptionBodyFromFile( String pathToExceptionFile ) {
+        LOG.info( "Reading exception body from " + pathToExceptionFile );
+        if ( pathToExceptionFile != null && pathToExceptionFile.length() > 0 ) {
+            InputStream exceptionAsStream = null;
+            try {
+                File exceptionFile = new File( pathToExceptionFile );
+                exceptionAsStream = new FileInputStream( exceptionFile );
+                return IOUtils.toString( exceptionAsStream );
+            } catch ( FileNotFoundException e ) {
+                LOG.warn( "Could not read exception message from file: File not found! Defaulting to " + DEFAULT_BODY );
+            } catch ( IOException e ) {
+                LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY + "Reason: "
+                          + e.getMessage() );
+            } finally {
+                closeQuietly( exceptionAsStream );
+            }
+        }
+        return DEFAULT_BODY;
     }
 
 }

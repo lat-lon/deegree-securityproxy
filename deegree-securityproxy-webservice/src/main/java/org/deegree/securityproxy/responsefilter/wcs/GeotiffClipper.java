@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static org.apache.commons.io.IOUtils.copy;
 import static org.geotools.geometry.jts.JTS.transform;
 import static org.geotools.referencing.CRS.decode;
 import static org.geotools.referencing.CRS.findMathTransform;
@@ -46,7 +47,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -87,7 +87,7 @@ public class GeotiffClipper implements ImageClipper {
     @Override
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination )
-                            throws IllegalArgumentException {
+                            throws IllegalArgumentException, ClippingException {
         checkRequiredParameters( imageToClip, visibleArea, destination );
 
         try {
@@ -111,7 +111,7 @@ public class GeotiffClipper implements ImageClipper {
             }
         } catch ( Exception e ) {
             LOG.error( "An error occured during clipping the image!", e );
-            return new ResponseClippingReport( e.getMessage() );
+            throw new ClippingException( e );
         }
     }
 
@@ -175,7 +175,7 @@ public class GeotiffClipper implements ImageClipper {
                             throws IOException, FileNotFoundException {
         File tempFile = File.createTempFile( "imageToClip", ".tif" );
         FileOutputStream output = new FileOutputStream( tempFile );
-        IOUtils.copy( coverageToClip, output );
+        copy( coverageToClip, output );
         output.close();
         return tempFile;
     }
