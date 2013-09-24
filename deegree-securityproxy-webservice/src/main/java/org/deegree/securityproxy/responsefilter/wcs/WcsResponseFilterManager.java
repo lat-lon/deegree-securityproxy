@@ -138,14 +138,17 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 if ( clippingGeometry == null ) {
+                    writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
                     return new ResponseClippingReport( NO_LIMITING_GEOMETRY_MSG );
                 }
                 return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
+                writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
                 return new ResponseClippingReport( e.getMessage() );
             } catch ( IOException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
+                writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
                 return new ResponseClippingReport( e.getMessage() );
             }
 
@@ -202,11 +205,26 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
             return clippedImageReport;
         } catch ( ClippingException e ) {
-            servletResponse.setStatus( exceptionStatusCode );
-            write( exceptionBody, destination );
+            writeExceptionBodyAndSetExceptionStatusCode( servletResponse, destination );
             return new ResponseClippingReport( e.getMessage() );
         }
 
+    }
+
+    private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse ) {
+        try {
+            OutputStream destination = servletResponse.getRealOutputStream();
+            writeExceptionBodyAndSetExceptionStatusCode( servletResponse, destination );
+        } catch ( IOException e ) {
+            LOG.error( "An error occurred during writing the exception response!", e );
+        }
+    }
+
+    private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse,
+                                                              OutputStream destination )
+                            throws IOException {
+        servletResponse.setStatus( exceptionStatusCode );
+        write( exceptionBody, destination );
     }
 
     private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )

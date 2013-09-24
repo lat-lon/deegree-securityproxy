@@ -41,6 +41,7 @@ import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_BODY;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
+import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NO_LIMITING_GEOMETRY_MSG;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.hamcrest.CoreMatchers.is;
@@ -104,6 +105,8 @@ public class WcsResponseFilterManagerTest {
     private static final String COVERAGE_NAME_FAILURE = "failureCoverageName";
 
     private static final String COVERAGE_NAME_EMPTY = "emptyCoverageName";
+
+    private static final String COVERAGE_NAME_NO_GEOM = "noGeomCoverageName";
 
     private static final String GEOMETRY_SIMPLE = "POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))";
 
@@ -252,17 +255,7 @@ public class WcsResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithFailureResponseShouldSetStatusCode()
-                            throws Exception {
-        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
-        Authentication mockAuthentication = mockAuthentication();
-        wcsResponseFilterManager.filterResponse( mockedServletResponse,
-                                                 createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
-        verify( mockedServletResponse, times( 1 ) ).setStatus( DEFAULT_STATUS_CODE );
-    }
-
-    @Test
-    public void testFilterResponseWithFailureResponseShouldWriteException()
+    public void testFilterResponseWithFailureResponseShouldWriteExceptionResponse()
                             throws Exception {
         final ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
         ServletOutputStream stream = createStream( bufferingStream );
@@ -272,6 +265,7 @@ public class WcsResponseFilterManagerTest {
                                                  createWcsGetCoverageRequestInvokeFailureResponse(), mockAuthentication );
 
         assertThat( bufferingStream.toString(), is( DEFAULT_BODY ) );
+        verify( mockedServletResponse, times( 1 ) ).setStatus( DEFAULT_STATUS_CODE );
     }
 
     @Test
@@ -340,6 +334,34 @@ public class WcsResponseFilterManagerTest {
         verify( mockedServletResponse ).getRealOutputStream();
     }
 
+    @Test
+    public void testFilterResponseWithoutGeometryShouldReturnNoLimitationFailureReport()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
+        Authentication mockAuthentication = mockAuthentication();
+        ResponseClippingReport response = wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                   createWcsGetCoverageRequestWithoutGeom(),
+                                                                                   mockAuthentication );
+        assertThat( response.getFailure(), is( NO_LIMITING_GEOMETRY_MSG ) );
+        assertThat( response.isFiltered(), is( false ) );
+        assertThat( response.getReturnedVisibleArea(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testFilterResponseWithoutGeometryShouldWriteExceptionResponse()
+                            throws Exception {
+
+        final ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
+        ServletOutputStream stream = createStream( bufferingStream );
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithOutputStream( stream );
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequestWithoutGeom(),
+                                                 mockAuthentication );
+
+        assertThat( bufferingStream.toString(), is( DEFAULT_BODY ) );
+        verify( mockedServletResponse, times( 1 ) ).setStatus( DEFAULT_STATUS_CODE );
+    }
+
     /*
      * #filterResponse() - Exceptions
      */
@@ -402,6 +424,10 @@ public class WcsResponseFilterManagerTest {
 
     private WcsRequest createWcsGetCoverageRequestInvokeFailureResponse() {
         return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_FAILURE ) );
+    }
+
+    private WcsRequest createWcsGetCoverageRequestWithoutGeom() {
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_NO_GEOM ) );
     }
 
     private WcsRequest createWcsGetCoverageRequestWithNullCoverageName() {
@@ -469,6 +495,7 @@ public class WcsResponseFilterManagerTest {
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY_SIMPLE ) );
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
+        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
         WcsUser wcsUser = new WcsUser( "user", "password", Collections.<WcsPermission> emptyList(), filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
