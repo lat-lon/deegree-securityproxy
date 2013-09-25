@@ -40,6 +40,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.awt.image.BufferedImage;
@@ -57,6 +58,8 @@ import javax.imageio.ImageIO;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
+import org.geotools.geometry.GeneralEnvelope;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -394,7 +397,6 @@ public class GeotiffClipperTest {
     @Test
     public void testTransformVisibleAreaToImageCrs()
                             throws Exception {
-
         File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
 
@@ -403,7 +405,28 @@ public class GeotiffClipperTest {
                                                                                       geoTiffReader );
         Geometry expectedGeometry = new GeometryFactory().toGeometry( new Envelope( 214532.475581639, 3470063.34743009,
                                                                                     534994.655061707, 9329005.18235732 ) );
+
         assertThat( transformedGeometry, is( expectedGeometry ) );
+    }
+
+    /*
+     * #transformToVisibleAreaCrs()
+     */
+    @Test
+    public void testTransformToVisibleAreaCrs()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
+
+        Geometry geoTiffEnvelopeAsGeometry = convertImageEnvelopeToGeometry( geoTiffReader );
+        Geometry transformedGeometry = geotiffClipper.transformToVisibleAreaCrs( geoTiffEnvelopeAsGeometry,
+                                                                                 geoTiffReader );
+        Geometry expectedGeometry = new GeometryFactory().toGeometry( new Envelope( -111.625671116814,
+                                                                                    -111.500779260647,
+                                                                                    39.9990119740282, 40.1255737525128 ) );
+        Geometry expectedGeometryBuffered = expectedGeometry.buffer( 0.01 );
+
+        assertTrue( expectedGeometryBuffered.contains( transformedGeometry ) );
     }
 
     private GeoTiffReader createGeoTiffReader( File tiff )
@@ -641,6 +664,13 @@ public class GeotiffClipperTest {
                 description.appendText( "Should not contain the same pixels as the source!" );
             }
         };
+    }
+
+    private Geometry convertImageEnvelopeToGeometry( GeoTiffReader reader ) {
+        GeometryFactory geometryFactory = new GeometryFactory();
+        GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
+        ReferencedEnvelope envelope = new ReferencedEnvelope( imageEnvelope );
+        return geometryFactory.toGeometry( envelope );
     }
 
 }

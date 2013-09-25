@@ -104,10 +104,13 @@ public class GeotiffClipper implements ImageClipper {
                 GridCoverage2D clippedGeotiff = calculateClippedGeotiff( visibleAreaInImageCrs, geotiff, imageEnvelope );
                 writer.write( clippedGeotiff, null );
                 Geometry visibleAreaAfterClipping = calculateAreaVisibleAfterClipping( reader, visibleAreaInImageCrs );
-                return new ResponseClippingReport( visibleAreaAfterClipping, true );
+                Geometry visibleAreaAfterClippingInOriginalCrs = transformToVisibleAreaCrs( visibleAreaAfterClipping,
+                                                                                            reader );
+                return new ResponseClippingReport( visibleAreaAfterClippingInOriginalCrs, true );
             } else {
                 writer.write( geotiff, null );
-                return new ResponseClippingReport( imageEnvelope, false );
+                Geometry imageEnvelopeInOriginalCrs = transformToVisibleAreaCrs( imageEnvelope, reader );
+                return new ResponseClippingReport( imageEnvelopeInOriginalCrs, false );
             }
         } catch ( Exception e ) {
             LOG.error( "An error occured during clipping the image!", e );
@@ -168,6 +171,27 @@ public class GeotiffClipper implements ImageClipper {
 
         MathTransform transformVisibleAreaToImageCrs = findMathTransform( visibleAreaCRS, imageCRS );
         return transform( geometryToTransform, transformVisibleAreaToImageCrs );
+    }
+
+    /**
+     * Transforms the passed geometry into the CRS of the visible area
+     * 
+     * @param geometryToTransform
+     *            in coordinate system of the image to clip, never <code>null</code>
+     * @param reader
+     *            never <code>null</code>
+     * @return the transformed geometry, never <code>null</code>
+     * @throws NoSuchAuthorityCodeException
+     * @throws FactoryException
+     * @throws TransformException
+     */
+    Geometry transformToVisibleAreaCrs( Geometry geometryToTransform, GeoTiffReader reader )
+                            throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+        CoordinateReferenceSystem imageCRS = reader.getCrs();
+        CoordinateReferenceSystem visibleAreaCRS = decode( VISIBLE_AREA_CRS, true );
+
+        MathTransform transformToVisibleAreaCrs = findMathTransform( imageCRS, visibleAreaCRS );
+        return transform( geometryToTransform, transformToVisibleAreaCrs );
     }
 
     // TODO: dirty hack! coverage should be read from input stream directly
