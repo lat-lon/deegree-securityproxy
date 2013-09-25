@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
+import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -55,6 +56,9 @@ public class SecurityFilter implements Filter {
     private SecurityRequestResposeLogger proxyReportLogger;
 
     @Autowired
+    private ResponseFilterReportLogger filterReportLogger;
+
+    @Autowired
     private ResponseFilterManager filterManager;
 
     @Override
@@ -85,6 +89,7 @@ public class SecurityFilter implements Filter {
             if ( filterManager.supports( owsRequest.getClass() ) ) {
                 ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
                                                                                     authentication );
+                filterReportLogger.logResponseFilterReport( filterResponse );
                 LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
             } else {
                 LOG.debug( "No filter configured for " + owsRequest.getClass() );

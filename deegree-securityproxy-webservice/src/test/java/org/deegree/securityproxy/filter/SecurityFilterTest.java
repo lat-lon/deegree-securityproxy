@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
+import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -79,6 +80,9 @@ public class SecurityFilterTest {
     private SecurityRequestResposeLogger logger;
 
     @Autowired
+    private ResponseFilterReportLogger loggerResponseFilterReportMock;
+
+    @Autowired
     private WcsRequestParser requestParserMock;
 
     @Autowired
@@ -125,6 +129,13 @@ public class SecurityFilterTest {
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ) );
+    }
+
+    @Test
+    public void testLoggingOfResponseFilterReportShouldNeInvoked()
+                            throws IOException, ServletException {
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject() );
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -177,6 +188,7 @@ public class SecurityFilterTest {
         RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( true );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+
         verify( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
                                                             (OwsRequest) anyObject(), (Authentication) anyObject() );
     }
