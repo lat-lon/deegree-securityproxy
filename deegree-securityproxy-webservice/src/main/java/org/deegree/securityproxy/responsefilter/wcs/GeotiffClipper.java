@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static java.io.File.createTempFile;
 import static org.apache.commons.io.IOUtils.copy;
 import static org.geotools.geometry.jts.JTS.transform;
 import static org.geotools.referencing.CRS.decode;
@@ -95,19 +96,23 @@ public class GeotiffClipper implements ImageClipper {
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
             Geometry visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
+            LOG.debug( "Transformed visible geometry is: " + visibleAreaInImageCrs );
 
             GeoTiffWriter writer = new GeoTiffWriter( destination );
             GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
 
             Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
             if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
+                LOG.debug( "Clipping is required!" );
                 GridCoverage2D clippedGeotiff = calculateClippedGeotiff( visibleAreaInImageCrs, geotiff, imageEnvelope );
                 writer.write( clippedGeotiff, null );
                 Geometry visibleAreaAfterClipping = calculateAreaVisibleAfterClipping( reader, visibleAreaInImageCrs );
+                LOG.debug( "Visible area after clipping is " + visibleAreaAfterClipping );
                 Geometry visibleAreaAfterClippingInOriginalCrs = transformToVisibleAreaCrs( visibleAreaAfterClipping,
                                                                                             reader );
                 return new ResponseClippingReport( visibleAreaAfterClippingInOriginalCrs, true );
             } else {
+                LOG.debug( "Clipping is not required!" );
                 writer.write( geotiff, null );
                 Geometry imageEnvelopeInOriginalCrs = transformToVisibleAreaCrs( imageEnvelope, reader );
                 return new ResponseClippingReport( imageEnvelopeInOriginalCrs, false );
@@ -197,7 +202,8 @@ public class GeotiffClipper implements ImageClipper {
     // TODO: dirty hack! coverage should be read from input stream directly
     private File writeToTempFile( InputStream coverageToClip )
                             throws IOException, FileNotFoundException {
-        File tempFile = File.createTempFile( "imageToClip", ".tif" );
+        File tempFile = createTempFile( "imageToClip", ".tif" );
+        LOG.trace( "Response image was written into file: " + tempFile.getAbsolutePath() );
         FileOutputStream output = new FileOutputStream( tempFile );
         copy( coverageToClip, output );
         output.close();

@@ -15,6 +15,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
@@ -23,6 +24,7 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.WcsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -38,6 +40,8 @@ import org.springframework.security.core.Authentication;
  * @version $Revision: $, $Date: $
  */
 public class SecurityFilter implements Filter {
+
+    private final static Logger LOG = Logger.getLogger( SecurityFilter.class );
 
     private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
 
@@ -79,7 +83,9 @@ public class SecurityFilter implements Filter {
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
             if ( filterManager.supports( owsRequest.getClass() ) ) {
-                filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
+                ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
+                                                                                    authentication );
+                LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
             } else {
                 wrappedResponse.copyBufferedStreamToRealStream();
             }

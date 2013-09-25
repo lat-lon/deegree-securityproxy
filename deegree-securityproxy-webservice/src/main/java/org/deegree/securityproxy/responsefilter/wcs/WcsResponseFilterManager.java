@@ -130,13 +130,16 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
+            LOG.info(  "Apply filter for response of request " + wcsRequest );
             try {
                 if ( isException( servletResponse ) ) {
+                    LOG.debug( "Response contains an exception!" );
                     copyBufferedStream( servletResponse );
                     return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 if ( clippingGeometry == null ) {
+                    LOG.debug( "Clipping geoemtry could not retrieved!" );
                     writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
                     return new ResponseClippingReport( NO_LIMITING_GEOMETRY_MSG );
                 }
@@ -150,8 +153,8 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                 writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
                 return new ResponseClippingReport( e.getMessage() );
             }
-
         }
+        LOG.debug( "Request was not a GetCoverage request. Will be ignored by this filter manager!" );
         copyBufferedStream( servletResponse );
         return new ResponseClippingReport( NOT_A_COVERAGE_REQUEST_MSG );
     }
