@@ -193,9 +193,9 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                     Geometry clippingGeometry )
                             throws IOException {
-        InputStream imageAsStream = servletResponse.getBufferedStream();
-        ByteArrayOutputStream destination = new ByteArrayOutputStream();
         try {
+            InputStream imageAsStream = servletResponse.getBufferedStream();
+            ByteArrayOutputStream destination = new ByteArrayOutputStream();
             ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
                                                                                             clippingGeometry,
                                                                                             destination );
@@ -205,7 +205,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             destination.writeTo( servletResponse.getRealOutputStream() );
             return clippedImageReport;
         } catch ( ClippingException e ) {
-            writeExceptionBodyAndSetExceptionStatusCode( servletResponse, destination );
+            writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
             return new ResponseClippingReport( e.getMessage() );
         }
 

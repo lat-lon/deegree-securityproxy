@@ -460,7 +460,6 @@ public class WcsResponseFilterManagerTest {
 
     private ServletOutputStream createStream( final ByteArrayOutputStream bufferingStream ) {
         ServletOutputStream stream = new ServletOutputStream() {
-
             @Override
             public void write( int b )
                                     throws IOException {
