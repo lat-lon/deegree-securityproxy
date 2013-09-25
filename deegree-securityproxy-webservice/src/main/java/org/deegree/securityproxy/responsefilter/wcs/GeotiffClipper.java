@@ -96,7 +96,7 @@ public class GeotiffClipper implements ImageClipper {
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
             Geometry visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
-            LOG.debug( "Transformed visible geometry is: " + visibleAreaInImageCrs );
+            LOG.debug( "Transformed visible geometry: " + visibleAreaInImageCrs );
 
             GeoTiffWriter writer = new GeoTiffWriter( destination );
             GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
@@ -107,7 +107,7 @@ public class GeotiffClipper implements ImageClipper {
                 GridCoverage2D clippedGeotiff = calculateClippedGeotiff( visibleAreaInImageCrs, geotiff, imageEnvelope );
                 writer.write( clippedGeotiff, null );
                 Geometry visibleAreaAfterClipping = calculateAreaVisibleAfterClipping( reader, visibleAreaInImageCrs );
-                LOG.debug( "Visible area after clipping is " + visibleAreaAfterClipping );
+                LOG.debug( "Visible area after clipping: " + visibleAreaAfterClipping );
                 Geometry visibleAreaAfterClippingInOriginalCrs = transformToVisibleAreaCrs( visibleAreaAfterClipping,
                                                                                             reader );
                 return new ResponseClippingReport( visibleAreaAfterClippingInOriginalCrs, true );

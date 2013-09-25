@@ -130,7 +130,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
-            LOG.info(  "Apply filter for response of request " + wcsRequest );
+            LOG.info( "Apply filter for response of request " + wcsRequest );
             try {
                 if ( isException( servletResponse ) ) {
                     LOG.debug( "Response contains an exception!" );
@@ -139,7 +139,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 if ( clippingGeometry == null ) {
-                    LOG.debug( "Clipping geoemtry could not retrieved!" );
+                    LOG.debug( "Clipping geometry could not retrieved!" );
                     writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
                     return new ResponseClippingReport( NO_LIMITING_GEOMETRY_MSG );
                 }
@@ -194,9 +194,10 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                             throws IOException {
         InputStream imageAsStream = servletResponse.getBufferedStream();
         OutputStream destination = servletResponse.getRealOutputStream();
-        ResponseClippingReport clippedImageReport;
         try {
-            clippedImageReport = imageClipper.calculateClippedImage( imageAsStream, clippingGeometry, destination );
+            ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
+                                                                                            clippingGeometry,
+                                                                                            destination );
 
             addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
             return clippedImageReport;
@@ -257,6 +258,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     private void addHeaderInfoIfNoFailureOccurred( StatusCodeResponseBodyWrapper servletResponse,
                                                    ResponseClippingReport clippedImageReport ) {
         if ( noFailureOccured( clippedImageReport ) ) {
+            LOG.debug( "Add header '" + REQUEST_AREA_HEADER_KEY + "'" );
             WKTWriter writer = new WKTWriter();
             String requestAreaWkt = writer.write( clippedImageReport.getReturnedVisibleArea() );
             servletResponse.addHeader( REQUEST_AREA_HEADER_KEY, requestAreaWkt );

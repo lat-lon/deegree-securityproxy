@@ -65,7 +65,6 @@ public class SecurityFilter implements Filter {
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
                             throws IOException, ServletException {
-        LOG.debug( "FILTER" );
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
@@ -84,12 +83,11 @@ public class SecurityFilter implements Filter {
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
             if ( filterManager.supports( owsRequest.getClass() ) ) {
-                LOG.debug( "Filter is configured for " + owsRequest.getClass() );
                 ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
                                                                                     authentication );
                 LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
             } else {
-                LOG.debug( "No filter was configured for " + owsRequest.getClass() );
+                LOG.debug( "No filter configured for " + owsRequest.getClass() );
                 wrappedResponse.copyBufferedStreamToRealStream();
             }
         }
