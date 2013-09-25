@@ -51,7 +51,7 @@ public class StatusCodeResponseBodyWrapper extends HttpServletResponseWrapper {
     @Override
     public void addHeader( String name, String value ) {
         if ( !"Transfer-Encoding".equals( name ) ) {
-            super.setHeader( name, value );
+            super.addHeader( name, value );
         }
     }
 
