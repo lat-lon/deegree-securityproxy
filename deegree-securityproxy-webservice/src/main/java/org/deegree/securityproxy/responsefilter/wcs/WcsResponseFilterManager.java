@@ -39,6 +39,7 @@ import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -193,13 +194,15 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                                                                     Geometry clippingGeometry )
                             throws IOException {
         InputStream imageAsStream = servletResponse.getBufferedStream();
-        OutputStream destination = servletResponse.getRealOutputStream();
+        ByteArrayOutputStream destination = new ByteArrayOutputStream();
         try {
             ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
                                                                                             clippingGeometry,
                                                                                             destination );
 
             addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
+            // required to set the header (must be set BEFORE any data is written to the response)
+            destination.writeTo( servletResponse.getRealOutputStream() );
             return clippedImageReport;
         } catch ( ClippingException e ) {
             writeExceptionBodyAndSetExceptionStatusCode( servletResponse, destination );
@@ -258,9 +261,9 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     private void addHeaderInfoIfNoFailureOccurred( StatusCodeResponseBodyWrapper servletResponse,
                                                    ResponseClippingReport clippedImageReport ) {
         if ( noFailureOccured( clippedImageReport ) ) {
-            LOG.debug( "Add header '" + REQUEST_AREA_HEADER_KEY + "'" );
             WKTWriter writer = new WKTWriter();
             String requestAreaWkt = writer.write( clippedImageReport.getReturnedVisibleArea() );
+            LOG.debug( "Add header '" + REQUEST_AREA_HEADER_KEY + "': " + requestAreaWkt );
             servletResponse.addHeader( REQUEST_AREA_HEADER_KEY, requestAreaWkt );
         }
     }
