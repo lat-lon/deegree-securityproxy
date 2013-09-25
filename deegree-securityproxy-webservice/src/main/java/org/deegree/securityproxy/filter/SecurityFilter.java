@@ -80,6 +80,8 @@ public class SecurityFilter implements Filter {
             chain.doFilter( httpRequest, wrappedResponse );
             if ( filterManager.supports( owsRequest.getClass() ) ) {
                 filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
+            } else {
+                wrappedResponse.copyBufferedStreamToRealStream();
             }
         }
         handleAuthorizationReport( uuid, httpRequest, wrappedResponse, authorizationReport );

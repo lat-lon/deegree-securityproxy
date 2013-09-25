@@ -44,6 +44,55 @@ public class StatusCodeResponseBodyWrapperTest {
         assertThat( (int) wrapper.getBufferedBody()[0], is( 1 ) );
     }
 
+    @Test
+    public void testCopyBufferedStreamToRealStreamWithWriter()
+                            throws Exception {
+        String textToWrite = "TEXT";
+        ByteArrayOutputStream realStream = new ByteArrayOutputStream();
+        HttpServletResponse mockResponse = mockResponse( realStream );
+
+        StatusCodeResponseBodyWrapper wrapper = new StatusCodeResponseBodyWrapper( mockResponse );
+        PrintWriter writer = wrapper.getWriter();
+        writer.write( textToWrite );
+
+        wrapper.copyBufferedStreamToRealStream();
+
+        String writtenTextToRealStream = realStream.toString();
+        assertThat( writtenTextToRealStream, is( textToWrite ) );
+    }
+
+    @Test
+    public void testCopyBufferedStreamToRealStreamWithStream()
+                            throws Exception {
+        String textToWrite = "TEXT";
+        ByteArrayOutputStream realStream = new ByteArrayOutputStream();
+        HttpServletResponse mockResponse = mockResponse( realStream );
+
+        StatusCodeResponseBodyWrapper wrapper = new StatusCodeResponseBodyWrapper( mockResponse );
+        ServletOutputStream writer = wrapper.getOutputStream();
+        writer.print( textToWrite );
+
+        wrapper.copyBufferedStreamToRealStream();
+
+        String writtenTextToRealStream = realStream.toString();
+        assertThat( writtenTextToRealStream, is( textToWrite ) );
+    }
+
+    @Test
+    public void testGetRealStreamWithoutCopyShouldBeEmpty()
+                            throws Exception {
+        String textToWrite = "TEXT";
+        ByteArrayOutputStream realStream = new ByteArrayOutputStream();
+        HttpServletResponse mockResponse = mockResponse( realStream );
+
+        StatusCodeResponseBodyWrapper wrapper = new StatusCodeResponseBodyWrapper( mockResponse );
+        ServletOutputStream writer = wrapper.getOutputStream();
+        writer.print( textToWrite );
+
+        String writtenTextToRealStream = realStream.toString();
+        assertThat( writtenTextToRealStream, is( "" ) );
+    }
+
     private HttpServletResponse mockResponse()
                             throws IOException {
         HttpServletResponse mock = mock( HttpServletResponse.class );
@@ -56,6 +105,21 @@ public class StatusCodeResponseBodyWrapperTest {
             public void write( int b )
                                     throws IOException {
                 inner.write( b );
+            }
+        } );
+        return mock;
+    }
+
+    private HttpServletResponse mockResponse( final ByteArrayOutputStream realStream )
+                            throws IOException {
+        HttpServletResponse mock = mock( HttpServletResponse.class );
+        when( mock.getWriter() ).thenReturn( new PrintWriter( new ByteArrayOutputStream() ) );
+        when( mock.getOutputStream() ).thenReturn( new ServletOutputStream() {
+
+            @Override
+            public void write( int b )
+                                    throws IOException {
+                realStream.write( b );
             }
         } );
         return mock;

@@ -36,7 +36,6 @@
 package org.deegree.securityproxy.responsefilter.wcs;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.copy;
 import static org.apache.commons.io.IOUtils.write;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 
@@ -48,7 +47,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
@@ -127,13 +125,14 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     @Override
     public ResponseClippingReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
-                                                  Authentication auth ) {
+                                                  Authentication auth )
+                            throws IOException {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             try {
                 if ( isException( servletResponse ) ) {
-                    copyExceptionToResponse( servletResponse );
+                    copyBufferedStream( servletResponse );
                     return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
@@ -153,6 +152,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             }
 
         }
+        copyBufferedStream( servletResponse );
         return new ResponseClippingReport( NOT_A_COVERAGE_REQUEST_MSG );
     }
 
@@ -186,13 +186,6 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         }
     }
 
-    private void copyExceptionToResponse( StatusCodeResponseBodyWrapper servletResponse )
-                            throws IOException {
-        InputStream bufferedInputStream = servletResponse.getBufferedStream();
-        ServletOutputStream outputStream = servletResponse.getRealOutputStream();
-        copy( bufferedInputStream, outputStream );
-    }
-
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                     Geometry clippingGeometry )
                             throws IOException {
@@ -218,6 +211,11 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         } catch ( IOException e ) {
             LOG.error( "An error occurred during writing the exception response!", e );
         }
+    }
+
+    private void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
+                            throws IOException {
+        servletResponse.copyBufferedStreamToRealStream();
     }
 
     private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse,

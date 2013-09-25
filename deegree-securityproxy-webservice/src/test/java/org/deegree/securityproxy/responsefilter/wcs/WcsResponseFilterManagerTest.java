@@ -54,7 +54,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -191,17 +190,7 @@ public class WcsResponseFilterManagerTest {
      */
 
     @Test
-    public void testFilterResponseWithCapabilitiesResponseShouldDoNothing()
-                            throws Exception {
-        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
-        Authentication mockAuthentication = mockAuthentication();
-        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCapabilitiesRequest(),
-                                                 mockAuthentication );
-        verifyZeroInteractions( mockedServletResponse );
-    }
-
-    @Test
-    public void testFilterResponseWithCapabilitiesResponseShouldReturnCorrectReport()
+    public void testFilterResponseWithCapabilitiesResponseShouldReturnNotACoverageReport()
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
         Authentication mockAuthentication = mockAuthentication();
@@ -211,6 +200,16 @@ public class WcsResponseFilterManagerTest {
         assertThat( filterResponse.isFiltered(), is( false ) );
         assertThat( filterResponse.getFailure(), is( NOT_A_COVERAGE_REQUEST_MSG ) );
         assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
+    }
+
+    @Test
+    public void testFilterResponseWithCapabilitiesResponseShouldCopyBufferedStream()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
+        Authentication mockAuthentication = mockAuthentication();
+        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCapabilitiesRequest(),
+                                                 mockAuthentication );
+        verify( mockedServletResponse ).copyBufferedStreamToRealStream();
     }
 
     @Test
@@ -292,13 +291,13 @@ public class WcsResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithExceptionShouldReturnCopyException()
+    public void testFilterResponseWithExceptionShouldCopyBufferedStream()
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithExceptionAndStatusCode200();
         Authentication mockAuthentication = mockAuthentication();
         wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
                                                  mockAuthentication );
-        verify( mockedServletResponse ).getRealOutputStream();
+        verify( mockedServletResponse ).copyBufferedStreamToRealStream();
     }
 
     @Test
@@ -325,13 +324,14 @@ public class WcsResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithExceptionStatusCodeShouldReturnCopyException()
+    public void testFilterResponseWithExceptionStatusCodeShouldCopyBufferedStream()
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithoutExceptionAndStatusCode400();
         Authentication mockAuthentication = mockAuthentication();
         wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
                                                  mockAuthentication );
-        verify( mockedServletResponse ).getRealOutputStream();
+        verify( mockedServletResponse ).copyBufferedStreamToRealStream();
+        ;
     }
 
     @Test
