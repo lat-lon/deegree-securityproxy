@@ -31,6 +31,7 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.request.WcsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -93,6 +94,9 @@ public class SecurityFilterTest {
         WcsRequest wcsRequestMockToReturn = mock( WcsRequest.class );
         doReturn( wcsRequestMockToReturn ).when( requestParserMock ).parse( (HttpServletRequest) anyObject() );
         doReturn( true ).when( responseFilterManagerMock ).supports( wcsRequestMockToReturn.getClass() );
+        doReturn( mock( ResponseFilterReport.class ) ).when( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
+                                                                                                         (WcsRequest) anyObject(),
+                                                                                                         (Authentication) anyObject() );
     }
 
     @Test
@@ -275,4 +279,5 @@ public class SecurityFilterTest {
 
         };
     }
+
 }
