@@ -69,6 +69,11 @@ public class ResponseClippingReport implements ResponseFilterReport {
                                            + "clipped. Returned visible area: " + returnedVisibleArea;
     }
 
+    @Override
+    public String toString() {
+        return getMessage();
+    }
+
     /**
      * 
      * @return the failure message if an error occurred during clipping.
