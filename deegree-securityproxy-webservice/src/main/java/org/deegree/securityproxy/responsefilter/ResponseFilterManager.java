@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter;
 
+import java.io.IOException;
+
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -66,9 +68,12 @@ public interface ResponseFilterManager {
      * @throws IllegalArgumentException
      *             if one of the required arguments is <code>null</code> or the passed {@link OwsRequest} is not
      *             supported
+     * @throws IOException
+     *             if an I/O error occurres during writing in the real output stream
      */
-    ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request, Authentication auth )
-                            throws IllegalArgumentException;
+    ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+                                         Authentication auth )
+                            throws IllegalArgumentException, IOException;
 
     /**
      * Checks if the passed class can be filtered or not.

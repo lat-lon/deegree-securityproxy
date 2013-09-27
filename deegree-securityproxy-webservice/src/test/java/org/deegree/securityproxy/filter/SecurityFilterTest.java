@@ -25,12 +25,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
+import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.request.WcsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -78,6 +80,9 @@ public class SecurityFilterTest {
     private SecurityRequestResposeLogger logger;
 
     @Autowired
+    private ResponseFilterReportLogger loggerResponseFilterReportMock;
+
+    @Autowired
     private WcsRequestParser requestParserMock;
 
     @Autowired
@@ -93,6 +98,9 @@ public class SecurityFilterTest {
         WcsRequest wcsRequestMockToReturn = mock( WcsRequest.class );
         doReturn( wcsRequestMockToReturn ).when( requestParserMock ).parse( (HttpServletRequest) anyObject() );
         doReturn( true ).when( responseFilterManagerMock ).supports( wcsRequestMockToReturn.getClass() );
+        doReturn( mock( ResponseFilterReport.class ) ).when( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
+                                                                                                         (WcsRequest) anyObject(),
+                                                                                                         (Authentication) anyObject() );
     }
 
     @Test
@@ -121,6 +129,13 @@ public class SecurityFilterTest {
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ) );
+    }
+
+    @Test
+    public void testLoggingOfResponseFilterReportShouldNeInvoked()
+                            throws IOException, ServletException {
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject() );
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -158,8 +173,8 @@ public class SecurityFilterTest {
         filter.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
 
         ArgumentCaptor<String> uuidArgumentFirstInvocation = ArgumentCaptor.forClass( String.class );
-        verify( response, times( 2 ) ).setHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );
-        verify( response, times( 2 ) ).setHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );
+        verify( response, times( 2 ) ).addHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );
+        verify( response, times( 2 ) ).addHeader( argThat( is( "serial_uuid" ) ), uuidArgumentFirstInvocation.capture() );
 
         String firstUuidArgument = uuidArgumentFirstInvocation.getAllValues().get( 0 );
         String secondUuidArgument = uuidArgumentFirstInvocation.getAllValues().get( 1 );
@@ -173,6 +188,7 @@ public class SecurityFilterTest {
         RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( true );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+
         verify( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
                                                             (OwsRequest) anyObject(), (Authentication) anyObject() );
     }
@@ -275,4 +291,5 @@ public class SecurityFilterTest {
 
         };
     }
+
 }

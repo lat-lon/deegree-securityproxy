@@ -28,7 +28,10 @@
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.request.WcsRequestParser" />
 
-  <bean name="responseFilterManager" class="org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager" />
+  <bean name="responseFilterManager" class="org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager">
+    <constructor-arg value="${clipping_exception_file_path}" />
+    <constructor-arg value="${clipping_failed_status_code}" />
+  </bean>
 
   <bean name="geometryRetriever" class="org.deegree.securityproxy.responsefilter.wcs.GeometryRetrieverImpl" />
 

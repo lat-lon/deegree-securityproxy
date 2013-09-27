@@ -157,7 +157,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
     }
 
     private void createGeometryFilter( List<WcsGeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
-        String coverageName = getAsString( row, serviceNameColumn );
+        String coverageName = getAsString( row, layerNameColumn );
         if ( coverageName != null && !coverageName.isEmpty() ) {
             String geometryLimit = getAsString( row, geometryLimitColumn );
             WcsGeometryFilterInfo wcsGeometryFilter = new WcsGeometryFilterInfo( coverageName, geometryLimit );
