@@ -33,26 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.logging;
+package org.deegree.securityproxy.responsefilter.wcs;
 
 /**
- * Encapsulates information about the filtering step
+ * Indicates that an error occurred during clipping.
  * 
- * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResponseFilterReport {
+public class ClippingException extends Exception {
 
-    /**
-     * @return <code>true</code> if filtering was applied, <code>false</code> otherwise
-     */
-    boolean isFiltered();
+    private static final long serialVersionUID = -2684310743504404279L;
 
-    /**
-     * @return the message containing details about the filtering or error messages
-     */
-    String getMessage();
+    public ClippingException( Exception e ) {
+        super( e );
+    }
 
 }

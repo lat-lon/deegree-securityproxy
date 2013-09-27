@@ -96,4 +96,10 @@ public class WcsRequest implements OwsRequest {
         return Collections.unmodifiableList( coverageNames );
     }
 
+    @Override
+    public String toString() {
+        return "WcsRequest [operationType=" + operationType + ", serviceVersion=" + serviceVersion + ", coverageNames="
+               + coverageNames + "]";
+    }
+
 }

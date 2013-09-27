@@ -38,10 +38,12 @@ package org.deegree.securityproxy.responsefilter.wcs;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Contains methods to clip images.
+ * Contains method to clip images.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -51,20 +53,23 @@ import com.vividsolutions.jts.geom.Geometry;
 public interface ImageClipper {
 
     /**
-     * Clips the passed image as defined in the clipping area...
+     * Clips the passed image as defined in the clipping area.
      * 
      * @param coverageToClip
-     *            contains the coverage to clip, never <code>null</code>
+     *            contains the coverage to clip - must contain an image! never <code>null</code>
      * @param visibleArea
-     *            the geometry covering the area visible for the user, never <code>null</code>
+     *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
      * @param destination
-     *            {@link OutputStream} to write image, never <code>null</code>
+     *            {@link OutputStream} to write the image, never <code>null</code>
      * @throws IllegalArgumentException
      *             if one one the parameter is <code>null</code>
-     * @throws Exception
-     *             TODO if clipping failed
+     * @throws ClippingException
+     *             if an error occurred during clipping
+     * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
+     *         geometry
      */
-    void calculateClippedImage( InputStream coverageToClip, Geometry visibleArea, OutputStream destination )
-                            throws IllegalArgumentException;
+    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
+                                                  OutputStream destination )
+                            throws IllegalArgumentException, ClippingException;
 
 }

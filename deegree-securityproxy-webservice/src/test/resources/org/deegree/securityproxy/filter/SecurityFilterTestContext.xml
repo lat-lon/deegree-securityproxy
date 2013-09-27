@@ -7,13 +7,17 @@
   <bean id="proxyReportLoggerMock" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="org.deegree.securityproxy.logger.SecurityRequestResposeLogger" />
   </bean>
-  
+
+  <bean id="filterReportLoggerMock" class="org.mockito.Mockito" factory-method="mock">
+    <constructor-arg value="org.deegree.securityproxy.logger.ResponseFilterReportLogger" />
+  </bean>
+
   <bean id="responseFilterMock" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="org.deegree.securityproxy.responsefilter.ResponseFilterManager" />
   </bean>
 
-  <bean id="requestAuthorizationManagerMock" class="org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager"  />
-  
+  <bean id="requestAuthorizationManagerMock" class="org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager" />
+
   <bean id="wcsRequestParser" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="org.deegree.securityproxy.request.WcsRequestParser" />
   </bean>

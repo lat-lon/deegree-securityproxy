@@ -1,5 +1,7 @@
 package org.deegree.securityproxy.filter;
 
+import static org.apache.commons.io.IOUtils.copy;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -49,7 +51,7 @@ public class StatusCodeResponseBodyWrapper extends HttpServletResponseWrapper {
     @Override
     public void addHeader( String name, String value ) {
         if ( !"Transfer-Encoding".equals( name ) ) {
-            super.setHeader( name, value );
+            super.addHeader( name, value );
         }
     }
 
@@ -92,6 +94,17 @@ public class StatusCodeResponseBodyWrapper extends HttpServletResponseWrapper {
         isWriterUsed = true;
         this.bufferingWriter = new CopyPrintWriter( super.getWriter() );
         return bufferingWriter;
+    }
+
+    /**
+     * Copies the content of the internal buffered stream to the real outputstream of the underlying http response
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
+     */
+    public void copyBufferedStreamToRealStream()
+                            throws IOException {
+        copy( getBufferedStream(), getRealOutputStream() );
     }
 
     /**

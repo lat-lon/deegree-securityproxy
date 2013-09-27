@@ -15,14 +15,17 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
+import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.WcsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -39,6 +42,8 @@ import org.springframework.security.core.Authentication;
  */
 public class SecurityFilter implements Filter {
 
+    private final static Logger LOG = Logger.getLogger( SecurityFilter.class );
+
     private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
 
     @Autowired
@@ -49,6 +54,9 @@ public class SecurityFilter implements Filter {
 
     @Autowired
     private SecurityRequestResposeLogger proxyReportLogger;
+
+    @Autowired
+    private ResponseFilterReportLogger filterReportLogger;
 
     @Autowired
     private ResponseFilterManager filterManager;
@@ -67,10 +75,10 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
-        OwsRequest wcsRequest = null;
+        OwsRequest owsRequest = null;
         try {
-            wcsRequest = parser.parse( httpRequest );
-            authorizationReport = requestAuthorizationManager.decide( authentication, wcsRequest );
+            owsRequest = parser.parse( httpRequest );
+            authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false );
         } catch ( IllegalArgumentException e ) {
@@ -78,8 +86,14 @@ public class SecurityFilter implements Filter {
         }
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
-            if ( filterManager.supports( wcsRequest.getClass() ) ) {
-                filterManager.filterResponse( wrappedResponse, wcsRequest, authentication );
+            if ( filterManager.supports( owsRequest.getClass() ) ) {
+                ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
+                                                                                    authentication );
+                filterReportLogger.logResponseFilterReport( filterResponse );
+                LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
+            } else {
+                LOG.debug( "No filter configured for " + owsRequest.getClass() );
+                wrappedResponse.copyBufferedStreamToRealStream();
             }
         }
         handleAuthorizationReport( uuid, httpRequest, wrappedResponse, authorizationReport );

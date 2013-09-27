@@ -33,26 +33,29 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.logging;
+package org.deegree.securityproxy.logger;
+
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 
 /**
- * Encapsulates information about the filtering step
+ * Interface for loggers that can handle the logging of {@link ResponseFilterReport}s.
  * 
- * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ResponseFilterReport {
+public interface ResponseFilterReportLogger {
 
     /**
-     * @return <code>true</code> if filtering was applied, <code>false</code> otherwise
+     * Logs a {@link ResponseFilterReport}
+     * 
+     * @param report
+     *            never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if report is <code>null</code>
      */
-    boolean isFiltered();
-
-    /**
-     * @return the message containing details about the filtering or error messages
-     */
-    String getMessage();
+    public void logResponseFilterReport( ResponseFilterReport report )
+                            throws IllegalArgumentException;
 
 }
