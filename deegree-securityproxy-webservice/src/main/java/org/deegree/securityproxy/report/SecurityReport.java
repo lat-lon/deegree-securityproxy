@@ -102,7 +102,7 @@ public class SecurityReport {
         builder.append( " |Reponse was: " );
         String sent = isResponseSuccessfullySent ? "successful." : "not successful.";
         builder.append( sent );
-        builder.append( " " + message );
+        builder.append( " " + message + "||" );
         return builder.toString();
     }
 
