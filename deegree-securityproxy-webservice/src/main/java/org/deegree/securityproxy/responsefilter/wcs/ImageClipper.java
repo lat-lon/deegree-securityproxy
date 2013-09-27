@@ -58,7 +58,7 @@ public interface ImageClipper {
      * @param coverageToClip
      *            contains the coverage to clip - must contain an image! never <code>null</code>
      * @param visibleArea
-     *            the geometry covering the area visible for the user, never <code>null</code>
+     *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
      * @param destination
      *            {@link OutputStream} to write the image, never <code>null</code>
      * @throws IllegalArgumentException
