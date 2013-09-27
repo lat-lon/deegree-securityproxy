@@ -100,7 +100,7 @@ public class GeotiffClipper implements ImageClipper {
                 visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
                 LOG.debug( "Transformed visible geometry: " + visibleAreaInImageCrs );
             } else {
-                LOG.debug( "No clipping area given!" );
+                LOG.debug( "Clipping geometry is full extend as no clipping area is defined!" );
             }
 
             GeoTiffWriter writer = new GeoTiffWriter( destination );

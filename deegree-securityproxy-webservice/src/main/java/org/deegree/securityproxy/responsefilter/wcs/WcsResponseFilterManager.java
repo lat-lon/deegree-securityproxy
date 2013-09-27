@@ -137,9 +137,6 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                     return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
-                if ( clippingGeometry == null ) {
-                    LOG.debug( "Clipping geometry is full extend as no clipping area is defined!" );
-                }
                 return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
