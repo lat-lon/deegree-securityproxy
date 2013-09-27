@@ -86,8 +86,6 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
 
-    static final String NO_LIMITING_GEOMETRY_MSG = "No limiting geometry defined!";
-
     static final int DEFAULT_STATUS_CODE = 500;
 
     static final String DEFAULT_BODY = "Clipping failed!";
@@ -140,9 +138,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                 }
                 Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, wcsRequest );
                 if ( clippingGeometry == null ) {
-                    LOG.debug( "Clipping geometry could not retrieved!" );
-                    writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                    return new ResponseClippingReport( NO_LIMITING_GEOMETRY_MSG );
+                    LOG.debug( "Clipping geometry is full extend as no clipping area is defined!" );
                 }
                 return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
             } catch ( ParseException e ) {
