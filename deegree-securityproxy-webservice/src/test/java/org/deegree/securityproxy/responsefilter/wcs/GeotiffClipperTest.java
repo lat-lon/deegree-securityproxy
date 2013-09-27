@@ -95,12 +95,6 @@ public class GeotiffClipperTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCalculateClippedImageWithNullClippingGeometryShouldFail()
-                            throws Exception {
-        geotiffClipper.calculateClippedImage( mockInputStream(), null, mockOutputStream() );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullOutputStreamShouldFail()
                             throws Exception {
         geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null );
@@ -110,6 +104,24 @@ public class GeotiffClipperTest {
      * #calculateClippedImage() - Dimension
      */
 
+    @Test
+    public void testCalculateClippedImageWithNullClippingGeometryShouldReturnWholeImage()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
+        
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
+        assertThat( destinationFile, hasSamePixels( sourceFile ) );
+    }
+    
     @Test
     public void testCalculateClippedImageInsideVisibleArea()
                             throws Exception {

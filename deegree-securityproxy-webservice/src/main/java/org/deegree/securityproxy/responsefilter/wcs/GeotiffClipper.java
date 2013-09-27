@@ -89,14 +89,17 @@ public class GeotiffClipper implements ImageClipper {
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination )
                             throws IllegalArgumentException, ClippingException {
-        checkRequiredParameters( imageToClip, visibleArea, destination );
+        checkRequiredParameters( imageToClip, destination );
 
         try {
             File imageToClipAsFile = writeToTempFile( imageToClip );
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
-            Geometry visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
-            LOG.debug( "Transformed visible geometry: " + visibleAreaInImageCrs );
+            Geometry visibleAreaInImageCrs = null;
+            if ( visibleArea != null && !"".equals( visibleArea ) ) {
+                visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
+                LOG.debug( "Transformed visible geometry: " + visibleAreaInImageCrs );
+            }
 
             GeoTiffWriter writer = new GeoTiffWriter( destination );
             GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
@@ -210,12 +213,10 @@ public class GeotiffClipper implements ImageClipper {
         return tempFile;
     }
 
-    private void checkRequiredParameters( InputStream imageToClip, Geometry visibleArea, OutputStream toWriteImage )
+    private void checkRequiredParameters( InputStream imageToClip, OutputStream toWriteImage )
                             throws IllegalArgumentException {
         if ( imageToClip == null )
             throw new IllegalArgumentException( "Image to clip must not be null!" );
-        if ( visibleArea == null )
-            throw new IllegalArgumentException( "Wcs request must not be null!" );
         if ( toWriteImage == null )
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
     }
@@ -264,6 +265,9 @@ public class GeotiffClipper implements ImageClipper {
     }
 
     private boolean isClippingRequired( Geometry imageGeometry, Geometry clippingGeometry ) {
+        if ( clippingGeometry == null ) {
+            return false;
+        }
         return !clippingGeometry.contains( imageGeometry );
     }
 
