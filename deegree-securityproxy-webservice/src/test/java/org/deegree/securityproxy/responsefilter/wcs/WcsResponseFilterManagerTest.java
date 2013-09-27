@@ -41,7 +41,6 @@ import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_BODY;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
-import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NO_LIMITING_GEOMETRY_MSG;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,6 +49,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -162,6 +162,9 @@ public class WcsResponseFilterManagerTest {
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometryEmpty ),
                                                   (OutputStream) anyObject() ) ).thenReturn( mockEmptyReport );
+        when(
+              imageClipper.calculateClippedImage( (InputStream) anyObject(), (Geometry) isNull(),
+                                                  (OutputStream) anyObject() ) ).thenReturn( mockReport );
     }
 
     @Test
@@ -335,31 +338,14 @@ public class WcsResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithoutGeometryShouldReturnNoLimitationFailureReport()
+    public void testFilterResponseWithoutGeometryShouldReturnCorrectReport()
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
         Authentication mockAuthentication = mockAuthentication();
-        ResponseClippingReport response = wcsResponseFilterManager.filterResponse( mockedServletResponse,
-                                                                                   createWcsGetCoverageRequestWithoutGeom(),
-                                                                                   mockAuthentication );
-        assertThat( response.getFailure(), is( NO_LIMITING_GEOMETRY_MSG ) );
-        assertThat( response.isFiltered(), is( false ) );
-        assertThat( response.getReturnedVisibleArea(), is( nullValue() ) );
-    }
-
-    @Test
-    public void testFilterResponseWithoutGeometryShouldWriteExceptionResponse()
-                            throws Exception {
-
-        final ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
-        ServletOutputStream stream = createStream( bufferingStream );
-        StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithOutputStream( stream );
-        Authentication mockAuthentication = mockAuthentication();
-        wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequestWithoutGeom(),
-                                                 mockAuthentication );
-
-        assertThat( bufferingStream.toString(), is( DEFAULT_BODY ) );
-        verify( mockedServletResponse, times( 1 ) ).setStatus( DEFAULT_STATUS_CODE );
+        ResponseClippingReport filterResponse = wcsResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                         createWcsGetCoverageRequestWithoutGeom(),
+                                                                                         mockAuthentication );
+        assertThat( filterResponse, is( mockReport ) );
     }
 
     /*
