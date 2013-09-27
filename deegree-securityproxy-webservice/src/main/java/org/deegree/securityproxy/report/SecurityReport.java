@@ -99,7 +99,7 @@ public class SecurityReport {
         builder.append( ipAddressOfRequestingUser );
         builder.append( ", target URL: " );
         builder.append( targetUri );
-        builder.append( " |Reponse was: " );
+        builder.append( " |Response was: " );
         String sent = isResponseSuccessfullySent ? "successful." : "not successful.";
         builder.append( sent );
         builder.append( " " + message + "||" );
