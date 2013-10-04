@@ -48,6 +48,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.imageio.ImageReader;
+import javax.imageio.metadata.IIOInvalidTreeException;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.stream.FileImageInputStream;
+
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.coverage.grid.GridCoverage2D;
@@ -58,6 +63,7 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.image.io.ImageIOExt;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
@@ -65,6 +71,8 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import com.sun.media.imageio.plugins.tiff.TIFFDirectory;
+import com.sun.media.imageio.plugins.tiff.TIFFField;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -93,6 +101,7 @@ public class GeotiffClipper implements ImageClipper {
 
         try {
             File imageToClipAsFile = writeToTempFile( imageToClip );
+
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
             Geometry visibleAreaInImageCrs = null;
@@ -103,8 +112,9 @@ public class GeotiffClipper implements ImageClipper {
                 LOG.debug( "Clipping geometry is full extend as no clipping area is defined!" );
             }
 
-            GeoTiffWriter writer = new GeoTiffWriter( destination );
             GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
+            GeoTiffWriter writer = new GeoTiffWriter( destination );
+            setMetadata( imageToClipAsFile, writer );
 
             Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
             if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
@@ -221,6 +231,28 @@ public class GeotiffClipper implements ImageClipper {
             throw new IllegalArgumentException( "Image to clip must not be null!" );
         if ( toWriteImage == null )
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
+    }
+
+    private void setMetadata( File imageToClipAsFile, GeoTiffWriter writer )
+                            throws FileNotFoundException, IOException, IIOInvalidTreeException {
+        TIFFDirectory tiffDirectory = retrieveTiffDirectory( imageToClipAsFile );
+        TIFFField[] allTiffFields = tiffDirectory.getTIFFFields();
+        for ( TIFFField tiffField : allTiffFields ) {
+            int tagNumber = tiffField.getTagNumber();
+            String value = tiffField.getValueAsString( 0 );
+            // TODO: Why do those two tags make the geotiff unreadable?
+            if ( tagNumber != 284 && tagNumber != 339 ) {
+                writer.setMetadataValue( Integer.toString( tagNumber ), value );
+            }
+        }
+    }
+
+    private TIFFDirectory retrieveTiffDirectory( File imageToClipAsFile )
+                            throws FileNotFoundException, IOException {
+        ImageReader reader = ImageIOExt.getImageioReader( new FileImageInputStream( imageToClipAsFile ) );
+        reader.setInput( new FileImageInputStream( imageToClipAsFile ) );
+        IIOMetadata metadata = reader.getImageMetadata( 0 );
+        return TIFFDirectory.createFromMetadata( metadata );
     }
 
     private GridCoverage2D calculateClippedGeotiff( Geometry visibleAreaInImageCrs, GridCoverage2D geotiffToWrite,
