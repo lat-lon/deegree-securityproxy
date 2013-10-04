@@ -332,13 +332,14 @@ public class GeotiffClipperTest {
         TIFFDirectory tiffDirectorySource = retrieveTiffDirectory( sourceFile );
         TIFFDirectory tiffDirectoryDestination = retrieveTiffDirectory( destinationFile );
 
-        String compressionSource = getValueOfTiffField( BaselineTIFFTagSet.TAG_COMPRESSION, tiffDirectorySource );
-        String compressionDestination = getValueOfTiffField( BaselineTIFFTagSet.TAG_COMPRESSION,
-                                                             tiffDirectoryDestination );
+        String compressionSource = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_COMPRESSION, tiffDirectorySource );
+        String compressionDestination = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_COMPRESSION,
+                                                                  tiffDirectoryDestination );
 
-        String resolutionUnitSource = getValueOfTiffField( BaselineTIFFTagSet.TAG_RESOLUTION_UNIT, tiffDirectorySource );
-        String resolutionUnitDestination = getValueOfTiffField( BaselineTIFFTagSet.TAG_RESOLUTION_UNIT,
-                                                                tiffDirectoryDestination );
+        String resolutionUnitSource = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_RESOLUTION_UNIT,
+                                                                tiffDirectorySource );
+        String resolutionUnitDestination = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_RESOLUTION_UNIT,
+                                                                     tiffDirectoryDestination );
 
         assertThat( compressionDestination, is( compressionSource ) );
         assertThat( resolutionUnitDestination, is( resolutionUnitSource ) );
@@ -734,7 +735,7 @@ public class GeotiffClipperTest {
         return TIFFDirectory.createFromMetadata( metadata );
     }
 
-    private String getValueOfTiffField( int tiffId, TIFFDirectory tiffDirectorySource ) {
+    private String retrieveValueOfTiffField( int tiffId, TIFFDirectory tiffDirectorySource ) {
         TIFFField tiffField = tiffDirectorySource.getTIFFField( tiffId );
         return tiffField.getValueAsString( 0 );
     }
