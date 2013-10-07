@@ -107,35 +107,44 @@ public class SecurityFilterTest {
     public void testLoggingFilterShouldGenerateReportWithSerialUuid()
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectSerialUuid() ) );
+        verify( logger ).logProxyReportInfo( (SecurityReport) anyObject(), argThat( hasCorrectSerialUuid() ) );
     }
 
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectIpAddress() ) );
+        verify( logger ).logProxyReportInfo( argThat( hasCorrectIpAddress() ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingShouldGenerateReportWithCorrectTargetUrl()
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrl() ) );
+        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrl() ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingShouldGenerateCorrectReportForSuccessfulReponse()
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ) );
+        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingOfResponseFilterReportShouldNeInvoked()
                             throws IOException, ServletException {
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-        verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject() );
+        verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject(),
+                                                                          (String) anyObject() );
+    }
+
+    @Test
+    public void testLoggingOfResponseFilterReportShouldGenerateReportWithSerialUuid()
+                            throws IOException, ServletException {
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+        verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject(),
+                                                                          argThat( hasCorrectSerialUuid() ) );
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -144,7 +153,7 @@ public class SecurityFilterTest {
         RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
-        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ) );
+        verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ), (String) anyObject() );
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -154,7 +163,7 @@ public class SecurityFilterTest {
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
                          new FilterChainTestImpl( SC_BAD_REQUEST ) );
-        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ) );
+        verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ), (String) anyObject() );
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -213,12 +222,12 @@ public class SecurityFilterTest {
         return mock( HttpServletResponse.class );
     }
 
-    private Matcher<SecurityReport> hasCorrectSerialUuid() {
-        return new BaseMatcher<SecurityReport>() {
+    private Matcher<String> hasCorrectSerialUuid() {
+        return new BaseMatcher<String>() {
 
             public boolean matches( Object item ) {
-                SecurityReport report = (SecurityReport) item;
-                return SERIAL_UUID_LENGTH == report.getSerialUuid().length();
+                String uuid = (String) item;
+                return SERIAL_UUID_LENGTH == uuid.length();
             }
 
             public void describeTo( Description description ) {

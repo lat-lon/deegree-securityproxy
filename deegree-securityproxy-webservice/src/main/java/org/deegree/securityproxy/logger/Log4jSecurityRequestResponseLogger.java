@@ -43,19 +43,19 @@ public class Log4jSecurityRequestResponseLogger implements SecurityRequestRespos
     }
 
     @Override
-    public void logProxyReportInfo( SecurityReport report )
+    public void logProxyReportInfo( SecurityReport report, String serialUuid )
                             throws IllegalArgumentException {
         if ( report == null )
             throw new IllegalArgumentException( "ProxyReport must not be null!" );
-        PROXY_LOG.info( report.toString() );
+        PROXY_LOG.info( serialUuid + "| " + report.toString() );
     }
 
     @Override
-    public void logResponseFilterReport( ResponseFilterReport report )
+    public void logResponseFilterReport( ResponseFilterReport report, String serialUuid )
                             throws IllegalArgumentException {
         if ( report == null )
             throw new IllegalArgumentException( "ResponseFilterReport must not be null!" );
-        FILTER_REPORT_LOG.info( report.toString() );
+        FILTER_REPORT_LOG.info( serialUuid + "| " + report.toString() );
     }
 
     private void configureLogging() {
