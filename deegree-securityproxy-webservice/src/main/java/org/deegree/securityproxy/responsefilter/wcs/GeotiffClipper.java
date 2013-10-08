@@ -48,14 +48,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOInvalidTreeException;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.metadata.IIOMetadataNode;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.coverage.processing.operation.Resample;
 import org.geotools.coverage.processing.operation.Rescale;
@@ -63,16 +61,15 @@ import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.io.ImageIOExt;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import com.sun.media.imageio.plugins.tiff.TIFFDirectory;
-import com.sun.media.imageio.plugins.tiff.TIFFField;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -101,7 +98,6 @@ public class GeotiffClipper implements ImageClipper {
 
         try {
             File imageToClipAsFile = writeToTempFile( imageToClip );
-
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
             Geometry visibleAreaInImageCrs = null;
@@ -114,7 +110,7 @@ public class GeotiffClipper implements ImageClipper {
 
             GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
             GeoTiffWriter writer = new GeoTiffWriter( destination );
-            setMetadata( imageToClipAsFile, writer );
+            setMetadata( reader, writer );
 
             Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
             if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
@@ -233,26 +229,57 @@ public class GeotiffClipper implements ImageClipper {
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
     }
 
-    private void setMetadata( File imageToClipAsFile, GeoTiffWriter writer )
-                            throws FileNotFoundException, IOException, IIOInvalidTreeException {
-        TIFFDirectory tiffDirectory = retrieveTiffDirectory( imageToClipAsFile );
-        TIFFField[] allTiffFields = tiffDirectory.getTIFFFields();
-        for ( TIFFField tiffField : allTiffFields ) {
-            int tagNumber = tiffField.getTagNumber();
-            String value = tiffField.getValueAsString( 0 );
-            // TODO: Why do those two tags make the geotiff unreadable?
-            if ( tagNumber != 284 && tagNumber != 339 ) {
-                writer.setMetadataValue( Integer.toString( tagNumber ), value );
+    private void setMetadata( GeoTiffReader reader, GeoTiffWriter writer )
+                            throws IOException {
+        NodeList nodeWithTags = retrieveNodeWithTags( reader );
+        setAllMetadataValuesOfAllTags( writer, nodeWithTags );
+    }
+
+    private NodeList retrieveNodeWithTags( GeoTiffReader reader ) {
+        GeoTiffIIOMetadataDecoder metadata = reader.getMetadata();
+        IIOMetadataNode rootNode = metadata.getRootNode();
+        Node firstChildNode = rootNode.getChildNodes().item( 0 );
+        return firstChildNode.getChildNodes();
+    }
+
+    private void setAllMetadataValuesOfAllTags( GeoTiffWriter writer, NodeList nodeWithTags )
+                            throws IOException {
+        for ( int indexTagNumber = 0; indexTagNumber < nodeWithTags.getLength(); indexTagNumber++ ) {
+            Node nodeWithTag = nodeWithTags.item( indexTagNumber );
+            String tagNumber = retrieveTagNumber( nodeWithTag );
+            excludeTagsAndSetAlleMetadataValues( writer, nodeWithTag, tagNumber );
+        }
+    }
+
+    private String retrieveTagNumber( Node nodeWithTag ) {
+        Node firstAttribute = nodeWithTag.getAttributes().item( 0 );
+        return firstAttribute.getNodeValue();
+    }
+
+    private void excludeTagsAndSetAlleMetadataValues( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
+                            throws IOException {
+        // TODO: Why do those two tags make the geotiff unreadable?
+        if ( !"284".equals( tagNumber ) && !"339".equals( tagNumber ) ) {
+            // TODO: All three resolution tags cannot be set by this method.
+            if ( !"282".equals( tagNumber ) && !"283".equals( tagNumber ) && !"296".equals( tagNumber ) ) {
+                setAllMetadataValuesByTagNumber( writer, nodeWithTag, tagNumber );
             }
         }
     }
 
-    private TIFFDirectory retrieveTiffDirectory( File imageToClipAsFile )
-                            throws FileNotFoundException, IOException {
-        ImageReader reader = ImageIOExt.getImageioReader( new FileImageInputStream( imageToClipAsFile ) );
-        reader.setInput( new FileImageInputStream( imageToClipAsFile ) );
-        IIOMetadata metadata = reader.getImageMetadata( 0 );
-        return TIFFDirectory.createFromMetadata( metadata );
+    private void setAllMetadataValuesByTagNumber( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
+                            throws IOException {
+        Node nodeWithValues = nodeWithTag.getChildNodes().item( 0 );
+        for ( int indexTagValue = 0; indexTagValue < nodeWithValues.getChildNodes().getLength(); indexTagValue++ ) {
+            String tagValue = retrieveTagValue( nodeWithValues, indexTagValue );
+            writer.setMetadataValue( tagNumber, tagValue );
+        }
+    }
+
+    private String retrieveTagValue( Node nodeWithValues, int index ) {
+        Node childNode = nodeWithValues.getChildNodes().item( index );
+        Node firstAttribute = childNode.getAttributes().item( 0 );
+        return firstAttribute.getNodeValue();
     }
 
     private GridCoverage2D calculateClippedGeotiff( Geometry visibleAreaInImageCrs, GridCoverage2D geotiffToWrite,

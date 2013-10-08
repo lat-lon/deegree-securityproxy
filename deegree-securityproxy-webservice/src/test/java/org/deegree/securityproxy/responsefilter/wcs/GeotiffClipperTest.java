@@ -47,7 +47,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,26 +54,23 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.metadata.IIOInvalidTreeException;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.metadata.IIOMetadataNode;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.image.io.ImageIOExt;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet;
-import com.sun.media.imageio.plugins.tiff.TIFFDirectory;
-import com.sun.media.imageio.plugins.tiff.TIFFField;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -329,20 +325,15 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        TIFFDirectory tiffDirectorySource = retrieveTiffDirectory( sourceFile );
-        TIFFDirectory tiffDirectoryDestination = retrieveTiffDirectory( destinationFile );
+        NodeList nodesSource = retrieveNodeWithTags( sourceFile );
+        NodeList nodesDestination = retrieveNodeWithTags( destinationFile );
 
-        String compressionSource = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_COMPRESSION, tiffDirectorySource );
-        String compressionDestination = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_COMPRESSION,
-                                                                  tiffDirectoryDestination );
-
-        String resolutionUnitSource = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_RESOLUTION_UNIT,
-                                                                tiffDirectorySource );
-        String resolutionUnitDestination = retrieveValueOfTiffField( BaselineTIFFTagSet.TAG_RESOLUTION_UNIT,
-                                                                     tiffDirectoryDestination );
+        String compressionSource = retrieveTagValue( Integer.toString( BaselineTIFFTagSet.TAG_COMPRESSION ),
+                                                     nodesSource );
+        String compressionDestination = retrieveTagValue( Integer.toString( BaselineTIFFTagSet.TAG_COMPRESSION ),
+                                                          nodesDestination );
 
         assertThat( compressionDestination, is( compressionSource ) );
-        assertThat( resolutionUnitDestination, is( resolutionUnitSource ) );
     }
 
     /*
@@ -727,17 +718,36 @@ public class GeotiffClipperTest {
         return geometryFactory.toGeometry( envelope );
     }
 
-    private TIFFDirectory retrieveTiffDirectory( File file )
-                            throws FileNotFoundException, IOException, IIOInvalidTreeException {
-        ImageReader reader = ImageIOExt.getImageioReader( new FileImageInputStream( file ) );
-        reader.setInput( new FileImageInputStream( file ) );
-        IIOMetadata metadata = reader.getImageMetadata( 0 );
-        return TIFFDirectory.createFromMetadata( metadata );
+    private NodeList retrieveNodeWithTags( File file )
+                            throws DataSourceException {
+        GeoTiffReader reader = new GeoTiffReader( file );
+        GeoTiffIIOMetadataDecoder metadata = reader.getMetadata();
+        IIOMetadataNode rootNode = metadata.getRootNode();
+        Node firstChildNode = rootNode.getChildNodes().item( 0 );
+        return firstChildNode.getChildNodes();
     }
 
-    private String retrieveValueOfTiffField( int tiffId, TIFFDirectory tiffDirectorySource ) {
-        TIFFField tiffField = tiffDirectorySource.getTIFFField( tiffId );
-        return tiffField.getValueAsString( 0 );
+    private String retrieveTagValue( String tiffId, NodeList nodeWithTags ) {
+        for ( int indexTagNumber = 0; indexTagNumber < nodeWithTags.getLength(); indexTagNumber++ ) {
+            Node nodeWithTag = nodeWithTags.item( indexTagNumber );
+            String tagNumber = retrieveTagNumber( nodeWithTag );
+            if ( tiffId.equals( tagNumber ) ) {
+                return retrieveFirstValue( nodeWithTag );
+            }
+        }
+        return null;
+    }
+
+    private String retrieveTagNumber( Node nodeWithTag ) {
+        Node firstAttribute = nodeWithTag.getAttributes().item( 0 );
+        return firstAttribute.getNodeValue();
+    }
+
+    private String retrieveFirstValue( Node nodeWithTag ) {
+        Node nodeWithValues = nodeWithTag.getChildNodes().item( 0 );
+        Node firstChildNode = nodeWithValues.getChildNodes().item( 0 );
+        Node firstAttribute = firstChildNode.getAttributes().item( 0 );
+        return firstAttribute.getNodeValue();
     }
 
 }
