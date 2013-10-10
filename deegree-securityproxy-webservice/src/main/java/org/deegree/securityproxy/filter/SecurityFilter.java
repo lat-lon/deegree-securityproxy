@@ -89,7 +89,7 @@ public class SecurityFilter implements Filter {
             if ( filterManager.supports( owsRequest.getClass() ) ) {
                 ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
                                                                                     authentication );
-                filterReportLogger.logResponseFilterReport( filterResponse );
+                filterReportLogger.logResponseFilterReport( filterResponse, uuid );
                 LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
             } else {
                 LOG.debug( "No filter configured for " + owsRequest.getClass() );
@@ -138,9 +138,8 @@ public class SecurityFilter implements Filter {
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;
-        SecurityReport report = new SecurityReport( uuid, request.getRemoteAddr(), requestURL, isRequestSuccessful,
-                                                    message );
-        proxyReportLogger.logProxyReportInfo( report );
+        SecurityReport report = new SecurityReport( request.getRemoteAddr(), requestURL, isRequestSuccessful, message );
+        proxyReportLogger.logProxyReportInfo( report, uuid );
     }
 
     private String createUuidHeader( StatusCodeResponseBodyWrapper wrappedResponse ) {

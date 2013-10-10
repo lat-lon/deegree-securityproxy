@@ -52,10 +52,12 @@ public interface ResponseFilterReportLogger {
      * 
      * @param report
      *            never <code>null</code>
+     * @param serialUuid
+     *            represents id of the incoming request
      * @throws IllegalArgumentException
      *             if report is <code>null</code>
      */
-    public void logResponseFilterReport( ResponseFilterReport report )
+    public void logResponseFilterReport( ResponseFilterReport report, String serialUuid )
                             throws IllegalArgumentException;
 
 }
