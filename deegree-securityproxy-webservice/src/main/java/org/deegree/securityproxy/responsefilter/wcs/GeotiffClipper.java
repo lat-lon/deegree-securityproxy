@@ -86,6 +86,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class GeotiffClipper implements ImageClipper {
 
+    private static final int INDEX_TAG_NUMBER = 0;
+
     private static Logger LOG = Logger.getLogger( GeotiffClipper.class );
 
     private static final String VISIBLE_AREA_CRS = "EPSG:4326";
@@ -244,19 +246,19 @@ public class GeotiffClipper implements ImageClipper {
 
     private void setAllMetadataValuesOfAllTags( GeoTiffWriter writer, NodeList nodeWithTags )
                             throws IOException {
-        for ( int indexTagNumber = 0; indexTagNumber < nodeWithTags.getLength(); indexTagNumber++ ) {
-            Node nodeWithTag = nodeWithTags.item( indexTagNumber );
+        for ( int indexNodeWithTags = 0; indexNodeWithTags < nodeWithTags.getLength(); indexNodeWithTags++ ) {
+            Node nodeWithTag = nodeWithTags.item( indexNodeWithTags );
             String tagNumber = retrieveTagNumber( nodeWithTag );
-            excludeTagsAndSetAlleMetadataValues( writer, nodeWithTag, tagNumber );
+            excludeTagsAndSetAllMetadataValues( writer, nodeWithTag, tagNumber );
         }
     }
 
     private String retrieveTagNumber( Node nodeWithTag ) {
-        Node firstAttribute = nodeWithTag.getAttributes().item( 0 );
+        Node firstAttribute = nodeWithTag.getAttributes().item( INDEX_TAG_NUMBER );
         return firstAttribute.getNodeValue();
     }
 
-    private void excludeTagsAndSetAlleMetadataValues( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
+    private void excludeTagsAndSetAllMetadataValues( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
                             throws IOException {
         // TODO: Why do those two tags make the geotiff unreadable?
         if ( !"284".equals( tagNumber ) && !"339".equals( tagNumber ) ) {
@@ -265,6 +267,10 @@ public class GeotiffClipper implements ImageClipper {
                 setAllMetadataValuesByTagNumber( writer, nodeWithTag, tagNumber );
             }
         }
+    }
+
+    private boolean shouldBeSet( int tagNumber, String tagNumberToCheck ) {
+        return !Integer.toString( tagNumber ).equals( tagNumberToCheck );
     }
 
     private void setAllMetadataValuesByTagNumber( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
