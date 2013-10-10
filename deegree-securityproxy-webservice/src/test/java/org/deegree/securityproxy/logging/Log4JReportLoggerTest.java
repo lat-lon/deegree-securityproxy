@@ -19,6 +19,6 @@ public class Log4JReportLoggerTest {
     @Test(expected = IllegalArgumentException.class)
     public void testReportLoggerLogInfoShouldThrowIllegalArgumentExceptionOnNullReport() {
         SecurityRequestResposeLogger logger = new Log4jSecurityRequestResponseLogger();
-        logger.logProxyReportInfo( null );
+        logger.logProxyReportInfo( null, null );
     }
 }

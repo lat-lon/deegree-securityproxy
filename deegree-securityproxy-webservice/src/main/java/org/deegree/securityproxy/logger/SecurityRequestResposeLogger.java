@@ -17,8 +17,13 @@ public interface SecurityRequestResposeLogger {
     /**
      * Log a {@link SecurityReport} on log level INFO
      * 
-     * @param report never <code>null</code>
-     * @throws IllegalArgumentException if report is <code>null</code>
+     * @param report
+     *            never <code>null</code>
+     * @param serialUuid
+     *            represents id of the incoming request
+     * @throws IllegalArgumentException
+     *             if report is <code>null</code>
      */
-    public void logProxyReportInfo(SecurityReport report) throws IllegalArgumentException;
+    public void logProxyReportInfo( SecurityReport report, String serialUuid )
+                            throws IllegalArgumentException;
 }
