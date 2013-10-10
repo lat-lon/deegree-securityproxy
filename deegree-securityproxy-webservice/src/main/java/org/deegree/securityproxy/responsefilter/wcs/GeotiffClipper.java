@@ -261,16 +261,16 @@ public class GeotiffClipper implements ImageClipper {
     private void excludeTagsAndSetAllMetadataValues( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
                             throws IOException {
         // TODO: Why do those two tags make the geotiff unreadable?
-        if ( !"284".equals( tagNumber ) && !"339".equals( tagNumber ) ) {
+        if ( shouldBeSet( tagNumber, "284" ) && shouldBeSet( tagNumber, "339" ) ) {
             // TODO: All three resolution tags cannot be set by this method.
-            if ( !"282".equals( tagNumber ) && !"283".equals( tagNumber ) && !"296".equals( tagNumber ) ) {
+            if ( shouldBeSet( tagNumber, "282" ) && shouldBeSet( tagNumber, "283" ) && shouldBeSet( tagNumber, "296" ) ) {
                 setAllMetadataValuesByTagNumber( writer, nodeWithTag, tagNumber );
             }
         }
     }
 
-    private boolean shouldBeSet( int tagNumber, String tagNumberToCheck ) {
-        return !Integer.toString( tagNumber ).equals( tagNumberToCheck );
+    private boolean shouldBeSet( String tagNumber, String tagNumberToCheck ) {
+        return !tagNumber.equals( tagNumberToCheck );
     }
 
     private void setAllMetadataValuesByTagNumber( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )

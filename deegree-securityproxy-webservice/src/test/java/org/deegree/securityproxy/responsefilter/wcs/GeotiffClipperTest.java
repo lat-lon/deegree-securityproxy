@@ -317,7 +317,7 @@ public class GeotiffClipperTest {
     @Test
     public void testCalculateClippedImageShouldHaveSameCompression()
                             throws Exception {
-        File sourceFile = createNewFile( "Mask1-Raw_unclipped.tif" );
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
         File destinationFile = createNewTempFile();
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
