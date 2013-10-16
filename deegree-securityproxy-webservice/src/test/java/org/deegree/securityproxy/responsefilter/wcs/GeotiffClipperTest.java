@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
+import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_COMPRESSION;
+import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_RESOLUTION_UNIT;
+import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_X_RESOLUTION;
+import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_Y_RESOLUTION;
 import static javax.imageio.ImageIO.read;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -54,8 +58,10 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.imageio.metadata.IIOMetadataNode;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralEnvelope;
@@ -65,6 +71,8 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -109,19 +117,19 @@ public class GeotiffClipperTest {
                             throws Exception {
         File sourceFile = createNewFile( "dem90_geotiff_tiled.tiff" );
         File destinationFile = createNewTempFile();
-        
-        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
         InputStream inputStream = createInputStreamFrom( sourceFile );
-        
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
         geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
-        
+
         inputStream.close();
         outputStream.close();
 
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
         assertThat( destinationFile, hasSamePixels( sourceFile ) );
     }
-    
+
     @Test
     public void testCalculateClippedImageInsideVisibleArea()
                             throws Exception {
@@ -301,6 +309,63 @@ public class GeotiffClipperTest {
         geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
                                               outputStream );
 
+    }
+
+    /*
+     * #calculateClippedImage() - Compare metadata
+     */
+    @Test
+    public void testCalculateClippedImageShouldHaveSameCompression()
+                            throws Exception {
+        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
+        File destinationFile = createNewTempFile();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        NodeList nodesSource = retrieveNodeWithTags( sourceFile );
+        NodeList nodesDestination = retrieveNodeWithTags( destinationFile );
+
+        String compressionSource = retrieveTagValue( TAG_COMPRESSION, nodesSource );
+        String compressionDestination = retrieveTagValue( TAG_COMPRESSION, nodesDestination );
+
+        assertThat( compressionDestination, is( compressionSource ) );
+    }
+
+    @Ignore("Must be fixed!!!")
+    @Test
+    public void testCalculateClippedImageShouldHaveCorrectResolutionMetadata()
+                            throws Exception {
+        File sourceFile = createNewFile( "TODO.tif" );
+        File destinationFile = createNewTempFile();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+
+        inputStream.close();
+        outputStream.close();
+
+        NodeList nodesSource = retrieveNodeWithTags( sourceFile );
+        NodeList nodesDestination = retrieveNodeWithTags( destinationFile );
+
+        String yResolutionSource = retrieveTagValue( TAG_Y_RESOLUTION, nodesSource );
+        String xResolutionSource = retrieveTagValue( TAG_X_RESOLUTION, nodesSource );
+        String resolutionUnitSource = retrieveTagValue( TAG_RESOLUTION_UNIT, nodesSource );
+
+        String yResolutionDestination = retrieveTagValue( TAG_Y_RESOLUTION, nodesDestination );
+        String xResolutionDestination = retrieveTagValue( TAG_X_RESOLUTION, nodesDestination );
+        String resolutionUnitDestination = retrieveTagValue( TAG_RESOLUTION_UNIT, nodesDestination );
+
+        assertThat( xResolutionDestination, is( xResolutionSource ) );
+        assertThat( yResolutionDestination, is( yResolutionSource ) );
+        assertThat( resolutionUnitDestination, is( resolutionUnitSource ) );
     }
 
     /*
@@ -683,6 +748,38 @@ public class GeotiffClipperTest {
         GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
         ReferencedEnvelope envelope = new ReferencedEnvelope( imageEnvelope );
         return geometryFactory.toGeometry( envelope );
+    }
+
+    private NodeList retrieveNodeWithTags( File file )
+                            throws DataSourceException {
+        GeoTiffReader reader = new GeoTiffReader( file );
+        GeoTiffIIOMetadataDecoder metadata = reader.getMetadata();
+        IIOMetadataNode rootNode = metadata.getRootNode();
+        Node firstChildNode = rootNode.getChildNodes().item( 0 );
+        return firstChildNode.getChildNodes();
+    }
+
+    private String retrieveTagValue( int tiffId, NodeList nodeWithTags ) {
+        for ( int indexTagNumber = 0; indexTagNumber < nodeWithTags.getLength(); indexTagNumber++ ) {
+            Node nodeWithTag = nodeWithTags.item( indexTagNumber );
+            String tagNumber = retrieveTagNumber( nodeWithTag );
+            if ( Integer.toString( tiffId ).equals( tagNumber ) ) {
+                return retrieveFirstValue( nodeWithTag );
+            }
+        }
+        return null;
+    }
+
+    private String retrieveTagNumber( Node nodeWithTag ) {
+        Node firstAttribute = nodeWithTag.getAttributes().item( 0 );
+        return firstAttribute.getNodeValue();
+    }
+
+    private String retrieveFirstValue( Node nodeWithTag ) {
+        Node nodeWithValues = nodeWithTag.getChildNodes().item( 0 );
+        Node firstChildNode = nodeWithValues.getChildNodes().item( 0 );
+        Node firstAttribute = firstChildNode.getAttributes().item( 0 );
+        return firstAttribute.getNodeValue();
     }
 
 }
