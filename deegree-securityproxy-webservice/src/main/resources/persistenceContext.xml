@@ -9,6 +9,9 @@
     <property name="password" value="${jdbc.password}" />
     <property name="initialSize" value="5" />
     <property name="maxActive" value="10" />
+    <property name="testOnBorrow" value="true"/>
+    <property name="validationQuery" value="select version()"/>
+    <property name="validationQueryTimeout" value="5"/>
   </bean>
 
 </beans>
