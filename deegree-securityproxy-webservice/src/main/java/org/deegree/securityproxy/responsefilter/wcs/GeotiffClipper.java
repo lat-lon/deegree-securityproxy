@@ -53,12 +53,10 @@ import javax.imageio.metadata.IIOMetadataNode;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.geotools.coverage.grid.GridCoverage2D;
-import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.coverage.processing.operation.Resample;
 import org.geotools.coverage.processing.operation.Rescale;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.gce.geotiff.GeoTiffWriter;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
@@ -67,8 +65,6 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -85,8 +81,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @version $Revision: $, $Date: $
  */
 public class GeotiffClipper implements ImageClipper {
-
-    private static final int INDEX_TAG_NUMBER = 0;
 
     private static Logger LOG = Logger.getLogger( GeotiffClipper.class );
 
@@ -111,8 +105,10 @@ public class GeotiffClipper implements ImageClipper {
             }
 
             GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
-            GeoTiffWriter writer = new GeoTiffWriter( destination );
-            setMetadata( reader, writer );
+            IIOMetadataNode metadataRootNode = reader.getMetadata().getRootNode();
+
+            GeoTiffWriterModified writer = new GeoTiffWriterModified( destination );
+            writer.setIIOMetadata( metadataRootNode );
 
             Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
             if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
@@ -229,63 +225,6 @@ public class GeotiffClipper implements ImageClipper {
             throw new IllegalArgumentException( "Image to clip must not be null!" );
         if ( toWriteImage == null )
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
-    }
-
-    private void setMetadata( GeoTiffReader reader, GeoTiffWriter writer )
-                            throws IOException {
-        NodeList nodeWithTags = retrieveNodeWithTags( reader );
-        setAllMetadataValuesOfAllTags( writer, nodeWithTags );
-    }
-
-    private NodeList retrieveNodeWithTags( GeoTiffReader reader ) {
-        GeoTiffIIOMetadataDecoder metadata = reader.getMetadata();
-        IIOMetadataNode rootNode = metadata.getRootNode();
-        Node firstChildNode = rootNode.getChildNodes().item( 0 );
-        return firstChildNode.getChildNodes();
-    }
-
-    private void setAllMetadataValuesOfAllTags( GeoTiffWriter writer, NodeList nodeWithTags )
-                            throws IOException {
-        for ( int indexNodeWithTags = 0; indexNodeWithTags < nodeWithTags.getLength(); indexNodeWithTags++ ) {
-            Node nodeWithTag = nodeWithTags.item( indexNodeWithTags );
-            String tagNumber = retrieveTagNumber( nodeWithTag );
-            excludeTagsAndSetAllMetadataValues( writer, nodeWithTag, tagNumber );
-        }
-    }
-
-    private String retrieveTagNumber( Node nodeWithTag ) {
-        Node firstAttribute = nodeWithTag.getAttributes().item( INDEX_TAG_NUMBER );
-        return firstAttribute.getNodeValue();
-    }
-
-    private void excludeTagsAndSetAllMetadataValues( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
-                            throws IOException {
-        // TODO: Why do those two tags make the geotiff unreadable?
-        if ( shouldBeSet( tagNumber, "284" ) && shouldBeSet( tagNumber, "339" ) ) {
-            // TODO: All three resolution tags cannot be set by this method.
-            if ( shouldBeSet( tagNumber, "282" ) && shouldBeSet( tagNumber, "283" ) && shouldBeSet( tagNumber, "296" ) ) {
-                setAllMetadataValuesByTagNumber( writer, nodeWithTag, tagNumber );
-            }
-        }
-    }
-
-    private boolean shouldBeSet( String tagNumber, String tagNumberToCheck ) {
-        return !tagNumber.equals( tagNumberToCheck );
-    }
-
-    private void setAllMetadataValuesByTagNumber( GeoTiffWriter writer, Node nodeWithTag, String tagNumber )
-                            throws IOException {
-        Node nodeWithValues = nodeWithTag.getChildNodes().item( 0 );
-        for ( int indexTagValue = 0; indexTagValue < nodeWithValues.getChildNodes().getLength(); indexTagValue++ ) {
-            String tagValue = retrieveTagValue( nodeWithValues, indexTagValue );
-            writer.setMetadataValue( tagNumber, tagValue );
-        }
-    }
-
-    private String retrieveTagValue( Node nodeWithValues, int index ) {
-        Node childNode = nodeWithValues.getChildNodes().item( index );
-        Node firstAttribute = childNode.getAttributes().item( 0 );
-        return firstAttribute.getNodeValue();
     }
 
     private GridCoverage2D calculateClippedGeotiff( Geometry visibleAreaInImageCrs, GridCoverage2D geotiffToWrite,

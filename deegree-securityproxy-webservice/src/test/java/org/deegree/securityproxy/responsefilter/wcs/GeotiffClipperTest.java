@@ -337,7 +337,7 @@ public class GeotiffClipperTest {
         assertThat( compressionDestination, is( compressionSource ) );
     }
 
-    @Ignore("Must be fixed!!!")
+    @Ignore("A test tiff with resulution tags has to be added!")
     @Test
     public void testCalculateClippedImageShouldHaveCorrectResolutionMetadata()
                             throws Exception {
