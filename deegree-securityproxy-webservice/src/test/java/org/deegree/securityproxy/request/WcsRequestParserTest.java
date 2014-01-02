@@ -63,6 +63,16 @@ public class WcsRequestParserTest {
 
     private WcsRequestParser parser = new WcsRequestParser();
 
+    public static final String FORMAT_PARAM = "FORMAT";
+
+    public static final String RESX_PARAM = "RESX";
+
+    public static final String RESY_PARAM = "RESY";
+
+    public static final String CRS_PARAM = "CRS";
+
+    public static final String BBOX_PARAM = "BBOX";
+
     private static final String COVERAGE_PARAM = "COVERAGE";
 
     private static final String REQUEST_PARAM = "REQUEST";
@@ -245,6 +255,11 @@ public class WcsRequestParserTest {
         parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE.name() } );
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
+        parameterMap.put( CRS_PARAM, new String[] { "EPSG:4326" } );
+        parameterMap.put( BBOX_PARAM, new String[] { "-89.67,20.25,-89.32,20.44" } );
+        parameterMap.put( RESX_PARAM, new String[] { "50" } );
+        parameterMap.put( RESY_PARAM, new String[] { "50" } );
+        parameterMap.put( FORMAT_PARAM, new String[] { "GEOTIFF_INT16" } );
         return parameterMap;
     }
 
