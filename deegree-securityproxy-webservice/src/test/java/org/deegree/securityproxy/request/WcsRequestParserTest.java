@@ -59,6 +59,12 @@ public class WcsRequestParserTest {
 
     private WcsRequestParser parser = new WcsRequestParser();
 
+    public static final String WIDTH_PARAM = "WIDTH";
+
+    public static final String HEIGHT_PARAM = "HEIGHT";
+
+    public static final String TIME_PARAM = "TIME";
+
     public static final String FORMAT_PARAM = "FORMAT";
 
     public static final String RESX_PARAM = "RESX";
@@ -80,6 +86,18 @@ public class WcsRequestParserTest {
     private static final String COVERAGE_NAME = "layerName";
 
     private static final String SERVICE_NAME = "serviceName";
+
+    public static final String CRS_NAME = "EPSG:4326";
+
+    public static final String BBOX_NAME = "-89.67,20.25,-89.32,20.44";
+
+    public static final String TIME_NAME = "2012-04-05";
+
+    public static final String RESX_NAME = "50";
+
+    public static final String RESY_NAME = "50";
+
+    public static final String FORMAT_NAME = "GEOTIFF_INT16";
 
     /* Tests for valid requests for WCS GetCapabilities */
     @Test
@@ -135,6 +153,125 @@ public class WcsRequestParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoCoveragesShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoCoverageParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestMissingCoverageShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestMissingCoverageParameter();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoCrsShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoCrsParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestMissingCrsShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestMissingCrsParameter();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoBboxShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoBboxParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoTimeShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoTimeParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestMissingBboxAndTimeShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestMissingBboxAndTimeParameter();
+        parser.parse( request );
+    }
+
+    @Test
+    public void testParseFromGetCoverageRequestBboxAndMissingTime()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestBboxAndMissingTimeParameter();
+        parser.parse( request );
+    }
+
+    @Test
+    public void testParseFromGetCoverageRequestTimeAndMissingBbox()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTimeAndMissingBboxParameter();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoResxShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoResxParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoResyShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoResyParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestMissingResxAndResyAndWitdthAndHeightShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestMissingResxAndResyAndWitdthAndHeightParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestResxAndMissingResyAndWitdthAndHeightShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestResxAndMissingResyAndWitdthAndHeightParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestResyAndMissingResxAndWitdthAndHeightShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestResyAndMissingResxAndWitdthAndHeightParameters();
+        parser.parse( request );
+    }
+
+    @Test
+    public void testParseFromGetCoverageRequestResxAndResyAndMissingWitdthAndHeight()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestResxAndResyAndMissingWitdthAndHeightParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestTwoFormatShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestTwoFormatParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCoverageRequestMissingFormatShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCoverageRequestMissingFormatParameter();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testParseWithNullRequestShouldFail()
           throws UnsupportedRequestTypeException {
         parser.parse( null );
@@ -183,6 +320,123 @@ public class WcsRequestParserTest {
     private HttpServletRequest mockWcsGetCoverageRequestMultipleCoverageParameter() {
         Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME + "," + COVERAGE_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoCoverageParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME, COVERAGE_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestMissingCoverageParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.remove( COVERAGE_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoCrsParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( CRS_PARAM, new String[] { CRS_NAME, CRS_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestMissingCrsParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.remove( CRS_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoBboxParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( BBOX_PARAM, new String[] { BBOX_NAME, BBOX_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoTimeParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( TIME_PARAM, new String[] { TIME_NAME, TIME_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestMissingBboxAndTimeParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.remove( BBOX_PARAM );
+        parameterMap.remove( TIME_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestBboxAndMissingTimeParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( BBOX_PARAM, new String[] { BBOX_NAME } );
+        parameterMap.remove( TIME_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTimeAndMissingBboxParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( TIME_PARAM, new String[] { TIME_NAME } );
+        parameterMap.remove( BBOX_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoResxParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( RESX_PARAM, new String[] { RESX_NAME, RESX_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoResyParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( RESY_PARAM, new String[] { RESY_NAME, RESY_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestMissingResxAndResyAndWitdthAndHeightParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.remove( RESX_PARAM );
+        parameterMap.remove( RESY_PARAM );
+        parameterMap.remove( WIDTH_PARAM );
+        parameterMap.remove( HEIGHT_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestResxAndMissingResyAndWitdthAndHeightParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( RESX_PARAM, new String[] { RESX_NAME } );
+        parameterMap.remove( RESY_PARAM );
+        parameterMap.remove( WIDTH_PARAM );
+        parameterMap.remove( HEIGHT_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestResyAndMissingResxAndWitdthAndHeightParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( RESY_PARAM, new String[] { RESY_NAME } );
+        parameterMap.remove( RESX_PARAM );
+        parameterMap.remove( WIDTH_PARAM );
+        parameterMap.remove( HEIGHT_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestResxAndResyAndMissingWitdthAndHeightParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( RESX_PARAM, new String[] { RESX_NAME } );
+        parameterMap.put( RESY_PARAM, new String[] { RESY_NAME } );
+        parameterMap.remove( WIDTH_PARAM );
+        parameterMap.remove( HEIGHT_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestTwoFormatParameters() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.put( FORMAT_PARAM, new String[] { FORMAT_NAME, FORMAT_NAME } );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWcsGetCoverageRequestMissingFormatParameter() {
+        Map<String, String[]> parameterMap = createValidGetCoverageParameterMap();
+        parameterMap.remove( FORMAT_PARAM );
         return mockRequest( parameterMap );
     }
 
@@ -251,11 +505,11 @@ public class WcsRequestParserTest {
         parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE.name() } );
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
-        parameterMap.put( CRS_PARAM, new String[] { "EPSG:4326" } );
-        parameterMap.put( BBOX_PARAM, new String[] { "-89.67,20.25,-89.32,20.44" } );
-        parameterMap.put( RESX_PARAM, new String[] { "50" } );
-        parameterMap.put( RESY_PARAM, new String[] { "50" } );
-        parameterMap.put( FORMAT_PARAM, new String[] { "GEOTIFF_INT16" } );
+        parameterMap.put( CRS_PARAM, new String[] { CRS_NAME } );
+        parameterMap.put( BBOX_PARAM, new String[] { BBOX_NAME } );
+        parameterMap.put( RESX_PARAM, new String[] { RESX_NAME } );
+        parameterMap.put( RESY_PARAM, new String[] { RESY_NAME } );
+        parameterMap.put( FORMAT_PARAM, new String[] { FORMAT_NAME } );
         return parameterMap;
     }
 
@@ -282,5 +536,4 @@ public class WcsRequestParserTest {
         when( servletRequest.getQueryString() ).thenReturn( SERVICE_NAME );
         return servletRequest;
     }
-
 }
