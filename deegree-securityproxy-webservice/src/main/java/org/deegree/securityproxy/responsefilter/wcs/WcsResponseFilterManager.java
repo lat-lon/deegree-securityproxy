@@ -141,11 +141,11 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
                 writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                return new ResponseClippingReport( e.getMessage() );
+                return new ResponseClippingReport( ""+e.getMessage() );
             } catch ( IOException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
                 writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                return new ResponseClippingReport( e.getMessage() );
+                return new ResponseClippingReport( ""+e.getMessage() );
             }
         }
         LOG.debug( "Request was not a GetCoverage request. Will be ignored by this filter manager!" );
@@ -199,7 +199,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             return clippedImageReport;
         } catch ( ClippingException e ) {
             writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-            return new ResponseClippingReport( e.getMessage() );
+            return new ResponseClippingReport( ""+e.getMessage() );
         }
 
     }

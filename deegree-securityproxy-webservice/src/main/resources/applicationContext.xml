@@ -16,10 +16,10 @@
   </bean>
 
   <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
-    <constructor-arg type="String">
+    <constructor-arg type="java.lang.String">
       <value>PROXY_CONFIG</value>
     </constructor-arg>
-    <constructor-arg type="String">
+    <constructor-arg type="java.lang.String">
       <value>log4j.properties</value>
     </constructor-arg>
   </bean>
