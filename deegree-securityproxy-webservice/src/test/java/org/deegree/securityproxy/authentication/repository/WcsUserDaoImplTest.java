@@ -177,6 +177,12 @@ public class WcsUserDaoImplTest {
         assertThat( secondGeometryLimit, is( expectedSecondGeometryLimit ) );
     }
 
+    @Test
+    public void testRetrieveWcsUserByIdValidHeaderShouldReturnInternalServiceUrl() {
+        WcsUser wcsUser = source.retrieveWcsUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
+        assertThat( wcsUser.getInternalServiceUrl(), is( "serviceUrl" ) );
+    }
+
     @After
     public void tearDown() {
         db.shutdown();
