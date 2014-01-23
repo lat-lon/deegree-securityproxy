@@ -19,6 +19,8 @@ public class WcsUserTest {
 
     private static final String PASSWORD = null;
 
+    private static final String INTERNAL_SERVICE_URL = "internal-service-url";
+
     @Test
     public void testConstructorWithNullAuthoritiesShouldReturnEmptyLists()
                             throws Exception {
@@ -43,6 +45,16 @@ public class WcsUserTest {
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), insertedFilterList, null );
         List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
+    }
+
+    @Test
+    public void testGetPermissionsShouldReturnInsertedInternalServiceUrl()
+          throws Exception {
+        String insertedServiceUrl = INTERNAL_SERVICE_URL;
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createEmptyFilterList(),
+                                       insertedServiceUrl );
+        String serviceUrl = wcsUser.getInternalServiceUrl();
+        assertThat( serviceUrl, is( insertedServiceUrl ) );
     }
 
     @Test(expected = UnsupportedOperationException.class)
