@@ -32,6 +32,8 @@ public class WcsUser implements UserDetails {
 
     private final List<WcsGeometryFilterInfo> filters;
 
+    private final String internalServiceUrl;
+
     /**
      * @param username
      *            may be <code>null</code>
@@ -41,9 +43,11 @@ public class WcsUser implements UserDetails {
      *            may be <code>null</code> or empty
      * @param filters
      *            may be <code>null</code> or empty
+     * @param internalServiceUrl
+     *            may be <code>null</code>
      */
     public WcsUser( String username, String password, List<WcsPermission> authorities,
-                    List<WcsGeometryFilterInfo> filters ) {
+                    List<WcsGeometryFilterInfo> filters, String internalServiceUrl ) {
         this.username = username;
         this.password = password;
         if ( authorities == null )
@@ -52,6 +56,7 @@ public class WcsUser implements UserDetails {
         if ( filters == null )
             filters = new ArrayList<WcsGeometryFilterInfo>();
         this.filters = unmodifiableList( filters );
+        this.internalServiceUrl = internalServiceUrl;
     }
 
     @Override
@@ -103,4 +108,7 @@ public class WcsUser implements UserDetails {
         return filters;
     }
 
+    public String getInternalServiceUrl() {
+        return internalServiceUrl;
+    }
 }

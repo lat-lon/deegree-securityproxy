@@ -52,7 +52,7 @@ public class HeaderTokenAuthenticationProviderTest {
         Mockito.reset( source );
         when( source.retrieveWcsUserById( INVALID_TOKEN ) ).thenReturn( null );
         WcsUser validUser = new WcsUser( VALID_USERNAME, VALID_PASSWORD, Collections.<WcsPermission> emptyList(),
-                                         Collections.<WcsGeometryFilterInfo> emptyList() );
+                                         Collections.<WcsGeometryFilterInfo> emptyList(), null );
         when( source.retrieveWcsUserById( VALID_TOKEN ) ).thenReturn( validUser );
         when( source.retrieveWcsUserById( null ) ).thenThrow( IllegalArgumentException.class );
     }
