@@ -53,6 +53,8 @@ public class WcsUserDaoImpl implements WcsUserDao {
 
     private final String serviceNameColumn;
 
+    private final String internalServiceUrlColumn;
+
     private final String layerNameColumn;
 
     private final String subscriptionStart;
@@ -63,8 +65,9 @@ public class WcsUserDaoImpl implements WcsUserDao {
 
     public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
                            String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
-                           String operationTypeColumn, String serviceNameColumn, String layerNameColumn,
-                           String subscriptionStart, String subscriptionEnd, String geometryLimitColumn ) {
+                           String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
+                           String layerNameColumn, String subscriptionStart, String subscriptionEnd,
+                           String geometryLimitColumn ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
@@ -74,6 +77,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
         this.serviceVersionColumn = serviceVersionColumn;
         this.operationTypeColumn = operationTypeColumn;
         this.serviceNameColumn = serviceNameColumn;
+        this.internalServiceUrlColumn = internalServiceUrlColumn;
         this.layerNameColumn = layerNameColumn;
         this.subscriptionStart = subscriptionStart;
         this.subscriptionEnd = subscriptionEnd;
@@ -109,6 +113,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
         builder.append( passwordColumn ).append( "," );
         builder.append( serviceTypeColumn ).append( "," );
         builder.append( serviceNameColumn ).append( "," );
+        builder.append( internalServiceUrlColumn ).append( "," );
         builder.append( serviceVersionColumn ).append( "," );
         builder.append( operationTypeColumn ).append( "," );
         builder.append( layerNameColumn ).append( "," );
@@ -133,16 +138,18 @@ public class WcsUserDaoImpl implements WcsUserDao {
         String password = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
         List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
+        String internalServiceUrl = null;
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
                 addAuthorities( authorities, row );
                 createGeometryFilter( geometrieFilter, row );
+                internalServiceUrl = getAsString( row, internalServiceUrlColumn );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, geometrieFilter );
+            return new WcsUser( username, password, authorities, geometrieFilter, internalServiceUrl );
         return null;
     }
 
