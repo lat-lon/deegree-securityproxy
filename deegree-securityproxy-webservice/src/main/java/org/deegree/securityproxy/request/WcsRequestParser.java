@@ -56,42 +56,45 @@ public class WcsRequestParser {
           throws UnsupportedRequestTypeException {
         if ( request == null )
             throw new IllegalArgumentException( "Request must not be null!" );
+        String serviceName = request.getServletPath();
+        if ( serviceName == null )
+            throw new IllegalArgumentException( "Service name must not be null!" );
         Map<String, String[]> normalizedParameterMap = normalizeKvpMap( request.getParameterMap() );
         checkParameters( normalizedParameterMap );
         WcsOperationType type = evaluateOperationType( normalizedParameterMap );
         switch ( type ) {
         case GETCAPABILITIES:
-            return parseGetCapabilitiesRequest( normalizedParameterMap );
+            return parseGetCapabilitiesRequest( serviceName, normalizedParameterMap );
         case DESCRIBECOVERAGE:
-            return parseDescribeCoverageRequest( normalizedParameterMap );
+            return parseDescribeCoverageRequest( serviceName, normalizedParameterMap );
         case GETCOVERAGE:
-            return parseGetCoverageRequest( normalizedParameterMap );
+            return parseGetCoverageRequest( serviceName, normalizedParameterMap );
         }
         throw new IllegalArgumentException( "Unrecognized operation type: " + type );
     }
 
-    private WcsRequest parseGetCoverageRequest( Map<String, String[]> normalizedParameterMap ) {
+    private WcsRequest parseGetCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         checkGetCoverageParameters( normalizedParameterMap );
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
         if ( coverageParameter == null || coverageParameter.length == 0 )
-            return new WcsRequest( GETCOVERAGE, version );
+            return new WcsRequest( GETCOVERAGE, version, serviceName );
         else {
             List<String> separatedCoverages = extractCoverages( coverageParameter );
             if ( ( separatedCoverages ).size() != 1 )
                 throw new IllegalArgumentException( "GetCoverage requires exactly one coverage parameter!" );
-            return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ) );
+            return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ), serviceName );
         }
     }
 
-    private WcsRequest parseDescribeCoverageRequest( Map<String, String[]> normalizedParameterMap ) {
+    private WcsRequest parseDescribeCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
         if ( coverageParameter == null || coverageParameter.length == 0 )
-            return new WcsRequest( DESCRIBECOVERAGE, version );
+            return new WcsRequest( DESCRIBECOVERAGE, version, serviceName );
         else {
             List<String> separatedCoverages = extractCoverages( coverageParameter );
-            return new WcsRequest( DESCRIBECOVERAGE, version, separatedCoverages );
+            return new WcsRequest( DESCRIBECOVERAGE, version, separatedCoverages, serviceName );
         }
     }
 
@@ -102,9 +105,9 @@ public class WcsRequestParser {
         return separatedCoverages;
     }
 
-    private WcsRequest parseGetCapabilitiesRequest( Map<String, String[]> normalizedParameterMap ) {
+    private WcsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
-        return new WcsRequest( GETCAPABILITIES, version );
+        return new WcsRequest( GETCAPABILITIES, version, serviceName );
     }
 
     private WcsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {

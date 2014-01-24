@@ -109,17 +109,18 @@ public class WcsRequestParserTest {
     }
 
     @Test
-    public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersion()
+    public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersionAndServiceName()
           throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetCapabilitiesRequest();
         WcsRequest wcsRequest = parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( GETCAPABILITIES ) );
         assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
+        assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
     }
 
     /* Test for valid requests for WCS DescribeCoverage */
     @Test
-    public void testParseFromDescribeCoverageRequestShouldParseCoverageOperationTypeAndServiceVersion()
+    public void testParseFromDescribeCoverageRequestShouldParseCoverageOperationTypeAndServiceVersionAndServiceName()
           throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsDescribeCoverageRequest();
         WcsRequest wcsRequest = parser.parse( request );
@@ -129,11 +130,12 @@ public class WcsRequestParserTest {
         assertThat( coverageNames.size(), is( 2 ) );
         assertThat( wcsRequest.getOperationType(), is( DESCRIBECOVERAGE ) );
         assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
+        assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
     }
 
     /* Test for valid requests for WCS GetCoverage */
     @Test
-    public void testParseFromGetCoverageRequestShouldParseCoverageOperationTypeAndServiceVersion()
+    public void testParseFromGetCoverageRequestShouldParseCoverageOperationTypeAndServiceVersionAndServiceName()
           throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetCoverageRequest();
         WcsRequest wcsRequest = parser.parse( request );
@@ -142,9 +144,17 @@ public class WcsRequestParserTest {
         assertThat( coverageNames.size(), is( 1 ) );
         assertThat( wcsRequest.getOperationType(), is( GETCOVERAGE ) );
         assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
+        assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
     }
 
     /* Test for invalid requests */
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetCapabilitiesRequestMissingServiceNameShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWcsGetCapabilitiesRequestMissingServiceName();
+        parser.parse( request );
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMultipleCoveragesShouldFail()
           throws UnsupportedRequestTypeException {
@@ -305,6 +315,11 @@ public class WcsRequestParserTest {
     public void testParseWithMissingVersionParameter()
           throws UnsupportedRequestTypeException {
         parser.parse( mockValidWcsRequestMissingVersionParameter( "wcs" ) );
+    }
+
+    private HttpServletRequest mockWcsGetCapabilitiesRequestMissingServiceName() {
+        Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
+        return mockRequestWithoutServiceName( parameterMap );
     }
 
     private HttpServletRequest mockWcsGetCapabilitiesRequest() {
@@ -533,7 +548,30 @@ public class WcsRequestParserTest {
             when( servletRequest.getParameter( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM )[0] );
             when( servletRequest.getParameterValues( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM ) );
         }
-        when( servletRequest.getQueryString() ).thenReturn( SERVICE_NAME );
+        when( servletRequest.getServletPath() ).thenReturn( SERVICE_NAME );
+        return servletRequest;
+    }
+
+    private HttpServletRequest mockRequestWithoutServiceName( Map<String, String[]> parameterMap ) {
+        HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
+        when( servletRequest.getParameterMap() ).thenReturn( parameterMap );
+        when( servletRequest.getParameterNames() ).thenReturn( new Vector<String>( parameterMap.keySet() ).elements() );
+        if ( parameterMap.get( VERSION_PARAM ) != null ) {
+            when( servletRequest.getParameter( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM )[0] );
+            when( servletRequest.getParameterValues( VERSION_PARAM ) ).thenReturn( parameterMap.get( VERSION_PARAM ) );
+        }
+        if ( parameterMap.get( COVERAGE_PARAM ) != null ) {
+            when( servletRequest.getParameter( COVERAGE_PARAM ) ).thenReturn( parameterMap.get( COVERAGE_PARAM )[0] );
+        }
+        when( servletRequest.getParameterValues( COVERAGE_NAME ) ).thenReturn( parameterMap.get( COVERAGE_PARAM ) );
+        if ( parameterMap.get( REQUEST_PARAM ) != null ) {
+            when( servletRequest.getParameter( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM )[0] );
+            when( servletRequest.getParameterValues( REQUEST_PARAM ) ).thenReturn( parameterMap.get( REQUEST_PARAM ) );
+        }
+        if ( parameterMap.get( SERVICE_PARAM ) != null ) {
+            when( servletRequest.getParameter( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM )[0] );
+            when( servletRequest.getParameterValues( SERVICE_PARAM ) ).thenReturn( parameterMap.get( SERVICE_PARAM ) );
+        }
         return servletRequest;
     }
 }

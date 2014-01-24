@@ -19,7 +19,7 @@ public class TestWcsRequestAuthorizationManager implements RequestAuthorizationM
     @Override
     public AuthorizationReport decide( Authentication authentication, Object object)
                             throws AccessDeniedException, InsufficientAuthenticationException {
-        return new AuthorizationReport( "", isAuthorized );
+        return new AuthorizationReport( "", isAuthorized, "" );
     }
 
     @Override

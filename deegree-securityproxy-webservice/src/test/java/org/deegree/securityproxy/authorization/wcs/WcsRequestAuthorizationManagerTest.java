@@ -73,7 +73,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final String COVERAGE_NAME = "layerName";
 
-    private static final String INTERNAL_SERVICE_URL = null;
+    private static final String INTERNAL_SERVICE_URL = "serviceUrl";
 
     private RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 

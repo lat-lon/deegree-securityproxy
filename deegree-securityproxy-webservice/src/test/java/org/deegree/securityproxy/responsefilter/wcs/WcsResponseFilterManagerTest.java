@@ -115,6 +115,8 @@ public class WcsResponseFilterManagerTest {
 
     private static final String REPORT_FAILURE = "failure";
 
+    private static final String SERVICE_NAME = "serviceName";
+
     private static Geometry geometrySimple;
 
     private static Geometry geometryFailure;
@@ -397,31 +399,34 @@ public class WcsResponseFilterManagerTest {
     }
 
     private WcsRequest createWcsGetCoverageRequest() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME ) );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME ), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestOutsideVisbleArea() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_EMPTY ) );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_EMPTY ),
+                               SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestWithoutCoverageName() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> emptyList() );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String>emptyList(), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestInvokeFailureResponse() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_FAILURE ) );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_FAILURE ),
+                               SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestWithoutGeom() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_NO_GEOM ) );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_NO_GEOM ),
+                               SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestWithNullCoverageName() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> singletonList( null ) );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String>singletonList( null ), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCapabilitiesRequest() {
-        return new WcsRequest( GETCAPABILITIES, VERSION_110 );
+        return new WcsRequest( GETCAPABILITIES, VERSION_110, SERVICE_NAME );
     }
 
     private StatusCodeResponseBodyWrapper mockResponseWrapper()
