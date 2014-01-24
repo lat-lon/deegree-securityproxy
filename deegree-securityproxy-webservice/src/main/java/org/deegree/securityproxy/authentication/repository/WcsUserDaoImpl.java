@@ -1,15 +1,5 @@
 package org.deegree.securityproxy.authentication.repository;
 
-import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
@@ -20,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.sql.DataSource;
+import java.util.*;
+
+import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
 
 /**
  * Loads {@link UserDetails} from a {@link DataSource}.
@@ -138,18 +133,16 @@ public class WcsUserDaoImpl implements WcsUserDao {
         String password = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
         List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
-        String internalServiceUrl = null;
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
                 addAuthorities( authorities, row );
                 createGeometryFilter( geometrieFilter, row );
-                internalServiceUrl = getAsString( row, internalServiceUrlColumn );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, geometrieFilter, internalServiceUrl );
+            return new WcsUser( username, password, authorities, geometrieFilter );
         return null;
     }
 
@@ -158,8 +151,9 @@ public class WcsUserDaoImpl implements WcsUserDao {
         List<WcsServiceVersion> serviceVersions = getServiceVersions( row );
         WcsOperationType operationType = getOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
+        String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
-            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName ) );
+            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl ) );
         }
     }
 

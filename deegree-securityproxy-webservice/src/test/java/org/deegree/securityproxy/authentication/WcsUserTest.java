@@ -19,12 +19,10 @@ public class WcsUserTest {
 
     private static final String PASSWORD = null;
 
-    private static final String INTERNAL_SERVICE_URL = "internal-service-url";
-
     @Test
     public void testConstructorWithNullAuthoritiesShouldReturnEmptyLists()
                             throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, null, createEmptyFilterList(), null );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, null, createEmptyFilterList() );
         assertThat( wcsUser.getAuthorities().size(), is( EMPTY ) );
         assertThat( wcsUser.getWcsPermissions().size(), is( EMPTY ) );
     }
@@ -33,7 +31,7 @@ public class WcsUserTest {
     public void testGetPermissionsShouldReturnInsertedPermissions()
                             throws Exception {
         List<WcsPermission> insertedPermissionsList = createPermissionsList();
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, insertedPermissionsList, createEmptyFilterList(), null );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, insertedPermissionsList, createEmptyFilterList() );
         List<WcsPermission> authorities = wcsUser.getWcsPermissions();
         assertThat( authorities, is( insertedPermissionsList ) );
     }
@@ -42,25 +40,15 @@ public class WcsUserTest {
     public void testGetPermissionsShouldReturnInsertedFilters()
                             throws Exception {
         List<WcsGeometryFilterInfo> insertedFilterList = createFilterList();
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), insertedFilterList, null );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), insertedFilterList );
         List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
-    }
-
-    @Test
-    public void testGetPermissionsShouldReturnInsertedInternalServiceUrl()
-          throws Exception {
-        String insertedServiceUrl = INTERNAL_SERVICE_URL;
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createEmptyFilterList(),
-                                       insertedServiceUrl );
-        String serviceUrl = wcsUser.getInternalServiceUrl();
-        assertThat( serviceUrl, is( insertedServiceUrl ) );
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testGetPermissionsShouldReturnUnmodifiableWcsPermissionList()
                             throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createPermissionsList(), createEmptyFilterList(), null );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createPermissionsList(), createEmptyFilterList() );
         List<WcsPermission> authorities = wcsUser.getWcsPermissions();
         authorities.add( mockWcsPermission() );
     }
@@ -68,7 +56,7 @@ public class WcsUserTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testGetPermissionsShouldReturnUnmodifiableFilterList()
                             throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList(), null );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList() );
         List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         filters.add( mockFilter() );
     }

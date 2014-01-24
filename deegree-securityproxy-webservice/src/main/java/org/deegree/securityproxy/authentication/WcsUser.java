@@ -1,13 +1,13 @@
 package org.deegree.securityproxy.authentication;
 
-import static java.util.Collections.unmodifiableList;
+import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * {@link UserDetails} implementation encapsulating username, password, authorities ({@link WcsPermission}s) and
@@ -32,8 +32,6 @@ public class WcsUser implements UserDetails {
 
     private final List<WcsGeometryFilterInfo> filters;
 
-    private final String internalServiceUrl;
-
     /**
      * @param username
      *            may be <code>null</code>
@@ -43,11 +41,9 @@ public class WcsUser implements UserDetails {
      *            may be <code>null</code> or empty
      * @param filters
      *            may be <code>null</code> or empty
-     * @param internalServiceUrl
-     *            may be <code>null</code>
      */
     public WcsUser( String username, String password, List<WcsPermission> authorities,
-                    List<WcsGeometryFilterInfo> filters, String internalServiceUrl ) {
+                    List<WcsGeometryFilterInfo> filters ) {
         this.username = username;
         this.password = password;
         if ( authorities == null )
@@ -56,7 +52,6 @@ public class WcsUser implements UserDetails {
         if ( filters == null )
             filters = new ArrayList<WcsGeometryFilterInfo>();
         this.filters = unmodifiableList( filters );
-        this.internalServiceUrl = internalServiceUrl;
     }
 
     @Override
@@ -106,9 +101,5 @@ public class WcsUser implements UserDetails {
      */
     public List<WcsGeometryFilterInfo> getWcsGeometryFilterInfos() {
         return filters;
-    }
-
-    public String getInternalServiceUrl() {
-        return internalServiceUrl;
     }
 }

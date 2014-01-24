@@ -26,5 +26,5 @@ INSERT INTO usertable(access_token, user_name, password, serviceName, layer_serv
 INSERT INTO usertable(access_token, user_name, password, serviceName, layer_service_type_name, layerName, subscription_start, subscription_end, user_layer_limited_to ) 
   VALUES ('VALID_HEADER_WITH_GEOMETRY_LIMIT_TWO_RECORDS','USER','PASSWORD', 'serviceName2', 'WCS', 'layer2', '2013-05-05', '2113-05-05', 'POLYGON');
 
-INSERT INTO usertable(access_token, user_name, password, layer_service_type_name, subscription_start, subscription_end, serviceName, internalServiceUrl )
-  VALUES ('VALID_HEADER_INTERNAL_SERVICE_URL','USER','PASSWORD', 'WCS', '2013-05-05', '2113-05-05', 'serviceName', 'serviceUrl');
+INSERT INTO usertable(access_token, user_name, password, serviceVersion, serviceName, operationType, layer_service_type_name, subscription_start, subscription_end, internalServiceUrl )
+  VALUES ('VALID_HEADER_INTERNAL_SERVICE_URL','USER','PASSWORD', '<= 1.0.0', 'serviceName', 'GetCapabilities', 'WCS', '2013-05-05', '2113-05-05', 'serviceUrl');
