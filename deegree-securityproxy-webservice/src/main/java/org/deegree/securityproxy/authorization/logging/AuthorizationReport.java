@@ -16,9 +16,12 @@ public class AuthorizationReport {
 
     private final boolean isAuthorized;
 
-    public AuthorizationReport( String message, boolean isAuthorized ) {
+    private final String serviceUrl;
+
+    public AuthorizationReport( String message, boolean isAuthorized, String serviceUrl ) {
         this.message = message;
         this.isAuthorized = isAuthorized;
+        this.serviceUrl = serviceUrl;
     }
 
     /**
@@ -35,4 +38,7 @@ public class AuthorizationReport {
         return isAuthorized;
     }
 
+    public String getServiceUrl() {
+        return serviceUrl;
+    }
 }
