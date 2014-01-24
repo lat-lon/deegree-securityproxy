@@ -57,22 +57,27 @@ public class WcsRequest implements OwsRequest {
 
     private List<String> coverageNames;
 
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames ) {
+    private String serviceName;
+
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames, String serviceName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageNames = coverageNames;
+        this.serviceName = serviceName;
     }
 
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName ) {
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName, String serviceName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageNames = Collections.singletonList( coverageName );
+        this.serviceName = serviceName;
     }
 
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion ) {
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String serviceName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageNames = Collections.emptyList();
+        this.serviceName = serviceName;
     }
 
     /**
@@ -96,10 +101,14 @@ public class WcsRequest implements OwsRequest {
         return Collections.unmodifiableList( coverageNames );
     }
 
+    public String getServiceName() {
+        return serviceName;
+    }
+
     @Override
     public String toString() {
         return "WcsRequest [operationType=" + operationType + ", serviceVersion=" + serviceVersion + ", coverageNames="
-               + coverageNames + "]";
+               + coverageNames + ", serviceName=" + serviceName + "]";
     }
 
 }
