@@ -1,5 +1,19 @@
 package org.deegree.securityproxy.authentication.repository;
 
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
@@ -14,18 +28,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -182,16 +184,15 @@ public class WcsUserDaoImplTest {
         UserDetails wcsUser = source.retrieveWcsUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
         List<String> internalServiceUrls = new ArrayList<String>();
         for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
-            if ( authority instanceof WcsPermission ) {
-                String internalServiceUrl = ( (WcsPermission) authority ).getInternalServiceUrl();
-                internalServiceUrls.add( internalServiceUrl );
-            }
+            String internalServiceUrl = ( (WcsPermission) authority ).getInternalServiceUrl();
+            internalServiceUrls.add( internalServiceUrl );
         }
-        assertTrue( internalServiceUrls.contains( "serviceUrl" ) );
+        assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
     }
 
     @After
     public void tearDown() {
         db.shutdown();
     }
+
 }
