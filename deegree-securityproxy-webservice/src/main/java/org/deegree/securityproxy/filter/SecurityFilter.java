@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
@@ -92,11 +91,11 @@ public class SecurityFilter implements Filter {
             owsRequest = parser.parse( httpRequest );
             authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
-            //TODO: Replace null.
-            authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false, null );
+            // TODO: Replace null.
+            authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG );
         } catch ( IllegalArgumentException e ) {
-            //TODO: Replace null.
-            authorizationReport = new AuthorizationReport( e.getMessage(), false, null );
+            // TODO: Replace null.
+            authorizationReport = new AuthorizationReport( e.getMessage() );
         }
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
