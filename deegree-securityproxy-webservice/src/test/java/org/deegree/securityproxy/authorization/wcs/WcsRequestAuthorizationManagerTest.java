@@ -179,6 +179,7 @@ public class WcsRequestAuthorizationManagerTest {
         when( mock.getCoverageNames() ).thenReturn( Collections.singletonList( layerName ) );
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
+        when( mock.getServiceName() ).thenReturn( serviceName );
         return mock;
     }
 
