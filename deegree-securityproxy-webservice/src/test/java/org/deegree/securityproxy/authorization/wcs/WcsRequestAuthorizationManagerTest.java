@@ -35,6 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.authorization.wcs;
 
+import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.AUTHORIZED;
+import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_200;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.commons.WcsOperationType;
@@ -43,20 +61,6 @@ import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.AUTHORIZED;
-import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.NOT_AUTHORIZED;
-import static org.deegree.securityproxy.commons.WcsOperationType.*;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_200;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -64,6 +68,8 @@ import static org.mockito.Mockito.*;
  * @version $Revision: $, $Date: $
  */
 public class WcsRequestAuthorizationManagerTest {
+
+    private static final boolean NOT_AUTHORIZED = false;
 
     private static final WcsServiceVersion VERSION = VERSION_100;
 
@@ -151,7 +157,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedServiceName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );

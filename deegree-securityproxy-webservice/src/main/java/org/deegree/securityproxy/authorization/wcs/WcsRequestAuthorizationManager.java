@@ -26,8 +26,6 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class WcsRequestAuthorizationManager implements RequestAuthorizationManager {
 
-    public static final boolean NOT_AUTHORIZED = false;
-
     public static final boolean AUTHORIZED = true;
 
     public static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
@@ -45,7 +43,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     @Override
     public AuthorizationReport decide( Authentication authentication, Object securedObject ) {
         if ( !checkAuthentication( authentication ) ) {
-            return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG, NOT_AUTHORIZED, null );
+            return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG );
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         WcsRequest wcsRequest = (WcsRequest) securedObject;
@@ -56,7 +54,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         } else if ( isGetCapabilitiesRequest( wcsRequest ) ) {
             return authorizeGetCapabilities( wcsRequest, authorities );
         }
-        return new AuthorizationReport( UNKNOWN_ERROR_MSG, NOT_AUTHORIZED, null );
+        return new AuthorizationReport( UNKNOWN_ERROR_MSG );
     }
 
     private boolean checkAuthentication( Authentication authentication ) {
@@ -87,7 +85,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         }
         for ( String coverageName : wcsRequest.getCoverageNames() ) {
             if ( !grantedCoverages.contains( coverageName ) )
-                return new AuthorizationReport( DESCRIBECOVERAGE_UNAUTHORIZED_MSG, NOT_AUTHORIZED, null );
+                return new AuthorizationReport( DESCRIBECOVERAGE_UNAUTHORIZED_MSG );
 
         }
         return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl );
@@ -102,11 +100,12 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                      && isOperationTypeAuthorized( wcsRequest, wcsPermission )
                      && isServiceVersionAuthorized( wcsRequest, wcsPermission )
                      && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
-                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, wcsPermission.getInternalServiceUrl() );
+                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
+                                                    wcsPermission.getInternalServiceUrl() );
                 }
             }
         }
-        return new AuthorizationReport( GETCOVERAGE_UNAUTHORIZED_MSG, NOT_AUTHORIZED, null );
+        return new AuthorizationReport( GETCOVERAGE_UNAUTHORIZED_MSG );
     }
 
     private AuthorizationReport authorizeGetCapabilities( WcsRequest wcsRequest,
@@ -117,11 +116,12 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                 if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
                      && isServiceVersionAuthorized( wcsRequest, wcsPermission )
                      && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
-                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, wcsPermission.getInternalServiceUrl() );
+                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
+                                                    wcsPermission.getInternalServiceUrl() );
                 }
             }
         }
-        return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG, NOT_AUTHORIZED, null );
+        return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG );
     }
 
     private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {
