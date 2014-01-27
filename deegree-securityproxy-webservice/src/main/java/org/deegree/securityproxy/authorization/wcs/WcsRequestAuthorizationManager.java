@@ -79,6 +79,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                      && isServiceVersionAuthorized( wcsRequest, wcsPermission )
                      && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     grantedCoverages.add( wcsPermission.getCoverageName() );
+                    // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
+                    // DSP always chooses the url of the last permission.
                     internalServiceUrl = wcsPermission.getInternalServiceUrl();
                 }
             }
