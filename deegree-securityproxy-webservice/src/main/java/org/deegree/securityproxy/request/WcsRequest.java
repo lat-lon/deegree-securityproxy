@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
+import static java.util.Collections.singletonList;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -59,48 +61,81 @@ public class WcsRequest implements OwsRequest {
 
     private String serviceName;
 
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames, String serviceName ) {
+    /**
+     * Instantiates a new {@link WcsRequest} with an empty {@link List} of coverage names.
+     * 
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     */
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String serviceName ) {
+        this( operationType, serviceVersion, Collections.<String> emptyList(), serviceName );
+    }
+
+    /**
+     * Instantiates a new {@link WcsRequest} with an single coverage name.
+     * 
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param coverageName
+     *            the name of the coverage, never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     */
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
+                       String serviceName ) {
+        this( operationType, serviceVersion, singletonList( coverageName ), serviceName );
+    }
+
+    /**
+     * Instantiates a new {@link WcsRequest}.
+     * 
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param coverageNames
+     *            a {@link List} of coverage names, may be empty but never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     */
+    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames,
+                       String serviceName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageNames = coverageNames;
         this.serviceName = serviceName;
     }
 
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName, String serviceName ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
-        this.coverageNames = Collections.singletonList( coverageName );
-        this.serviceName = serviceName;
-    }
-
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String serviceName ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
-        this.coverageNames = Collections.emptyList();
-        this.serviceName = serviceName;
-    }
-
     /**
-     * @return the operationType
+     * @return the operationType, never <code>null</code>
      */
     public WcsOperationType getOperationType() {
         return operationType;
     }
 
     /**
-     * @return the serviceVersion
+     * @return the serviceVersion, never <code>null</code>
      */
     public WcsServiceVersion getServiceVersion() {
         return serviceVersion;
     }
 
     /**
-     * @return the layerName
+     * @return the coverageNames as unmodifiable list, may be empty but never <code>null</code>
      */
     public List<String> getCoverageNames() {
         return Collections.unmodifiableList( coverageNames );
     }
 
+    /**
+     * @return the serviceName, never <code>null</code>
+     */
     public String getServiceName() {
         return serviceName;
     }
