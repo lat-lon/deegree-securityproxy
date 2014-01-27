@@ -4,6 +4,7 @@ import org.deegree.securityproxy.commons.WcsOperationType;
 import org.deegree.securityproxy.commons.WcsServiceVersion;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.*;
 
 import static org.deegree.securityproxy.commons.WcsOperationType.*;
@@ -56,9 +57,7 @@ public class WcsRequestParser {
           throws UnsupportedRequestTypeException {
         if ( request == null )
             throw new IllegalArgumentException( "Request must not be null!" );
-        String serviceName = request.getServletPath();
-        if ( serviceName == null )
-            throw new IllegalArgumentException( "Service name must not be null!" );
+        String serviceName = evaluateServiceName( request );
         Map<String, String[]> normalizedParameterMap = normalizeKvpMap( request.getParameterMap() );
         checkParameters( normalizedParameterMap );
         WcsOperationType type = evaluateOperationType( normalizedParameterMap );
@@ -81,7 +80,7 @@ public class WcsRequestParser {
             return new WcsRequest( GETCOVERAGE, version, serviceName );
         else {
             List<String> separatedCoverages = extractCoverages( coverageParameter );
-            if ( ( separatedCoverages ).size() != 1 )
+            if ( separatedCoverages.size() != 1 )
                 throw new IllegalArgumentException( "GetCoverage requires exactly one coverage parameter!" );
             return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ), serviceName );
         }
@@ -135,6 +134,13 @@ public class WcsRequestParser {
         if ( "GetCoverage".equalsIgnoreCase( value ) )
             return WcsOperationType.GETCOVERAGE;
         throw new IllegalArgumentException( "Unrecognized operation " + value );
+    }
+
+    private String evaluateServiceName( HttpServletRequest request ) {
+        String serviceName = request.getServletPath();
+        if ( serviceName == null )
+            throw new IllegalArgumentException( "Service name must not be null!" );
+        return serviceName;
     }
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap )
