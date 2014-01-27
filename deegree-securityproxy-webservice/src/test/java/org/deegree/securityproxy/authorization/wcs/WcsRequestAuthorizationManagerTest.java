@@ -149,6 +149,16 @@ public class WcsRequestAuthorizationManagerTest {
         assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
     }
 
+    @Test
+    public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
+          throws Exception {
+        Authentication authentication = mockDefaultAuthentication();
+        WcsRequest request = mockRequestWithUnsupportedServiceName();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
+    }
+
     private WcsRequest mockDefaultRequest() {
         return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION );
     }
@@ -171,6 +181,10 @@ public class WcsRequestAuthorizationManagerTest {
 
     private WcsRequest mockRequestWithUnsupportedLayerName() {
         return mockRequest( "unknown", OPERATION_TYPE, SERVICE_NAME, VERSION );
+    }
+
+    private WcsRequest mockRequestWithUnsupportedServiceName() {
+        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, "unknown", VERSION );
     }
 
     private WcsRequest mockRequest( String layerName, WcsOperationType operationType, String serviceName,
