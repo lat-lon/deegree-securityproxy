@@ -47,6 +47,8 @@ public class SecurityFilter implements Filter {
 
     private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
 
+    static final String REQUEST_ATTRIBUTE_SERVICE_URL = "net.sf.j2ep.serviceurl";
+
     @Autowired
     private RequestAuthorizationManager requestAuthorizationManager;
 
@@ -76,29 +78,17 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
-
-
-        //Object principal = authentication.getPrincipal();
-        //if ( !( principal instanceof WcsUser ) ) {
-        //    throw new IllegalArgumentException( "Principal is not a WcsUser!" );
-        //}
-        //WcsUser wcsUser = (WcsUser) principal;
-        //String internalServiceUrl = wcsUser.getInternalServiceUrl();
-
-
-
         OwsRequest owsRequest = null;
         try {
             owsRequest = parser.parse( httpRequest );
             authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
-            //TODO: Replace null.
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false, null );
         } catch ( IllegalArgumentException e ) {
-            //TODO: Replace null.
             authorizationReport = new AuthorizationReport( e.getMessage(), false, null );
         }
         if ( authorizationReport.isAuthorized() ) {
+            attachServiceUrlAttributeToRequest( httpRequest, authorizationReport );
             chain.doFilter( httpRequest, wrappedResponse );
             if ( filterManager.supports( owsRequest.getClass() ) ) {
                 ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
@@ -162,4 +152,9 @@ public class SecurityFilter implements Filter {
         return uuid;
     }
 
+    private void attachServiceUrlAttributeToRequest( HttpServletRequest httpRequest,
+                                                     AuthorizationReport authorizationReport ) {
+        String serviceUrl = authorizationReport.getServiceUrl();
+        httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
+    }
 }
