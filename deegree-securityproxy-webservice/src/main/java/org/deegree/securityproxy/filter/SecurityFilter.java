@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
@@ -75,14 +76,27 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( wrappedResponse );
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
+
+
+        //Object principal = authentication.getPrincipal();
+        //if ( !( principal instanceof WcsUser ) ) {
+        //    throw new IllegalArgumentException( "Principal is not a WcsUser!" );
+        //}
+        //WcsUser wcsUser = (WcsUser) principal;
+        //String internalServiceUrl = wcsUser.getInternalServiceUrl();
+
+
+
         OwsRequest owsRequest = null;
         try {
             owsRequest = parser.parse( httpRequest );
             authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
-            authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false );
+            //TODO: Replace null.
+            authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false, null );
         } catch ( IllegalArgumentException e ) {
-            authorizationReport = new AuthorizationReport( e.getMessage(), false );
+            //TODO: Replace null.
+            authorizationReport = new AuthorizationReport( e.getMessage(), false, null );
         }
         if ( authorizationReport.isAuthorized() ) {
             chain.doFilter( httpRequest, wrappedResponse );
