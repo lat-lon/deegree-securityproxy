@@ -76,7 +76,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
                 if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     grantedCoverages.add( wcsPermission.getCoverageName() );
                     internalServiceUrl = wcsPermission.getInternalServiceUrl();
                 }
@@ -97,7 +98,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                 WcsPermission wcsPermission = (WcsPermission) authority;
                 if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
                      && isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, wcsPermission.getInternalServiceUrl() );
                 }
             }
@@ -110,7 +112,9 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
-                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission ) && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, wcsPermission.getInternalServiceUrl() );
                 }
             }
@@ -149,7 +153,11 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
             return firstCoverage.equals( wcsPermission.getCoverageName() );
         }
         return false;
-
     }
 
+    private boolean isServiceNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
+        if ( wcsRequest.getServiceName() != null )
+            return wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
+        return false;
+    }
 }
