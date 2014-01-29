@@ -5,6 +5,7 @@ CREATE TABLE usertable (
 	serviceVersion VARCHAR(255),
 	layerName VARCHAR(255),
 	serviceName VARCHAR(255),
+	internalServiceUrl VARCHAR(255),
 	operationType VARCHAR(255),
 	subscription_start date,
 	subscription_end date,

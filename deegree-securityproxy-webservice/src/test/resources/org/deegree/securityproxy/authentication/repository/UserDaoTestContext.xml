@@ -23,6 +23,7 @@
     <constructor-arg value="serviceVersion" />
     <constructor-arg value="operationType" />
     <constructor-arg value="serviceName" />
+    <constructor-arg value="internalServiceUrl" />
     <constructor-arg value="layerName" />
     <constructor-arg value="subscription_start" />
     <constructor-arg value="subscription_end" />

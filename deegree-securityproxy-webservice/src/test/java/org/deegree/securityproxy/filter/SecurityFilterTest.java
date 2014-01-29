@@ -1,28 +1,5 @@
 package org.deegree.securityproxy.filter;
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
-
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
@@ -46,6 +23,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static javax.servlet.http.HttpServletResponse.*;
+import static org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager.SERVICE_URL;
+import static org.deegree.securityproxy.filter.SecurityFilter.REQUEST_ATTRIBUTE_SERVICE_URL;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 
 /**
  * Tests for {@link SecurityFilterTest}
@@ -200,6 +195,15 @@ public class SecurityFilterTest {
 
         verify( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
                                                             (OwsRequest) anyObject(), (Authentication) anyObject() );
+    }
+
+    @Test
+    public void testRequestShouldContainServiceNameAttribute()
+          throws IOException, ServletException {
+        HttpServletRequest request = generateMockRequest();
+        filter.doFilter( request, generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+
+        verify( request ).setAttribute( eq( REQUEST_ATTRIBUTE_SERVICE_URL ), eq( SERVICE_URL ) );
     }
 
     private ServletRequest generateMockRequestNullQueryString() {

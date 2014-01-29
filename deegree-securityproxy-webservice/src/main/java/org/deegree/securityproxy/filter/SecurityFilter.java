@@ -46,6 +46,8 @@ public class SecurityFilter implements Filter {
 
     private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
 
+    static final String REQUEST_ATTRIBUTE_SERVICE_URL = "net.sf.j2ep.serviceurl";
+
     @Autowired
     private RequestAuthorizationManager requestAuthorizationManager;
 
@@ -80,11 +82,12 @@ public class SecurityFilter implements Filter {
             owsRequest = parser.parse( httpRequest );
             authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
-            authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG, false );
+            authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG );
         } catch ( IllegalArgumentException e ) {
-            authorizationReport = new AuthorizationReport( e.getMessage(), false );
+            authorizationReport = new AuthorizationReport( e.getMessage() );
         }
         if ( authorizationReport.isAuthorized() ) {
+            attachServiceUrlAttributeToRequest( httpRequest, authorizationReport );
             chain.doFilter( httpRequest, wrappedResponse );
             if ( filterManager.supports( owsRequest.getClass() ) ) {
                 ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
@@ -148,4 +151,9 @@ public class SecurityFilter implements Filter {
         return uuid;
     }
 
+    private void attachServiceUrlAttributeToRequest( HttpServletRequest httpRequest,
+                                                     AuthorizationReport authorizationReport ) {
+        String serviceUrl = authorizationReport.getServiceUrl();
+        httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
+    }
 }

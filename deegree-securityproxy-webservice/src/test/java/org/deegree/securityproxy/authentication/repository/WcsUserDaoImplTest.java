@@ -3,11 +3,13 @@ package org.deegree.securityproxy.authentication.repository;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -177,8 +179,20 @@ public class WcsUserDaoImplTest {
         assertThat( secondGeometryLimit, is( expectedSecondGeometryLimit ) );
     }
 
+    @Test
+    public void testRetrieveWcsUserByIdValidHeaderShouldReturnInternalServiceUrl() {
+        UserDetails wcsUser = source.retrieveWcsUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
+        List<String> internalServiceUrls = new ArrayList<String>();
+        for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
+            String internalServiceUrl = ( (WcsPermission) authority ).getInternalServiceUrl();
+            internalServiceUrls.add( internalServiceUrl );
+        }
+        assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
+    }
+
     @After
     public void tearDown() {
         db.shutdown();
     }
+
 }

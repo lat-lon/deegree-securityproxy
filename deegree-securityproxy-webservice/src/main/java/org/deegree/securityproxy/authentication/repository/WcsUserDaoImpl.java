@@ -1,15 +1,5 @@
 package org.deegree.securityproxy.authentication.repository;
 
-import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import javax.sql.DataSource;
-
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
@@ -20,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.sql.DataSource;
+import java.util.*;
+
+import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
 
 /**
  * Loads {@link UserDetails} from a {@link DataSource}.
@@ -53,6 +48,8 @@ public class WcsUserDaoImpl implements WcsUserDao {
 
     private final String serviceNameColumn;
 
+    private final String internalServiceUrlColumn;
+
     private final String layerNameColumn;
 
     private final String subscriptionStart;
@@ -63,8 +60,9 @@ public class WcsUserDaoImpl implements WcsUserDao {
 
     public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
                            String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
-                           String operationTypeColumn, String serviceNameColumn, String layerNameColumn,
-                           String subscriptionStart, String subscriptionEnd, String geometryLimitColumn ) {
+                           String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
+                           String layerNameColumn, String subscriptionStart, String subscriptionEnd,
+                           String geometryLimitColumn ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
@@ -74,6 +72,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
         this.serviceVersionColumn = serviceVersionColumn;
         this.operationTypeColumn = operationTypeColumn;
         this.serviceNameColumn = serviceNameColumn;
+        this.internalServiceUrlColumn = internalServiceUrlColumn;
         this.layerNameColumn = layerNameColumn;
         this.subscriptionStart = subscriptionStart;
         this.subscriptionEnd = subscriptionEnd;
@@ -109,6 +108,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
         builder.append( passwordColumn ).append( "," );
         builder.append( serviceTypeColumn ).append( "," );
         builder.append( serviceNameColumn ).append( "," );
+        builder.append( internalServiceUrlColumn ).append( "," );
         builder.append( serviceVersionColumn ).append( "," );
         builder.append( operationTypeColumn ).append( "," );
         builder.append( layerNameColumn ).append( "," );
@@ -151,8 +151,9 @@ public class WcsUserDaoImpl implements WcsUserDao {
         List<WcsServiceVersion> serviceVersions = getServiceVersions( row );
         WcsOperationType operationType = getOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
+        String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
-            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName ) );
+            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl ) );
         }
     }
 

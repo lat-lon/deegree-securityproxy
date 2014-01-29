@@ -1,13 +1,13 @@
 package org.deegree.securityproxy.authentication;
 
-import static java.util.Collections.unmodifiableList;
+import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * {@link UserDetails} implementation encapsulating username, password, authorities ({@link WcsPermission}s) and
@@ -102,5 +102,4 @@ public class WcsUser implements UserDetails {
     public List<WcsGeometryFilterInfo> getWcsGeometryFilterInfos() {
         return filters;
     }
-
 }

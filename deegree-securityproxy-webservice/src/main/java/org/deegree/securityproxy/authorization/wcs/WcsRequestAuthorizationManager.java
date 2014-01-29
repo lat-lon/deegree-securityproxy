@@ -26,8 +26,6 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class WcsRequestAuthorizationManager implements RequestAuthorizationManager {
 
-    public static final boolean NOT_AUTHORIZED = false;
-
     public static final boolean AUTHORIZED = true;
 
     public static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
@@ -45,7 +43,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     @Override
     public AuthorizationReport decide( Authentication authentication, Object securedObject ) {
         if ( !checkAuthentication( authentication ) ) {
-            return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG, NOT_AUTHORIZED );
+            return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG );
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         WcsRequest wcsRequest = (WcsRequest) securedObject;
@@ -56,7 +54,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         } else if ( isGetCapabilitiesRequest( wcsRequest ) ) {
             return authorizeGetCapabilities( wcsRequest, authorities );
         }
-        return new AuthorizationReport( UNKNOWN_ERROR_MSG, NOT_AUTHORIZED );
+        return new AuthorizationReport( UNKNOWN_ERROR_MSG );
     }
 
     private boolean checkAuthentication( Authentication authentication ) {
@@ -71,21 +69,26 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     private AuthorizationReport authorizeDescribeCoverage( WcsRequest wcsRequest,
                                                            Collection<? extends GrantedAuthority> authorities ) {
         List<String> grantedCoverages = new ArrayList<String>();
+        String internalServiceUrl = null;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
                 if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     grantedCoverages.add( wcsPermission.getCoverageName() );
+                    // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
+                    // DSP always chooses the url of the last permission.
+                    internalServiceUrl = wcsPermission.getInternalServiceUrl();
                 }
             }
         }
         for ( String coverageName : wcsRequest.getCoverageNames() ) {
             if ( !grantedCoverages.contains( coverageName ) )
-                return new AuthorizationReport( DESCRIBECOVERAGE_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
+                return new AuthorizationReport( DESCRIBECOVERAGE_UNAUTHORIZED_MSG );
 
         }
-        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
+        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl );
     }
 
     private AuthorizationReport authorizeGetCoverage( WcsRequest wcsRequest,
@@ -95,12 +98,14 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                 WcsPermission wcsPermission = (WcsPermission) authority;
                 if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
                      && isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
+                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
+                                                    wcsPermission.getInternalServiceUrl() );
                 }
             }
         }
-        return new AuthorizationReport( GETCOVERAGE_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
+        return new AuthorizationReport( GETCOVERAGE_UNAUTHORIZED_MSG );
     }
 
     private AuthorizationReport authorizeGetCapabilities( WcsRequest wcsRequest,
@@ -108,12 +113,15 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
-                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission ) && isServiceVersionAuthorized( wcsRequest, wcsPermission ) ) {
-                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED );
+                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
+                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
+                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
+                                                    wcsPermission.getInternalServiceUrl() );
                 }
             }
         }
-        return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG, NOT_AUTHORIZED );
+        return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG );
     }
 
     private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {
@@ -147,7 +155,11 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
             return firstCoverage.equals( wcsPermission.getCoverageName() );
         }
         return false;
-
     }
 
+    private boolean isServiceNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
+        if ( wcsRequest.getServiceName() != null )
+            return wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
+        return false;
+    }
 }

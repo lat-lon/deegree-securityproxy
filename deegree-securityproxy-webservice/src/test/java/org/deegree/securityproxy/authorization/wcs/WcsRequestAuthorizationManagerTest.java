@@ -36,7 +36,6 @@
 package org.deegree.securityproxy.authorization.wcs;
 
 import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.AUTHORIZED;
-import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.NOT_AUTHORIZED;
 import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
@@ -70,6 +69,8 @@ import org.springframework.security.core.Authentication;
  */
 public class WcsRequestAuthorizationManagerTest {
 
+    private static final boolean NOT_AUTHORIZED = false;
+
     private static final WcsServiceVersion VERSION = VERSION_100;
 
     private static final WcsOperationType OPERATION_TYPE = GETCOVERAGE;
@@ -77,6 +78,8 @@ public class WcsRequestAuthorizationManagerTest {
     private static final String SERVICE_NAME = "serviceName";
 
     private static final String COVERAGE_NAME = "layerName";
+
+    private static final String INTERNAL_SERVICE_URL = "serviceUrl";
 
     private RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 
@@ -152,6 +155,16 @@ public class WcsRequestAuthorizationManagerTest {
         assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
     }
 
+    @Test
+    public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
+                            throws Exception {
+        Authentication authentication = mockDefaultAuthentication();
+        WcsRequest request = mockRequestWithUnsupportedServiceName();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+        assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
+    }
+
     private WcsRequest mockDefaultRequest() {
         return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION );
     }
@@ -176,19 +189,24 @@ public class WcsRequestAuthorizationManagerTest {
         return mockRequest( "unknown", OPERATION_TYPE, SERVICE_NAME, VERSION );
     }
 
+    private WcsRequest mockRequestWithUnsupportedServiceName() {
+        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, "unknown", VERSION );
+    }
+
     private WcsRequest mockRequest( String layerName, WcsOperationType operationType, String serviceName,
                                     WcsServiceVersion version ) {
         WcsRequest mock = mock( WcsRequest.class );
         when( mock.getCoverageNames() ).thenReturn( Collections.singletonList( layerName ) );
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
+        when( mock.getServiceName() ).thenReturn( serviceName );
         return mock;
     }
 
     private Authentication mockDefaultAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -196,8 +214,8 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME ) );
-        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION, null, SERVICE_NAME ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL ) );
+        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION, null, SERVICE_NAME, INTERNAL_SERVICE_URL ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }

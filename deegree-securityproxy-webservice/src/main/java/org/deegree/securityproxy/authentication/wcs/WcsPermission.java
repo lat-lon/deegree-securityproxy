@@ -61,12 +61,15 @@ public class WcsPermission implements GrantedAuthority {
 
     private final String serviceName;
 
+    private final String internalServiceUrl;
+
     public WcsPermission( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
-                          String serviceName ) {
+                          String serviceName, String internalServiceUrl ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageName = coverageName;
         this.serviceName = serviceName;
+        this.internalServiceUrl = internalServiceUrl;
     }
 
     @Override
@@ -104,4 +107,7 @@ public class WcsPermission implements GrantedAuthority {
         return serviceName;
     }
 
+    public String getInternalServiceUrl() {
+        return internalServiceUrl;
+    }
 }

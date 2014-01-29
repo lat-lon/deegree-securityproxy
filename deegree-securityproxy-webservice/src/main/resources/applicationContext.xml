@@ -47,6 +47,7 @@
     <constructor-arg value="layer_service_type_version_hint" />
     <constructor-arg value="ogc_layer_service_operation_type_name" />
     <constructor-arg value="service_name" />
+    <constructor-arg value="internal_service_url" />
     <constructor-arg value="service_layer_name" />
     <constructor-arg value="subscription_start_date" />
     <constructor-arg value="subscription_end_date" />
