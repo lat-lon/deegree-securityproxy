@@ -4,7 +4,6 @@ import java.util.Collections;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.repository.UserDao;
-import org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;

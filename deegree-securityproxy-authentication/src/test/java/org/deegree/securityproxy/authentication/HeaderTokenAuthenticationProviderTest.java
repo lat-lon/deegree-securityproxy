@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 
 import org.deegree.securityproxy.authentication.repository.UserDao;
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -51,8 +52,7 @@ public class HeaderTokenAuthenticationProviderTest {
     public void setupDatasource() {
         Mockito.reset( source );
         when( source.retrieveUserById( INVALID_TOKEN ) ).thenReturn( null );
-        WcsUser validUser = new WcsUser( VALID_USERNAME, VALID_PASSWORD, Collections.<WcsPermission> emptyList(),
-                                         Collections.<WcsGeometryFilterInfo> emptyList() );
+        UserDetails validUser = new User( VALID_USERNAME, VALID_PASSWORD, Collections.<GrantedAuthority> emptyList() );
         when( source.retrieveUserById( VALID_TOKEN ) ).thenReturn( validUser );
         when( source.retrieveUserById( null ) ).thenThrow( IllegalArgumentException.class );
     }
