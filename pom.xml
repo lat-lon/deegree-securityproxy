@@ -193,6 +193,9 @@
   </pluginRepositories>
 
   <modules>
+    <module>deegree-securityproxy-authentication</module>
+    <module>deegree-securityproxy-packaging</module>
+    <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-webservice</module>
   </modules>
 
