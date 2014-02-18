@@ -33,7 +33,6 @@ import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.hamcrest.BaseMatcher;
@@ -98,11 +97,11 @@ public class SecurityFilterTest {
     public void resetMock()
                             throws Exception {
         reset( logger, requestParserMock, responseFilterManagerMock );
-        WcsRequest wcsRequestMockToReturn = mock( WcsRequest.class );
+        OwsRequest wcsRequestMockToReturn = mock( OwsRequest.class );
         doReturn( wcsRequestMockToReturn ).when( requestParserMock ).parse( (HttpServletRequest) anyObject() );
         doReturn( true ).when( responseFilterManagerMock ).supports( wcsRequestMockToReturn.getClass() );
         doReturn( mock( ResponseFilterReport.class ) ).when( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
-                                                                                                         (WcsRequest) anyObject(),
+                                                                                                         (OwsRequest) anyObject(),
                                                                                                          (Authentication) anyObject() );
     }
 
@@ -207,7 +206,7 @@ public class SecurityFilterTest {
 
     @Test
     public void testRequestShouldContainServiceNameAttribute()
-          throws IOException, ServletException {
+                            throws IOException, ServletException {
         HttpServletRequest request = generateMockRequest();
         filter.doFilter( request, generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 

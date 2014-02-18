@@ -33,41 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.wcs;
-
-import java.util.List;
-
-import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
+package org.deegree.securityproxy.responsefilter;
 
 /**
- * Contains method to retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s
+ * Indicates that an error occurred during clipping.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface GeometryRetriever {
+public class ClippingException extends Exception {
 
-    /**
-     * Retrieves or calculates the parsed geometry to use from the list of {@link WcsGeometryFilterInfo}s identified by
-     * the given coverage name. The algorithm to detect or calculate the geometry is left to the implementations.
-     * 
-     * @param coverageName
-     *            the name of the coverage the geometries should be retrieved for, never <code>null</code>
-     * @param geometryFilterInfos
-     *            the list of {@link WcsGeometryFilterInfo}s containing the geometries, never <code>null</code> may be
-     *            empty
-     * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
-     * @throws IllegalArgumentException
-     *             if one of the parameters <code>null</code>
-     * @throws ParsingException
-     *             if the geometry could not be parsed or calculated
-     */
-    Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
-                            throws IllegalArgumentException, ParseException;
+    private static final long serialVersionUID = -2684310743504404279L;
+
+    public ClippingException( Exception e ) {
+        super( e );
+    }
 
 }

@@ -12,17 +12,6 @@
   </parent>
 
   <dependencies>
-    <!-- Remove this! -->
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-securityproxy-authentication</artifactId>
-      <version>1.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-securityproxy-service-wcs</artifactId>
-      <version>1.1-SNAPSHOT</version>
-    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>

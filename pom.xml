@@ -25,6 +25,16 @@
         <artifactId>deegree-securityproxy-authentication</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-service-wcs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>

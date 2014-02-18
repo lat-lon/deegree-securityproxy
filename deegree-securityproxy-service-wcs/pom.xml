@@ -18,6 +18,10 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-core</artifactId>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -103,6 +107,11 @@
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <!-- Servlet API -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
     </dependency>
   </dependencies>
 

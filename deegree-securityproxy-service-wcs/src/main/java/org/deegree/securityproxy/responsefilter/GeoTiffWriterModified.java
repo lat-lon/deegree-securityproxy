@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.responsefilter.wcs;
+package org.deegree.securityproxy.responsefilter;
 
 import it.geosolutions.imageio.plugins.tiff.TIFFImageWriteParam;
 import it.geosolutions.imageioimpl.plugins.tiff.TIFFImageWriter;

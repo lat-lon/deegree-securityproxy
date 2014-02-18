@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.wcs.request;
 
 import static org.deegree.securityproxy.domain.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.domain.WcsOperationType;
 import org.deegree.securityproxy.domain.WcsServiceVersion;
+import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 /**
  * Parses an incoming {@link HttpServletRequest} into a {@link WcsRequest}.

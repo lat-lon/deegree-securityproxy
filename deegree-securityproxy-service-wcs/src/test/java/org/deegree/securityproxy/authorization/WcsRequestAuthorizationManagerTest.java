@@ -33,9 +33,9 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authorization.wcs;
+package org.deegree.securityproxy.authorization;
 
-import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.AUTHORIZED;
+import static org.deegree.securityproxy.authorization.WcsRequestAuthorizationManager.AUTHORIZED;
 import static org.deegree.securityproxy.domain.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.domain.WcsOperationType.GETCOVERAGE;
@@ -54,11 +54,10 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.WcsPermission;
-import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.domain.WcsOperationType;
 import org.deegree.securityproxy.domain.WcsServiceVersion;
-import org.deegree.securityproxy.request.WcsRequest;
+import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 

@@ -33,16 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.wcs;
+package org.deegree.securityproxy.responsefilter;
 
 import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
 import static org.deegree.securityproxy.domain.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.domain.WcsServiceVersion.VERSION_110;
-import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_BODY;
-import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
-import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
-import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
-import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
+import static org.deegree.securityproxy.responsefilter.WcsResponseFilterManager.DEFAULT_BODY;
+import static org.deegree.securityproxy.responsefilter.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
+import static org.deegree.securityproxy.responsefilter.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
+import static org.deegree.securityproxy.responsefilter.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
+import static org.deegree.securityproxy.responsefilter.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -72,8 +72,8 @@ import org.deegree.securityproxy.authentication.WcsPermission;
 import org.deegree.securityproxy.authentication.WcsUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.WcsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -96,7 +96,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/responsefilter/wcs/WcsResponseFilterManagerTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/responsefilter/WcsResponseFilterManagerTestContext.xml" })
 public class WcsResponseFilterManagerTest {
 
     private static final String COVERAGE_NAME = "coverageName";
@@ -403,12 +403,11 @@ public class WcsResponseFilterManagerTest {
     }
 
     private WcsRequest createWcsGetCoverageRequestOutsideVisbleArea() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_EMPTY ),
-                               SERVICE_NAME );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME_EMPTY ), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestWithoutCoverageName() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String>emptyList(), SERVICE_NAME );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> emptyList(), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequestInvokeFailureResponse() {
@@ -422,7 +421,7 @@ public class WcsResponseFilterManagerTest {
     }
 
     private WcsRequest createWcsGetCoverageRequestWithNullCoverageName() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String>singletonList( null ), SERVICE_NAME );
+        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> singletonList( null ), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCapabilitiesRequest() {

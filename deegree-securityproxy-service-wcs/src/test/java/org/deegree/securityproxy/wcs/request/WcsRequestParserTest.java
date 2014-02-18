@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.wcs.request;
 
 import static org.deegree.securityproxy.domain.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
@@ -50,6 +50,8 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -62,21 +64,21 @@ public class WcsRequestParserTest {
 
     private OwsRequestParser parser = new WcsRequestParser();
 
-    public static final String WIDTH_PARAM = "WIDTH";
+    private static final String WIDTH_PARAM = "WIDTH";
 
-    public static final String HEIGHT_PARAM = "HEIGHT";
+    private static final String HEIGHT_PARAM = "HEIGHT";
 
-    public static final String TIME_PARAM = "TIME";
+    private static final String TIME_PARAM = "TIME";
 
-    public static final String FORMAT_PARAM = "FORMAT";
+    private static final String FORMAT_PARAM = "FORMAT";
 
-    public static final String RESX_PARAM = "RESX";
+    private static final String RESX_PARAM = "RESX";
 
-    public static final String RESY_PARAM = "RESY";
+    private static final String RESY_PARAM = "RESY";
 
-    public static final String CRS_PARAM = "CRS";
+    private static final String CRS_PARAM = "CRS";
 
-    public static final String BBOX_PARAM = "BBOX";
+    private static final String BBOX_PARAM = "BBOX";
 
     private static final String COVERAGE_PARAM = "COVERAGE";
 
@@ -92,17 +94,17 @@ public class WcsRequestParserTest {
 
     private static final String SERVICE_NAME_WITH_PATH = "path/" + SERVICE_NAME;
 
-    public static final String CRS_NAME = "EPSG:4326";
+    private static final String CRS_NAME = "EPSG:4326";
 
-    public static final String BBOX_NAME = "-89.67,20.25,-89.32,20.44";
+    private static final String BBOX_NAME = "-89.67,20.25,-89.32,20.44";
 
-    public static final String TIME_NAME = "2012-04-05";
+    private static final String TIME_NAME = "2012-04-05";
 
-    public static final String RESX_NAME = "50";
+    private static final String RESX_NAME = "50";
 
-    public static final String RESY_NAME = "50";
+    private static final String RESY_NAME = "50";
 
-    public static final String FORMAT_NAME = "GEOTIFF_INT16";
+    private static final String FORMAT_NAME = "GEOTIFF_INT16";
 
     /* Tests for valid requests for WCS GetCapabilities */
     @Test

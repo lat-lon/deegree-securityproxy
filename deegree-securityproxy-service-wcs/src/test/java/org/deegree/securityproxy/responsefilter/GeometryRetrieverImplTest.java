@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.responsefilter.wcs;
+package org.deegree.securityproxy.responsefilter;
 
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.responsefilter.GeometryRetrieverImpl;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;

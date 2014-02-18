@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.wcs.request;
 
 import static java.util.Collections.singletonList;
 
@@ -42,6 +42,7 @@ import java.util.List;
 
 import org.deegree.securityproxy.domain.WcsOperationType;
 import org.deegree.securityproxy.domain.WcsServiceVersion;
+import org.deegree.securityproxy.request.OwsRequest;
 
 /**
  * Encapulates a WCS request.

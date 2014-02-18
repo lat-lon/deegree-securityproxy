@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authorization.wcs;
+package org.deegree.securityproxy.authorization;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import org.deegree.securityproxy.authentication.WcsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.domain.WcsOperationType;
-import org.deegree.securityproxy.request.WcsRequest;
+import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
