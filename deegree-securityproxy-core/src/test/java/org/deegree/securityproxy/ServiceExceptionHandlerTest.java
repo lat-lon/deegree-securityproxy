@@ -1,9 +1,9 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_BODY;
-import static org.deegree.securityproxy.authentication.ServiceExceptionHandler.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.ServiceExceptionHandler.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.ServiceExceptionHandler.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.ServiceExceptionHandler.DEFAULT_BODY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;

@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
