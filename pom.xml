@@ -5,7 +5,7 @@
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
   <version>1.1-SNAPSHOT</version>
-  <name>Deegree security component</name>
+  <name>deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
   <properties>
