@@ -12,7 +12,7 @@ import org.deegree.securityproxy.report.SecurityReport;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface SecurityRequestResposeLogger {
+public interface SecurityRequestResponseLogger {
 
     /**
      * Log a {@link SecurityReport} on log level INFO
@@ -24,6 +24,6 @@ public interface SecurityRequestResposeLogger {
      * @throws IllegalArgumentException
      *             if report is <code>null</code>
      */
-    public void logProxyReportInfo( SecurityReport report, String serialUuid )
+    void logProxyReportInfo( SecurityReport report, String serialUuid )
                             throws IllegalArgumentException;
 }

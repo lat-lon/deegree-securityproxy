@@ -1,7 +1,7 @@
 package org.deegree.securityproxy.logging;
 
 import org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger;
-import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
+import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.junit.Test;
 
 /**
@@ -18,7 +18,7 @@ public class Log4JReportLoggerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testReportLoggerLogInfoShouldThrowIllegalArgumentExceptionOnNullReport() {
-        SecurityRequestResposeLogger logger = new Log4jSecurityRequestResponseLogger();
+        SecurityRequestResponseLogger logger = new Log4jSecurityRequestResponseLogger();
         logger.logProxyReportInfo( null, null );
     }
 }

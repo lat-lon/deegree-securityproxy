@@ -56,7 +56,7 @@ public interface OwsRequestParser {
      *            contain the following parameter not more than once: "version".
      * @return {@link WcsRequest}. Never <code>null</code>
      * @throws UnsupportedRequestTypeException
-     *             when the given request does not have the service type "wcs"
+     *             when the given request does not have the correct service type
      */
     OwsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException;

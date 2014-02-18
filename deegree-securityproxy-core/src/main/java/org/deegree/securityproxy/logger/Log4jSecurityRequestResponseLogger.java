@@ -9,7 +9,7 @@ import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 
 /**
- * This implementation of {@link SecurityRequestResposeLogger} uses Apache Log4J as logging framework
+ * This implementation of {@link SecurityRequestResponseLogger} uses Apache Log4J as logging framework
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -18,7 +18,7 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Log4jSecurityRequestResponseLogger implements SecurityRequestResposeLogger, ResponseFilterReportLogger {
+public class Log4jSecurityRequestResponseLogger implements SecurityRequestResponseLogger, ResponseFilterReportLogger {
 
     private static final Logger LOG = Logger.getLogger( Log4jSecurityRequestResponseLogger.class );
 
@@ -26,9 +26,9 @@ public class Log4jSecurityRequestResponseLogger implements SecurityRequestRespos
 
     private static final Logger FILTER_REPORT_LOG = Logger.getLogger( "FilterReportLogger" );
 
-    private String proxyConfEnv;
+    private final String proxyConfEnv;
 
-    private String log4JFileName;
+    private final String log4JFileName;
 
     public Log4jSecurityRequestResponseLogger( String proxyConfEnv, String log4JFileName ) {
         this.proxyConfEnv = proxyConfEnv;

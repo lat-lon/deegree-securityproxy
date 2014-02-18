@@ -57,7 +57,7 @@ public interface ResponseFilterReportLogger {
      * @throws IllegalArgumentException
      *             if report is <code>null</code>
      */
-    public void logResponseFilterReport( ResponseFilterReport report, String serialUuid )
+    void logResponseFilterReport( ResponseFilterReport report, String serialUuid )
                             throws IllegalArgumentException;
 
 }

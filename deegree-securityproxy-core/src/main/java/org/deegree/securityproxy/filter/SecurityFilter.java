@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
-import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
+import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
@@ -55,7 +55,7 @@ public class SecurityFilter implements Filter {
     private OwsRequestParser parser;
 
     @Autowired
-    private SecurityRequestResposeLogger proxyReportLogger;
+    private SecurityRequestResponseLogger proxyReportLogger;
 
     @Autowired
     private ResponseFilterReportLogger filterReportLogger;

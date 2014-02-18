@@ -1,8 +1,7 @@
 package org.deegree.securityproxy.request;
 
 /**
- * 
- * TODO add class documentation here
+ * Indicates that the request type is not supported.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $

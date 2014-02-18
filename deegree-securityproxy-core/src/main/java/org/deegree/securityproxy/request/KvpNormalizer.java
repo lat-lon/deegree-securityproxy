@@ -6,8 +6,22 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.ArrayUtils;
 
+/**
+ * Key-Value-Pair normalizer
+ * 
+ * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
+ * @author last edited by: $Author: lyn $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class KvpNormalizer {
 
+    /**
+     * @param parameterMap
+     *            a map of parameters, never <code>null</code>
+     * @return the incoming map with keys in lower cases, duplicated keys are merged into one key with multiple values;
+     *         never <code>null</code>
+     */
     public static Map<String, String[]> normalizeKvpMap( Map<String, String[]> parameterMap ) {
         Map<String, String[]> normalizedMap = new HashMap<String, String[]>();
         for ( Entry<String, String[]> entry : parameterMap.entrySet() ) {
@@ -22,4 +36,5 @@ public class KvpNormalizer {
         }
         return normalizedMap;
     }
+
 }

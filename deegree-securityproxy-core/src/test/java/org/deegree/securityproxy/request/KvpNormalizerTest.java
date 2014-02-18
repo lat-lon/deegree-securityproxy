@@ -8,6 +8,12 @@ import java.util.Map;
 
 import org.junit.Test;
 
+/**
+ * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
+ * @author last edited by: $Author: lyn $
+ * 
+ * @version $Revision: $, $Date: $
+ */
 public class KvpNormalizerTest {
 
     @Test

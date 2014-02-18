@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
-import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
+import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
@@ -76,10 +76,10 @@ public class SecurityFilterTest {
     private SecurityFilter filter;
 
     /**
-     * Autowire a mocked instance of {@link SecurityRequestResposeLogger}
+     * Autowire a mocked instance of {@link SecurityRequestResponseLogger}
      */
     @Autowired
-    private SecurityRequestResposeLogger logger;
+    private SecurityRequestResponseLogger logger;
 
     @Autowired
     private ResponseFilterReportLogger loggerResponseFilterReportMock;
