@@ -3,7 +3,7 @@ package org.deegree.securityproxy.filter;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager.SERVICE_URL;
+import static org.deegree.securityproxy.authorization.TestRequestAuthorizationManager.SERVICE_URL;
 import static org.deegree.securityproxy.filter.SecurityFilter.REQUEST_ATTRIBUTE_SERVICE_URL;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
-import org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager;
+import org.deegree.securityproxy.authorization.TestRequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
@@ -152,7 +152,7 @@ public class SecurityFilterTest {
     @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportForUnauthenticatedReponse()
                             throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
+        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( false );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ), (String) anyObject() );
@@ -161,7 +161,7 @@ public class SecurityFilterTest {
     @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportNullQueryString()
                             throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
+        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( false );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
                          new FilterChainTestImpl( SC_BAD_REQUEST ) );
@@ -171,7 +171,7 @@ public class SecurityFilterTest {
     @Test(expected = AccessDeniedException.class)
     public void testFilterShouldThrowExceptionOnUnauthorized()
                             throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( false );
+        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( false );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
     }
@@ -196,7 +196,7 @@ public class SecurityFilterTest {
     @Test
     public void testResponseShouldInvokeResponseFilterManager()
                             throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestWcsRequestAuthorizationManager( true );
+        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( true );
         filter.setRequestAuthorizationManager( requestAuthorizationManager );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 

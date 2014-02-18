@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authorization.wcs;
+package org.deegree.securityproxy.authorization;
 
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
@@ -7,16 +7,16 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 
-public class TestWcsRequestAuthorizationManager implements RequestAuthorizationManager {
+public class TestRequestAuthorizationManager implements RequestAuthorizationManager {
 
     public static final String SERVICE_URL = "url";
 
     private boolean isAuthorized = true;
 
-    public TestWcsRequestAuthorizationManager() {
+    public TestRequestAuthorizationManager() {
     }
 
-    public TestWcsRequestAuthorizationManager( boolean isAuthorized ) {
+    public TestRequestAuthorizationManager( boolean isAuthorized ) {
         this.isAuthorized = isAuthorized;
     }
 
