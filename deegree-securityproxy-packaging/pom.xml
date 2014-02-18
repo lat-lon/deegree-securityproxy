@@ -40,4 +40,8 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <finalName>deegree-securityproxy-webservice</finalName>
+  </build>
+
 </project>
