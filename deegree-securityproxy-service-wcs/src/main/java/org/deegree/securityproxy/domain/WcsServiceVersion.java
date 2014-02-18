@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.commons;
+package org.deegree.securityproxy.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;

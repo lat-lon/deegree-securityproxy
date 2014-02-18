@@ -1,8 +1,8 @@
-package org.deegree.securityproxy.authentication.repository;
+package org.deegree.securityproxy.auhentication.repository;
 
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.domain.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -15,8 +15,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.WcsPermission;
 import org.deegree.securityproxy.authentication.WcsUser;
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

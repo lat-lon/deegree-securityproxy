@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.auhentication;
 
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
@@ -8,7 +8,9 @@ import static org.mockito.Mockito.mock;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.WcsPermission;
+import org.deegree.securityproxy.authentication.WcsUser;
 import org.junit.Test;
 
 public class WcsUserTest {

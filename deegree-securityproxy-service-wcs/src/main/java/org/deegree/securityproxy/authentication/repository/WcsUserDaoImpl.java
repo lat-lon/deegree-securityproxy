@@ -1,20 +1,25 @@
 package org.deegree.securityproxy.authentication.repository;
 
+import static org.deegree.securityproxy.domain.WcsServiceVersion.parseVersions;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.WcsPermission;
 import org.deegree.securityproxy.authentication.WcsUser;
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
-import org.deegree.securityproxy.commons.ServiceType;
-import org.deegree.securityproxy.commons.WcsOperationType;
-import org.deegree.securityproxy.commons.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.repository.UserDao;
+import org.deegree.securityproxy.domain.WcsOperationType;
+import org.deegree.securityproxy.domain.WcsServiceVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.sql.DataSource;
-import java.util.*;
-
-import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
 
 /**
  * Loads {@link UserDetails} from a {@link DataSource}.
@@ -26,6 +31,8 @@ import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
  * @version $Revision: $, $Date: $
  */
 public class WcsUserDaoImpl implements UserDao {
+
+    private static final String SERVICE_NAME = "WCS";
 
     @Autowired
     private DataSource source;
@@ -153,7 +160,8 @@ public class WcsUserDaoImpl implements UserDao {
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
-            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl ) );
+            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName,
+                                                internalServiceUrl ) );
         }
     }
 
@@ -168,7 +176,7 @@ public class WcsUserDaoImpl implements UserDao {
 
     private boolean checkIfWcsServiceType( Map<String, Object> row ) {
         String serviceType = getAsString( row, serviceTypeColumn );
-        if ( ServiceType.WCS.toString().equals( serviceType.toUpperCase() ) )
+        if ( SERVICE_NAME.equals( serviceType.toUpperCase() ) )
             return true;
         return false;
     }

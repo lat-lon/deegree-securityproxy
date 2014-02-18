@@ -40,8 +40,8 @@ import static java.util.Collections.singletonList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.commons.WcsOperationType;
-import org.deegree.securityproxy.commons.WcsServiceVersion;
+import org.deegree.securityproxy.domain.WcsOperationType;
+import org.deegree.securityproxy.domain.WcsServiceVersion;
 
 /**
  * Encapulates a WCS request.

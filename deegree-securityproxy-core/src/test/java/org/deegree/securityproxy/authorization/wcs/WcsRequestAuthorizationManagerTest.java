@@ -36,11 +36,11 @@
 package org.deegree.securityproxy.authorization.wcs;
 
 import static org.deegree.securityproxy.authorization.wcs.WcsRequestAuthorizationManager.AUTHORIZED;
-import static org.deegree.securityproxy.commons.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_100;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_200;
+import static org.deegree.securityproxy.domain.WcsOperationType.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.domain.WcsServiceVersion.VERSION_200;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
@@ -53,10 +53,10 @@ import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.authentication.WcsPermission;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
-import org.deegree.securityproxy.commons.WcsOperationType;
-import org.deegree.securityproxy.commons.WcsServiceVersion;
+import org.deegree.securityproxy.domain.WcsOperationType;
+import org.deegree.securityproxy.domain.WcsServiceVersion;
 import org.deegree.securityproxy.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;

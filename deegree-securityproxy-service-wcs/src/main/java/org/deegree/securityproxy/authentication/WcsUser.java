@@ -1,6 +1,6 @@
 package org.deegree.securityproxy.authentication;
 
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
+import org.deegree.securityproxy.authentication.WcsPermission;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

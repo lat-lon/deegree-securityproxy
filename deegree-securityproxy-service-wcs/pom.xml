@@ -13,6 +13,11 @@
   </parent>
 
   <dependencies>
+    <!-- deegree-securityproxy -->
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-authentication</artifactId>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>

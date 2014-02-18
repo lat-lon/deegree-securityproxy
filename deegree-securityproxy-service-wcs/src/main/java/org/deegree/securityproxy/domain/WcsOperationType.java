@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.commons;
+package org.deegree.securityproxy.domain;
 
 /**
  * Discriminates WCS service operation types common to all WCS versions.

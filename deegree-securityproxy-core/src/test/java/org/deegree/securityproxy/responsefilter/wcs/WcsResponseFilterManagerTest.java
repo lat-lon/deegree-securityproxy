@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.wcs;
 
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.commons.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.commons.WcsServiceVersion.VERSION_110;
+import static org.deegree.securityproxy.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.domain.WcsServiceVersion.VERSION_110;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_BODY;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
 import static org.deegree.securityproxy.responsefilter.wcs.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
@@ -68,8 +68,8 @@ import java.util.List;
 import javax.servlet.ServletOutputStream;
 
 import org.deegree.securityproxy.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.WcsPermission;
 import org.deegree.securityproxy.authentication.WcsUser;
-import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.WcsRequest;

@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.commons;
+package org.deegree.securityproxy.domain;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
