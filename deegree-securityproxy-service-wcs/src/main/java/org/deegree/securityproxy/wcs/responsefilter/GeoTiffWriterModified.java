@@ -93,7 +93,7 @@ public class GeoTiffWriterModified extends GeoTiffWriter {
      * @see org.opengis.coverage.grid.GridCoverageWriter#write(org.opengis.coverage.grid.GridCoverage,
      * org.opengis.parameter.GeneralParameterValue[])
      */
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "deprecation" })
     @Override
     public void write( final GridCoverage gc, final GeneralParameterValue[] params )
                             throws IllegalArgumentException, IOException, IndexOutOfBoundsException {
