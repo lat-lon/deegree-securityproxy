@@ -8,6 +8,7 @@
   <context:annotation-config />
   <import resource="securityContext.xml" />
   <import resource="persistenceContext.xml" />
+  <import resource="wcsContext.xml" />
 
   <bean id="serviceExceptionHandler" class="org.deegree.securityproxy.ServiceExceptionHandler">
     <constructor-arg value="${exception_file_path}" />
@@ -22,36 +23,6 @@
     <constructor-arg type="java.lang.String">
       <value>log4j.properties</value>
     </constructor-arg>
-  </bean>
-
-  <bean id="wcsRequestAuthorizationManager" class="org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager" />
-
-  <bean id="wcsRequestParser" class="org.deegree.securityproxy.wcs.request.WcsRequestParser" />
-
-  <bean name="responseFilterManager" class="org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager">
-    <constructor-arg value="${clipping_exception_file_path}" />
-    <constructor-arg value="${clipping_failed_status_code}" />
-  </bean>
-
-  <bean name="geometryRetriever" class="org.deegree.securityproxy.wcs.responsefilter.GeometryRetrieverImpl" />
-
-  <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.GeotiffClipper" />
-
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.wcs.authentication.repository.WcsUserDaoImpl">
-    <constructor-arg value="ows_system_admin" />
-    <constructor-arg value="user_access_info" />
-    <constructor-arg value="access_token" />
-    <constructor-arg value="user_name" />
-    <constructor-arg value="password" />
-    <constructor-arg value="layer_service_type_name" />
-    <constructor-arg value="layer_service_type_version_hint" />
-    <constructor-arg value="ogc_layer_service_operation_type_name" />
-    <constructor-arg value="service_name" />
-    <constructor-arg value="internal_service_url" />
-    <constructor-arg value="service_layer_name" />
-    <constructor-arg value="subscription_start_date" />
-    <constructor-arg value="subscription_end_date" />
-    <constructor-arg value="user_layer_limited_to" />
   </bean>
 
   <bean name="authenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
