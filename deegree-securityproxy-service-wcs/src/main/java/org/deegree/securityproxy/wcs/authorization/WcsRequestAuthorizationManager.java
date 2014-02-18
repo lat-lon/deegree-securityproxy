@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.wcs.authentication.WcsPermission;
 import org.deegree.securityproxy.wcs.domain.WcsOperationType;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
@@ -42,12 +43,12 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     public static final String GETCAPABILITIES_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCapabilities with the given parameters";
 
     @Override
-    public AuthorizationReport decide( Authentication authentication, Object securedObject ) {
+    public AuthorizationReport decide( Authentication authentication, OwsRequest request) {
         if ( !checkAuthentication( authentication ) ) {
             return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG );
         }
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        WcsRequest wcsRequest = (WcsRequest) securedObject;
+        WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
             return authorizeGetCoverage( wcsRequest, authorities );
         } else if ( isDescribeCoverageRequest( wcsRequest ) ) {
