@@ -25,7 +25,7 @@ import static org.deegree.securityproxy.commons.WcsServiceVersion.parseVersions;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsUserDaoImpl implements WcsUserDao {
+public class WcsUserDaoImpl implements UserDao {
 
     @Autowired
     private DataSource source;
@@ -80,7 +80,7 @@ public class WcsUserDaoImpl implements WcsUserDao {
     }
 
     @Override
-    public WcsUser retrieveWcsUserById( String headerValue )
+    public WcsUser retrieveUserById( String headerValue )
                             throws IllegalArgumentException {
         if ( !checkParameter( headerValue ) )
             return null;

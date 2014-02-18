@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
-import org.deegree.securityproxy.authentication.repository.WcsUserDao;
+import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.deegree.securityproxy.authentication.wcs.WcsPermission;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,17 +44,17 @@ public class HeaderTokenAuthenticationProviderTest {
     private AuthenticationProvider provider;
 
     @Autowired
-    private WcsUserDao source;
+    private UserDao source;
 
     @SuppressWarnings("unchecked")
     @Before
     public void setupDatasource() {
         Mockito.reset( source );
-        when( source.retrieveWcsUserById( INVALID_TOKEN ) ).thenReturn( null );
+        when( source.retrieveUserById( INVALID_TOKEN ) ).thenReturn( null );
         WcsUser validUser = new WcsUser( VALID_USERNAME, VALID_PASSWORD, Collections.<WcsPermission> emptyList(),
                                          Collections.<WcsGeometryFilterInfo> emptyList() );
-        when( source.retrieveWcsUserById( VALID_TOKEN ) ).thenReturn( validUser );
-        when( source.retrieveWcsUserById( null ) ).thenThrow( IllegalArgumentException.class );
+        when( source.retrieveUserById( VALID_TOKEN ) ).thenReturn( validUser );
+        when( source.retrieveUserById( null ) ).thenThrow( IllegalArgumentException.class );
     }
 
     @Test

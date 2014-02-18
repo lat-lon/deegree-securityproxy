@@ -3,7 +3,7 @@ package org.deegree.securityproxy.authentication;
 import java.util.Collections;
 
 import org.apache.log4j.Logger;
-import org.deegree.securityproxy.authentication.repository.WcsUserDao;
+import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -29,7 +29,7 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     private static Logger log = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
 
     @Autowired
-    private WcsUserDao dao;
+    private UserDao dao;
 
     @Override
     public Authentication authenticate( Authentication authentication )
@@ -48,7 +48,7 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     }
 
     private Authentication createVerifiedToken( String headerTokenValue ) {
-        UserDetails userDetails = dao.retrieveWcsUserById( headerTokenValue );
+        UserDetails userDetails = dao.retrieveUserById( headerTokenValue );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
             return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue, userDetails.getAuthorities() );

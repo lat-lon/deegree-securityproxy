@@ -2,7 +2,6 @@ package org.deegree.securityproxy.authentication.repository;
 
 import javax.sql.DataSource;
 
-import org.deegree.securityproxy.authentication.WcsUser;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -14,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface WcsUserDao {
+public interface UserDao {
 
     /**
      * Verify an header value against the encapsulated data source.
@@ -25,7 +24,7 @@ public interface WcsUserDao {
      * @throws IllegalArgumentException
      *             on <code>null</code> or empty argument
      */
-    WcsUser retrieveWcsUserById( String headerValue )
+    UserDetails retrieveUserById( String headerValue )
                             throws IllegalArgumentException;
 
 }
