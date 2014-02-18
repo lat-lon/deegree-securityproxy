@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authorization.wcs;
+package org.deegree.securityproxy.authorization;
 
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.springframework.security.core.Authentication;

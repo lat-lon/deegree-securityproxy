@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
-import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
