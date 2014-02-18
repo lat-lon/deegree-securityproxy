@@ -12,4 +12,38 @@
     <version>1.1-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+    <!-- Improve this! -->
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-core</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-wcs</artifactId>
+      <version>1.1-SNAPSHOT</version>
+    </dependency>
+    <!-- Test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <!-- Spring Framework -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+    <!-- J2EP -->
+    <dependency>
+      <groupId>de.latlon</groupId>
+      <artifactId>j2ep</artifactId>
+    </dependency>
+    <!-- Servlet API -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
