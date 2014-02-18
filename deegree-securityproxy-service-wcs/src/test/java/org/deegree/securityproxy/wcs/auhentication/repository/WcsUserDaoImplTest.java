@@ -135,7 +135,7 @@ public class WcsUserDaoImplTest {
     @Test
     public void testRetrieveUserByIdValidHeaderWithGeometryLimitShouldReturnEmptyCollection() {
         WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_NULL_GEOMETRY_LIMIT" );
-        List<WcsGeometryFilterInfo> emptyList = Collections.<WcsGeometryFilterInfo> emptyList();
+        List<WcsGeometryFilterInfo> emptyList = Collections.emptyList();
         assertThat( wcsUser.getWcsGeometryFilterInfos(), is( emptyList ) );
     }
 

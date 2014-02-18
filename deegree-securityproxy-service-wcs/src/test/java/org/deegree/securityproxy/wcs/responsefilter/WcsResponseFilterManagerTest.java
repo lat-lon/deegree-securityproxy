@@ -155,7 +155,7 @@ public class WcsResponseFilterManagerTest {
 
     @Before
     public void resetMocks()
-                            throws Exception, ClippingException {
+                            throws ClippingException {
         reset( imageClipper );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometrySimple ),
@@ -340,7 +340,6 @@ public class WcsResponseFilterManagerTest {
         wcsResponseFilterManager.filterResponse( mockedServletResponse, createWcsGetCoverageRequest(),
                                                  mockAuthentication );
         verify( mockedServletResponse ).copyBufferedStreamToRealStream();
-        ;
     }
 
     @Test
@@ -473,8 +472,7 @@ public class WcsResponseFilterManagerTest {
         return mockedServletResponse;
     }
 
-    private StatusCodeResponseBodyWrapper mockResponseWrapperWithoutExceptionAndStatusCode400()
-                            throws IOException {
+    private StatusCodeResponseBodyWrapper mockResponseWrapperWithoutExceptionAndStatusCode400() {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
         when( mockedServletResponse.getStatus() ).thenReturn( 400 );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );

@@ -62,7 +62,7 @@ import org.mockito.Mockito;
  */
 public class WcsRequestParserTest {
 
-    private OwsRequestParser parser = new WcsRequestParser();
+    private final OwsRequestParser parser = new WcsRequestParser();
 
     private static final String WIDTH_PARAM = "WIDTH";
 

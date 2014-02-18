@@ -24,7 +24,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  */
 public class HeaderTokenAuthenticationProvider implements AuthenticationProvider {
 
-    private static Logger LOG = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
+    private static final Logger LOG = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
 
     @Autowired
     private UserDao dao;

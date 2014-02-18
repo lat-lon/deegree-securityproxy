@@ -30,13 +30,13 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     public static final boolean AUTHORIZED = true;
 
-    public static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
+    private static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
 
-    public static final String ACCESS_GRANTED_MSG = "Access granted.";
+    private static final String ACCESS_GRANTED_MSG = "Access granted.";
 
-    public static final String UNKNOWN_ERROR_MSG = "Unknown error. See application log for details.";
+    private static final String UNKNOWN_ERROR_MSG = "Unknown error. See application log for details.";
 
-    public static final String DESCRIBECOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation DescribeCoverage with the given parameters";
+    private static final String DESCRIBECOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation DescribeCoverage with the given parameters";
 
     public static final String GETCOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCoverage with the given parameters";
 
@@ -140,15 +140,13 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     }
 
     private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getOperationType() != null )
-            return wcsRequest.getOperationType().equals( wcsPermission.getOperationType() );
-        return false;
+        return wcsRequest.getOperationType() != null && wcsRequest.getOperationType()
+              .equals( wcsPermission.getOperationType() );
     }
 
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getServiceVersion() != null )
-            return wcsRequest.getServiceVersion().equals( wcsPermission.getServiceVersion() );
-        return false;
+        return wcsRequest.getServiceVersion() != null && wcsRequest.getServiceVersion()
+              .equals( wcsPermission.getServiceVersion() );
     }
 
     private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
@@ -160,8 +158,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     }
 
     private boolean isServiceNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        if ( wcsRequest.getServiceName() != null )
-            return wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
-        return false;
+        return wcsRequest.getServiceName() != null && wcsRequest.getServiceName()
+              .equals( wcsPermission.getServiceName() );
     }
 }

@@ -137,7 +137,7 @@ public class SecurityFilter implements Filter {
     private void generateAndLogProxyReport( String message, String uuid, HttpServletRequest request,
                                             StatusCodeResponseBodyWrapper response ) {
         int statusCode = response.getStatus();
-        boolean isRequestSuccessful = SC_OK == statusCode ? true : false;
+        boolean isRequestSuccessful = SC_OK == statusCode;
         String targetURI = request.getRequestURL().toString();
         String queryString = request.getQueryString();
         String requestURL = queryString != null ? targetURI + "?" + queryString : targetURI;

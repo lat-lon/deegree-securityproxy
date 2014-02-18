@@ -5,7 +5,7 @@ import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.junit.Test;
 
 /**
- * Tests for {@link Log4JSecurityRequestResponseLogger}
+ * Tests for {@link Log4JReportLoggerTest}
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>

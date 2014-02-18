@@ -54,13 +54,13 @@ import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
  */
 public class WcsRequest implements OwsRequest {
 
-    private WcsOperationType operationType;
+    private final WcsOperationType operationType;
 
-    private WcsServiceVersion serviceVersion;
+    private final WcsServiceVersion serviceVersion;
 
-    private List<String> coverageNames;
+    private final List<String> coverageNames;
 
-    private String serviceName;
+    private final String serviceName;
 
     /**
      * Instantiates a new {@link WcsRequest} with an empty {@link List} of coverage names.

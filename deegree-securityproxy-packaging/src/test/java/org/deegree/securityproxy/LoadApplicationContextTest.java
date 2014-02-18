@@ -4,7 +4,6 @@ import static java.io.File.createTempFile;
 import static org.apache.commons.io.IOUtils.copy;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +54,7 @@ public class LoadApplicationContextTest {
     }
 
     private static File copyPropertiesFileToNewConfigDir()
-                            throws IOException, FileNotFoundException {
+                            throws IOException {
         File configDirectory = createConfigDirectory();
         File configPropertiesFile = new File( configDirectory, CONFIG_PROPERTIES_FILE_NAME );
         FileOutputStream fileOutputStream = new FileOutputStream( configPropertiesFile );

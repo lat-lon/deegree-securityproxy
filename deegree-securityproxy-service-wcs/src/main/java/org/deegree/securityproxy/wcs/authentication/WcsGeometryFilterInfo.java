@@ -49,7 +49,7 @@ public class WcsGeometryFilterInfo {
 
     private final String coverageName;
 
-    private String geometry;
+    private final String geometry;
 
     /**
      * Instantiates a new {@link WcsGeometryFilterInfo} with full extend (null geometry)

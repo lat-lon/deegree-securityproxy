@@ -82,7 +82,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final String INTERNAL_SERVICE_URL = "serviceUrl";
 
-    private RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
+    private final RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 
     @Test
     public void testSupportsWcsRequestShouldBeSupported()

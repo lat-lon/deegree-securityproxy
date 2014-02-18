@@ -35,7 +35,7 @@ public class StatusCodeResponseBodyWrapper extends HttpServletResponseWrapper {
 
     private ServletOutputStream servletOutputStream;
 
-    private ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream bufferingStream = new ByteArrayOutputStream();
 
     public StatusCodeResponseBodyWrapper( HttpServletResponse response ) {
         super( response );

@@ -50,7 +50,7 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision: $, $Date: $
  */
-public interface GeometryRetriever {
+interface GeometryRetriever {
 
     /**
      * Retrieves or calculates the parsed geometry to use from the list of {@link WcsGeometryFilterInfo}s identified by
@@ -64,7 +64,7 @@ public interface GeometryRetriever {
      * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
      * @throws IllegalArgumentException
      *             if one of the parameters <code>null</code>
-     * @throws ParsingException
+     * @throws ParseException
      *             if the geometry could not be parsed or calculated
      */
     Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )

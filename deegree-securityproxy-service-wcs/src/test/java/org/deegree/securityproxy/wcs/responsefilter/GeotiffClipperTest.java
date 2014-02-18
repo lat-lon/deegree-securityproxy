@@ -92,7 +92,7 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class GeotiffClipperTest {
 
-    private GeotiffClipper geotiffClipper = new GeotiffClipper();
+    private final GeotiffClipper geotiffClipper = new GeotiffClipper();
 
     /*
      * #calculateClippedImage() - Exceptions

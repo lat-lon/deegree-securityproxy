@@ -47,7 +47,7 @@ import org.opengis.referencing.crs.GeographicCRS;
 import org.opengis.referencing.crs.ProjectedCRS;
 import org.opengis.util.ProgressListener;
 
-public class GeoTiffWriterModified extends GeoTiffWriter {
+class GeoTiffWriterModified extends GeoTiffWriter {
 
     private final Map<String, String> metadataKeyValue = new HashMap<String, String>();
 

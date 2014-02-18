@@ -41,12 +41,7 @@ import static org.geotools.geometry.jts.JTS.transform;
 import static org.geotools.referencing.CRS.decode;
 import static org.geotools.referencing.CRS.findMathTransform;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import javax.imageio.metadata.IIOMetadataNode;
 
@@ -61,7 +56,6 @@ import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
@@ -82,7 +76,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class GeotiffClipper implements ImageClipper {
 
-    private static Logger LOG = Logger.getLogger( GeotiffClipper.class );
+    private static final Logger LOG = Logger.getLogger( GeotiffClipper.class );
 
     private static final String VISIBLE_AREA_CRS = "EPSG:4326";
 
@@ -104,7 +98,7 @@ public class GeotiffClipper implements ImageClipper {
                 LOG.debug( "Clipping geometry is full extend as no clipping area is defined!" );
             }
 
-            GridCoverage2D geotiff = (GridCoverage2D) reader.read( null );
+            GridCoverage2D geotiff = reader.read( null );
             IIOMetadataNode metadataRootNode = reader.getMetadata().getRootNode();
 
             GeoTiffWriterModified writer = new GeoTiffWriterModified( destination );
@@ -174,12 +168,11 @@ public class GeotiffClipper implements ImageClipper {
      * @param reader
      *            never <code>null</code>
      * @return the transformed geometry, never <code>null</code>
-     * @throws NoSuchAuthorityCodeException
      * @throws FactoryException
      * @throws TransformException
      */
     Geometry transformVisibleAreaToImageCrs( Geometry geometryToTransform, GeoTiffReader reader )
-                            throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+                            throws FactoryException, TransformException {
         CoordinateReferenceSystem visibleAreaCRS = decode( VISIBLE_AREA_CRS, true );
         CoordinateReferenceSystem imageCRS = reader.getCrs();
 
@@ -195,12 +188,11 @@ public class GeotiffClipper implements ImageClipper {
      * @param reader
      *            never <code>null</code>
      * @return the transformed geometry, never <code>null</code>
-     * @throws NoSuchAuthorityCodeException
      * @throws FactoryException
      * @throws TransformException
      */
     Geometry transformToVisibleAreaCrs( Geometry geometryToTransform, GeoTiffReader reader )
-                            throws NoSuchAuthorityCodeException, FactoryException, TransformException {
+                            throws FactoryException, TransformException {
         CoordinateReferenceSystem imageCRS = reader.getCrs();
         CoordinateReferenceSystem visibleAreaCRS = decode( VISIBLE_AREA_CRS, true );
 
@@ -210,7 +202,7 @@ public class GeotiffClipper implements ImageClipper {
 
     // TODO: dirty hack! coverage should be read from input stream directly
     private File writeToTempFile( InputStream coverageToClip )
-                            throws IOException, FileNotFoundException {
+                            throws IOException {
         File tempFile = createTempFile( "imageToClip", ".tif" );
         LOG.trace( "Response image was written into file: " + tempFile.getAbsolutePath() );
         FileOutputStream output = new FileOutputStream( tempFile );
@@ -235,8 +227,7 @@ public class GeotiffClipper implements ImageClipper {
         } else {
             modifiedCoverageToWrite = executeRescalingToNull( geotiffToWrite );
         }
-        GridCoverage2D resampledCoverageToWrite = executeResampling( modifiedCoverageToWrite, geotiffToWrite );
-        return resampledCoverageToWrite;
+        return executeResampling( modifiedCoverageToWrite, geotiffToWrite );
     }
 
     private GridCoverage2D executeCropping( GridCoverage2D coverageToWrite, Geometry croppingArea ) {
@@ -271,10 +262,7 @@ public class GeotiffClipper implements ImageClipper {
     }
 
     private boolean isClippingRequired( Geometry imageGeometry, Geometry clippingGeometry ) {
-        if ( clippingGeometry == null ) {
-            return false;
-        }
-        return !clippingGeometry.contains( imageGeometry );
+        return clippingGeometry != null && !clippingGeometry.contains( imageGeometry );
     }
 
 }

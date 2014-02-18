@@ -35,21 +35,21 @@ public class WcsRequestParser implements OwsRequestParser {
 
     private static final Object COVERAGE = "coverage";
 
-    public static final String CRS = "crs";
+    private static final String CRS = "crs";
 
-    public static final String BBOX = "bbox";
+    private static final String BBOX = "bbox";
 
-    public static final String TIME = "time";
+    private static final String TIME = "time";
 
-    public static final String WIDTH = "width";
+    private static final String WIDTH = "width";
 
-    public static final String HEIGHT = "height";
+    private static final String HEIGHT = "height";
 
-    public static final String RESX = "resx";
+    private static final String RESX = "resx";
 
-    public static final String RESY = "resy";
+    private static final String RESY = "resy";
 
-    public static final String FORMAT = "format";
+    private static final String FORMAT = "format";
 
     /*
      * (non-Javadoc)

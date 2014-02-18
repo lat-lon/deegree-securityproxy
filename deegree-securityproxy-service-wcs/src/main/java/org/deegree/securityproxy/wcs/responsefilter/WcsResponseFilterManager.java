@@ -155,9 +155,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     @Override
     public <T extends OwsRequest> boolean supports( Class<T> clazz ) {
-        if ( WcsRequest.class.equals( clazz ) )
-            return true;
-        return false;
+        return WcsRequest.class.equals( clazz );
     }
 
     private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {

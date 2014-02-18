@@ -94,7 +94,7 @@ public class WcsUserDaoImpl implements UserDao {
         String jdbcString = generateSqlQuery();
         try {
             Date now = new Date();
-            List<Map<String, Object>> rows = template.queryForList( jdbcString, new Object[] { headerValue, now } );
+            List<Map<String, Object>> rows = template.queryForList( jdbcString, headerValue, now );
             return createUserForRows( rows );
         } catch ( DataAccessException e ) {
             return null;
@@ -102,9 +102,7 @@ public class WcsUserDaoImpl implements UserDao {
     }
 
     private boolean checkParameter( String headerValue ) {
-        if ( headerValue == null || "".equals( headerValue ) )
-            return false;
-        return true;
+        return !( headerValue == null || "".equals( headerValue ) );
     }
 
     private String generateSqlQuery() {
@@ -175,9 +173,7 @@ public class WcsUserDaoImpl implements UserDao {
 
     private boolean checkIfWcsServiceType( Map<String, Object> row ) {
         String serviceType = getAsString( row, serviceTypeColumn );
-        if ( SERVICE_NAME.equals( serviceType.toUpperCase() ) )
-            return true;
-        return false;
+        return SERVICE_NAME.equals( serviceType.toUpperCase() );
     }
 
     private WcsOperationType getOperationType( Map<String, Object> row ) {

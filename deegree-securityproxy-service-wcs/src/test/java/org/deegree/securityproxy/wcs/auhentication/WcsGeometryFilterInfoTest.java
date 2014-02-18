@@ -50,9 +50,9 @@ import org.junit.Test;
  */
 public class WcsGeometryFilterInfoTest {
 
-    private String COVERAGE_NAME = "coverageName";
+    private final String COVERAGE_NAME = "coverageName";
 
-    private String GEOMETRY = "geometryAsString";
+    private final String GEOMETRY = "geometryAsString";
 
     @Test
     public void testConstructorWcsGeometryFilterInfo()

@@ -32,7 +32,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
  */
 public class ServiceExceptionHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 
-    private static Logger LOG = Logger.getLogger( ServiceExceptionHandler.class );
+    private static final Logger LOG = Logger.getLogger( ServiceExceptionHandler.class );
 
     public static final String DEFAULT_BODY = "Access Denied";
 

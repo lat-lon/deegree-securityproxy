@@ -54,7 +54,7 @@ public interface OwsRequestParser {
      *            never <code>null</code>. Must contain the following parameters exactly once ignoring the casing:
      *            "request" and "service". Must contain the following parameter not more than once: "coverage". May
      *            contain the following parameter not more than once: "version".
-     * @return {@link WcsRequest}. Never <code>null</code>
+     * @return {@link OwsRequest}. Never <code>null</code>
      * @throws UnsupportedRequestTypeException
      *             when the given request does not have the correct service type
      */

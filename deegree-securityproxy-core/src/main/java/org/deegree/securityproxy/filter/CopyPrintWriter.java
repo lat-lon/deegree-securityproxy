@@ -12,7 +12,7 @@ import java.io.Writer;
  */
 public class CopyPrintWriter extends PrintWriter {
 
-    private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
     public CopyPrintWriter( Writer writer ) {
         super( writer );

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @version $Revision: $, $Date: $
  */
-public class FilterChainTestImpl implements FilterChain {
+class FilterChainTestImpl implements FilterChain {
     
     private int status;
 

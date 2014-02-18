@@ -99,7 +99,7 @@ public class StatusCodeResponseBodyWrapperTest {
         when( mock.getWriter() ).thenReturn( new PrintWriter( new ByteArrayOutputStream() ) );
         when( mock.getOutputStream() ).thenReturn( new ServletOutputStream() {
 
-            private OutputStream inner = new ByteArrayOutputStream();
+            private final OutputStream inner = new ByteArrayOutputStream();
 
             @Override
             public void write( int b )
