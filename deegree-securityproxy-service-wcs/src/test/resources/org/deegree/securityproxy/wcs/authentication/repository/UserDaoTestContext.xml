@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/jdbc 
+        http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
+
+  <jdbc:embedded-database id="dataSource">
+    <jdbc:script location="classpath*:org/deegree/securityproxy/wcs/authentication/repository/test_schema.sql" />
+    <jdbc:script location="classpath*:org/deegree/securityproxy/wcs/authentication/repository/test_data.sql" />
+  </jdbc:embedded-database>
+
+  <bean id="headerTokenDataSource"
+    class="org.deegree.securityproxy.wcs.authentication.repository.WcsUserDaoImpl">
+    <constructor-arg value="" />
+    <constructor-arg value="usertable" />
+    <constructor-arg value="access_token" />
+    <constructor-arg value="user_name" />
+    <constructor-arg value="password" />
+    <constructor-arg value="layer_service_type_name" />
+    <constructor-arg value="serviceVersion" />
+    <constructor-arg value="operationType" />
+    <constructor-arg value="serviceName" />
+    <constructor-arg value="internalServiceUrl" />
+    <constructor-arg value="layerName" />
+    <constructor-arg value="subscription_start" />
+    <constructor-arg value="subscription_end" />
+    <constructor-arg value="user_layer_limited_to" />
+  </bean>
+
+</beans>

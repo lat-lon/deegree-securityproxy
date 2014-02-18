@@ -24,20 +24,20 @@
     </constructor-arg>
   </bean>
 
-  <bean id="wcsRequestAuthorizationManager" class="org.deegree.securityproxy.authorization.WcsRequestAuthorizationManager" />
+  <bean id="wcsRequestAuthorizationManager" class="org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager" />
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.wcs.request.WcsRequestParser" />
 
-  <bean name="responseFilterManager" class="org.deegree.securityproxy.responsefilter.WcsResponseFilterManager">
+  <bean name="responseFilterManager" class="org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager">
     <constructor-arg value="${clipping_exception_file_path}" />
     <constructor-arg value="${clipping_failed_status_code}" />
   </bean>
 
-  <bean name="geometryRetriever" class="org.deegree.securityproxy.responsefilter.GeometryRetrieverImpl" />
+  <bean name="geometryRetriever" class="org.deegree.securityproxy.wcs.responsefilter.GeometryRetrieverImpl" />
 
-  <bean name="imageClipper" class="org.deegree.securityproxy.responsefilter.GeotiffClipper" />
+  <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.GeotiffClipper" />
 
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.repository.WcsUserDaoImpl">
+  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.wcs.authentication.repository.WcsUserDaoImpl">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
     <constructor-arg value="access_token" />
