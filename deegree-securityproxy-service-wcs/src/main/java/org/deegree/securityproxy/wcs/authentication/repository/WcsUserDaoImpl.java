@@ -87,8 +87,7 @@ public class WcsUserDaoImpl implements UserDao {
     }
 
     @Override
-    public WcsUser retrieveUserById( String headerValue )
-                            throws IllegalArgumentException {
+    public WcsUser retrieveUserById( String headerValue ) {
         if ( !checkParameter( headerValue ) )
             return null;
         JdbcTemplate template = new JdbcTemplate( source );

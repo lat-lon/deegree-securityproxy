@@ -14,8 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
- * Performs verification of an incoming {@link Authentication}. Authenticates the token against a
- * {@link WcsUserDaoImpl}
+ * Performs verification of an incoming {@link Authentication}. Authenticates the token against a {@link UserDao}
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -25,7 +24,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  */
 public class HeaderTokenAuthenticationProvider implements AuthenticationProvider {
 
-    private static Logger log = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
+    private static Logger LOG = Logger.getLogger( HeaderTokenAuthenticationProvider.class );
 
     @Autowired
     private UserDao dao;
@@ -33,11 +32,11 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     @Override
     public Authentication authenticate( Authentication authentication )
                             throws AuthenticationException {
-        log.info( "Authenticating incoming request " + authentication );
+        LOG.info( "Authenticating incoming request " + authentication );
         if ( authentication == null )
             return generateAnonymousAuthenticationToken();
         String headerTokenValue = (String) authentication.getPrincipal();
-        log.info( "Header token " + headerTokenValue );
+        LOG.info( "Header token " + headerTokenValue );
         return createVerifiedToken( headerTokenValue );
     }
 
@@ -57,11 +56,9 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
     }
 
     private AnonymousAuthenticationToken generateAnonymousAuthenticationToken() {
-        SimpleGrantedAuthority grantedAuthorityImpl = new SimpleGrantedAuthority(
-                                                              "ROLE_ANONYMOUS" );
-        return new AnonymousAuthenticationToken(
-                                                 "Anonymous User",
-                                                 "Anonymous User",
+        SimpleGrantedAuthority grantedAuthorityImpl = new SimpleGrantedAuthority( "ROLE_ANONYMOUS" );
+        return new AnonymousAuthenticationToken( "Anonymous User", "Anonymous User",
                                                  Collections.singletonList( grantedAuthorityImpl ) );
     }
+
 }

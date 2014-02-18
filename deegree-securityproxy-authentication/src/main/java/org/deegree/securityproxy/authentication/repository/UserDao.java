@@ -19,12 +19,10 @@ public interface UserDao {
      * Verify an header value against the encapsulated data source.
      * 
      * @param headerValue
-     *            never <code>null</code> or empty
-     * @return the user details that match the given header value
-     * @throws IllegalArgumentException
-     *             on <code>null</code> or empty argument
+     *            the value of the header token used for authentication, may be <code>null</code> or empty
+     * @return the user details that match the given header value, <code>null</code> if the headerValue is
+     *         <code>null</code> or empty or if no matching user could be found
      */
-    UserDetails retrieveUserById( String headerValue )
-                            throws IllegalArgumentException;
+    UserDetails retrieveUserById( String headerValue );
 
 }
