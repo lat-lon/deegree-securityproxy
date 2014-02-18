@@ -21,9 +21,9 @@ import org.deegree.securityproxy.authorization.wcs.RequestAuthorizationManager;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResposeLogger;
 import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.request.WcsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ public class SecurityFilter implements Filter {
     private RequestAuthorizationManager requestAuthorizationManager;
 
     @Autowired
-    private WcsRequestParser parser;
+    private OwsRequestParser parser;
 
     @Autowired
     private SecurityRequestResposeLogger proxyReportLogger;

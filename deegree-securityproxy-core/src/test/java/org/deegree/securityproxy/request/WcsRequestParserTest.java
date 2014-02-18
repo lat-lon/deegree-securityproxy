@@ -60,7 +60,7 @@ import org.mockito.Mockito;
  */
 public class WcsRequestParserTest {
 
-    private WcsRequestParser parser = new WcsRequestParser();
+    private OwsRequestParser parser = new WcsRequestParser();
 
     public static final String WIDTH_PARAM = "WIDTH";
 
@@ -109,7 +109,7 @@ public class WcsRequestParserTest {
     public void testParseFromGetCapabilitiesRequestShouldIgnoreCoverageName()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetCapabilitiesRequest();
-        WcsRequest wcsRequest = parser.parse( request );
+        WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         assertThat( wcsRequest.getCoverageNames().isEmpty(), is( true ) );
     }
 
@@ -117,7 +117,7 @@ public class WcsRequestParserTest {
     public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersionAndServiceName()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetCapabilitiesRequest();
-        WcsRequest wcsRequest = parser.parse( request );
+        WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( GETCAPABILITIES ) );
         assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
         assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
@@ -127,7 +127,7 @@ public class WcsRequestParserTest {
     public void testParseFromGetCapabilitiesRequestWithExtendedPathShouldParseServiceName()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetCapabilitiesRequestWithExtendedPath();
-        WcsRequest wcsRequest = parser.parse( request );
+        WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( GETCAPABILITIES ) );
         assertThat( wcsRequest.getServiceVersion(), is( VERSION_100 ) );
         assertThat( wcsRequest.getServiceName(), is( SERVICE_NAME ) );
@@ -138,7 +138,7 @@ public class WcsRequestParserTest {
     public void testParseFromDescribeCoverageRequestShouldParseCoverageOperationTypeAndServiceVersionAndServiceName()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsDescribeCoverageRequest();
-        WcsRequest wcsRequest = parser.parse( request );
+        WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         List<String> coverageNames = wcsRequest.getCoverageNames();
         assertThat( coverageNames.get( 0 ), is( COVERAGE_NAME ) );
         assertThat( coverageNames.get( 1 ), is( COVERAGE_NAME ) );
@@ -153,7 +153,7 @@ public class WcsRequestParserTest {
     public void testParseFromGetCoverageRequestShouldParseCoverageOperationTypeAndServiceVersionAndServiceName()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWcsGetCoverageRequest();
-        WcsRequest wcsRequest = parser.parse( request );
+        WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         List<String> coverageNames = wcsRequest.getCoverageNames();
         assertThat( coverageNames.get( 0 ), is( COVERAGE_NAME ) );
         assertThat( coverageNames.size(), is( 1 ) );

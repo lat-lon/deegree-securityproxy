@@ -23,7 +23,7 @@ import org.deegree.securityproxy.domain.WcsServiceVersion;
  * @author last edited by: $Author: erben $
  * @version $Revision: $, $Date: $
  */
-public class WcsRequestParser {
+public class WcsRequestParser implements OwsRequestParser {
 
     private static final String REQUEST = "request";
 
@@ -49,17 +49,12 @@ public class WcsRequestParser {
 
     public static final String FORMAT = "format";
 
-    /**
-     * Parses an incoming {@link HttpServletRequest} into a {@link WcsRequest}.
+    /*
+     * (non-Javadoc)
      * 
-     * @param request
-     *            never <code>null</code>. Must contain the following parameters exactly once ignoring the casing:
-     *            "request" and "service". Must contain the following parameter not more than once: "coverage". May
-     *            contain the following parameter not more than once: "version".
-     * @return {@link WcsRequest}. Never <code>null</code>
-     * @throws UnsupportedRequestTypeException
-     *             when the given request does not have the service type "wcs"
+     * @see org.deegree.securityproxy.request.OqsRequestParser#parse(javax.servlet.http.HttpServletRequest)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public WcsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException {

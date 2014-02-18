@@ -19,7 +19,7 @@
   <bean id="requestAuthorizationManagerMock" class="org.deegree.securityproxy.authorization.wcs.TestWcsRequestAuthorizationManager" />
 
   <bean id="wcsRequestParser" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.deegree.securityproxy.request.WcsRequestParser" />
+    <constructor-arg value="org.deegree.securityproxy.request.OwsRequestParser" />
   </bean>
 
   <bean name="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter" />
