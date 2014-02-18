@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.wcs.request;
 
+import static java.lang.String.format;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 import static org.deegree.securityproxy.wcs.domain.WcsOperationType.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
@@ -33,7 +34,7 @@ public class WcsRequestParser implements OwsRequestParser {
 
     private static final String VERSION = "version";
 
-    private static final Object COVERAGE = "coverage";
+    private static final String COVERAGE = "coverage";
 
     private static final String CRS = "crs";
 
@@ -51,11 +52,6 @@ public class WcsRequestParser implements OwsRequestParser {
 
     private static final String FORMAT = "format";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.deegree.securityproxy.request.OqsRequestParser#parse(javax.servlet.http.HttpServletRequest)
-     */
     @Override
     @SuppressWarnings("unchecked")
     public WcsRequest parse( HttpServletRequest request )
@@ -65,6 +61,10 @@ public class WcsRequestParser implements OwsRequestParser {
         String serviceName = evaluateServiceName( request );
         Map<String, String[]> normalizedParameterMap = normalizeKvpMap( request.getParameterMap() );
         checkParameters( normalizedParameterMap );
+        return parseRequest( serviceName, normalizedParameterMap );
+    }
+
+    private WcsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         WcsOperationType type = evaluateOperationType( normalizedParameterMap );
         switch ( type ) {
         case GETCAPABILITIES:
@@ -81,20 +81,19 @@ public class WcsRequestParser implements OwsRequestParser {
         checkGetCoverageParameters( normalizedParameterMap );
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
-        if ( coverageParameter == null || coverageParameter.length == 0 )
+        if ( isNotSet( coverageParameter ) )
             return new WcsRequest( GETCOVERAGE, version, serviceName );
-        else {
-            List<String> separatedCoverages = extractCoverages( coverageParameter );
-            if ( separatedCoverages.size() != 1 )
-                throw new IllegalArgumentException( "GetCoverage requires exactly one coverage parameter!" );
-            return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ), serviceName );
-        }
+
+        List<String> separatedCoverages = extractCoverages( coverageParameter );
+        if ( separatedCoverages.size() != 1 )
+            throw new IllegalArgumentException( "GetCoverage requires exactly one coverage parameter!" );
+        return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ), serviceName );
     }
 
     private WcsRequest parseDescribeCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
-        if ( coverageParameter == null || coverageParameter.length == 0 )
+        if ( isNotSet( coverageParameter ) )
             return new WcsRequest( DESCRIBECOVERAGE, version, serviceName );
         else {
             List<String> separatedCoverages = extractCoverages( coverageParameter );
@@ -160,34 +159,15 @@ public class WcsRequestParser implements OwsRequestParser {
 
     private void checkServiceParameter( Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
-        String[] serviceParameter = normalizedParameterMap.get( SERVICE );
-        if ( serviceParameter == null || serviceParameter.length == 0 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"service\" parameter, ignoring the casing. None Given." );
-        }
-        if ( serviceParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"service\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( serviceParameter ) );
-        }
-        String serviceType = serviceParameter[0];
+        String serviceType = checkSingleRequiredParameter( normalizedParameterMap, SERVICE );
         if ( !"wcs".equalsIgnoreCase( serviceType ) ) {
-            throw new UnsupportedRequestTypeException(
-                                                       "Request must contain a \"service\" parameter with value \"wcs\"" );
+            String msg = "Request must contain a \"service\" parameter with value \"wcs\"";
+            throw new UnsupportedRequestTypeException( msg );
         }
     }
 
     private void checkRequestParameter( Map<String, String[]> normalizedParameterMap ) {
-        String[] requestParameter = normalizedParameterMap.get( REQUEST );
-        if ( requestParameter == null || requestParameter.length == 0 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"request\" parameter, ignoring the casing. None Given." );
-        }
-        if ( requestParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"request\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( requestParameter ) );
-        }
+        checkSingleRequiredParameter( normalizedParameterMap, REQUEST );
     }
 
     private void checkGetCoverageParameters( Map<String, String[]> normalizedParameterMap ) {
@@ -199,47 +179,25 @@ public class WcsRequestParser implements OwsRequestParser {
     }
 
     private void checkCoverageParameter( Map<String, String[]> normalizedParameterMap ) {
-        String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
-        if ( coverageParameter == null )
-            throw new IllegalArgumentException(
-                                                "Request must contain a \"coverage\" parameter, ignoring the casing. None given." );
-        if ( coverageParameter.length == 0 || coverageParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"coverage\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( coverageParameter ) );
-        }
+        checkSingleRequiredParameter( normalizedParameterMap, COVERAGE );
     }
 
     private void checkCrsParameter( Map<String, String[]> normalizedParameterMap ) {
-        String[] crsParameter = normalizedParameterMap.get( CRS );
-        if ( crsParameter == null || crsParameter.length == 0 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"crs\" parameter, ignoring the casing. None Given." );
-        }
-        if ( crsParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"crs\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( crsParameter ) );
-        }
+        checkSingleRequiredParameter( normalizedParameterMap, CRS );
     }
 
     private void checkBboxOrTimeParameter( Map<String, String[]> normalizedParameterMap ) {
         String[] bboxParameter = normalizedParameterMap.get( BBOX );
         String[] timeParameter = normalizedParameterMap.get( TIME );
-        if ( ( bboxParameter == null || bboxParameter.length == 0 )
-             && ( timeParameter == null || timeParameter.length == 0 ) ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain a \"bbox\" or \"time\" parameter, ignoring the casing. None Given." );
+        if ( isNotSet( bboxParameter ) && isNotSet( timeParameter ) ) {
+            String msg = "Request must contain a \"bbox\" or \"time\" parameter, ignoring the casing. None Given.";
+            throw new IllegalArgumentException( msg );
         }
-        if ( !( bboxParameter == null || bboxParameter.length == 0 ) && bboxParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must not contain more than one \"bbox\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( bboxParameter ) );
+        if ( !isNotSet( bboxParameter ) && isNotSingle( bboxParameter ) ) {
+            throwException( BBOX, bboxParameter );
         }
-        if ( !( timeParameter == null || timeParameter.length == 0 ) && timeParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must not contain more than one \"time\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( timeParameter ) );
+        if ( !isNotSet( timeParameter ) && isNotSingle( timeParameter ) ) {
+            throwException( TIME, timeParameter );
         }
     }
 
@@ -248,43 +206,68 @@ public class WcsRequestParser implements OwsRequestParser {
         String[] heightParameter = normalizedParameterMap.get( HEIGHT );
         String[] resxParameter = normalizedParameterMap.get( RESX );
         String[] resyParameter = normalizedParameterMap.get( RESY );
-        if ( ( ( widthParameter == null || widthParameter.length == 0 ) || ( heightParameter == null || heightParameter.length == 0 ) )
-             && ( ( resxParameter == null || resxParameter.length == 0 ) || ( resyParameter == null || resyParameter.length == 0 ) ) ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain a \"width\" and \"height\" or \"resx\" and \"resy\" parameter, ignoring the casing." );
+        boolean isNotWidthAndHeight = isNotSet( widthParameter ) || isNotSet( heightParameter );
+        boolean isNotResXAndResY = isNotSet( resxParameter ) || isNotSet( resyParameter );
+        if ( isNotWidthAndHeight && isNotResXAndResY ) {
+            throw new IllegalArgumentException( msg() );
         }
-        if ( !( widthParameter == null || widthParameter.length == 0 ) && widthParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must not contain more than one \"width\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( widthParameter ) );
+        if ( !isNotSet( widthParameter ) && isNotSingle( widthParameter ) ) {
+            throwException( WIDTH, widthParameter );
         }
-        if ( !( heightParameter == null || heightParameter.length == 0 ) && heightParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must not contain more than one \"height\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( heightParameter ) );
+        if ( !isNotSet( heightParameter ) && isNotSingle( heightParameter ) ) {
+            throwException( HEIGHT, heightParameter );
         }
-        if ( !( resxParameter == null || resxParameter.length == 0 ) && resxParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must not contain more than one \"resx\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( resxParameter ) );
+        if ( !isNotSet( resxParameter ) && isNotSingle( resxParameter ) ) {
+            throwException( RESX, resxParameter );
         }
-        if ( !( resyParameter == null || resyParameter.length == 0 ) && resyParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must not contain more than one \"resy\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( resyParameter ) );
+        if ( !isNotSet( resyParameter ) && isNotSingle( resyParameter ) ) {
+            throwException( RESY, resyParameter );
         }
     }
 
+    private String msg() {
+        return "Request must contain a \"width\" and \"height\" or \"resx\" and \"resy\" parameter, ignoring the casing.";
+    }
+
     private void checkFormatParameter( Map<String, String[]> normalizedParameterMap ) {
-        String[] formatParameter = normalizedParameterMap.get( FORMAT );
-        if ( formatParameter == null || formatParameter.length == 0 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"format\" parameter, ignoring the casing. None Given." );
+        checkSingleRequiredParameter( normalizedParameterMap, FORMAT );
+    }
+
+    private String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap, String parameterName ) {
+        String[] parameterValue = checkRequiredParameter( normalizedParameterMap, parameterName );
+        if ( isNotSingle( parameterValue ) ) {
+            throwException( parameterName, parameterValue );
         }
-        if ( formatParameter.length > 1 ) {
-            throw new IllegalArgumentException(
-                                                "Request must contain exactly one \"format\" parameter, ignoring the casing. Given parameters:"
-                                                                        + Arrays.toString( formatParameter ) );
+        return parameterValue[0];
+    }
+
+    private String[] checkRequiredParameter( Map<String, String[]> normalizedParameterMap, String parameterName ) {
+        String[] parameterValue = normalizedParameterMap.get( parameterName );
+        if ( isNotSet( parameterValue ) ) {
+            throwException( parameterName );
         }
+        return parameterValue;
+    }
+
+    private void throwException( String parameterName ) {
+        String msg = "Request must contain exactly one %s parameter, ignoring the casing. None Given.";
+        throw new IllegalArgumentException( format( msg, parameterName ) );
+    }
+
+    private void throwException( String parameterName, String[] parameterValue ) {
+        String msg = "Request must contain exactly one '%s' parameter, ignoring the casing. Given parameters: %s";
+        throw new IllegalArgumentException( format( msg, parameterName, asString( parameterValue ) ) );
+    }
+
+    private boolean isNotSet( String[] parameterValue ) {
+        return parameterValue == null || parameterValue.length == 0;
+    }
+
+    private boolean isNotSingle( String[] parameterValue ) {
+        return parameterValue.length > 1;
+    }
+
+    private String asString( String[] arrayParameter ) {
+        return Arrays.toString( arrayParameter );
     }
 }
