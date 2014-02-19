@@ -39,7 +39,7 @@ import org.springframework.security.core.Authentication;
  */
 public class SecurityFilter implements Filter {
 
-    private final static Logger LOG = Logger.getLogger( SecurityFilter.class );
+    private static final Logger LOG = Logger.getLogger( SecurityFilter.class );
 
     private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
 

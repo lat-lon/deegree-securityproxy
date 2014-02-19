@@ -41,7 +41,11 @@ import static org.geotools.geometry.jts.JTS.transform;
 import static org.geotools.referencing.CRS.decode;
 import static org.geotools.referencing.CRS.findMathTransform;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.imageio.metadata.IIOMetadataNode;
 
@@ -91,7 +95,7 @@ public class GeotiffClipper implements ImageClipper {
             GeoTiffReader reader = new GeoTiffReader( imageToClipAsFile );
 
             Geometry visibleAreaInImageCrs = null;
-            if ( visibleArea != null && !"".equals( visibleArea ) ) {
+            if ( visibleArea != null ) {
                 visibleAreaInImageCrs = transformVisibleAreaToImageCrs( visibleArea, reader );
                 LOG.debug( "Transformed visible geometry: " + visibleAreaInImageCrs );
             } else {

@@ -93,9 +93,10 @@ public class WcsGeometryFilterInfo {
     }
 
     private void checkRequiredParameter( String coverageName ) {
-        // TODO Auto-generated method stub
-        if ( coverageName == null || coverageName.isEmpty() )
-            throw new IllegalArgumentException( "Required parameter coverage name is " + coverageName == null ? "null"
-                                                                                                             : "empty" );
+        if ( coverageName == null )
+            throw new IllegalArgumentException( "Required parameter coverage name is null" );
+        if ( coverageName.isEmpty() )
+            throw new IllegalArgumentException( "Required parameter coverage name is empty" );
     }
+
 }

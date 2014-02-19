@@ -16,6 +16,9 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public class KvpNormalizer {
 
+    private KvpNormalizer() {
+    }
+    
     /**
      * @param parameterMap
      *            a map of parameters, never <code>null</code>

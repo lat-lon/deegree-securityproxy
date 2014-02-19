@@ -63,7 +63,10 @@ public class Log4jSecurityRequestResponseLogger implements SecurityRequestRespon
         if ( log4jConfigurationPath != null ) {
             PropertyConfigurator.configure( log4jConfigurationPath );
         } else {
-            LOG.warn( "Could not retrieve log4j.properties from configuration directory. Please set the value of PROXY_CONFIG environment variable and place the log4j.properties in it." );
+            String msg = "Could not retrieve log4j.properties from configuration directory. "
+                         + "Please set the value of PROXY_CONFIG environment variable "
+                         + "and place the log4j.properties in it.";
+            LOG.warn( msg );
         }
     }
 

@@ -108,28 +108,26 @@ class GeoTiffWriterModified extends GeoTiffWriter {
             // Checking params
             //
             // /////////////////////////////////////////////////////////////////////
-            if ( params != null ) {
-                Parameter<?> param;
-                final int length = params.length;
-                for ( int i = 0; i < length; i++ ) {
-                    param = (Parameter) params[i];
-                    final ReferenceIdentifier name = param.getDescriptor().getName();
-                    if ( name.equals( AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName() ) ) {
-                        gtParams = (GeoToolsWriteParams) param.getValue();
-                        continue;
-                    }
-                    if ( name.equals( GeoTiffFormat.WRITE_TFW.getName() ) ) {
-                        writeTfw = (Boolean) param.getValue();
-                        continue;
-                    }
-                    if ( name.equals( GeoTiffFormat.PROGRESS_LISTENER.getName() ) ) {
-                        listener = (ProgressListener) param.getValue();
-                        continue;
-                    }
-                    if ( name.equals( GeoTiffFormat.RETAIN_AXES_ORDER.getName() ) ) {
-                        retainAxesOrder = (Boolean) param.getValue();
-                        continue;
-                    }
+            Parameter<?> param;
+            final int length = params.length;
+            for ( int i = 0; i < length; i++ ) {
+                param = (Parameter) params[i];
+                final ReferenceIdentifier name = param.getDescriptor().getName();
+                if ( name.equals( AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName() ) ) {
+                    gtParams = (GeoToolsWriteParams) param.getValue();
+                    continue;
+                }
+                if ( name.equals( GeoTiffFormat.WRITE_TFW.getName() ) ) {
+                    writeTfw = (Boolean) param.getValue();
+                    continue;
+                }
+                if ( name.equals( GeoTiffFormat.PROGRESS_LISTENER.getName() ) ) {
+                    listener = (ProgressListener) param.getValue();
+                    continue;
+                }
+                if ( name.equals( GeoTiffFormat.RETAIN_AXES_ORDER.getName() ) ) {
+                    retainAxesOrder = (Boolean) param.getValue();
+                    continue;
                 }
             }
         }
@@ -152,10 +150,9 @@ class GeoTiffWriterModified extends GeoTiffWriter {
         // we handle just projected and geographic crs
         //
         if ( !( crs instanceof ProjectedCRS || crs instanceof GeographicCRS ) ) {
-            throw new GeoTiffException(
-                                        null,
-                                        "The supplied grid coverage uses an unsupported crs! You are allowed to use only projected and geographic coordinate reference systems",
-                                        null );
+            String msg = "The supplied grid coverage uses an unsupported crs! "
+                         + "You are allowed to use only projected and geographic coordinate reference systems";
+            throw new GeoTiffException( null, msg, null );
         }
 
         // creating geotiff metadata
@@ -224,7 +221,13 @@ class GeoTiffWriterModified extends GeoTiffWriter {
      * of the axes, but checking them from the supplied CRS.
      * 
      * @see {@link http://lists.maptools.org/pipermail/geotiff/2006-January/000213.html}
-     * @see      {@http://lists.maptools.org/pipermail/geotiff/2006-January/000212.html}
+     * @see      {@http://lists.maptools.org/pipermail/geotiff/2006-January/000212.html
+     * 
+     * 
+     * 
+     * 
+     * 
+     * }
      * @param crs
      *            The {@link CoordinateReferenceSystem} of the {@link GridCoverage2D} to encode.
      * @param metadata
@@ -252,8 +255,9 @@ class GeoTiffWriterModified extends GeoTiffWriter {
         final AffineTransform modifiedRasterToModel = new AffineTransform( rasterToModel );
         // move the internal grid to world to corner from center
         modifiedRasterToModel.concatenate( CoverageUtilities.CENTER_TO_CORNER );
-        ;
-        int minx = range.getLow( 0 ), miny = range.getLow( 1 );
+
+        int minx = range.getLow( 0 );
+        int miny = range.getLow( 1 );
         if ( minx != 0 || miny != 0 ) {
             // //
             //
@@ -340,12 +344,7 @@ class GeoTiffWriterModified extends GeoTiffWriter {
             //
             // release resources
             //
-            try {
-                if ( outputStream != null )
-                    outputStream.flush();
-            } catch ( Throwable e ) {
-                // eat me
-            }
+            outputStream.flush();
 
             try {
                 if ( !( destination instanceof ImageOutputStream ) && outputStream != null )
