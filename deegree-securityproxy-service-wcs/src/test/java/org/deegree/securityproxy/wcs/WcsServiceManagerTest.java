@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -84,7 +84,7 @@ public class WcsServiceManagerTest {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
-        assertTrue( isSupported );
+        assertThat( isSupported, is( true ) );
     }
 
     @Test
@@ -92,7 +92,7 @@ public class WcsServiceManagerTest {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
-        assertFalse( isSupported );
+        assertThat( isSupported, is( false ) );
     }
 
     private ResponseFilterManager mockResponseFilterManager() {
