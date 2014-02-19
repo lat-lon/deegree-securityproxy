@@ -38,7 +38,7 @@
   </bean>
 
   <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter">
-    <constructor-arg ref="${exception_file_path}"/>
+    <constructor-arg ref="serviceManagers"/>
     <constructor-arg ref="log4JReportLogger"/>
     <constructor-arg ref="log4JReportLogger"/>
   </bean>
