@@ -6,6 +6,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+  <bean id="wcsServiceManager" class="org.deegree.securityproxy.wcs.WcsServiceManager">
+    <constructor-arg ref="wcsRequestParser"/>
+    <constructor-arg ref="wcsRequestAuthorizationManager"/>
+    <constructor-arg ref="responseFilterManager"/>
+  </bean>
+
   <bean id="wcsRequestAuthorizationManager"
         class="org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager"/>
 

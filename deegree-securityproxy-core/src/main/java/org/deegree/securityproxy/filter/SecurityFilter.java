@@ -4,6 +4,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.Filter;
@@ -16,17 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 
@@ -48,20 +45,18 @@ public class SecurityFilter implements Filter {
 
     static final String REQUEST_ATTRIBUTE_SERVICE_URL = "net.sf.j2ep.serviceurl";
 
-    @Autowired
-    private RequestAuthorizationManager requestAuthorizationManager;
+    private List<ServiceManager> serviceManagers;
 
-    @Autowired
-    private OwsRequestParser parser;
-
-    @Autowired
     private SecurityRequestResponseLogger proxyReportLogger;
 
-    @Autowired
     private ResponseFilterReportLogger filterReportLogger;
 
-    @Autowired
-    private ResponseFilterManager filterManager;
+    public SecurityFilter( List<ServiceManager> serviceManagers, SecurityRequestResponseLogger proxyReportLogger,
+                           ResponseFilterReportLogger filterReportLogger ) {
+        this.serviceManagers = serviceManagers;
+        this.proxyReportLogger = proxyReportLogger;
+        this.filterReportLogger = filterReportLogger;
+    }
 
     @Override
     public void init( FilterConfig filterConfig )
@@ -78,9 +73,11 @@ public class SecurityFilter implements Filter {
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
         OwsRequest owsRequest = null;
+        ServiceManager serviceManager = null;
         try {
-            owsRequest = parser.parse( httpRequest );
-            authorizationReport = requestAuthorizationManager.decide( authentication, owsRequest );
+            serviceManager = detectServiceManager( httpRequest );
+            owsRequest = serviceManager.parse( httpRequest );
+            authorizationReport = serviceManager.authorize( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG );
         } catch ( IllegalArgumentException e ) {
@@ -89,9 +86,9 @@ public class SecurityFilter implements Filter {
         if ( authorizationReport.isAuthorized() ) {
             attachServiceUrlAttributeToRequest( httpRequest, authorizationReport );
             chain.doFilter( httpRequest, wrappedResponse );
-            if ( filterManager.supports( owsRequest.getClass() ) ) {
-                ResponseFilterReport filterResponse = filterManager.filterResponse( wrappedResponse, owsRequest,
-                                                                                    authentication );
+            if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
+                ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
+                                                                                     owsRequest );
                 filterReportLogger.logResponseFilterReport( filterResponse, uuid );
                 LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
             } else {
@@ -104,15 +101,6 @@ public class SecurityFilter implements Filter {
 
     @Override
     public void destroy() {
-    }
-
-    /**
-     * For testing purposes only. Set authorization manager manually.
-     * 
-     * @param requestAuthorizationManager
-     */
-    protected void setRequestAuthorizationManager( RequestAuthorizationManager requestAuthorizationManager ) {
-        this.requestAuthorizationManager = requestAuthorizationManager;
     }
 
     private void handleAuthorizationReport( String uuid, HttpServletRequest httpRequest,
@@ -156,4 +144,16 @@ public class SecurityFilter implements Filter {
         String serviceUrl = authorizationReport.getServiceUrl();
         httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
     }
+
+    private ServiceManager detectServiceManager( HttpServletRequest request )
+                            throws UnsupportedRequestTypeException {
+        if ( serviceManagers != null ) {
+            for ( ServiceManager serviceManager : serviceManagers ) {
+                if ( serviceManager.isServiceTypeSupported( request ) )
+                    return serviceManager;
+            }
+        }
+        throw new UnsupportedRequestTypeException( UNSUPPORTED_REQUEST_ERROR_MSG );
+    }
+
 }
