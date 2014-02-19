@@ -17,6 +17,10 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
+ * This is an implementation of a {@link ServiceManager} for wcs-requests. It contains wcs specific parser,
+ * authorization-manager and filter-manager. It is possible to start parsing of wcs-requests, wcs-authorization,
+ * wcs-response-filtering and a check whether response-filtering is enabled.
+ *
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
