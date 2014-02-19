@@ -14,7 +14,7 @@ import org.apache.commons.lang.ArrayUtils;
  * 
  * @version $Revision: $, $Date: $
  */
-public class KvpNormalizer {
+public final class KvpNormalizer {
 
     private KvpNormalizer() {
     }
