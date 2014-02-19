@@ -7,7 +7,6 @@ import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -15,8 +14,6 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 
@@ -31,12 +28,9 @@ import java.util.List;
 import static javax.servlet.http.HttpServletResponse.*;
 import static org.deegree.securityproxy.authorization.TestRequestAuthorizationManager.SERVICE_URL;
 import static org.deegree.securityproxy.filter.SecurityFilter.REQUEST_ATTRIBUTE_SERVICE_URL;
-import static org.hamcrest.CoreMatchers.any;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 /**
@@ -65,9 +59,7 @@ public class SecurityFilterTest {
 
     private ResponseFilterReportLogger loggerResponseFilterReportMock;
 
-//    private OwsRequestParser requestParserMock;
-
-    private ResponseFilterManager responseFilterManagerMock;
+    private ServiceManager serviceManager;
 
     /**
      * Reset the mocked instance of logger to prevent side effects between tests
@@ -75,23 +67,9 @@ public class SecurityFilterTest {
     @Before
     public void resetMock()
           throws Exception {
-        List serviceManagers = new ArrayList<ServiceManager>();
-
-        ServiceManager serviceManagerMock = mock( ServiceManager.class );
-
-        doReturn( true ).when( serviceManagerMock ).isServiceTypeSupported( Mockito.any( HttpServletRequest.class ) );
-
-        AuthorizationReport authorizationReport = new AuthorizationReport( "test", true, "test" );
-        doReturn( authorizationReport ).when( serviceManagerMock ).authorize( Mockito.any( Authentication.class) , Mockito.any(OwsRequest.class));
-
-        OwsRequest wcsRequestMockToReturn = mock( OwsRequest.class );
-        doReturn( wcsRequestMockToReturn ).when( serviceManagerMock ).parse( (HttpServletRequest) anyObject() );
-
-        serviceManagers.add( serviceManagerMock );
-
-        logger = mock( SecurityRequestResponseLogger.class );
-        loggerResponseFilterReportMock = mock( ResponseFilterReportLogger.class );
-
+        List serviceManagers = createServiceManagersWithOneServiceManager( true );
+        logger = mockSecurityRequestResponseLogger();
+        loggerResponseFilterReportMock = mockResponseFilterReportLogger();
         filter = new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock );
 
         //reset( logger, requestParserMock, responseFilterManagerMock );
@@ -100,6 +78,47 @@ public class SecurityFilterTest {
 //              .filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
 //                               (OwsRequest) anyObject(),
 //                               (Authentication) anyObject() );
+    }
+
+    private List createServiceManagersWithOneServiceManager( boolean isAuthorized ) throws Exception {
+        List serviceManagers = new ArrayList<ServiceManager>();
+        serviceManager = mockServiceManager( isAuthorized );
+        serviceManagers.add( serviceManager );
+        return serviceManagers;
+    }
+
+    private ResponseFilterReportLogger mockResponseFilterReportLogger() {
+        return mock( ResponseFilterReportLogger.class );
+    }
+
+    private SecurityRequestResponseLogger mockSecurityRequestResponseLogger() {
+        return mock( SecurityRequestResponseLogger.class );
+    }
+
+    private ServiceManager mockServiceManager( boolean isAuthorized ) throws Exception {
+        ServiceManager serviceManager = mock( ServiceManager.class );
+
+        doReturn( true ).when( serviceManager ).isServiceTypeSupported( any( HttpServletRequest.class ) );
+        AuthorizationReport authorizationReport = new AuthorizationReport( "message", isAuthorized, "url" );
+        doReturn( authorizationReport ).when( serviceManager ).authorize( any( Authentication.class ),
+                                                                          any( OwsRequest.class ) );
+        OwsRequest owsRequest = mockOwsRequest();
+        doReturn( owsRequest ).when( serviceManager ).parse( any( HttpServletRequest.class ) );
+        doReturn( true ).when( serviceManager ).isResponseFilterEnabled( any( OwsRequest.class ) );
+        ResponseFilterReport responseFilterReport = mockResponseFilterReport();
+        doReturn( responseFilterReport ).when( serviceManager )
+              .filterResponse( any( StatusCodeResponseBodyWrapper.class ), any( Authentication.class ),
+                               any( OwsRequest.class ) );
+
+        return serviceManager;
+    }
+
+    private ResponseFilterReport mockResponseFilterReport() {
+        return mock( ResponseFilterReport.class );
+    }
+
+    private OwsRequest mockOwsRequest() {
+        return mock( OwsRequest.class );
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -160,16 +179,18 @@ public class SecurityFilterTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportForUnauthenticatedReponse()
-                            throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( false );
+                            throws Exception {
+        List serviceManagers = createServiceManagersWithOneServiceManager( false );
+        SecurityFilter filter = new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ), (String) anyObject() );
     }
 
     @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportNullQueryString()
-                            throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( false );
+                            throws Exception {
+        List serviceManagers = createServiceManagersWithOneServiceManager( false );
+        SecurityFilter filter = new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock );
         filter.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
                          new FilterChainTestImpl( SC_BAD_REQUEST ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ), (String) anyObject() );
@@ -177,8 +198,9 @@ public class SecurityFilterTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testFilterShouldThrowExceptionOnUnauthorized()
-                            throws IOException, ServletException {
-        RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( false );
+                            throws Exception {
+        List serviceManagers = createServiceManagersWithOneServiceManager( false );
+        SecurityFilter filter = new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_UNAUTHORIZED ) );
     }
 
@@ -205,8 +227,8 @@ public class SecurityFilterTest {
         RequestAuthorizationManager requestAuthorizationManager = new TestRequestAuthorizationManager( true );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
-        verify( responseFilterManagerMock ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
-                                                            (OwsRequest) anyObject(), (Authentication) anyObject() );
+        verify( serviceManager ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(), (Authentication) anyObject(),
+                                                            (OwsRequest) anyObject() );
     }
 
     @Test
@@ -319,14 +341,14 @@ public class SecurityFilterTest {
 
     private SecurityFilter createSecurityFilterWithEmptyListOfServiceManagers() {
         List serviceManagers = new ArrayList<ServiceManager>();
-        SecurityRequestResponseLogger logger = mock( SecurityRequestResponseLogger.class );
-        ResponseFilterReportLogger loggerResponseFilterReportMock = mock( ResponseFilterReportLogger.class );
+        SecurityRequestResponseLogger logger = mockSecurityRequestResponseLogger();
+        ResponseFilterReportLogger loggerResponseFilterReportMock = mockResponseFilterReportLogger();
         return new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock );
     }
 
     private SecurityFilter createSecurityFilterWithNullServiceManagers() {
-        SecurityRequestResponseLogger logger = mock( SecurityRequestResponseLogger.class );
-        ResponseFilterReportLogger loggerResponseFilterReportMock = mock( ResponseFilterReportLogger.class );
+        SecurityRequestResponseLogger logger = mockSecurityRequestResponseLogger();
+        ResponseFilterReportLogger loggerResponseFilterReportMock = mockResponseFilterReportLogger();
         return new SecurityFilter( null, logger, loggerResponseFilterReportMock );
     }
 
