@@ -1,5 +1,10 @@
 package org.deegree.securityproxy.wcs;
 
+import java.io.IOException;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.filter.ServiceManager;
@@ -12,15 +17,11 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Map;
-
 /**
  * This is an implementation of a {@link ServiceManager} for wcs-requests. It contains wcs specific parser,
  * authorization-manager and filter-manager. It is possible to start parsing of wcs-requests, wcs-authorization,
  * wcs-response-filtering and a check whether response-filtering is enabled.
- *
+ * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
@@ -42,7 +43,8 @@ class WcsServiceManager implements ServiceManager {
     }
 
     @Override
-    public OwsRequest parse( HttpServletRequest httpRequest ) throws UnsupportedRequestTypeException {
+    public OwsRequest parse( HttpServletRequest httpRequest )
+                            throws UnsupportedRequestTypeException {
         return parser.parse( httpRequest );
     }
 
@@ -58,13 +60,14 @@ class WcsServiceManager implements ServiceManager {
 
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
-                                                Authentication authentication,
-                                                OwsRequest owsRequest ) throws IOException {
+                                                Authentication authentication, OwsRequest owsRequest )
+                            throws IOException {
         return filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
     }
 
     @Override
     public boolean isServiceTypeSupported( HttpServletRequest request ) {
+        @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
         return "wcs".equals( kvpMap.get( "service" )[0] );
     }

@@ -1,5 +1,16 @@
 package org.deegree.securityproxy.wcs;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -9,18 +20,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
-
 /**
  * Tests for WcsServiceManager.
- *
+ * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -44,24 +46,27 @@ public class WcsServiceManagerTest {
     }
 
     @Test
-    public void testParse() throws Exception {
+    public void testParse()
+                            throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
         wcsServiceManager.parse( request );
 
-        verify( parser ).parse( any( HttpServletRequest.class ) );
+        verify( parser ).parse( request );
     }
 
     @Test
-    public void testAuthorize() throws Exception {
+    public void testAuthorize()
+                            throws Exception {
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wcsServiceManager.authorize( authentication, owsRequest );
 
-        verify( requestAuthorizationManager ).decide( any( Authentication.class ), any( OwsRequest.class ) );
+        verify( requestAuthorizationManager ).decide( authentication, owsRequest );
     }
 
     @Test
-    public void testIsResponseFilterEnabled() throws Exception {
+    public void testIsResponseFilterEnabled()
+                            throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         wcsServiceManager.isResponseFilterEnabled( owsRequest );
 
@@ -69,18 +74,19 @@ public class WcsServiceManagerTest {
     }
 
     @Test
-    public void testFilterResponse() throws Exception {
+    public void testFilterResponse()
+                            throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wcsServiceManager.filterResponse( wrappedResponse, authentication, owsRequest );
 
-        verify( filterManager ).filterResponse( any( StatusCodeResponseBodyWrapper.class ), any( OwsRequest.class ),
-                                                any( Authentication.class ) );
+        verify( filterManager ).filterResponse( wrappedResponse, owsRequest, authentication );
     }
 
     @Test
-    public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnTrue() throws Exception {
+    public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnTrue()
+                            throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
@@ -88,7 +94,8 @@ public class WcsServiceManagerTest {
     }
 
     @Test
-    public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse() throws Exception {
+    public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
+                            throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
@@ -124,15 +131,16 @@ public class WcsServiceManagerTest {
     }
 
     private HttpServletRequest mockHttpServletRequestWithWcsServiceParameter() {
-        HttpServletRequest request = mock( HttpServletRequest.class );
-        Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( "wcs" );
-        doReturn( kvpMap ).when( request ).getParameterMap();
-        return request;
+        return mockHttpServletRequestWithServiceParameter( "wcs" );
     }
 
     private HttpServletRequest mockHttpServletRequestWithWmsServiceParameter() {
+        return mockHttpServletRequestWithServiceParameter( "wms" );
+    }
+
+    private HttpServletRequest mockHttpServletRequestWithServiceParameter( String serviceValue ) {
         HttpServletRequest request = mock( HttpServletRequest.class );
-        Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( "wms" );
+        Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( serviceValue );
         doReturn( kvpMap ).when( request ).getParameterMap();
         return request;
     }
@@ -143,4 +151,5 @@ public class WcsServiceManagerTest {
         kvpMap.put( "service", serviceTypes );
         return kvpMap;
     }
+
 }
