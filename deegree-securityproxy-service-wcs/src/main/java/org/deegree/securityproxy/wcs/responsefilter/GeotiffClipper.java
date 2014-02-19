@@ -108,10 +108,10 @@ public class GeotiffClipper implements ImageClipper {
             GeoTiffWriterModified writer = new GeoTiffWriterModified( destination );
             writer.setIIOMetadata( metadataRootNode );
 
-            Geometry imageEnvelope = convertImageEnvelopeToGeometry( reader );
-            if ( isClippingRequired( imageEnvelope, visibleAreaInImageCrs ) ) {
+            Geometry imgEnvelope = convertImageEnvelopeToGeometry( reader );
+            if ( isClippingRequired( imgEnvelope, visibleAreaInImageCrs ) ) {
                 LOG.debug( "Clipping is required!" );
-                GridCoverage2D clippedGeotiff = calculateClippedGeotiff( visibleAreaInImageCrs, geotiff, imageEnvelope );
+                GridCoverage2D clippedGeotiff = calculateClippedGeotiff( visibleAreaInImageCrs, geotiff, imgEnvelope );
                 writer.write( clippedGeotiff, null );
                 Geometry visibleAreaAfterClipping = calculateAreaVisibleAfterClipping( reader, visibleAreaInImageCrs );
                 LOG.debug( "Visible area after clipping: " + visibleAreaAfterClipping );
@@ -121,7 +121,7 @@ public class GeotiffClipper implements ImageClipper {
             } else {
                 LOG.debug( "Clipping is not required!" );
                 writer.write( geotiff, null );
-                Geometry imageEnvelopeInOriginalCrs = transformToVisibleAreaCrs( imageEnvelope, reader );
+                Geometry imageEnvelopeInOriginalCrs = transformToVisibleAreaCrs( imgEnvelope, reader );
                 return new ResponseClippingReport( imageEnvelopeInOriginalCrs, false );
             }
         } catch ( Exception e ) {

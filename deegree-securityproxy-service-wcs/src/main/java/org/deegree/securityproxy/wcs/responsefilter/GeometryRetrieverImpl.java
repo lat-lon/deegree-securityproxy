@@ -91,7 +91,7 @@ public class GeometryRetrieverImpl implements GeometryRetriever {
 
     String normaliseWkt( String geometryAsString ) {
         if ( geometryAsString.startsWith( "SRID" ) )
-            geometryAsString = geometryAsString.substring( geometryAsString.indexOf( ";" ) + 1 );
+            return geometryAsString.substring( geometryAsString.indexOf( ";" ) + 1 );
         return geometryAsString;
     }
 

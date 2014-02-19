@@ -58,7 +58,8 @@ public enum WcsServiceVersion {
         String versionString = stripBooleanOperators( versionToParse );
         versionString = versionString.trim();
         WcsServiceVersion version = parseWithoutOperator( versionString );
-        if (version == null) return Collections.emptyList();
+        if (version == null) 
+            return Collections.emptyList();
         List<WcsServiceVersion> result = new ArrayList<WcsServiceVersion>();
         switch ( version ) {
         case VERSION_100:

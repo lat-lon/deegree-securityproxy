@@ -73,8 +73,9 @@ public class WcsRequestParser implements OwsRequestParser {
             return parseDescribeCoverageRequest( serviceName, normalizedParameterMap );
         case GETCOVERAGE:
             return parseGetCoverageRequest( serviceName, normalizedParameterMap );
+        default:
+            throw new IllegalArgumentException( "Unrecognized operation type: " + type );
         }
-        throw new IllegalArgumentException( "Unrecognized operation type: " + type );
     }
 
     private WcsRequest parseGetCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
@@ -209,7 +210,9 @@ public class WcsRequestParser implements OwsRequestParser {
         boolean isNotWidthAndHeight = isNotSet( widthParameter ) || isNotSet( heightParameter );
         boolean isNotResXAndResY = isNotSet( resxParameter ) || isNotSet( resyParameter );
         if ( isNotWidthAndHeight && isNotResXAndResY ) {
-            throw new IllegalArgumentException( msg() );
+            String msg = "Request must contain a \"width\" and \"height\" or \"resx\" and \"resy\" "
+                         + "parameter, ignoring the casing.";
+            throw new IllegalArgumentException( msg );
         }
         if ( !isNotSet( widthParameter ) && isNotSingle( widthParameter ) ) {
             throwException( WIDTH, widthParameter );
@@ -223,10 +226,6 @@ public class WcsRequestParser implements OwsRequestParser {
         if ( !isNotSet( resyParameter ) && isNotSingle( resyParameter ) ) {
             throwException( RESY, resyParameter );
         }
-    }
-
-    private String msg() {
-        return "Request must contain a \"width\" and \"height\" or \"resx\" and \"resy\" parameter, ignoring the casing.";
     }
 
     private void checkFormatParameter( Map<String, String[]> normalizedParameterMap ) {

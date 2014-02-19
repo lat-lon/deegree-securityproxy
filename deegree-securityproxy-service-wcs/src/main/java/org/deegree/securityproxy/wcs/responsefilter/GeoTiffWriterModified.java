@@ -174,8 +174,8 @@ class GeoTiffWriterModified extends GeoTiffWriter {
         // write image
         // writing ALWAYS the geophysics vew of the data
         //
-        writeImage( ( (GridCoverage2D) gc ).geophysics( true ).getRenderedImage(), this.outStream, metadata, gtParams,
-                    listener );
+        RenderedImage renderedImage = ( (GridCoverage2D) gc ).geophysics( true ).getRenderedImage();
+        writeImage( renderedImage, this.outStream, metadata, gtParams, listener );
 
         //
         // write tfw
@@ -222,6 +222,8 @@ class GeoTiffWriterModified extends GeoTiffWriter {
      * 
      * @see {@link http://lists.maptools.org/pipermail/geotiff/2006-January/000213.html}
      * @see      {@http://lists.maptools.org/pipermail/geotiff/2006-January/000212.html
+     * 
+     * 
      * 
      * 
      * 
@@ -347,7 +349,7 @@ class GeoTiffWriterModified extends GeoTiffWriter {
             outputStream.flush();
 
             try {
-                if ( !( destination instanceof ImageOutputStream ) && outputStream != null )
+                if ( !( destination instanceof ImageOutputStream ) )
                     outputStream.close();
             } catch ( Throwable e ) {
                 // eat me

@@ -78,7 +78,7 @@ import com.vividsolutions.jts.io.WKTWriter;
  */
 public class WcsResponseFilterManager implements ResponseFilterManager {
 
-    private final static Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
+    private static final Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
 
     static final String REQUEST_AREA_HEADER_KEY = "request_area";
 

@@ -30,20 +30,24 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     public static final boolean AUTHORIZED = true;
 
-    private static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! User could not be authenticated.";
+    private static final String NOT_AUTHENTICATED_ERROR_MSG = "Error while retrieving authentication! "
+                                                              + "User could not be authenticated.";
 
     private static final String ACCESS_GRANTED_MSG = "Access granted.";
 
     private static final String UNKNOWN_ERROR_MSG = "Unknown error. See application log for details.";
 
-    private static final String DESCRIBECOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation DescribeCoverage with the given parameters";
+    private static final String DESCRIBECOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation "
+                                                                    + "DescribeCoverage with the given parameters";
 
-    public static final String GETCOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCoverage with the given parameters";
+    public static final String GETCOVERAGE_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCoverage "
+                                                              + "with the given parameters";
 
-    public static final String GETCAPABILITIES_UNAUTHORIZED_MSG = "User not permitted to perform operation GetCapabilities with the given parameters";
+    public static final String GETCAPABILITIES_UNAUTHORIZED_MSG = "User not permitted to perform operation "
+                                                                  + "GetCapabilities with the given parameters";
 
     @Override
-    public AuthorizationReport decide( Authentication authentication, OwsRequest request) {
+    public AuthorizationReport decide( Authentication authentication, OwsRequest request ) {
         if ( !checkAuthentication( authentication ) ) {
             return new AuthorizationReport( NOT_AUTHENTICATED_ERROR_MSG );
         }
@@ -140,13 +144,13 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     }
 
     private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getOperationType() != null && wcsRequest.getOperationType()
-              .equals( wcsPermission.getOperationType() );
+        return wcsRequest.getOperationType() != null
+               && wcsRequest.getOperationType().equals( wcsPermission.getOperationType() );
     }
 
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getServiceVersion() != null && wcsRequest.getServiceVersion()
-              .equals( wcsPermission.getServiceVersion() );
+        return wcsRequest.getServiceVersion() != null
+               && wcsRequest.getServiceVersion().equals( wcsPermission.getServiceVersion() );
     }
 
     private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
@@ -158,7 +162,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     }
 
     private boolean isServiceNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getServiceName() != null && wcsRequest.getServiceName()
-              .equals( wcsPermission.getServiceName() );
+        return wcsRequest.getServiceName() != null
+               && wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
     }
 }

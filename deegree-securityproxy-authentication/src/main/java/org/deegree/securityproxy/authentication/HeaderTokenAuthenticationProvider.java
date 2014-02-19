@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.authentication;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.log4j.Logger;
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
@@ -49,7 +51,8 @@ public class HeaderTokenAuthenticationProvider implements AuthenticationProvider
         UserDetails userDetails = dao.retrieveUserById( headerTokenValue );
         boolean isAuthenticated = userDetails != null;
         if ( isAuthenticated ) {
-            return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue, userDetails.getAuthorities() );
+            Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+            return new PreAuthenticatedAuthenticationToken( userDetails, headerTokenValue, authorities );
         } else {
             return generateAnonymousAuthenticationToken();
         }
