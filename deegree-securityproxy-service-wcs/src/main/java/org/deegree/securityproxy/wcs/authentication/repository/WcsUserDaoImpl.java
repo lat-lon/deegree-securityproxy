@@ -1,8 +1,10 @@
 package org.deegree.securityproxy.wcs.authentication.repository;
 
+import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.parseVersions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -76,14 +78,14 @@ public class WcsUserDaoImpl implements UserDao {
                            String geometryLimitColumn ) {
         this( schemaName, tableName, headerColumn, userNameColumn, passwordColumn, serviceTypeColumn,
               serviceVersionColumn, operationTypeColumn, serviceNameColumn, internalServiceUrlColumn, layerNameColumn,
-              subscriptionStart, subscriptionEnd, geometryLimitColumn, Collections.<String> emptyList() );
+              subscriptionStart, subscriptionEnd, geometryLimitColumn, null );
     }
 
     public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
                            String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                            String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
                            String layerNameColumn, String subscriptionStart, String subscriptionEnd,
-                           String geometryLimitColumn, List<String> additionalRequestParameters ) {
+                           String geometryLimitColumn, String[] additionalRequestParameters ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
@@ -99,7 +101,7 @@ public class WcsUserDaoImpl implements UserDao {
         this.subscriptionEnd = subscriptionEnd;
         this.geometryLimitColumn = geometryLimitColumn;
         if ( additionalRequestParameters != null )
-            this.additionalRequestParameters = additionalRequestParameters;
+            this.additionalRequestParameters = asList( additionalRequestParameters );
         else
             this.additionalRequestParameters = Collections.emptyList();
     }

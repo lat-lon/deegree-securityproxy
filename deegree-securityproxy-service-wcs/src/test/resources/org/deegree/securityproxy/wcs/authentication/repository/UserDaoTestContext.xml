@@ -28,12 +28,7 @@
     <constructor-arg value="subscription_start" />
     <constructor-arg value="subscription_end" />
     <constructor-arg value="user_layer_limited_to" />
-    <constructor-arg>
-      <list>
-        <value>requestParam1</value>
-        <value>requestParam2</value>
-      </list>
-    </constructor-arg>
+    <constructor-arg value="requestParam1, requestParam2" />
   </bean>
 
 </beans>
