@@ -41,6 +41,7 @@
     <constructor-arg value="subscription_start_date"/>
     <constructor-arg value="subscription_end_date"/>
     <constructor-arg value="user_layer_limited_to"/>
+    <constructor-arg value="${additional_request_parameters}"/>
   </bean>
 
 </beans>
