@@ -69,7 +69,7 @@ class WcsServiceManager implements ServiceManager {
     public boolean isServiceTypeSupported( HttpServletRequest request ) {
         @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
-        return "wcs".equals( kvpMap.get( "service" )[0] );
+        return "wcs".equalsIgnoreCase( kvpMap.get( "service" )[0] );
     }
 
 }
