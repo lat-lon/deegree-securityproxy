@@ -74,10 +74,6 @@ import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.wcs.authentication.WcsPermission;
 import org.deegree.securityproxy.wcs.authentication.WcsUser;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
-import org.deegree.securityproxy.wcs.responsefilter.ClippingException;
-import org.deegree.securityproxy.wcs.responsefilter.GeometryRetriever;
-import org.deegree.securityproxy.wcs.responsefilter.ImageClipper;
-import org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -487,7 +483,8 @@ public class WcsResponseFilterManagerTest {
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
-        WcsUser wcsUser = new WcsUser( "user", "password", Collections.<WcsPermission> emptyList(), filters );
+        WcsUser wcsUser = new WcsUser( "user", "password", Collections.<WcsPermission> emptyList(), filters,
+                                       Collections.<String, String> emptyMap() );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
     }

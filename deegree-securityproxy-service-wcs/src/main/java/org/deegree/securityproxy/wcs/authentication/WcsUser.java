@@ -1,13 +1,14 @@
 package org.deegree.securityproxy.wcs.authentication;
 
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
+import static java.util.Collections.unmodifiableList;
+import static java.util.Collections.unmodifiableMap;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Collections.unmodifiableList;
 
 /**
  * {@link UserDetails} implementation encapsulating username, password, authorities ({@link WcsPermission}s) and
@@ -32,6 +33,8 @@ public class WcsUser implements UserDetails {
 
     private final List<WcsGeometryFilterInfo> filters;
 
+    private final Map<String, String> additionalKeyValuePairs;
+
     /**
      * @param username
      *            may be <code>null</code>
@@ -43,15 +46,24 @@ public class WcsUser implements UserDetails {
      *            may be <code>null</code> or empty
      */
     public WcsUser( String username, String password, List<WcsPermission> authorities,
-                    List<WcsGeometryFilterInfo> filters ) {
+                    List<WcsGeometryFilterInfo> filters, Map<String, String> additionalKeyValuePairs ) {
         this.username = username;
         this.password = password;
-        if ( authorities == null )
-            authorities = new ArrayList<WcsPermission>();
-        this.authorities = unmodifiableList( authorities );
-        if ( filters == null )
-            filters = new ArrayList<WcsGeometryFilterInfo>();
-        this.filters = unmodifiableList( filters );
+
+        if ( authorities != null )
+            this.authorities = unmodifiableList( authorities );
+        else
+            this.authorities = unmodifiableList( Collections.<WcsPermission> emptyList() );
+
+        if ( filters != null )
+            this.filters = unmodifiableList( filters );
+        else
+            this.filters = unmodifiableList( Collections.<WcsGeometryFilterInfo> emptyList() );
+
+        if ( additionalKeyValuePairs != null )
+            this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
+        else
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String> emptyMap() );
     }
 
     @Override
@@ -102,4 +114,12 @@ public class WcsUser implements UserDetails {
     public List<WcsGeometryFilterInfo> getWcsGeometryFilterInfos() {
         return filters;
     }
+
+    /**
+     * @return the additionalKeyValuePairs in a unmodifiable map, may be empty but never <code>null</code>
+     */
+    public Map<String, String> getAdditionalKeyValuePairs() {
+        return additionalKeyValuePairs;
+    }
+
 }

@@ -4,7 +4,9 @@ import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.parseVersio
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,11 +67,23 @@ public class WcsUserDaoImpl implements UserDao {
 
     private final String geometryLimitColumn;
 
+    private List<String> additionalRequestParameters;
+
     public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
                            String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                            String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
                            String layerNameColumn, String subscriptionStart, String subscriptionEnd,
                            String geometryLimitColumn ) {
+        this( schemaName, tableName, headerColumn, userNameColumn, passwordColumn, serviceTypeColumn,
+              serviceVersionColumn, operationTypeColumn, serviceNameColumn, internalServiceUrlColumn, layerNameColumn,
+              subscriptionStart, subscriptionEnd, geometryLimitColumn, Collections.<String> emptyList() );
+    }
+
+    public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
+                           String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
+                           String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
+                           String layerNameColumn, String subscriptionStart, String subscriptionEnd,
+                           String geometryLimitColumn, List<String> additionalRequestParameters ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
@@ -84,6 +98,10 @@ public class WcsUserDaoImpl implements UserDao {
         this.subscriptionStart = subscriptionStart;
         this.subscriptionEnd = subscriptionEnd;
         this.geometryLimitColumn = geometryLimitColumn;
+        if ( additionalRequestParameters != null )
+            this.additionalRequestParameters = additionalRequestParameters;
+        else
+            this.additionalRequestParameters = Collections.emptyList();
     }
 
     @Override
@@ -117,6 +135,10 @@ public class WcsUserDaoImpl implements UserDao {
         builder.append( operationTypeColumn ).append( "," );
         builder.append( layerNameColumn ).append( "," );
         builder.append( geometryLimitColumn );
+        for ( String additionalRequestParameter : additionalRequestParameters ) {
+            builder.append( "," );
+            builder.append( additionalRequestParameter );
+        }
         appendFrom( builder );
         builder.append( " WHERE " );
         builder.append( headerColumn ).append( " = ? AND ? BETWEEN " );
@@ -137,16 +159,18 @@ public class WcsUserDaoImpl implements UserDao {
         String password = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
         List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
+        Map<String, String> userRequestParameters = new HashMap<String, String>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
                 addAuthorities( authorities, row );
                 createGeometryFilter( geometrieFilter, row );
+                addAdditionalRequestParams( userRequestParameters, row );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, geometrieFilter );
+            return new WcsUser( username, password, authorities, geometrieFilter, userRequestParameters );
         return null;
     }
 
@@ -159,6 +183,14 @@ public class WcsUserDaoImpl implements UserDao {
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
             authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName,
                                                 internalServiceUrl ) );
+        }
+    }
+
+    private void addAdditionalRequestParams( Map<String, String> userRequestParameters, Map<String, Object> row ) {
+        for ( String additionalRequestParam : additionalRequestParameters ) {
+            String paramValue = getAsString( row, additionalRequestParam );
+            if ( paramValue != null && !paramValue.isEmpty() )
+                userRequestParameters.put( additionalRequestParam, paramValue );
         }
     }
 
