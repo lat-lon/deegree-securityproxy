@@ -32,7 +32,7 @@
 
   <bean id="headerFilter"
         class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
-    <property name="principalRequestHeader" value="access_token"/>
+    <property name="principalRequestHeader" value="${access_token_header_field_name}"/>
     <property name="authenticationManager" ref="authenticationManager"/>
     <property name="exceptionIfHeaderMissing" value="false"/>
   </bean>
