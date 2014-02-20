@@ -4,7 +4,6 @@ import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.parseVersions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
