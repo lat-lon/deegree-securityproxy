@@ -3,6 +3,7 @@ package org.deegree.securityproxy.wcs.authorization;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -76,6 +77,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                                                            Collection<? extends GrantedAuthority> authorities ) {
         List<String> grantedCoverages = new ArrayList<String>();
         String internalServiceUrl = null;
+        Map<String, String> additionalKeyValuePairs = null;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;
@@ -86,6 +88,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
                     // DSP always chooses the url of the last permission.
                     internalServiceUrl = wcsPermission.getInternalServiceUrl();
+                    additionalKeyValuePairs = wcsPermission.getAdditionalKeyValuePairs();
                 }
             }
         }
@@ -94,7 +97,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                 return new AuthorizationReport( DESCRIBECOVERAGE_UNAUTHORIZED_MSG );
 
         }
-        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl );
+        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl, additionalKeyValuePairs );
     }
 
     private AuthorizationReport authorizeGetCoverage( WcsRequest wcsRequest,
@@ -107,7 +110,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                      && isServiceVersionAuthorized( wcsRequest, wcsPermission )
                      && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
-                                                    wcsPermission.getInternalServiceUrl() );
+                                                    wcsPermission.getInternalServiceUrl(),
+                                                    wcsPermission.getAdditionalKeyValuePairs() );
                 }
             }
         }
@@ -123,7 +127,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                      && isServiceVersionAuthorized( wcsRequest, wcsPermission )
                      && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
-                                                    wcsPermission.getInternalServiceUrl() );
+                                                    wcsPermission.getInternalServiceUrl(),
+                                                    wcsPermission.getAdditionalKeyValuePairs() );
                 }
             }
         }

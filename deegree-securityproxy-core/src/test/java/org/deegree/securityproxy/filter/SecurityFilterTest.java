@@ -21,7 +21,9 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -415,16 +417,19 @@ public class SecurityFilterTest {
                                                    ServiceManager serviceManager )
                             throws Exception {
         doReturn( isServiceSupported ).when( serviceManager ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        AuthorizationReport authorizationReport = new AuthorizationReport( "message", isAuthorized, "url" );
+        Map<String, String> additionalKeyValuePairs = createAdditionalKeyValuePairs();
+        AuthorizationReport authorizationReport = new AuthorizationReport( "message", isAuthorized, "url",
+                                                                           additionalKeyValuePairs );
         doReturn( authorizationReport ).when( serviceManager ).authorize( any( Authentication.class ),
                                                                           any( OwsRequest.class ) );
         OwsRequest owsRequest = mockOwsRequest();
         doReturn( owsRequest ).when( serviceManager ).parse( any( HttpServletRequest.class ) );
         doReturn( true ).when( serviceManager ).isResponseFilterEnabled( any( OwsRequest.class ) );
         ResponseFilterReport responseFilterReport = mockResponseFilterReport();
-        doReturn( responseFilterReport ).when( serviceManager ).filterResponse( any( StatusCodeResponseBodyWrapper.class ),
-                                                                                any( Authentication.class ),
-                                                                                any( OwsRequest.class ) );
+        doReturn( responseFilterReport ).when( serviceManager ).filterResponse(
+              any( StatusCodeResponseBodyWrapper.class ),
+              any( Authentication.class ),
+              any( OwsRequest.class ) );
     }
 
     private ServiceManager mockServiceManager() {
@@ -437,6 +442,12 @@ public class SecurityFilterTest {
 
     private OwsRequest mockOwsRequest() {
         return mock( OwsRequest.class );
+    }
+
+    private Map<String, String> createAdditionalKeyValuePairs() {
+        Map<String, String> additionalKeyValuePairs = new HashMap<String, String>();
+        additionalKeyValuePairs.put( "additionalKey", "additionalValue" );
+        return additionalKeyValuePairs;
     }
 
 }
