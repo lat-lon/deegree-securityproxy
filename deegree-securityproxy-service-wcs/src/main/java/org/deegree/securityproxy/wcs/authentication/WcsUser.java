@@ -33,8 +33,6 @@ public class WcsUser implements UserDetails {
 
     private final List<WcsGeometryFilterInfo> filters;
 
-    private final Map<String, String> additionalKeyValuePairs;
-
     /**
      * @param username
      *            may be <code>null</code>
@@ -46,7 +44,7 @@ public class WcsUser implements UserDetails {
      *            may be <code>null</code> or empty
      */
     public WcsUser( String username, String password, List<WcsPermission> authorities,
-                    List<WcsGeometryFilterInfo> filters, Map<String, String> additionalKeyValuePairs ) {
+                    List<WcsGeometryFilterInfo> filters ) {
         this.username = username;
         this.password = password;
 
@@ -59,11 +57,6 @@ public class WcsUser implements UserDetails {
             this.filters = unmodifiableList( filters );
         else
             this.filters = unmodifiableList( Collections.<WcsGeometryFilterInfo> emptyList() );
-
-        if ( additionalKeyValuePairs != null )
-            this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
-        else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String> emptyMap() );
     }
 
     @Override
@@ -113,13 +106,6 @@ public class WcsUser implements UserDetails {
      */
     public List<WcsGeometryFilterInfo> getWcsGeometryFilterInfos() {
         return filters;
-    }
-
-    /**
-     * @return the additionalKeyValuePairs in a unmodifiable map, may be empty but never <code>null</code>
-     */
-    public Map<String, String> getAdditionalKeyValuePairs() {
-        return additionalKeyValuePairs;
     }
 
 }

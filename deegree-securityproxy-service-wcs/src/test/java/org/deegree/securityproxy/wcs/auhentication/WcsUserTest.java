@@ -32,8 +32,7 @@ public class WcsUserTest {
     @Test
     public void testConstructorWithNullAuthoritiesShouldReturnEmptyLists()
                             throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, null, createEmptyFilterList(),
-                                       createEmptyRequestParametersMap() );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, null, createEmptyFilterList() );
         assertThat( wcsUser.getAuthorities().size(), is( EMPTY ) );
         assertThat( wcsUser.getWcsPermissions().size(), is( EMPTY ) );
     }
@@ -42,8 +41,7 @@ public class WcsUserTest {
     public void testGetPermissionsShouldReturnInsertedPermissions()
                             throws Exception {
         List<WcsPermission> insertedPermissionsList = createPermissionsList();
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, insertedPermissionsList, createEmptyFilterList(),
-                                       createEmptyRequestParametersMap() );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, insertedPermissionsList, createEmptyFilterList() );
         List<WcsPermission> authorities = wcsUser.getWcsPermissions();
         assertThat( authorities, is( insertedPermissionsList ) );
     }
@@ -52,27 +50,17 @@ public class WcsUserTest {
     public void testGetPermissionsShouldReturnInsertedFilters()
                             throws Exception {
         List<WcsGeometryFilterInfo> insertedFilterList = createFilterList();
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), insertedFilterList,
-                                       createEmptyRequestParametersMap() );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), insertedFilterList );
         List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
     }
 
-    @Test
-    public void testGetAdditionalKeyValuePairsWithNull()
-                            throws Exception {
-        Map<String, String> requestParametersMap = createRequestParametersMap();
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList(),
-                                       requestParametersMap );
-        Map<String, String> requestParameters = wcsUser.getAdditionalKeyValuePairs();
-        assertThat( requestParameters, is( requestParameters ) );
-    }
+
 
     @Test(expected = UnsupportedOperationException.class)
     public void testGetPermissionsShouldReturnUnmodifiableWcsPermissionList()
                             throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createPermissionsList(), createEmptyFilterList(),
-                                       createEmptyRequestParametersMap() );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createPermissionsList(), createEmptyFilterList() );
         List<WcsPermission> authorities = wcsUser.getWcsPermissions();
         authorities.add( mockWcsPermission() );
     }
@@ -80,19 +68,9 @@ public class WcsUserTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testGetPermissionsShouldReturnUnmodifiableFilterList()
                             throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList(),
-                                       createEmptyRequestParametersMap() );
+        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList() );
         List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         filters.add( mockFilter() );
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void testGetAdditionalKeyValuePairsShouldReturnUnmodifiableFilterList()
-                            throws Exception {
-        WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, createEmptyPermissionsList(), createFilterList(),
-                                       createEmptyRequestParametersMap() );
-        Map<String, String> requestParameters = wcsUser.getAdditionalKeyValuePairs();
-        requestParameters.put( "key", "value" );
     }
 
     private List<WcsPermission> createEmptyPermissionsList() {
@@ -103,20 +81,12 @@ public class WcsUserTest {
         return emptyList();
     }
 
-    private Map<String, String> createEmptyRequestParametersMap() {
-        return emptyMap();
-    }
-
     private List<WcsPermission> createPermissionsList() {
         return Collections.singletonList( mockWcsPermission() );
     }
 
     private List<WcsGeometryFilterInfo> createFilterList() {
         return singletonList( mockFilter() );
-    }
-
-    private Map<String, String> createRequestParametersMap() {
-        return Collections.singletonMap( "test", "value" );
     }
 
     private WcsPermission mockWcsPermission() {

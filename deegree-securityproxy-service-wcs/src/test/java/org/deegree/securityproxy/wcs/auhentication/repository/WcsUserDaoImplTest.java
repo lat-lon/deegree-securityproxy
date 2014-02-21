@@ -191,33 +191,6 @@ public class WcsUserDaoImplTest {
         assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
     }
 
-    @Test
-    public void testRetrieveUserByIdWithoutAdditionalRequestParameters() {
-        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().size(), is( 0 ) );
-    }
-
-    @Test
-    public void testRetrieveUserByIdWithAdditionalRequestParameters() {
-        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
-
-        assertThat( wcsUser.getAdditionalKeyValuePairs().size(), is( 2 ) );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().containsKey( "requestParam1" ), is( true ) );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().containsKey( "requestParam2" ), is( true ) );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().get( "requestParam1" ), is( "addParam1" ) );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().get( "requestParam2" ), is( "addParam2" ) );
-
-    }
-
-    @Test
-    public void testRetrieveUserByIdWithOneAdditionalRequestParameters() {
-        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_ONE_EMPTY_REQUEST_PARAM" );
-
-        assertThat( wcsUser.getAdditionalKeyValuePairs().size(), is( 1 ) );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().containsKey( "requestParam1" ), is( true ) );
-        assertThat( wcsUser.getAdditionalKeyValuePairs().get( "requestParam1" ), is( "addParam1" ) );
-    }
-
     @After
     public void tearDown() {
         db.shutdown();

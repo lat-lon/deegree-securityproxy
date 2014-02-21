@@ -35,24 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.authorization;
 
-import static org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager.AUTHORIZED;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_200;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.wcs.authentication.WcsPermission;
@@ -62,10 +44,20 @@ import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
+
+import static org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager.AUTHORIZED;
+import static org.deegree.securityproxy.wcs.domain.WcsOperationType.*;
+import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_200;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
+
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
- * 
  * @version $Revision: $, $Date: $
  */
 public class WcsRequestAuthorizationManagerTest {
@@ -82,25 +74,27 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final String INTERNAL_SERVICE_URL = "serviceUrl";
 
+    private final Map<String, String> ADDITIONAL_KEY_VALUE_PAIRS = createAdditionalKeyValuePairs();
+
     private final RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 
     @Test
     public void testSupportsWcsRequestShouldBeSupported()
-                            throws Exception {
+          throws Exception {
         boolean isSupported = authorizationManager.supports( WcsRequest.class );
         assertThat( isSupported, is( true ) );
     }
 
     @Test
     public void testSupportsHttpServletRequestShouldBeUnsupported()
-                            throws Exception {
+          throws Exception {
         boolean isSupported = authorizationManager.supports( HttpServletRequest.class );
         assertThat( isSupported, is( false ) );
     }
 
     @Test
     public void testDecideWithSingleAuthorization()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockDefaultRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -109,7 +103,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideWithMultipleAuthorizations()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithMultiplePermissions();
         WcsRequest request = mockGetCapabilitiesRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -118,7 +112,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideMultipleAuthorizationsShouldBeRefusedCauseOfVersion()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithMultiplePermissions();
         WcsRequest request = mockGetCapabilitiesRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -128,7 +122,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfVersion()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -139,7 +133,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfOperationType()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedOperationType();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -148,7 +142,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfCovName()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedLayerName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -158,7 +152,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
-                            throws Exception {
+          throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WcsRequest request = mockRequestWithUnsupportedServiceName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -207,7 +201,8 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL,
+                                            ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -215,9 +210,17 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL ) );
-        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION, null, SERVICE_NAME, INTERNAL_SERVICE_URL ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL,
+                                            ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION, null, SERVICE_NAME, INTERNAL_SERVICE_URL,
+                                            ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
+    }
+
+    private Map<String, String> createAdditionalKeyValuePairs() {
+        Map<String, String> additionalKeyValuePairs = new HashMap<String, String>();
+        additionalKeyValuePairs.put( "additionalKey", "additionalValue" );
+        return additionalKeyValuePairs;
     }
 }

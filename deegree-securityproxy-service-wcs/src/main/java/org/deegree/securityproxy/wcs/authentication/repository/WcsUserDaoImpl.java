@@ -160,39 +160,40 @@ public class WcsUserDaoImpl implements UserDao {
         String password = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
         List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
-        Map<String, String> userRequestParameters = new HashMap<String, String>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
                 addAuthorities( authorities, row );
                 createGeometryFilter( geometrieFilter, row );
-                addAdditionalRequestParams( userRequestParameters, row );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, geometrieFilter, userRequestParameters );
+            return new WcsUser( username, password, authorities, geometrieFilter );
         return null;
     }
 
     private void addAuthorities( Collection<WcsPermission> authorities, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
         List<WcsServiceVersion> serviceVersions = getServiceVersions( row );
-        WcsOperationType operationType = getOperationType( row );
+        WcsOperationType operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
+        Map<String, String> userRequestParameters = retrieveAdditionalRequestParams( row );
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
             authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName,
-                                                internalServiceUrl ) );
+                                                internalServiceUrl, userRequestParameters ) );
         }
     }
 
-    private void addAdditionalRequestParams( Map<String, String> userRequestParameters, Map<String, Object> row ) {
+    private Map<String, String> retrieveAdditionalRequestParams( Map<String, Object> row ) {
+        Map<String, String> userRequestParameters = new HashMap<String, String>();
         for ( String additionalRequestParam : additionalRequestParameters ) {
             String paramValue = getAsString( row, additionalRequestParam );
             if ( paramValue != null && !paramValue.isEmpty() )
                 userRequestParameters.put( additionalRequestParam, paramValue );
         }
+        return userRequestParameters;
     }
 
     private void createGeometryFilter( List<WcsGeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
@@ -209,7 +210,7 @@ public class WcsUserDaoImpl implements UserDao {
         return SERVICE_NAME.equals( serviceType.toUpperCase() );
     }
 
-    private WcsOperationType getOperationType( Map<String, Object> row ) {
+    private WcsOperationType retrieveOperationType( Map<String, Object> row ) {
         String operationType = getAsString( row, operationTypeColumn );
         if ( operationType != null )
             return WcsOperationType.valueOf( operationType.toUpperCase() );
