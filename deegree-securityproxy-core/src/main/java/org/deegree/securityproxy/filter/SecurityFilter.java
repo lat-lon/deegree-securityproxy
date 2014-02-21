@@ -5,6 +5,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.Filter;
@@ -85,6 +86,7 @@ public class SecurityFilter implements Filter {
         }
         if ( authorizationReport.isAuthorized() ) {
             attachServiceUrlAttributeToRequest( httpRequest, authorizationReport );
+            attachAdditionalKeyValuePairsToRequest( httpRequest, authorizationReport );
             chain.doFilter( httpRequest, wrappedResponse );
             if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
                 ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
@@ -143,6 +145,18 @@ public class SecurityFilter implements Filter {
                                                      AuthorizationReport authorizationReport ) {
         String serviceUrl = authorizationReport.getServiceUrl();
         httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
+    }
+
+    private void attachAdditionalKeyValuePairsToRequest( HttpServletRequest httpRequest,
+                                                         AuthorizationReport authorizationReport ) {
+        Map<String, String> additionalKeyValuePairs = authorizationReport.getAdditionalKeyValuePairs();
+        if ( additionalKeyValuePairs != null && !additionalKeyValuePairs.isEmpty() ) {
+            for ( Map.Entry<String, String> entry : additionalKeyValuePairs.entrySet() ) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                //TODO: Add key and value to the httpRequest.
+            }
+        }
     }
 
     private ServiceManager detectServiceManager( HttpServletRequest request )
