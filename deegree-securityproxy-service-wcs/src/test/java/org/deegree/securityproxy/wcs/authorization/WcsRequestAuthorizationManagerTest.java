@@ -160,6 +160,19 @@ public class WcsRequestAuthorizationManagerTest {
         assertThat( report.getMessage(), is( WcsRequestAuthorizationManager.GETCOVERAGE_UNAUTHORIZED_MSG ) );
     }
 
+    @Test
+    public void testDecideSingleAuthorizationShouldIdentifyAdditionalKeyValuePairs()
+          throws Exception {
+        Authentication authentication = mockDefaultAuthentication();
+        WcsRequest request = mockDefaultRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+
+        Map<String, String> expectedAdditionalKeyValuePairs = new HashMap<String, String>();
+        expectedAdditionalKeyValuePairs.put( "additionalKey", "additionalValue" );
+
+        assertThat( report.getAdditionalKeyValuePairs(), is( expectedAdditionalKeyValuePairs ) );
+    }
+
     private WcsRequest mockDefaultRequest() {
         return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION );
     }
