@@ -88,10 +88,22 @@ public class WcsUserDaoImpl implements UserDao {
 
     @Override
     public WcsUser retrieveUserById( String headerValue ) {
-        if ( !checkParameter( headerValue ) )
+        if ( !checkParameterNotNullOrEmpty( headerValue ) )
             return null;
+        String jdbcString = generateSelectUserByHeaderSqlQuery();
+        return retrieveUser( headerValue, jdbcString );
+    }
+
+    @Override
+    public WcsUser retrieveUserByName( String userName ) {
+        if ( !checkParameterNotNullOrEmpty( userName ) )
+            return null;
+        String jdbcString = generateSelectByUserNameSqlQuery();
+        return retrieveUser( userName, jdbcString );
+    }
+
+    private WcsUser retrieveUser( String headerValue, String jdbcString ) {
         JdbcTemplate template = new JdbcTemplate( source );
-        String jdbcString = generateSqlQuery();
         try {
             Date now = new Date();
             List<Map<String, Object>> rows = template.queryForList( jdbcString, headerValue, now );
@@ -101,11 +113,19 @@ public class WcsUserDaoImpl implements UserDao {
         }
     }
 
-    private boolean checkParameter( String headerValue ) {
+    private boolean checkParameterNotNullOrEmpty( String headerValue ) {
         return !( headerValue == null || "".equals( headerValue ) );
     }
 
-    private String generateSqlQuery() {
+    private String generateSelectUserByHeaderSqlQuery() {
+        return generateSqlQuery( headerColumn );
+    }
+
+    private String generateSelectByUserNameSqlQuery() {
+        return generateSqlQuery( userNameColumn );
+    }
+
+    private String generateSqlQuery( String whereClauseColumn ) {
         StringBuilder builder = new StringBuilder();
         builder.append( "SELECT " );
         builder.append( userNameColumn ).append( "," );
@@ -119,7 +139,7 @@ public class WcsUserDaoImpl implements UserDao {
         builder.append( geometryLimitColumn );
         appendFrom( builder );
         builder.append( " WHERE " );
-        builder.append( headerColumn ).append( " = ? AND ? BETWEEN " );
+        builder.append( whereClauseColumn ).append( " = ? AND ? BETWEEN " );
         builder.append( subscriptionStart ).append( " AND " );
         builder.append( subscriptionEnd );
         return builder.toString();

@@ -191,6 +191,45 @@ public class WcsUserDaoImplTest {
         assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
     }
 
+    /* retrieveUserByName */
+
+    @Test
+    public void testRetrieveUserByNameValidNameShouldReturnUserDetailWithPermissions() {
+        UserDetails details = source.retrieveUserByName( "VALID_USER_MULTIPLE_VERSIONS" );
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 3 ) );
+    }
+
+    @Test
+    public void testRetrieveUserByNameValidSubscription() {
+        UserDetails details = source.retrieveUserByName( "VALID_USER_SUBSCRIPTION_OK" );
+        assertThat( details, notNullValue() );
+    }
+
+    @Test
+    public void testRetrieveUserByNameInvalidSubscription() {
+        UserDetails details = source.retrieveUserByName( "VALID_USER_SUBSCRIPTION_EXPIRED" );
+        assertThat( details, nullValue() );
+    }
+
+    @Test
+    public void testRetrieveUserByNameInvalidNameShouldReturnNull() {
+        UserDetails details = source.retrieveUserByName( "INVALID_USER" );
+        assertThat( details, nullValue() );
+    }
+
+    @Test
+    public void testRetrieveUserByNameEmptyNameShouldReturnNull() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserByName( "" );
+        assertThat( wcsUser, nullValue() );
+    }
+
+    @Test
+    public void testRetrieveUserByNameNullNameShouldReturnNull() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserByName( null );
+        assertThat( wcsUser, nullValue() );
+    }
+
     @After
     public void tearDown() {
         db.shutdown();
