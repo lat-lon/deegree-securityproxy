@@ -23,7 +23,7 @@ public class AuthorizationReport {
 
     private final String serviceUrl;
 
-    private final Map<String, String> additionalKeyValuePairs;
+    private final Map<String, String[]> additionalKeyValuePairs;
 
     /**
      * Instantiates a new {@link AuthorizationReport} for a failed authorization (isAuthhozied is <code>false</code>).
@@ -31,7 +31,7 @@ public class AuthorizationReport {
      * @param message containing the reason why the authorization failed, never <code>null</code>
      */
     public AuthorizationReport( String message ) {
-        this( message, false, null, unmodifiableMap( Collections.<String, String>emptyMap() ) );
+        this( message, false, null, unmodifiableMap( Collections.<String, String[]>emptyMap() ) );
     }
 
     /**
@@ -44,7 +44,7 @@ public class AuthorizationReport {
      * @param additionalKeyValuePairs additional key value pairs, may be empty but never <code>null</code>
      */
     public AuthorizationReport( String message, boolean isAuthorized, String serviceUrl,
-                                Map<String, String> additionalKeyValuePairs ) {
+                                Map<String, String[]> additionalKeyValuePairs ) {
         this.message = message;
         this.isAuthorized = isAuthorized;
         this.serviceUrl = serviceUrl;
@@ -52,7 +52,7 @@ public class AuthorizationReport {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String>emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
     }
 
     /**
@@ -80,7 +80,7 @@ public class AuthorizationReport {
     /**
      * @return additional key value pairs, may be empty but never <code>null</code>
      */
-    public Map<String, String> getAdditionalKeyValuePairs() {
+    public Map<String, String[]> getAdditionalKeyValuePairs() {
         return additionalKeyValuePairs;
     }
 

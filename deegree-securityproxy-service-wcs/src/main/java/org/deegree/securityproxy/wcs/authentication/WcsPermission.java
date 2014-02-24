@@ -67,10 +67,10 @@ public class WcsPermission implements GrantedAuthority {
 
     private final String internalServiceUrl;
 
-    private final Map<String, String> additionalKeyValuePairs;
+    private final Map<String, String[]> additionalKeyValuePairs;
 
     public WcsPermission( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
-                          String serviceName, String internalServiceUrl, Map<String, String> additionalKeyValuePairs ) {
+                          String serviceName, String internalServiceUrl, Map<String, String[]> additionalKeyValuePairs ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageName = coverageName;
@@ -80,7 +80,7 @@ public class WcsPermission implements GrantedAuthority {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String>emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
     }
 
     @Override
@@ -125,7 +125,7 @@ public class WcsPermission implements GrantedAuthority {
     /**
      * @return the additionalKeyValuePairs in a unmodifiable map, may be empty but never <code>null</code>
      */
-    public Map<String, String> getAdditionalKeyValuePairs() {
+    public Map<String, String[]> getAdditionalKeyValuePairs() {
         return additionalKeyValuePairs;
     }
 

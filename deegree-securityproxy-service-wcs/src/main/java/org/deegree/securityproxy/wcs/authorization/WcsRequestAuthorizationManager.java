@@ -77,7 +77,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
                                                            Collection<? extends GrantedAuthority> authorities ) {
         List<String> grantedCoverages = new ArrayList<String>();
         String internalServiceUrl = null;
-        Map<String, String> additionalKeyValuePairs = null;
+        Map<String, String[]> additionalKeyValuePairs = null;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof WcsPermission ) {
                 WcsPermission wcsPermission = (WcsPermission) authority;

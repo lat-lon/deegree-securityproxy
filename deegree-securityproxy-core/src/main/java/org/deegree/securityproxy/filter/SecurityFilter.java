@@ -4,9 +4,7 @@ import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -15,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -86,8 +85,9 @@ public class SecurityFilter implements Filter {
         }
         if ( authorizationReport.isAuthorized() ) {
             attachServiceUrlAttributeToRequest( httpRequest, authorizationReport );
-            attachAdditionalKeyValuePairsToRequest( httpRequest, authorizationReport );
-            chain.doFilter( httpRequest, wrappedResponse );
+            Map<String, String[]> additionalKeyValuePairs = authorizationReport.getAdditionalKeyValuePairs();
+            KvpRequestWrapper wrappedRequest = new KvpRequestWrapper( httpRequest, additionalKeyValuePairs );
+            chain.doFilter( wrappedRequest, wrappedResponse );
             if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
                 ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
                                                                                      owsRequest );
@@ -145,18 +145,6 @@ public class SecurityFilter implements Filter {
                                                      AuthorizationReport authorizationReport ) {
         String serviceUrl = authorizationReport.getServiceUrl();
         httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
-    }
-
-    private void attachAdditionalKeyValuePairsToRequest( HttpServletRequest httpRequest,
-                                                         AuthorizationReport authorizationReport ) {
-        Map<String, String> additionalKeyValuePairs = authorizationReport.getAdditionalKeyValuePairs();
-        if ( additionalKeyValuePairs != null && !additionalKeyValuePairs.isEmpty() ) {
-            for ( Map.Entry<String, String> entry : additionalKeyValuePairs.entrySet() ) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                //TODO: Add key and value to the httpRequest.
-            }
-        }
     }
 
     private ServiceManager detectServiceManager( HttpServletRequest request )

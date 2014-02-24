@@ -15,7 +15,7 @@ public class TestRequestAuthorizationManager implements RequestAuthorizationMana
 
     private boolean isAuthorized = true;
 
-    private final Map<String, String> ADDITIONAL_KEY_VALUE_PAIRS = createAdditionalKeyValuePairs();
+    private final Map<String, String[]> ADDITIONAL_KEY_VALUE_PAIRS = createAdditionalKeyValuePairs();
 
     public TestRequestAuthorizationManager() {
     }
@@ -35,9 +35,9 @@ public class TestRequestAuthorizationManager implements RequestAuthorizationMana
         return true;
     }
 
-    private Map<String, String> createAdditionalKeyValuePairs() {
-        Map<String, String> additionalKeyValuePairs = new HashMap<String, String>();
-        additionalKeyValuePairs.put( "additionalKey", "additionalValue" );
+    private Map<String, String[]> createAdditionalKeyValuePairs() {
+        Map<String, String[]> additionalKeyValuePairs = new HashMap<String, String[]>();
+        additionalKeyValuePairs.put( "additionalKey", new String[] { "additionalValue" } );
         return additionalKeyValuePairs;
     }
 

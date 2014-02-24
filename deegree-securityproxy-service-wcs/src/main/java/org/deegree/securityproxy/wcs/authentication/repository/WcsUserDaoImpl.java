@@ -179,19 +179,19 @@ public class WcsUserDaoImpl implements UserDao {
         WcsOperationType operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
-        Map<String, String> userRequestParameters = retrieveAdditionalRequestParams( row );
+        Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
         for ( WcsServiceVersion serviceVersion : serviceVersions ) {
             authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName,
                                                 internalServiceUrl, userRequestParameters ) );
         }
     }
 
-    private Map<String, String> retrieveAdditionalRequestParams( Map<String, Object> row ) {
-        Map<String, String> userRequestParameters = new HashMap<String, String>();
+    private Map<String, String[]> retrieveAdditionalRequestParams( Map<String, Object> row ) {
+        Map<String, String[]> userRequestParameters = new HashMap<String, String[]>();
         for ( String additionalRequestParam : additionalRequestParameters ) {
             String paramValue = getAsString( row, additionalRequestParam );
             if ( paramValue != null && !paramValue.isEmpty() )
-                userRequestParameters.put( additionalRequestParam, paramValue );
+                userRequestParameters.put( additionalRequestParam, new String[] { paramValue } );
         }
         return userRequestParameters;
     }

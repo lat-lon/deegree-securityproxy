@@ -34,10 +34,10 @@ public class WcsPermissionTest {
 
     @Test
     public void testGetAdditionalKeyValuePairs() throws Exception {
-        Map<String, String> requestParametersMap = createRequestParametersMap();
+        Map<String, String[]> requestParametersMap = createRequestParametersMap();
         WcsPermission wcsPermission = new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME,
                                                          INTERNAL_SERVICE_URL, requestParametersMap );
-        Map<String, String> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
+        Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
 
         assertThat( requestParameters, is( requestParametersMap ) );
     }
@@ -46,18 +46,18 @@ public class WcsPermissionTest {
     public void testGetAdditionalKeyValuePairsWithNull() throws Exception {
         WcsPermission wcsPermission = new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME,
                                                          INTERNAL_SERVICE_URL, null );
-        Map<String, String> emptyRequestParametersMap = createEmptyRequestParametersMap();
-        Map<String, String> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
+        Map<String, String[]> emptyRequestParametersMap = createEmptyRequestParametersMap();
+        Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
 
         assertThat( requestParameters, is( emptyRequestParametersMap ) );
     }
 
     @Test
     public void testGetAdditionalKeyValuePairsWithEmptyMap() throws Exception {
-        Map<String, String> emptyRequestParametersMap = createEmptyRequestParametersMap();
+        Map<String, String[]> emptyRequestParametersMap = createEmptyRequestParametersMap();
         WcsPermission wcsPermission = new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME,
                                                          INTERNAL_SERVICE_URL, emptyRequestParametersMap );
-        Map<String, String> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
+        Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
 
         assertThat( requestParameters, is( emptyRequestParametersMap ) );
     }
@@ -66,15 +66,15 @@ public class WcsPermissionTest {
     public void testGetAdditionalKeyValuePairsShouldReturnUnmodifiableFilterList() throws Exception {
         WcsPermission wcsPermission = new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME,
                                                          INTERNAL_SERVICE_URL, createRequestParametersMap() );
-        Map<String, String> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
-        requestParameters.put( "key", "value" );
+        Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
+        requestParameters.put( "key", new String[] { "value" } );
     }
 
-    private Map<String, String> createRequestParametersMap() {
-        return Collections.singletonMap( "key", "value" );
+    private Map<String, String[]> createRequestParametersMap() {
+        return Collections.singletonMap( "key", new String[] { "value" } );
     }
 
-    private Map<String, String> createEmptyRequestParametersMap() {
+    private Map<String, String[]> createEmptyRequestParametersMap() {
         return emptyMap();
     }
 

@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager.AUTHORIZED;
@@ -52,7 +53,9 @@ import static org.deegree.securityproxy.wcs.domain.WcsOperationType.*;
 import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
 import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_200;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -74,7 +77,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final String INTERNAL_SERVICE_URL = "serviceUrl";
 
-    private final Map<String, String> ADDITIONAL_KEY_VALUE_PAIRS = createAdditionalKeyValuePairs();
+    private final Map<String, String[]> ADDITIONAL_KEY_VALUE_PAIRS = createAdditionalKeyValuePairs();
 
     private final RequestAuthorizationManager authorizationManager = new WcsRequestAuthorizationManager();
 
@@ -167,10 +170,13 @@ public class WcsRequestAuthorizationManagerTest {
         WcsRequest request = mockDefaultRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
 
-        Map<String, String> expectedAdditionalKeyValuePairs = new HashMap<String, String>();
-        expectedAdditionalKeyValuePairs.put( "additionalKey", "additionalValue" );
+        String expectedAdditionalKey = "additionalKey";
+        String[] expectedAdditionalValue = { "additionalValue" };
+        Set<String> actualKeySet = report.getAdditionalKeyValuePairs().keySet();
+        String[] actualValue = report.getAdditionalKeyValuePairs().get( expectedAdditionalKey );
 
-        assertThat( report.getAdditionalKeyValuePairs(), is( expectedAdditionalKeyValuePairs ) );
+        assertTrue( actualKeySet.contains( expectedAdditionalKey ) );
+        assertTrue( Arrays.equals( actualValue, expectedAdditionalValue ) );
     }
 
     private WcsRequest mockDefaultRequest() {
@@ -231,9 +237,9 @@ public class WcsRequestAuthorizationManagerTest {
         return authentication;
     }
 
-    private Map<String, String> createAdditionalKeyValuePairs() {
-        Map<String, String> additionalKeyValuePairs = new HashMap<String, String>();
-        additionalKeyValuePairs.put( "additionalKey", "additionalValue" );
+    private Map<String, String[]> createAdditionalKeyValuePairs() {
+        Map<String, String[]> additionalKeyValuePairs = new HashMap<String, String[]>();
+        additionalKeyValuePairs.put( "additionalKey", new String[] { "additionalValue" } );
         return additionalKeyValuePairs;
     }
 }

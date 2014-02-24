@@ -20,10 +20,10 @@ public class AuthorizationReportTest {
 
     @Test
     public void testGetAdditionalKeyValuePairs() throws Exception {
-        Map<String, String> requestParametersMap = createRequestParametersMap();
+        Map<String, String[]> requestParametersMap = createRequestParametersMap();
         AuthorizationReport authorizationReport = new AuthorizationReport( "message", true, "serviceUrl",
                                                                            requestParametersMap );
-        Map<String, String> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
+        Map<String, String[]> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
 
         assertThat( requestParameters, is( requestParametersMap ) );
     }
@@ -31,18 +31,18 @@ public class AuthorizationReportTest {
     @Test
     public void testGetAdditionalKeyValuePairsWithNull() throws Exception {
         AuthorizationReport authorizationReport = new AuthorizationReport( "message", true, "serviceUrl", null );
-        Map<String, String> emptyRequestParametersMap = createEmptyRequestParametersMap();
-        Map<String, String> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
+        Map<String, String[]> emptyRequestParametersMap = createEmptyRequestParametersMap();
+        Map<String, String[]> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
 
         assertThat( requestParameters, is( emptyRequestParametersMap ) );
     }
 
     @Test
     public void testGetAdditionalKeyValuePairsWithEmptyMap() throws Exception {
-        Map<String, String> emptyRequestParametersMap = createEmptyRequestParametersMap();
+        Map<String, String[]> emptyRequestParametersMap = createEmptyRequestParametersMap();
         AuthorizationReport authorizationReport = new AuthorizationReport( "message", true, "serviceUrl",
                                                                            emptyRequestParametersMap );
-        Map<String, String> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
+        Map<String, String[]> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
 
         assertThat( requestParameters, is( emptyRequestParametersMap ) );
     }
@@ -51,15 +51,15 @@ public class AuthorizationReportTest {
     public void testGetAdditionalKeyValuePairsShouldReturnUnmodifiableFilterList() throws Exception {
         AuthorizationReport authorizationReport = new AuthorizationReport( "message", true, "serviceUrl",
                                                                            createRequestParametersMap() );
-        Map<String, String> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
-        requestParameters.put( "key", "value" );
+        Map<String, String[]> requestParameters = authorizationReport.getAdditionalKeyValuePairs();
+        requestParameters.put( "key", new String[] { "value" } );
     }
 
-    private Map<String, String> createRequestParametersMap() {
-        return Collections.singletonMap( "key", "value" );
+    private Map<String, String[]> createRequestParametersMap() {
+        return Collections.singletonMap( "key", new String[] { "value" } );
     }
 
-    private Map<String, String> createEmptyRequestParametersMap() {
+    private Map<String, String[]> createEmptyRequestParametersMap() {
         return emptyMap();
     }
 
