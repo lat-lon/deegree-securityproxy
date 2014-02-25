@@ -39,14 +39,18 @@ import org.deegree.securityproxy.wcs.domain.WcsOperationType;
 import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Collections;
+import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
+
 /**
  * Encapsulates a permission to access a secured WCS.
- * 
+ *
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $
- * 
  * @version $Revision: $, $Date: $
  */
 public class WcsPermission implements GrantedAuthority {
@@ -63,13 +67,20 @@ public class WcsPermission implements GrantedAuthority {
 
     private final String internalServiceUrl;
 
+    private final Map<String, String[]> additionalKeyValuePairs;
+
     public WcsPermission( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
-                          String serviceName, String internalServiceUrl ) {
+                          String serviceName, String internalServiceUrl, Map<String, String[]> additionalKeyValuePairs ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.coverageName = coverageName;
         this.serviceName = serviceName;
         this.internalServiceUrl = internalServiceUrl;
+
+        if ( additionalKeyValuePairs != null )
+            this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
+        else
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
     }
 
     @Override
@@ -110,4 +121,12 @@ public class WcsPermission implements GrantedAuthority {
     public String getInternalServiceUrl() {
         return internalServiceUrl;
     }
+
+    /**
+     * @return the additionalKeyValuePairs in a unmodifiable map, may be empty but never <code>null</code>
+     */
+    public Map<String, String[]> getAdditionalKeyValuePairs() {
+        return additionalKeyValuePairs;
+    }
+
 }

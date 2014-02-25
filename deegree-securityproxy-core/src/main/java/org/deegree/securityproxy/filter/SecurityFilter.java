@@ -5,6 +5,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.Filter;
@@ -85,7 +86,9 @@ public class SecurityFilter implements Filter {
         }
         if ( authorizationReport.isAuthorized() ) {
             attachServiceUrlAttributeToRequest( httpRequest, authorizationReport );
-            chain.doFilter( httpRequest, wrappedResponse );
+            Map<String, String[]> additionalKeyValuePairs = authorizationReport.getAdditionalKeyValuePairs();
+            KvpRequestWrapper wrappedRequest = new KvpRequestWrapper( httpRequest, additionalKeyValuePairs );
+            chain.doFilter( wrappedRequest, wrappedResponse );
             if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
                 ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
                                                                                      owsRequest );

@@ -1,19 +1,5 @@
 package org.deegree.securityproxy.wcs.auhentication.repository;
 
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.wcs.authentication.WcsPermission;
@@ -30,15 +16,23 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.*;
+
+import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+
 /**
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $
- * 
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/wcs/authentication/repository/UserDaoTestContext.xml" })
+@ContextConfiguration(
+      locations = { "classpath*:org/deegree/securityproxy/wcs/authentication/repository/UserDaoTestContext.xml" })
 public class WcsUserDaoImplTest {
 
     private EmbeddedDatabase db;
@@ -190,6 +184,57 @@ public class WcsUserDaoImplTest {
         }
         assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
     }
+    @Test
+    public void testRetrieveUserByIdWithoutAdditionalRequestParameters() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
+        Map<String, String[]> additionalKeyValuePair = retrieveFirstAdditionalKeyValuePair( wcsUser );
+
+        assertThat( additionalKeyValuePair.size(), is( 0 ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithOneAdditionalRequestParameters() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_ONE_EMPTY_REQUEST_PARAM" );
+        Map<String, String[]> additionalKeyValuePair = retrieveFirstAdditionalKeyValuePair( wcsUser );
+
+        assertThat( additionalKeyValuePair.size(), is( 1 ) );
+        assertThat( additionalKeyValuePair.containsKey( "requestParam1" ), is( true ) );
+        assertThat( additionalKeyValuePair.get( "requestParam1" ), is( new String[] { "addParam1" } ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithAdditionalRequestParameters() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
+        Map<String, String[]> additionalKeyValuePair = retrieveFirstAdditionalKeyValuePair( wcsUser );
+
+        assertThat( additionalKeyValuePair.size(), is( 2 ) );
+        assertThat( additionalKeyValuePair.containsKey( "requestParam1" ), is( true ) );
+        assertThat( additionalKeyValuePair.containsKey( "requestParam2" ), is( true ) );
+        assertThat( additionalKeyValuePair.get( "requestParam1" ), is( new String[] { "addParam1" } ) );
+        assertThat( additionalKeyValuePair.get( "requestParam2" ), is( new String[] { "addParam2" } ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithMultiplePermissionsWithAdditionalRequestParameters() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
+        List<Map<String, String[]>> additionalKeyValuePairsList = new ArrayList<Map<String, String[]>>();
+        for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
+            Map<String, String[]> additionalKeyValuePairs = ( (WcsPermission) authority ).getAdditionalKeyValuePairs();
+            additionalKeyValuePairsList.add( additionalKeyValuePairs );
+        }
+        Map<String, String[]> firstAdditionalKeyValuePairs = additionalKeyValuePairsList.get( 0 );
+        Map<String, String[]> secondAdditionalKeyValuePairs = additionalKeyValuePairsList.get( 1 );
+
+        assertThat( additionalKeyValuePairsList.size(), is( 2 ) );
+        assertThat( firstAdditionalKeyValuePairs.containsKey( "requestParam1" ), is( true ) );
+        assertThat( firstAdditionalKeyValuePairs.containsKey( "requestParam2" ), is( true ) );
+        assertThat( firstAdditionalKeyValuePairs.get( "requestParam1" ), is( new String[] { "addParam1" } ) );
+        assertThat( firstAdditionalKeyValuePairs.get( "requestParam2" ), is( new String[] { "addParam2" } ) );
+        assertThat( secondAdditionalKeyValuePairs.containsKey( "requestParam1" ), is( true ) );
+        assertThat( secondAdditionalKeyValuePairs.containsKey( "requestParam2" ), is( true ) );
+        assertThat( secondAdditionalKeyValuePairs.get( "requestParam1" ), is( new String[] { "addParam1" } ) );
+        assertThat( secondAdditionalKeyValuePairs.get( "requestParam2" ), is( new String[] { "addParam2" } ) );
+    }
 
     /* retrieveUserByName */
 
@@ -229,10 +274,15 @@ public class WcsUserDaoImplTest {
         WcsUser wcsUser = (WcsUser) source.retrieveUserByName( null );
         assertThat( wcsUser, nullValue() );
     }
-
+    
     @After
     public void tearDown() {
         db.shutdown();
+    }
+
+    private Map<String, String[]> retrieveFirstAdditionalKeyValuePair( WcsUser wcsUser ) {
+        GrantedAuthority authority = wcsUser.getAuthorities().get( 0 );
+        return ( (WcsPermission) authority ).getAdditionalKeyValuePairs();
     }
 
 }

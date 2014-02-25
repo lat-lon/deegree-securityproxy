@@ -10,5 +10,7 @@ CREATE TABLE usertable (
 	subscription_start date,
 	subscription_end date,
 	layer_service_type_name VARCHAR(255),
-	user_layer_limited_to VARCHAR(255)
+	user_layer_limited_to VARCHAR(255),
+	requestParam1 VARCHAR(255),
+	requestParam2 VARCHAR(255)
 );
