@@ -1,15 +1,14 @@
 package org.deegree.securityproxy.filter;
 
 import static java.util.Collections.emptyMap;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -43,11 +42,8 @@ public class KvpRequestWrapperTest {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         String queryString = kvpRequestWrapper.getQueryString();
 
-        assertTrue( queryString.startsWith( "?" ) );
-        assertTrue( queryString.contains( "existingKey" ) );
-        assertTrue( queryString.contains( "existingValue" ) );
-        assertTrue( queryString.contains( "additionalKey" ) );
-        assertTrue( queryString.contains( "additionalValue" ) );
+        String exptectedQueryString = "?existingKey=existingValue&additionalKey=additionalValue";
+        assertThat( queryString, is( exptectedQueryString ) );
     }
 
     @Test
@@ -56,24 +52,18 @@ public class KvpRequestWrapperTest {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePairsWithThreeEntries );
         String queryString = kvpRequestWrapper.getQueryString();
 
-        assertTrue( queryString.startsWith( "?" ) );
-        assertTrue( queryString.contains( "existingKey" ) );
-        assertTrue( queryString.contains( "existingValue" ) );
-        assertTrue( queryString.contains( "additionalKey1" ) );
-        assertTrue( queryString.contains( "additionalValue1" ) );
-        assertTrue( queryString.contains( "additionalKey2" ) );
-        assertTrue( queryString.contains( "additionalValue2" ) );
-        assertTrue( queryString.contains( "additionalKey3" ) );
-        assertTrue( queryString.contains( "additionalValue3" ) );
+        String exptectedQueryString = "?existingKey=existingValue&additionalKey1=additionalValue1&additionalKey2=additionalValue2&additionalKey3=additionalValue3";
+        assertThat( queryString, is( exptectedQueryString ) );
     }
 
     @Test
     public void testGetQueryStringWithoutOriginalParamsAndThreeAdditional()
                             throws Exception {
-        KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( requestWithoutParams, additionalKeyValuePairsWithThreeEntries );
+        KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( requestWithoutParams,
+                                                                     additionalKeyValuePairsWithThreeEntries );
         String queryString = kvpRequestWrapper.getQueryString();
 
-        String exptectedQueryString = "?additionalKey1=additionalValue3&additionalKey3=additionalValue1&additionalKey3=additionalValue3";
+        String exptectedQueryString = "?additionalKey1=additionalValue1&additionalKey2=additionalValue2&additionalKey3=additionalValue3";
         assertThat( queryString, is( exptectedQueryString ) );
     }
 
@@ -92,10 +82,10 @@ public class KvpRequestWrapperTest {
         String[] actualAdditionalValue = parameterMap.get( expectedAdditionalKey );
 
         assertThat( parameterMap.size(), is( 2 ) );
-        assertTrue( actualKeySet.contains( expectedExistingKey ) );
-        assertTrue( actualKeySet.contains( expectedAdditionalKey ) );
-        assertTrue( Arrays.equals( actualExistingValue, expectedExistingValue ) );
-        assertTrue( Arrays.equals( actualAdditionalValue, expectedAdditionalValue ) );
+        assertThat( actualKeySet, hasItem( expectedExistingKey ) );
+        assertThat( actualKeySet, hasItem( expectedAdditionalKey ) );
+        assertThat( actualExistingValue, is( expectedExistingValue ) );
+        assertThat( actualAdditionalValue, is( expectedAdditionalValue ) );
     }
 
     @Test
@@ -119,14 +109,15 @@ public class KvpRequestWrapperTest {
         String[] actualAdditionalValue3 = parameterMap.get( expectedAdditionalKey3 );
 
         assertThat( parameterMap.size(), is( 4 ) );
-        assertTrue( actualKeySet.contains( expectedExistingKey ) );
-        assertTrue( actualKeySet.contains( expectedAdditionalKey1 ) );
-        assertTrue( actualKeySet.contains( expectedAdditionalKey2 ) );
-        assertTrue( actualKeySet.contains( expectedAdditionalKey3 ) );
-        assertTrue( Arrays.equals( actualExistingValue, expectedExistingValue ) );
-        assertTrue( Arrays.equals( actualAdditionalValue1, expectedAdditionalValue1 ) );
-        assertTrue( Arrays.equals( actualAdditionalValue2, expectedAdditionalValue2 ) );
-        assertTrue( Arrays.equals( actualAdditionalValue3, expectedAdditionalValue3 ) );
+
+        assertThat( actualKeySet, hasItem( expectedExistingKey ) );
+        assertThat( actualKeySet, hasItem( expectedAdditionalKey1 ) );
+        assertThat( actualKeySet, hasItem( expectedAdditionalKey2 ) );
+        assertThat( actualKeySet, hasItem( expectedAdditionalKey3 ) );
+        assertThat( actualExistingValue, is( expectedExistingValue ) );
+        assertThat( actualAdditionalValue1, is( expectedAdditionalValue1 ) );
+        assertThat( actualAdditionalValue2, is( expectedAdditionalValue2 ) );
+        assertThat( actualAdditionalValue3, is( expectedAdditionalValue3 ) );
     }
 
     @Test
@@ -159,8 +150,8 @@ public class KvpRequestWrapperTest {
         String[] expectedExistingParameterValues = new String[] { "existingValue" };
         String[] expectedAdditionalParameterValues = new String[] { "additionalValue" };
 
-        assertTrue( Arrays.equals( existingParameterValues, expectedExistingParameterValues ) );
-        assertTrue( Arrays.equals( additionalParameterValues, expectedAdditionalParameterValues ) );
+        assertThat( existingParameterValues, is( expectedExistingParameterValues ) );
+        assertThat( additionalParameterValues, is( expectedAdditionalParameterValues ) );
     }
 
     @Test
@@ -183,8 +174,8 @@ public class KvpRequestWrapperTest {
         }
 
         assertThat( parameterNamesList.size(), is( 2 ) );
-        assertTrue( parameterNamesList.contains( "existingKey" ) );
-        assertTrue( parameterNamesList.contains( "additionalKey" ) );
+        assertThat( parameterNamesList, hasItem( "existingKey" ) );
+        assertThat( parameterNamesList, hasItem( "additionalKey" ) );
     }
 
     @Test
@@ -198,10 +189,10 @@ public class KvpRequestWrapperTest {
         }
 
         assertThat( parameterNamesList.size(), is( 4 ) );
-        assertTrue( parameterNamesList.contains( "existingKey" ) );
-        assertTrue( parameterNamesList.contains( "additionalKey1" ) );
-        assertTrue( parameterNamesList.contains( "additionalKey2" ) );
-        assertTrue( parameterNamesList.contains( "additionalKey3" ) );
+        assertThat( parameterNamesList, hasItem( "existingKey" ) );
+        assertThat( parameterNamesList, hasItem( "additionalKey1" ) );
+        assertThat( parameterNamesList, hasItem( "additionalKey2" ) );
+        assertThat( parameterNamesList, hasItem( "additionalKey3" ) );
     }
 
     private Map<String, String[]> createAdditionalKeyValuePair() {
