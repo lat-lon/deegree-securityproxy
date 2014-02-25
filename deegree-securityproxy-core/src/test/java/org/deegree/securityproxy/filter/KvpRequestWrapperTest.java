@@ -34,6 +34,10 @@ public class KvpRequestWrapperTest {
 
     private final Map<String, String[]> additionalKeyValuePair = createAdditionalKeyValuePair();
 
+    private final Map<String, String[]> additionalKeyValuePairWithoutEntries = new HashMap<String, String[]>();
+
+    private final Map<String, String[]> additionalKeyValuePairWithTwoValues = createAdditionalKeyValuePairsWithTwoValues();
+
     private final Map<String, String[]> additionalKeyValuePairsWithThreeEntries = createAdditionalKeyValuePairsWithThreeEntries();
 
     @Test
@@ -43,6 +47,16 @@ public class KvpRequestWrapperTest {
         String queryString = kvpRequestWrapper.getQueryString();
 
         String exptectedQueryString = "?existingKey=existingValue&additionalKey=additionalValue";
+        assertThat( queryString, is( exptectedQueryString ) );
+    }
+
+    @Test
+    public void testGetQueryStringWithoutAdditional()
+                            throws Exception {
+        KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePairWithoutEntries );
+        String queryString = kvpRequestWrapper.getQueryString();
+
+        String exptectedQueryString = "?existingKey=existingValue";
         assertThat( queryString, is( exptectedQueryString ) );
     }
 
@@ -64,6 +78,16 @@ public class KvpRequestWrapperTest {
         String queryString = kvpRequestWrapper.getQueryString();
 
         String exptectedQueryString = "?additionalKey1=additionalValue1&additionalKey2=additionalValue2&additionalKey3=additionalValue3";
+        assertThat( queryString, is( exptectedQueryString ) );
+    }
+
+    @Test
+    public void testGetQueryStringWithTwoValues()
+                            throws Exception {
+        KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePairWithTwoValues );
+        String queryString = kvpRequestWrapper.getQueryString();
+
+        String exptectedQueryString = "?existingKey=existingValue&additionalKey=additionalValue1,additionalValue2";
         assertThat( queryString, is( exptectedQueryString ) );
     }
 
@@ -207,6 +231,12 @@ public class KvpRequestWrapperTest {
         additionalKeyValuePairs.put( "additionalKey2", new String[] { "additionalValue2" } );
         additionalKeyValuePairs.put( "additionalKey3", new String[] { "additionalValue3" } );
         return additionalKeyValuePairs;
+    }
+
+    private Map<String, String[]> createAdditionalKeyValuePairsWithTwoValues() {
+        Map<String, String[]> additionalKeyValuePair = new HashMap<String, String[]>();
+        additionalKeyValuePair.put( "additionalKey", new String[] { "additionalValue1", "additionalValue2" } );
+        return additionalKeyValuePair;
     }
 
     private Map<String, String[]> createExistingParameterMap() {

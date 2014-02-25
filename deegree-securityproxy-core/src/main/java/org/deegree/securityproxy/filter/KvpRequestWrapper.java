@@ -1,15 +1,16 @@
 package org.deegree.securityproxy.filter;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
 /**
  * Custom Request wrapper that allows to add additional key-value-pairs.
- *
+ * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author <a href="wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author last edited by: $Author: stenger $
@@ -21,9 +22,10 @@ public class KvpRequestWrapper extends HttpServletRequestWrapper {
 
     /**
      * Constructs a request object wrapping the given request.
-     *
+     * 
      * @param request
-     * @throws IllegalArgumentException if the request is null
+     * @throws IllegalArgumentException
+     *             if the request is null
      */
     public KvpRequestWrapper( final HttpServletRequest request, final Map<String, String[]> additionalKeyValuePairs ) {
         super( request );
@@ -34,10 +36,10 @@ public class KvpRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public String getQueryString() {
         String originalQueryString = super.getQueryString();
-        String additionalKvps = retrieveAdditionalKeyValuePairsAsString();
-        return originalQueryString + additionalKvps;
+        return addAdditionalKeyValuePairsAsString( originalQueryString );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Map<String, String[]> getParameterMap() {
         Map<String, String[]> parameters = new TreeMap<String, String[]>();
@@ -65,20 +67,41 @@ public class KvpRequestWrapper extends HttpServletRequestWrapper {
         return Collections.enumeration( getParameterMap().keySet() );
     }
 
-    private String retrieveAdditionalKeyValuePairsAsString() {
-        StringBuilder additionalKvp = new StringBuilder();
+    private String addAdditionalKeyValuePairsAsString( String originalQueryString ) {
+        StringBuilder queryString = new StringBuilder();
+        boolean appendAmp = appendBeginning( originalQueryString, queryString );
         for ( Map.Entry<String, String[]> entry : additionalParameters.entrySet() ) {
             String key = entry.getKey();
-            String value = entry.getValue()[0];
-            additionalKvp.append( "&" ).append( key ).append( "=" ).append( value );
+            String value = commaSeparatedValue( entry );
+            if ( appendAmp )
+                queryString.append( "&" );
+            queryString.append( key ).append( "=" ).append( value );
+            appendAmp = true;
         }
-        return fixParametersIfOriginalQueryStringIsEmpty( additionalKvp.toString() );
+        return queryString.toString();
     }
 
-    private String fixParametersIfOriginalQueryStringIsEmpty( String kvps ) {
-        if ( super.getQueryString() == null || super.getQueryString() == "" )
-            return "?" + kvps.substring( 1 );
-        return kvps;
+    private boolean appendBeginning( String originalQueryString, StringBuilder queryString ) {
+        if ( originalQueryString == null || originalQueryString == "" ) {
+            queryString.append( '?' );
+            return false;
+        } else {
+            queryString.append( originalQueryString );
+            return true;
+        }
+    }
+
+    private String commaSeparatedValue( Map.Entry<String, String[]> entry ) {
+        StringBuilder valuesAsString = new StringBuilder();
+        String[] values = entry.getValue();
+        boolean appendComma = false;
+        for ( String value : values ) {
+            if ( appendComma )
+                valuesAsString.append( ',' );
+            valuesAsString.append( value );
+            appendComma = true;
+        }
+        return valuesAsString.toString();
     }
 
 }
