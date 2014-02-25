@@ -1,5 +1,20 @@
 package org.deegree.securityproxy.wcs.auhentication.repository;
 
+import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.wcs.authentication.WcsPermission;
@@ -16,14 +31,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.*;
-
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-
 /**
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -31,8 +38,7 @@ import static org.junit.Assert.assertThat;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(
-      locations = { "classpath*:org/deegree/securityproxy/wcs/authentication/repository/UserDaoTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/wcs/authentication/repository/UserDaoTestContext.xml" })
 public class WcsUserDaoImplTest {
 
     private EmbeddedDatabase db;
@@ -184,6 +190,7 @@ public class WcsUserDaoImplTest {
         }
         assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
     }
+
     @Test
     public void testRetrieveUserByIdWithoutAdditionalRequestParameters() {
         WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
@@ -236,6 +243,13 @@ public class WcsUserDaoImplTest {
         assertThat( secondAdditionalKeyValuePairs.get( "requestParam2" ), is( new String[] { "addParam2" } ) );
     }
 
+    @Test
+    public void testRetrieveUserByIdShouldHabeCorrectAccessToken() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
+
+        assertThat( wcsUser.getAccessToken(), is( "VALID_HEADER_WITH_REQUEST_PARAMS" ) );
+    }
+
     /* retrieveUserByName */
 
     @Test
@@ -243,6 +257,12 @@ public class WcsUserDaoImplTest {
         UserDetails details = source.retrieveUserByName( "VALID_USER_MULTIPLE_VERSIONS" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 3 ) );
+    }
+
+    @Test
+    public void testRetrieveUserByNameShouldHabeCorrectAccessToken() {
+        WcsUser wcsUser = (WcsUser) source.retrieveUserByName( "VALID_USER_GETCAPABILITIES" );
+        assertThat( wcsUser.getAccessToken(), is( "HEADER_GC" ) );
     }
 
     @Test
@@ -274,7 +294,7 @@ public class WcsUserDaoImplTest {
         WcsUser wcsUser = (WcsUser) source.retrieveUserByName( null );
         assertThat( wcsUser, nullValue() );
     }
-    
+
     @After
     public void tearDown() {
         db.shutdown();

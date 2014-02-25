@@ -49,7 +49,7 @@ public class WcsUserDaoImpl implements UserDao {
     private final String userNameColumn;
 
     private final String passwordColumn;
-
+    
     private final String serviceTypeColumn;
 
     private final String serviceVersionColumn;
@@ -121,11 +121,11 @@ public class WcsUserDaoImpl implements UserDao {
         return retrieveUser( userName, jdbcString );
     }
 
-    private WcsUser retrieveUser( String headerValue, String jdbcString ) {
+    private WcsUser retrieveUser( String selectByValue, String jdbcString ) {
         JdbcTemplate template = new JdbcTemplate( source );
         try {
             Date now = new Date();
-            List<Map<String, Object>> rows = template.queryForList( jdbcString, headerValue, now );
+            List<Map<String, Object>> rows = template.queryForList( jdbcString, selectByValue, now );
             return createUserForRows( rows );
         } catch ( DataAccessException e ) {
             return null;
@@ -149,6 +149,7 @@ public class WcsUserDaoImpl implements UserDao {
         builder.append( "SELECT " );
         builder.append( userNameColumn ).append( "," );
         builder.append( passwordColumn ).append( "," );
+        builder.append( headerColumn ).append( "," );
         builder.append( serviceTypeColumn ).append( "," );
         builder.append( serviceNameColumn ).append( "," );
         builder.append( internalServiceUrlColumn ).append( "," );
@@ -178,18 +179,20 @@ public class WcsUserDaoImpl implements UserDao {
     private WcsUser createUserForRows( List<Map<String, Object>> rows ) {
         String username = null;
         String password = null;
+        String accessToken = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
         List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
+                accessToken = getAsString( row, headerColumn );
                 addAuthorities( authorities, row );
                 createGeometryFilter( geometrieFilter, row );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, geometrieFilter );
+            return new WcsUser( username, password, accessToken, authorities, geometrieFilter );
         return null;
     }
 
