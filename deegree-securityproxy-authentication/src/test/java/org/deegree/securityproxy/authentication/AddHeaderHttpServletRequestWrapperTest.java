@@ -1,14 +1,17 @@
 package org.deegree.securityproxy.authentication;
 
+import static java.util.Collections.list;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 /**
@@ -31,7 +34,7 @@ public class AddHeaderHttpServletRequestWrapperTest {
 
         requestWrapper.addHeader( HEADER_NAME, HEADER_TOKEN );
 
-        assertThat( requestWrapper.getHeader( HEADER_NAME ), CoreMatchers.is( HEADER_TOKEN ) );
+        assertThat( requestWrapper.getHeader( HEADER_NAME ), is( HEADER_TOKEN ) );
     }
 
     @SuppressWarnings("unchecked")
@@ -41,7 +44,8 @@ public class AddHeaderHttpServletRequestWrapperTest {
 
         requestWrapper.addHeader( HEADER_NAME, HEADER_TOKEN );
 
-        assertThat( Collections.<String> list( requestWrapper.getHeaderNames() ), hasItem( HEADER_TOKEN ) );
+        List<String> list = list( requestWrapper.getHeaderNames() );
+        assertThat( list, hasItem( HEADER_TOKEN ) );
     }
 
     private HttpServletRequest mockRequest() {
