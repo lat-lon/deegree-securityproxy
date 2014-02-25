@@ -1,20 +1,28 @@
 package org.deegree.securityproxy.filter;
 
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.junit.Test;
 
 /**
  * Tests for {@link KvpRequestWrapper}.
- *
+ * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -23,12 +31,15 @@ public class KvpRequestWrapperTest {
 
     private final HttpServletRequest request = mockHttpServletRequest();
 
+    private final HttpServletRequest requestWithoutParams = mockHttpServletRequestWithoutParams();
+
     private final Map<String, String[]> additionalKeyValuePair = createAdditionalKeyValuePair();
 
     private final Map<String, String[]> additionalKeyValuePairsWithThreeEntries = createAdditionalKeyValuePairsWithThreeEntries();
 
     @Test
-    public void testGetQueryString() throws Exception {
+    public void testGetQueryString()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         String queryString = kvpRequestWrapper.getQueryString();
 
@@ -40,7 +51,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetQueryStringWithThreeAdditionalEntries() throws Exception {
+    public void testGetQueryStringWithThreeAdditionalEntries()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePairsWithThreeEntries );
         String queryString = kvpRequestWrapper.getQueryString();
 
@@ -56,7 +68,18 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterMap() throws Exception {
+    public void testGetQueryStringWithoutOriginalParamsAndThreeAdditional()
+                            throws Exception {
+        KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( requestWithoutParams, additionalKeyValuePairsWithThreeEntries );
+        String queryString = kvpRequestWrapper.getQueryString();
+
+        String exptectedQueryString = "?additionalKey1=additionalValue3&additionalKey3=additionalValue1&additionalKey3=additionalValue3";
+        assertThat( queryString, is( exptectedQueryString ) );
+    }
+
+    @Test
+    public void testGetParameterMap()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         Map<String, String[]> parameterMap = kvpRequestWrapper.getParameterMap();
 
@@ -76,7 +99,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterMapWithThreeAdditionalEntries() throws Exception {
+    public void testGetParameterMapWithThreeAdditionalEntries()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePairsWithThreeEntries );
         Map<String, String[]> parameterMap = kvpRequestWrapper.getParameterMap();
 
@@ -106,7 +130,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameter() throws Exception {
+    public void testGetParameter()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         String existingParameter = kvpRequestWrapper.getParameter( "existingKey" );
         String additionalParameter = kvpRequestWrapper.getParameter( "additionalKey" );
@@ -116,7 +141,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterWithNotExistingParameterShouldReturnNull() throws Exception {
+    public void testGetParameterWithNotExistingParameterShouldReturnNull()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         String notExistingParameter = kvpRequestWrapper.getParameter( "notExisting" );
 
@@ -124,7 +150,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterValues() throws Exception {
+    public void testGetParameterValues()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         String[] existingParameterValues = kvpRequestWrapper.getParameterValues( "existingKey" );
         String[] additionalParameterValues = kvpRequestWrapper.getParameterValues( "additionalKey" );
@@ -137,7 +164,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterValuesWithNotExistingParameterShouldReturnNull() throws Exception {
+    public void testGetParameterValuesWithNotExistingParameterShouldReturnNull()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         String[] notExistingParameterValues = kvpRequestWrapper.getParameterValues( "netExisting" );
 
@@ -145,7 +173,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterNames() throws Exception {
+    public void testGetParameterNames()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePair );
         Enumeration<String> parameterNames = kvpRequestWrapper.getParameterNames();
         List<String> parameterNamesList = new ArrayList<String>();
@@ -159,7 +188,8 @@ public class KvpRequestWrapperTest {
     }
 
     @Test
-    public void testGetParameterNamesWithThreeAdditionalEntries() throws Exception {
+    public void testGetParameterNamesWithThreeAdditionalEntries()
+                            throws Exception {
         KvpRequestWrapper kvpRequestWrapper = new KvpRequestWrapper( request, additionalKeyValuePairsWithThreeEntries );
         Enumeration<String> parameterNames = kvpRequestWrapper.getParameterNames();
         List<String> parameterNamesList = new ArrayList<String>();
@@ -195,11 +225,18 @@ public class KvpRequestWrapperTest {
     }
 
     private HttpServletRequest mockHttpServletRequest() {
-        HttpServletRequest request = Mockito.mock( HttpServletRequest.class );
+        HttpServletRequest request = mock( HttpServletRequest.class );
         doReturn( "?existingKey=existingValue" ).when( request ).getQueryString();
         Map<String, String[]> existingParameterMap = createExistingParameterMap();
         doReturn( existingParameterMap ).when( request ).getParameterMap();
         return request;
     }
 
+    private HttpServletRequest mockHttpServletRequestWithoutParams() {
+        HttpServletRequest request = mock( HttpServletRequest.class );
+        doReturn( null ).when( request ).getQueryString();
+        Map<String, String[]> existingParameterMap = emptyMap();
+        doReturn( existingParameterMap ).when( request ).getParameterMap();
+        return request;
+    }
 }
