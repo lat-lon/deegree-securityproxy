@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties"/>
-  <context:annotation-config/>
-  <import resource="securityContext.xml"/>
-  <import resource="persistenceContext.xml"/>
-  <import resource="wcsContext.xml"/>
+  <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
+  <context:annotation-config />
+  <import resource="securityContext.xml" />
+  <import resource="persistenceContext.xml" />
+  <import resource="wcsContext.xml" />
 
   <bean id="serviceExceptionHandler" class="org.deegree.securityproxy.ServiceExceptionHandler">
-    <constructor-arg value="${exception_file_path}"/>
-    <constructor-arg value="${authentication_denied_status_code}"/>
-    <constructor-arg value="${authorization_denied_status_code}"/>
+    <constructor-arg value="${exception_file_path}" />
+    <constructor-arg value="${authentication_denied_status_code}" />
+    <constructor-arg value="${authorization_denied_status_code}" />
   </bean>
 
   <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
@@ -27,28 +25,42 @@
     </constructor-arg>
   </bean>
 
-  <bean name="authenticationProvider"
-        class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider"/>
+  <bean name="headerAuthenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
+  
+  <bean name="headerAuthenticationManager" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationManager">
+    <constructor-arg ref="headerAuthenticationProvider" />
+  </bean>
 
-  <bean id="headerFilter"
-        class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
-    <property name="principalRequestHeader" value="${access_token_header_field_name}"/>
-    <property name="authenticationManager" ref="authenticationManager"/>
-    <property name="exceptionIfHeaderMissing" value="false"/>
+  <bean id="headerAuthenticationFilter"
+    class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+    <property name="principalRequestHeader" value="${access_token_header_field_name}" />
+    <property name="authenticationManager" ref="headerAuthenticationManager" />
+    <property name="exceptionIfHeaderMissing" value="false" />
+    <property name="checkForPrincipalChanges" value="true" />
+  </bean>
+
+  <bean id="userService" class="org.deegree.securityproxy.authentication.UserService">
+    <constructor-arg ref="headerTokenDataSource" />
   </bean>
 
   <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter">
-    <constructor-arg ref="serviceManagers"/>
-    <constructor-arg ref="log4JReportLogger"/>
-    <constructor-arg ref="log4JReportLogger"/>
+    <constructor-arg ref="serviceManagers" />
+    <constructor-arg ref="log4JReportLogger" />
+    <constructor-arg ref="log4JReportLogger" />
   </bean>
 
   <bean id="serviceManagers" class="java.util.ArrayList">
     <constructor-arg>
       <list>
-        <ref bean="wcsServiceManager"/>
+        <ref bean="wcsServiceManager" />
       </list>
     </constructor-arg>
+  </bean>
+
+  <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.AddHeaderBasicAuthenticationFilter">
+    <constructor-arg value="${access_token_header_field_name}"/>
+    <property name="authenticationManager" ref="basicAuthenticationManager" />
+    <property name="authenticationEntryPoint" ref="serviceExceptionHandler" />
   </bean>
 
 </beans>
