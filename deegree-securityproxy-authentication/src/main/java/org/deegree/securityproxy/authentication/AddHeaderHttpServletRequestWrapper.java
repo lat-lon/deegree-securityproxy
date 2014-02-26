@@ -80,7 +80,7 @@ public class AddHeaderHttpServletRequestWrapper extends HttpServletRequestWrappe
     @Override
     public Enumeration getHeaderNames() {
         List<String> names = initHeaderNamesFrom();
-        names.addAll( additionalHeader.values() );
+        names.addAll( additionalHeader.keySet() );
         return Collections.enumeration( names );
     }
 
@@ -93,4 +93,25 @@ public class AddHeaderHttpServletRequestWrapper extends HttpServletRequestWrappe
         return names;
     }
 
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Enumeration getHeaders( String name ) {
+        List<String> values = new ArrayList<String>();
+        addOriginalHeader( name, values );
+        addAdditionalHeader( name, values );
+        return Collections.enumeration( values );
+    }
+
+    private void addAdditionalHeader( String name, List<String> values ) {
+        String additionalHeaderValue = additionalHeader.get( name );
+        if ( additionalHeaderValue != null )
+            values.add( additionalHeaderValue );
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void addOriginalHeader( String name, List<String> values ) {
+        Enumeration headers = super.getHeaders( name );
+        if ( headers != null )
+            values.addAll( Collections.list( headers ) );
+    }
 }

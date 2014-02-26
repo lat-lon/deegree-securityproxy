@@ -22,7 +22,7 @@ public class AddHeaderHttpServletRequestWrapperTest {
 
     private static final String HEADER_NAME = "headerName";
 
-    private static final String HEADER_TOKEN = "headerToken";
+    private static final String HEADER_VALUE = "headerToken";
 
     private final HttpServletRequest request = mockRequest();
 
@@ -30,9 +30,9 @@ public class AddHeaderHttpServletRequestWrapperTest {
     public void testAddHeaderShouldReturnHeader() {
         AddHeaderHttpServletRequestWrapper requestWrapper = new AddHeaderHttpServletRequestWrapper( request );
 
-        requestWrapper.addHeader( HEADER_NAME, HEADER_TOKEN );
+        requestWrapper.addHeader( HEADER_NAME, HEADER_VALUE );
 
-        assertThat( requestWrapper.getHeader( HEADER_NAME ), is( HEADER_TOKEN ) );
+        assertThat( requestWrapper.getHeader( HEADER_NAME ), is( HEADER_VALUE ) );
     }
 
     @SuppressWarnings("unchecked")
@@ -40,10 +40,21 @@ public class AddHeaderHttpServletRequestWrapperTest {
     public void testAddHeaderShouldReturnHeaderName() {
         AddHeaderHttpServletRequestWrapper requestWrapper = new AddHeaderHttpServletRequestWrapper( request );
 
-        requestWrapper.addHeader( HEADER_NAME, HEADER_TOKEN );
+        requestWrapper.addHeader( HEADER_NAME, HEADER_VALUE );
 
         List<String> list = list( requestWrapper.getHeaderNames() );
-        assertThat( list, hasItem( HEADER_TOKEN ) );
+        assertThat( list, hasItem( HEADER_NAME ) );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testAddHeaderShouldReturnHeaderValues() {
+        AddHeaderHttpServletRequestWrapper requestWrapper = new AddHeaderHttpServletRequestWrapper( request );
+
+        requestWrapper.addHeader( HEADER_NAME, HEADER_VALUE );
+
+        List<String> list = list( requestWrapper.getHeaders( HEADER_NAME ) );
+        assertThat( list, hasItem( HEADER_VALUE ) );
     }
 
     private HttpServletRequest mockRequest() {
