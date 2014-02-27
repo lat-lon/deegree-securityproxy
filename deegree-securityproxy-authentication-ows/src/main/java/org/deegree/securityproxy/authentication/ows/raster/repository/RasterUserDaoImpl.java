@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.raster.WcsUser;
+import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -31,7 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsUserDaoImpl implements UserDao {
+public class RasterUserDaoImpl implements UserDao {
 
     private static final String SERVICE_NAME = "WCS";
 
@@ -68,7 +68,7 @@ public class WcsUserDaoImpl implements UserDao {
 
     private List<String> additionalRequestParameters;
 
-    public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
+    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
                            String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                            String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
                            String layerNameColumn, String subscriptionStart, String subscriptionEnd,
@@ -78,7 +78,7 @@ public class WcsUserDaoImpl implements UserDao {
               subscriptionStart, subscriptionEnd, geometryLimitColumn, null );
     }
 
-    public WcsUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
+    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
                            String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                            String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
                            String layerNameColumn, String subscriptionStart, String subscriptionEnd,
@@ -104,7 +104,7 @@ public class WcsUserDaoImpl implements UserDao {
     }
 
     @Override
-    public WcsUser retrieveUserById( String headerValue ) {
+    public RasterUser retrieveUserById( String headerValue ) {
         if ( !checkParameterNotNullOrEmpty( headerValue ) )
             return null;
         String jdbcString = generateSelectUserByHeaderSqlQuery();
@@ -112,14 +112,14 @@ public class WcsUserDaoImpl implements UserDao {
     }
 
     @Override
-    public WcsUser retrieveUserByName( String userName ) {
+    public RasterUser retrieveUserByName( String userName ) {
         if ( !checkParameterNotNullOrEmpty( userName ) )
             return null;
         String jdbcString = generateSelectByUserNameSqlQuery();
         return retrieveUser( userName, jdbcString );
     }
 
-    private WcsUser retrieveUser( String selectByValue, String jdbcString ) {
+    private RasterUser retrieveUser( String selectByValue, String jdbcString ) {
         JdbcTemplate template = new JdbcTemplate( source );
         try {
             Date now = new Date();
@@ -174,7 +174,7 @@ public class WcsUserDaoImpl implements UserDao {
         builder.append( tableName );
     }
 
-    private WcsUser createUserForRows( List<Map<String, Object>> rows ) {
+    private RasterUser createUserForRows( List<Map<String, Object>> rows ) {
         String username = null;
         String password = null;
         String accessToken = null;
@@ -190,7 +190,7 @@ public class WcsUserDaoImpl implements UserDao {
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, accessToken, authorities, geometrieFilter );
+            return new RasterUser( username, password, accessToken, authorities, geometrieFilter );
         return null;
     }
 

@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.ows.raster.repository.WcsUserDaoImpl">
+  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.ows.raster.repository.RasterUserDaoImpl">
     <constructor-arg value="ows_system_admin" />
     <constructor-arg value="user_access_info" />
     <constructor-arg value="access_token" />

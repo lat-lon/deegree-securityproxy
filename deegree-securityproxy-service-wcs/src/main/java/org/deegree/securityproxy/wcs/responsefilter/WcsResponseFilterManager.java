@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.WcsUser;
+import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
@@ -225,18 +225,18 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
                             throws IllegalArgumentException, ParseException {
-        WcsUser wcsUser = retrieveWcsUser( auth );
+        RasterUser wcsUser = retrieveWcsUser( auth );
         List<GeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
         String coverageName = retrieveCoverageName( wcsRequest );
         return geometryRetriever.retrieveGeometry( coverageName, geometryFilterInfos );
     }
 
-    private WcsUser retrieveWcsUser( Authentication auth ) {
+    private RasterUser retrieveWcsUser( Authentication auth ) {
         Object principal = auth.getPrincipal();
-        if ( !( principal instanceof WcsUser ) ) {
+        if ( !( principal instanceof RasterUser ) ) {
             throw new IllegalArgumentException( "Principal is not a WcsUser!" );
         }
-        return (WcsUser) principal;
+        return (RasterUser) principal;
     }
 
     private String retrieveCoverageName( WcsRequest wcsRequest ) {

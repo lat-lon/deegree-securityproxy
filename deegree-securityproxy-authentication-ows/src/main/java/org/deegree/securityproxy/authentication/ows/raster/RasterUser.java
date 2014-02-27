@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsUser extends OwsUserDetails {
+public class RasterUser extends OwsUserDetails {
 
     private static final long serialVersionUID = 1264359266739783359L;
 
@@ -42,7 +42,7 @@ public class WcsUser extends OwsUserDetails {
      * @param filters
      *            may be <code>null</code> or empty
      */
-    public WcsUser( String username, String password, String accessToken, List<RasterPermission> authorities,
+    public RasterUser( String username, String password, String accessToken, List<RasterPermission> authorities,
                     List<GeometryFilterInfo> filters ) {
         super( accessToken );
         this.username = username;
