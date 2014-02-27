@@ -82,7 +82,7 @@ public class KvpRequestWrapper extends HttpServletRequestWrapper {
     }
 
     private boolean appendBeginning( String originalQueryString, StringBuilder queryString ) {
-        if ( originalQueryString == null || originalQueryString == "" ) {
+        if ( originalQueryString == null || originalQueryString.isEmpty() ) {
             queryString.append( '?' );
             return false;
         } else {
