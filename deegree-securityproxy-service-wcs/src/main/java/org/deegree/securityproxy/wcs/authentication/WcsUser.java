@@ -1,12 +1,11 @@
 package org.deegree.securityproxy.wcs.authentication;
 
 import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
+import org.deegree.securityproxy.authentication.OwsUserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsUser implements UserDetails {
+public class WcsUser extends OwsUserDetails {
 
     private static final long serialVersionUID = 1264359266739783359L;
 
@@ -43,8 +42,9 @@ public class WcsUser implements UserDetails {
      * @param filters
      *            may be <code>null</code> or empty
      */
-    public WcsUser( String username, String password, List<WcsPermission> authorities,
+    public WcsUser( String username, String password, String accessToken, List<WcsPermission> authorities,
                     List<WcsGeometryFilterInfo> filters ) {
+        super( accessToken );
         this.username = username;
         this.password = password;
 

@@ -2,16 +2,23 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-  <http entry-point-ref="serviceExceptionHandler"  use-expressions="true" create-session="stateless">
-    <access-denied-handler ref="serviceExceptionHandler"/>
+  <http entry-point-ref="serviceExceptionHandler" use-expressions="true" create-session="stateless">
+    <access-denied-handler ref="serviceExceptionHandler" />
     <intercept-url pattern="/**" access="isAuthenticated() or isAnonymous()" />
-    <custom-filter position="PRE_AUTH_FILTER" ref="headerFilter" />
+    <custom-filter before="PRE_AUTH_FILTER" ref="basicAuthenticationFilter" />
+    <custom-filter position="PRE_AUTH_FILTER" ref="headerAuthenticationFilter" />
     <custom-filter position="LAST" ref="securityFilter" />
   </http>
 
-  <authentication-manager alias="authenticationManager">
-    <authentication-provider ref="authenticationProvider" />
+<!--
+  Replaced by bean 'headerAuthenticationManager' configured in application.xml    
+  <authentication-manager alias="headerAuthenticationManager">
+    <authentication-provider ref="headerAuthenticationProvider" />
+  </authentication-manager>
+ -->
+ 
+  <authentication-manager alias="basicAuthenticationManager">
+    <authentication-provider user-service-ref="userService" />
   </authentication-manager>
 
 </beans:beans>
-

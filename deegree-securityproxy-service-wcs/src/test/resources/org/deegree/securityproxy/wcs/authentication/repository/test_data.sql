@@ -28,10 +28,19 @@ INSERT INTO usertable(access_token, user_name, password, serviceName, layer_serv
 
 INSERT INTO usertable(access_token, user_name, password, serviceVersion, serviceName, operationType, layer_service_type_name, subscription_start, subscription_end, internalServiceUrl )
   VALUES ('VALID_HEADER_INTERNAL_SERVICE_URL','USER','PASSWORD', '<= 1.0.0', 'serviceName', 'GetCapabilities', 'WCS', '2013-05-05', '2113-05-05', 'serviceUrl');
-  
+
 INSERT INTO usertable(access_token, user_name, password, serviceVersion, serviceName, operationType, layer_service_type_name, subscription_start, subscription_end, internalServiceUrl, requestParam1, requestParam2 )
   VALUES ('VALID_HEADER_WITH_REQUEST_PARAMS','USER','PASSWORD', '<= 1.0.0', 'serviceName', 'GetCapabilities', 'WCS', '2013-05-05', '2113-05-05', 'serviceUrl', 'addParam1', 'addParam2');
 INSERT INTO usertable(access_token, user_name, password, serviceVersion, serviceName, operationType, layer_service_type_name, subscription_start, subscription_end, internalServiceUrl, requestParam1, requestParam2 )
   VALUES ('VALID_HEADER_WITH_REQUEST_PARAMS','USER','PASSWORD', '<= 1.0.0', 'serviceName', 'GetCapabilities', 'WCS', '2013-05-05', '2113-05-05', 'serviceUrl', 'addParam1', 'addParam2');
 INSERT INTO usertable(access_token, user_name, password, serviceVersion, serviceName, operationType, layer_service_type_name, subscription_start, subscription_end, internalServiceUrl, requestParam1, requestParam2 )
   VALUES ('VALID_HEADER_WITH_ONE_EMPTY_REQUEST_PARAM','USER','PASSWORD', '<= 1.0.0', 'serviceName', 'GetCapabilities', 'WCS', '2013-05-05', '2113-05-05', 'serviceUrl', 'addParam1', '');
+    
+INSERT INTO usertable(access_token, user_name, password, serviceVersion, serviceName, operationType, layer_service_type_name, subscription_start, subscription_end ) 
+ VALUES ('HEADER_GC','VALID_USER_GETCAPABILITIES','PASSWORD', '<= 1.0.0', 'serviceName', 'GetCapabilities', 'WCS', '2013-05-05', '2113-05-05');
+ INSERT INTO usertable(access_token, user_name, password, serviceVersion, layerName, serviceName,  operationType, layer_service_type_name, subscription_start, subscription_end ) 
+ VALUES ('HEADER_MV','VALID_USER_MULTIPLE_VERSIONS','PASSWORD', '<= 2.0.0', 'layerName', 'serviceName', 'GetCoverage', 'WCS', '2013-05-05', '2113-05-05');
+INSERT INTO usertable(access_token, user_name, password, layer_service_type_name, subscription_start, subscription_end ) 
+  VALUES ('HEADER_SO','VALID_USER_SUBSCRIPTION_OK','PASSWORD', 'WCS', '2013-05-05', '2113-05-05');
+INSERT INTO usertable(access_token, user_name, password, layer_service_type_name, subscription_start, subscription_end ) 
+  VALUES ('HEADER_SE','USEVALID_USER_SUBSCRIPTION_EXPIREDR','PASSWORD', 'WCS', '2013-05-05', '2013-09-05');

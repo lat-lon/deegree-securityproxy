@@ -49,7 +49,7 @@ public class WcsUserDaoImpl implements UserDao {
     private final String userNameColumn;
 
     private final String passwordColumn;
-
+    
     private final String serviceTypeColumn;
 
     private final String serviceVersionColumn;
@@ -107,28 +107,49 @@ public class WcsUserDaoImpl implements UserDao {
 
     @Override
     public WcsUser retrieveUserById( String headerValue ) {
-        if ( !checkParameter( headerValue ) )
+        if ( !checkParameterNotNullOrEmpty( headerValue ) )
             return null;
+        String jdbcString = generateSelectUserByHeaderSqlQuery();
+        return retrieveUser( headerValue, jdbcString );
+    }
+
+    @Override
+    public WcsUser retrieveUserByName( String userName ) {
+        if ( !checkParameterNotNullOrEmpty( userName ) )
+            return null;
+        String jdbcString = generateSelectByUserNameSqlQuery();
+        return retrieveUser( userName, jdbcString );
+    }
+
+    private WcsUser retrieveUser( String selectByValue, String jdbcString ) {
         JdbcTemplate template = new JdbcTemplate( source );
-        String jdbcString = generateSqlQuery();
         try {
             Date now = new Date();
-            List<Map<String, Object>> rows = template.queryForList( jdbcString, headerValue, now );
+            List<Map<String, Object>> rows = template.queryForList( jdbcString, selectByValue, now );
             return createUserForRows( rows );
         } catch ( DataAccessException e ) {
             return null;
         }
     }
 
-    private boolean checkParameter( String headerValue ) {
+    private boolean checkParameterNotNullOrEmpty( String headerValue ) {
         return !( headerValue == null || "".equals( headerValue ) );
     }
 
-    private String generateSqlQuery() {
+    private String generateSelectUserByHeaderSqlQuery() {
+        return generateSqlQuery( headerColumn );
+    }
+
+    private String generateSelectByUserNameSqlQuery() {
+        return generateSqlQuery( userNameColumn );
+    }
+
+    private String generateSqlQuery( String whereClauseColumn ) {
         StringBuilder builder = new StringBuilder();
         builder.append( "SELECT " );
         builder.append( userNameColumn ).append( "," );
         builder.append( passwordColumn ).append( "," );
+        builder.append( headerColumn ).append( "," );
         builder.append( serviceTypeColumn ).append( "," );
         builder.append( serviceNameColumn ).append( "," );
         builder.append( internalServiceUrlColumn ).append( "," );
@@ -142,7 +163,7 @@ public class WcsUserDaoImpl implements UserDao {
         }
         appendFrom( builder );
         builder.append( " WHERE " );
-        builder.append( headerColumn ).append( " = ? AND ? BETWEEN " );
+        builder.append( whereClauseColumn ).append( " = ? AND ? BETWEEN " );
         builder.append( subscriptionStart ).append( " AND " );
         builder.append( subscriptionEnd );
         return builder.toString();
@@ -158,18 +179,20 @@ public class WcsUserDaoImpl implements UserDao {
     private WcsUser createUserForRows( List<Map<String, Object>> rows ) {
         String username = null;
         String password = null;
+        String accessToken = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
         List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
+                accessToken = getAsString( row, headerColumn );
                 addAuthorities( authorities, row );
                 createGeometryFilter( geometrieFilter, row );
             }
         }
         if ( username != null && password != null )
-            return new WcsUser( username, password, authorities, geometrieFilter );
+            return new WcsUser( username, password, accessToken, authorities, geometrieFilter );
         return null;
     }
 

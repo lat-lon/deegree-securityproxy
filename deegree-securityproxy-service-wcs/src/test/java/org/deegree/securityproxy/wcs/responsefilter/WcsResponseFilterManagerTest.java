@@ -483,7 +483,8 @@ public class WcsResponseFilterManagerTest {
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
         filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
-        WcsUser wcsUser = new WcsUser( "user", "password", Collections.<WcsPermission> emptyList(), filters );
+        WcsUser wcsUser = new WcsUser( "user", "password", "accessToken", Collections.<WcsPermission> emptyList(),
+                                       filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
     }
