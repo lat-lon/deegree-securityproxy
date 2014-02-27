@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -156,8 +158,11 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     }
 
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
-        return wcsRequest.getServiceVersion() != null
-               && wcsRequest.getServiceVersion().equals( wcsPermission.getServiceVersion() );
+        OwsServiceVersion requestedServiceVersion = wcsRequest.getServiceVersion();
+        if(requestedServiceVersion == null)
+            return false;
+        LimitedOwsServiceVersion serviceVersionLimit = wcsPermission.getServiceVersion();
+        return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
     private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {

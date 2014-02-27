@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter;
 
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_110;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
 import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.DEFAULT_BODY;
 import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
 import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;

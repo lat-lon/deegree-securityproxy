@@ -1,6 +1,5 @@
 package org.deegree.securityproxy.authentication.ows.repository;
 
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -16,6 +15,8 @@ import java.util.Map;
 import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.junit.After;
 import org.junit.Before;
@@ -43,6 +44,11 @@ public class WcsUserDaoImplTest {
 
     private static final String GETCOVERAGE = "GetCoverage";
 
+    private static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( "1.0.0" );
+
+    private static final LimitedOwsServiceVersion LESSTHAN_VERSION_100 = new LimitedOwsServiceVersion( "<=",
+                                                                                                       VERSION_100 );
+
     private EmbeddedDatabase db;
 
     @Autowired
@@ -67,7 +73,7 @@ public class WcsUserDaoImplTest {
         assertThat( authorities.size(), is( 1 ) );
         WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( GETCAPABILITIES ) );
-        assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
+        assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
         assertThat( firstAuthority.getCoverageName(), is( nullValue() ) );
     }
@@ -79,7 +85,7 @@ public class WcsUserDaoImplTest {
         assertThat( authorities.size(), is( 1 ) );
         WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( GETCOVERAGE ) );
-        assertThat( firstAuthority.getServiceVersion(), is( VERSION_100 ) );
+        assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
         assertThat( firstAuthority.getCoverageName(), is( "layerName" ) );
     }
@@ -95,7 +101,7 @@ public class WcsUserDaoImplTest {
     public void testRetrieveUserByIdValidHeaderShouldReturnUserDetailWithOnePermissionsButMultipleVersions() {
         UserDetails details = source.retrieveUserById( "VALID_HEADER_MULTIPLE_VERSIONS" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 3 ) );
+        assertThat( authorities.size(), is( 1 ) );
     }
 
     @Test
@@ -258,7 +264,7 @@ public class WcsUserDaoImplTest {
     public void testRetrieveUserByNameValidNameShouldReturnUserDetailWithPermissions() {
         UserDetails details = source.retrieveUserByName( "VALID_USER_MULTIPLE_VERSIONS" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
-        assertThat( authorities.size(), is( 3 ) );
+        assertThat( authorities.size(), is( 1 ) );
     }
 
     @Test

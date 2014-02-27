@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.request;
 
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;

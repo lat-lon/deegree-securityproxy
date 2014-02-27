@@ -40,7 +40,7 @@ import static java.util.Collections.unmodifiableMap;
 import java.util.Collections;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -58,7 +58,7 @@ public class WcsPermission implements GrantedAuthority {
 
     private final String operationType;
 
-    private final WcsServiceVersion serviceVersion;
+    private final LimitedOwsServiceVersion serviceVersion;
 
     private final String coverageName;
 
@@ -68,7 +68,7 @@ public class WcsPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public WcsPermission( String operationType, WcsServiceVersion serviceVersion, String coverageName,
+    public WcsPermission( String operationType, LimitedOwsServiceVersion serviceVersion, String coverageName,
                           String serviceName, String internalServiceUrl, Map<String, String[]> additionalKeyValuePairs ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
@@ -99,7 +99,7 @@ public class WcsPermission implements GrantedAuthority {
     /**
      * @return the serviceVersion
      */
-    public WcsServiceVersion getServiceVersion() {
+    public LimitedOwsServiceVersion getServiceVersion() {
         return serviceVersion;
     }
 

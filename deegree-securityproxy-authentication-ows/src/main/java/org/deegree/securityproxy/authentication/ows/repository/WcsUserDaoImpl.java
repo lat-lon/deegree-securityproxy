@@ -1,7 +1,6 @@
 package org.deegree.securityproxy.authentication.ows.repository;
 
 import static java.util.Arrays.asList;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.parseVersions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +15,7 @@ import javax.sql.DataSource;
 import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
-import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -197,15 +196,13 @@ public class WcsUserDaoImpl implements UserDao {
 
     private void addAuthorities( Collection<WcsPermission> authorities, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
-        List<WcsServiceVersion> serviceVersions = getServiceVersions( row );
+        LimitedOwsServiceVersion serviceVersion = parseServiceVersion( row );
         String operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
-        for ( WcsServiceVersion serviceVersion : serviceVersions ) {
-            authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName,
-                                                internalServiceUrl, userRequestParameters ) );
-        }
+        authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl,
+                                            userRequestParameters ) );
     }
 
     private Map<String, String[]> retrieveAdditionalRequestParams( Map<String, Object> row ) {
@@ -236,9 +233,11 @@ public class WcsUserDaoImpl implements UserDao {
         return getAsString( row, operationTypeColumn );
     }
 
-    private List<WcsServiceVersion> getServiceVersions( Map<String, Object> row ) {
-        String serviceVersion = getAsString( row, serviceVersionColumn );
-        return parseVersions( serviceVersion );
+    private LimitedOwsServiceVersion parseServiceVersion( Map<String, Object> row ) {
+        String asString = getAsString( row, serviceVersionColumn );
+        if ( asString != null && !asString.isEmpty() )
+            return new LimitedOwsServiceVersion( asString );
+        return null;
     }
 
     private String getAsString( Map<String, Object> row, String columnName ) {

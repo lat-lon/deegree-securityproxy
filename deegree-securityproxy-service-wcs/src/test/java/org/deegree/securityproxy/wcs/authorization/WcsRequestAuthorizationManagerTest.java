@@ -35,12 +35,12 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.authorization;
 
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_200;
 import static org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager.AUTHORIZED;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.DESCRIBECOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_100;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_200;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +59,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
-import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
@@ -75,7 +76,7 @@ public class WcsRequestAuthorizationManagerTest {
 
     private static final boolean NOT_AUTHORIZED = false;
 
-    private static final WcsServiceVersion VERSION = VERSION_100;
+    private static final LimitedOwsServiceVersion VERSION_LESS_EQUAL_100 = new LimitedOwsServiceVersion( "<= 1.0.0" );
 
     private static final String OPERATION_TYPE = GETCOVERAGE;
 
@@ -188,11 +189,11 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockDefaultRequest() {
-        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION );
+        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockGetCapabilitiesRequest() {
-        return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION );
+        return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
@@ -204,19 +205,19 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockRequestWithUnsupportedOperationType() {
-        return mockRequest( COVERAGE_NAME, DESCRIBECOVERAGE, SERVICE_NAME, VERSION );
+        return mockRequest( COVERAGE_NAME, DESCRIBECOVERAGE, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockRequestWithUnsupportedLayerName() {
-        return mockRequest( "unknown", OPERATION_TYPE, SERVICE_NAME, VERSION );
+        return mockRequest( "unknown", OPERATION_TYPE, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockRequestWithUnsupportedServiceName() {
-        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, "unknown", VERSION );
+        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, "unknown", VERSION_100 );
     }
 
     private WcsRequest mockRequest( String layerName, String operationType, String serviceName,
-                                    WcsServiceVersion version ) {
+                                    OwsServiceVersion version ) {
         WcsRequest mock = mock( WcsRequest.class );
         when( mock.getCoverageNames() ).thenReturn( Collections.singletonList( layerName ) );
         when( mock.getOperationType() ).thenReturn( operationType );
@@ -228,8 +229,8 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL,
-                                            ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
+                                            INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -237,10 +238,10 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION, COVERAGE_NAME, SERVICE_NAME, INTERNAL_SERVICE_URL,
-                                            ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION, null, SERVICE_NAME, INTERNAL_SERVICE_URL,
-                                            ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
+                                            INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+                                            INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }

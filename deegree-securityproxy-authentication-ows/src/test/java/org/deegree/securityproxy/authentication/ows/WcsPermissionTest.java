@@ -1,14 +1,13 @@
 package org.deegree.securityproxy.authentication.ows;
 
 import static java.util.Collections.emptyMap;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collections;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.junit.Test;
 
 /**
@@ -22,7 +21,7 @@ public class WcsPermissionTest {
 
     private static final String OPERATION_TYPE = "GetCoverage";
 
-    private static final WcsServiceVersion VERSION = VERSION_100;
+    private static final LimitedOwsServiceVersion VERSION = new LimitedOwsServiceVersion( "<= 1.2.0" );
 
     private static final String COVERAGE_NAME = "layerName";
 
