@@ -18,7 +18,6 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication</artifactId>
     </dependency>
-    <!-- TODO: remove this dependency! currently required because of WcsOperationType and WcsServiceVersion -->
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication-ows</artifactId>
