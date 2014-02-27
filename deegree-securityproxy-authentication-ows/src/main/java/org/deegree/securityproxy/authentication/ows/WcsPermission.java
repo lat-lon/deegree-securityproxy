@@ -35,18 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.authentication.ows;
 
-import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
-import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
-import org.springframework.security.core.GrantedAuthority;
+import static java.util.Collections.unmodifiableMap;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static java.util.Collections.unmodifiableMap;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * Encapsulates a permission to access a secured WCS.
- *
+ * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -57,7 +56,7 @@ public class WcsPermission implements GrantedAuthority {
 
     private static final long serialVersionUID = 5184855468635810194L;
 
-    private final WcsOperationType operationType;
+    private final String operationType;
 
     private final WcsServiceVersion serviceVersion;
 
@@ -69,7 +68,7 @@ public class WcsPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public WcsPermission( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
+    public WcsPermission( String operationType, WcsServiceVersion serviceVersion, String coverageName,
                           String serviceName, String internalServiceUrl, Map<String, String[]> additionalKeyValuePairs ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
@@ -80,7 +79,7 @@ public class WcsPermission implements GrantedAuthority {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]> emptyMap() );
     }
 
     @Override
@@ -93,7 +92,7 @@ public class WcsPermission implements GrantedAuthority {
     /**
      * @return the operationType
      */
-    public WcsOperationType getOperationType() {
+    public String getOperationType() {
         return operationType;
     }
 

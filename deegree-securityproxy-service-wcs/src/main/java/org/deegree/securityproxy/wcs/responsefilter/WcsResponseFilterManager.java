@@ -37,7 +37,7 @@ package org.deegree.securityproxy.wcs.responsefilter;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

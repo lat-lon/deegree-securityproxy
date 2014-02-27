@@ -16,7 +16,6 @@ import javax.sql.DataSource;
 import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
-import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
 import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class WcsUserDaoImpl implements UserDao {
     private final String userNameColumn;
 
     private final String passwordColumn;
-    
+
     private final String serviceTypeColumn;
 
     private final String serviceVersionColumn;
@@ -199,7 +198,7 @@ public class WcsUserDaoImpl implements UserDao {
     private void addAuthorities( Collection<WcsPermission> authorities, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
         List<WcsServiceVersion> serviceVersions = getServiceVersions( row );
-        WcsOperationType operationType = retrieveOperationType( row );
+        String operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
@@ -233,11 +232,8 @@ public class WcsUserDaoImpl implements UserDao {
         return SERVICE_NAME.equals( serviceType.toUpperCase() );
     }
 
-    private WcsOperationType retrieveOperationType( Map<String, Object> row ) {
-        String operationType = getAsString( row, operationTypeColumn );
-        if ( operationType != null )
-            return WcsOperationType.valueOf( operationType.toUpperCase() );
-        return null;
+    private String retrieveOperationType( Map<String, Object> row ) {
+        return getAsString( row, operationTypeColumn );
     }
 
     private List<WcsServiceVersion> getServiceVersions( Map<String, Object> row ) {

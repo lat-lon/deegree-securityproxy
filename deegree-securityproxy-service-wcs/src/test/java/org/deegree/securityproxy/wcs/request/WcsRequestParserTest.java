@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.request;
 
-import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -514,7 +514,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createWmsParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wms" } );
         return parameterMap;
     }
@@ -522,7 +522,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createValidDescribeCoverageParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { DESCRIBECOVERAGE.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { DESCRIBECOVERAGE } );
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME + "," + COVERAGE_NAME } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         return parameterMap;
@@ -531,7 +531,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createValidGetCapabilitiesParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         return parameterMap;
     }
@@ -539,7 +539,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createValidGetCoverageParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE } );
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         parameterMap.put( CRS_PARAM, new String[] { CRS_NAME } );
@@ -600,4 +600,5 @@ public class WcsRequestParserTest {
         }
         return servletRequest;
     }
+
 }

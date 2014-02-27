@@ -1,7 +1,5 @@
 package org.deegree.securityproxy.authentication.ows.repository;
 
-import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -40,6 +38,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/ows/repository/UserDaoTestContext.xml" })
 public class WcsUserDaoImplTest {
+
+    private static final String GETCAPABILITIES = "GetCapabilities";
+
+    private static final String GETCOVERAGE = "GetCoverage";
 
     private EmbeddedDatabase db;
 

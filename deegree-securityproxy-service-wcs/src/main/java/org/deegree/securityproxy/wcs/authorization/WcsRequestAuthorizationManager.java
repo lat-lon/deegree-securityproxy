@@ -1,5 +1,9 @@
 package org.deegree.securityproxy.wcs.authorization;
 
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -8,7 +12,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
-import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -136,21 +139,20 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     }
 
     private boolean isDescribeCoverageRequest( WcsRequest wcsRequest ) {
-        return WcsOperationType.DESCRIBECOVERAGE.equals( wcsRequest.getOperationType() );
+        return DESCRIBECOVERAGE.equals( wcsRequest.getOperationType() );
     }
 
     private boolean isGetCoverageRequest( WcsRequest wcsRequest ) {
-        return WcsOperationType.GETCOVERAGE.equals( wcsRequest.getOperationType() );
+        return GETCOVERAGE.equals( wcsRequest.getOperationType() );
     }
 
     private boolean isGetCapabilitiesRequest( WcsRequest wcsRequest ) {
-        return WcsOperationType.GETCAPABILITIES.equals( wcsRequest.getOperationType() );
-
+        return GETCAPABILITIES.equals( wcsRequest.getOperationType() );
     }
 
     private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
         return wcsRequest.getOperationType() != null
-               && wcsRequest.getOperationType().equals( wcsPermission.getOperationType() );
+               && wcsRequest.getOperationType().equalsIgnoreCase( wcsPermission.getOperationType() );
     }
 
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, WcsPermission wcsPermission ) {
