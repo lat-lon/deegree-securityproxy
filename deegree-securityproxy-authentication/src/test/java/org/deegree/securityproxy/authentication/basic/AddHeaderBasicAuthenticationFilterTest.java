@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.basic;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -13,6 +13,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authentication.AddHeaderHttpServletRequestWrapper;
+import org.deegree.securityproxy.authentication.OwsUserDetails;
+import org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 

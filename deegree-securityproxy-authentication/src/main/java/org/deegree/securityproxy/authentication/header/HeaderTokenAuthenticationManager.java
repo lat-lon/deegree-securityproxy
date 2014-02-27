@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.header;
 
 import java.util.Collections;
 

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.basic;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.repository.UserDao;

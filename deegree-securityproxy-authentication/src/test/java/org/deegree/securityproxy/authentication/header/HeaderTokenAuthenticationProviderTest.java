@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.header;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

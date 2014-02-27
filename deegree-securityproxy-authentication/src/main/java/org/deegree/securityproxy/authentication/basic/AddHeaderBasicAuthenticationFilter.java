@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.basic;
 
 import java.io.IOException;
 
@@ -44,6 +44,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.deegree.securityproxy.authentication.AddHeaderHttpServletRequestWrapper;
+import org.deegree.securityproxy.authentication.OwsUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 

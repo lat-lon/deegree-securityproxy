@@ -25,9 +25,9 @@
     </constructor-arg>
   </bean>
 
-  <bean name="headerAuthenticationProvider" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
+  <bean name="headerAuthenticationProvider" class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationProvider" />
   
-  <bean name="headerAuthenticationManager" class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationManager">
+  <bean name="headerAuthenticationManager" class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationManager">
     <constructor-arg ref="headerAuthenticationProvider" />
   </bean>
 
@@ -39,7 +39,7 @@
     <property name="checkForPrincipalChanges" value="true" />
   </bean>
 
-  <bean id="userService" class="org.deegree.securityproxy.authentication.UserService">
+  <bean id="userService" class="org.deegree.securityproxy.authentication.basic.UserService">
     <constructor-arg ref="headerTokenDataSource" />
   </bean>
 
@@ -57,7 +57,7 @@
     </constructor-arg>
   </bean>
 
-  <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.AddHeaderBasicAuthenticationFilter">
+  <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter">
     <constructor-arg value="${access_token_header_field_name}"/>
     <property name="authenticationManager" ref="basicAuthenticationManager" />
     <property name="authenticationEntryPoint" ref="serviceExceptionHandler" />

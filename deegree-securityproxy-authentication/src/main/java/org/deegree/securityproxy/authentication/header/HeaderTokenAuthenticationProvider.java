@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication;
+package org.deegree.securityproxy.authentication.header;
 
 import java.util.Collection;
 import java.util.Collections;
