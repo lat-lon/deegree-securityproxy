@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
@@ -143,7 +143,7 @@ public class WcsUserDaoImplTest {
     @Test
     public void testRetrieveUserByIdValidHeaderWithGeometryLimitShouldReturnEmptyCollection() {
         WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_NULL_GEOMETRY_LIMIT" );
-        List<WcsGeometryFilterInfo> emptyList = Collections.emptyList();
+        List<GeometryFilterInfo> emptyList = Collections.emptyList();
         assertThat( wcsUser.getWcsGeometryFilterInfos(), is( emptyList ) );
     }
 
@@ -154,9 +154,9 @@ public class WcsUserDaoImplTest {
         String expectedGeometryLimit = "SRID=4326;MULTIPOLYGON(((-89.739 20.864,-89.758 20.876,-89.765 20.894,-89.748 20.897,-89.73 20.91,-89.708 20.928,-89.704 20.948,-89.716 20.964,-89.729 20.99,-89.73 21.017,-89.712 21.021,-89.685 21.031,-89.667 21.025,-89.641 21.017,-89.62 21.019,-89.599 21.018,-89.575 20.995,-89.568 20.97,-89.562 20.934,-89.562 20.91,-89.577 20.89,-89.609 20.878,-89.636 20.877,-89.664 20.881,-89.683 20.904,-89.683 20.917,-89.664 20.941,-89.662 20.954,-89.674 20.965,-89.687 20.983,-89.705 20.989,-89.703 20.974,-89.696 20.961,-89.686 20.949,-89.683 20.935,-89.694 20.919,-89.705 20.901,-89.722 20.875,-89.727 20.869,-89.739 20.864),(-89.627 20.985,-89.603 20.962,-89.62 20.936,-89.634 20.943,-89.639 20.961,-89.649 20.975,-89.627 20.985)))";
 
         WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_GEOMETRY_LIMIT_ONE_RECORD" );
-        List<WcsGeometryFilterInfo> responseFilters = wcsUser.getWcsGeometryFilterInfos();
-        WcsGeometryFilterInfo responseFilter = responseFilters.get( 0 );
-        String coverageName = responseFilter.getCoverageName();
+        List<GeometryFilterInfo> responseFilters = wcsUser.getWcsGeometryFilterInfos();
+        GeometryFilterInfo responseFilter = responseFilters.get( 0 );
+        String coverageName = responseFilter.getLayerName();
         String geometryLimit = responseFilter.getGeometryString();
 
         assertThat( responseFilters.size(), is( expectedSize ) );
@@ -173,12 +173,12 @@ public class WcsUserDaoImplTest {
         String expectedSecondGeometryLimit = "POLYGON";
 
         WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_GEOMETRY_LIMIT_TWO_RECORDS" );
-        List<WcsGeometryFilterInfo> responseFilters = wcsUser.getWcsGeometryFilterInfos();
-        WcsGeometryFilterInfo firstResponseFilter = responseFilters.get( 0 );
-        WcsGeometryFilterInfo secondResponseFilter = responseFilters.get( 1 );
-        String firstCoverageName = firstResponseFilter.getCoverageName();
+        List<GeometryFilterInfo> responseFilters = wcsUser.getWcsGeometryFilterInfos();
+        GeometryFilterInfo firstResponseFilter = responseFilters.get( 0 );
+        GeometryFilterInfo secondResponseFilter = responseFilters.get( 1 );
+        String firstCoverageName = firstResponseFilter.getLayerName();
         String firstGeometryLimit = firstResponseFilter.getGeometryString();
-        String secondCoverageName = secondResponseFilter.getCoverageName();
+        String secondCoverageName = secondResponseFilter.getLayerName();
         String secondGeometryLimit = secondResponseFilter.getGeometryString();
 
         assertThat( responseFilters.size(), is( expectedSize ) );

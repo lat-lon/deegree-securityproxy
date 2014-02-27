@@ -36,7 +36,7 @@
 package org.deegree.securityproxy.authentication.ows;
 
 /**
- * Encapulates a wcs coverage filter, containing the coverage name and geometry
+ * Encapulates a geometry filter, containing the layer name and geometry
  * 
  * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
@@ -45,35 +45,35 @@ package org.deegree.securityproxy.authentication.ows;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsGeometryFilterInfo {
+public class GeometryFilterInfo {
 
-    private final String coverageName;
+    private final String layerName;
 
     private final String geometry;
 
     /**
-     * Instantiates a new {@link WcsGeometryFilterInfo} with full extend (null geometry)
+     * Instantiates a new {@link GeometryFilterInfo} with full extend (null geometry)
      * 
-     * @param coverageName
+     * @param layerName
      *            neither <code>null</code> nor empty
      * @throws IllegalArgumentException
      *             if coverageName is <code>null</code>
      */
-    public WcsGeometryFilterInfo( String coverageName ) throws IllegalArgumentException {
-        this( coverageName, null );
+    public GeometryFilterInfo( String layerName ) throws IllegalArgumentException {
+        this( layerName, null );
     }
 
     /**
-     * @param coverageName
+     * @param layerName
      *            neither <code>null</code> nor empty
      * @param geometry
      *            the geometry limiting the visibility of the coverage, if <code>null</code> the extend is not limited
      * @throws IllegalArgumentException
      *             if coverageName is <code>null</code>
      */
-    public WcsGeometryFilterInfo( String coverageName, String geometry ) throws IllegalArgumentException {
-        checkRequiredParameter( coverageName );
-        this.coverageName = coverageName;
+    public GeometryFilterInfo( String layerName, String geometry ) throws IllegalArgumentException {
+        checkRequiredParameter( layerName );
+        this.layerName = layerName;
         this.geometry = geometry;
 
     }
@@ -81,8 +81,8 @@ public class WcsGeometryFilterInfo {
     /**
      * @return the name of the coverage, never <code>null</code>
      */
-    public String getCoverageName() {
-        return coverageName;
+    public String getLayerName() {
+        return layerName;
     }
 
     /**
@@ -94,9 +94,9 @@ public class WcsGeometryFilterInfo {
 
     private void checkRequiredParameter( String coverageName ) {
         if ( coverageName == null )
-            throw new IllegalArgumentException( "Required parameter coverage name is null" );
+            throw new IllegalArgumentException( "Required parameter layer name is null" );
         if ( coverageName.isEmpty() )
-            throw new IllegalArgumentException( "Required parameter coverage name is empty" );
+            throw new IllegalArgumentException( "Required parameter layer name is empty" );
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
@@ -179,7 +179,7 @@ public class WcsUserDaoImpl implements UserDao {
         String password = null;
         String accessToken = null;
         List<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        List<WcsGeometryFilterInfo> geometrieFilter = new ArrayList<WcsGeometryFilterInfo>();
+        List<GeometryFilterInfo> geometrieFilter = new ArrayList<GeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
                 username = getAsString( row, userNameColumn );
@@ -215,11 +215,11 @@ public class WcsUserDaoImpl implements UserDao {
         return userRequestParameters;
     }
 
-    private void createGeometryFilter( List<WcsGeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
+    private void createGeometryFilter( List<GeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
         String coverageName = getAsString( row, layerNameColumn );
         if ( coverageName != null && !coverageName.isEmpty() ) {
             String geometryLimit = getAsString( row, geometryLimitColumn );
-            WcsGeometryFilterInfo wcsGeometryFilter = new WcsGeometryFilterInfo( coverageName, geometryLimit );
+            GeometryFilterInfo wcsGeometryFilter = new GeometryFilterInfo( coverageName, geometryLimit );
             geometryFilter.add( wcsGeometryFilter );
         }
     }

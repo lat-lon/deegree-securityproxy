@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * {@link UserDetails} implementation encapsulating username, password, authorities ({@link WcsPermission}s) and
- * {@link WcsGeometryFilterInfo}s.
+ * {@link GeometryFilterInfo}s.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
@@ -30,7 +30,7 @@ public class WcsUser extends OwsUserDetails {
 
     private final List<WcsPermission> authorities;
 
-    private final List<WcsGeometryFilterInfo> filters;
+    private final List<GeometryFilterInfo> filters;
 
     /**
      * @param username
@@ -43,7 +43,7 @@ public class WcsUser extends OwsUserDetails {
      *            may be <code>null</code> or empty
      */
     public WcsUser( String username, String password, String accessToken, List<WcsPermission> authorities,
-                    List<WcsGeometryFilterInfo> filters ) {
+                    List<GeometryFilterInfo> filters ) {
         super( accessToken );
         this.username = username;
         this.password = password;
@@ -56,7 +56,7 @@ public class WcsUser extends OwsUserDetails {
         if ( filters != null )
             this.filters = unmodifiableList( filters );
         else
-            this.filters = unmodifiableList( Collections.<WcsGeometryFilterInfo> emptyList() );
+            this.filters = unmodifiableList( Collections.<GeometryFilterInfo> emptyList() );
     }
 
     @Override
@@ -102,9 +102,9 @@ public class WcsUser extends OwsUserDetails {
     }
 
     /**
-     * @return all {@link WcsGeometryFilterInfo}s in a unmodifiable list, never <code>null</code>
+     * @return all {@link GeometryFilterInfo}s in a unmodifiable list, never <code>null</code>
      */
-    public List<WcsGeometryFilterInfo> getWcsGeometryFilterInfos() {
+    public List<GeometryFilterInfo> getWcsGeometryFilterInfos() {
         return filters;
     }
 

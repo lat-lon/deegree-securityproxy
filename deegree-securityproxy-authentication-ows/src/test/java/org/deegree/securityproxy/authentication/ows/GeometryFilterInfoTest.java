@@ -39,7 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
 import org.junit.Test;
 
 /**
@@ -48,7 +48,7 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsGeometryFilterInfoTest {
+public class GeometryFilterInfoTest {
 
     private final String COVERAGE_NAME = "coverageName";
 
@@ -57,43 +57,43 @@ public class WcsGeometryFilterInfoTest {
     @Test
     public void testConstructorWcsGeometryFilterInfo()
                             throws Exception {
-        WcsGeometryFilterInfo wcsGeometryFilterInfo = new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY );
-        assertThat( wcsGeometryFilterInfo.getCoverageName(), is( COVERAGE_NAME ) );
+        GeometryFilterInfo wcsGeometryFilterInfo = new GeometryFilterInfo( COVERAGE_NAME, GEOMETRY );
+        assertThat( wcsGeometryFilterInfo.getLayerName(), is( COVERAGE_NAME ) );
         assertThat( wcsGeometryFilterInfo.getGeometryString(), is( GEOMETRY ) );
     }
 
     @Test
     public void testConstructorWcsGeometryFilterInfoWithNullGeometry()
                             throws Exception {
-        WcsGeometryFilterInfo wcsGeometryFilterInfo = new WcsGeometryFilterInfo( COVERAGE_NAME, null );
-        assertThat( wcsGeometryFilterInfo.getCoverageName(), is( COVERAGE_NAME ) );
+        GeometryFilterInfo wcsGeometryFilterInfo = new GeometryFilterInfo( COVERAGE_NAME, null );
+        assertThat( wcsGeometryFilterInfo.getLayerName(), is( COVERAGE_NAME ) );
         assertThat( wcsGeometryFilterInfo.getGeometryString(), is( nullValue() ) );
     }
 
     @Test
     public void testConstructorWcsGeometryFilterInfoWithoutGeometry()
                             throws Exception {
-        WcsGeometryFilterInfo wcsGeometryFilterInfo = new WcsGeometryFilterInfo( COVERAGE_NAME );
-        assertThat( wcsGeometryFilterInfo.getCoverageName(), is( COVERAGE_NAME ) );
+        GeometryFilterInfo wcsGeometryFilterInfo = new GeometryFilterInfo( COVERAGE_NAME );
+        assertThat( wcsGeometryFilterInfo.getLayerName(), is( COVERAGE_NAME ) );
         assertThat( wcsGeometryFilterInfo.getGeometryString(), is( nullValue() ) );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWcsGeometryFilterInfoWithNullCoverageNameShouldFail()
                             throws Exception {
-        new WcsGeometryFilterInfo( null );
+        new GeometryFilterInfo( null );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWcsGeometryFilterInfoWithNullCoverageNameAndGeoemtryShouldFail()
                             throws Exception {
-        new WcsGeometryFilterInfo( null, null );
+        new GeometryFilterInfo( null, null );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorWcsGeometryFilterInfoWithEmptyCoverageNameShouldFail()
                             throws Exception {
-        new WcsGeometryFilterInfo( "" );
+        new GeometryFilterInfo( "" );
     }
 
 }

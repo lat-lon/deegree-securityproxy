@@ -67,7 +67,7 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
-import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
@@ -478,11 +478,11 @@ public class WcsResponseFilterManagerTest {
 
     private Authentication mockAuthentication() {
         Authentication mockedAuthentication = mock( Authentication.class );
-        List<WcsGeometryFilterInfo> filters = new ArrayList<WcsGeometryFilterInfo>();
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY_SIMPLE ) );
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
+        List<GeometryFilterInfo> filters = new ArrayList<GeometryFilterInfo>();
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME, GEOMETRY_SIMPLE ) );
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
         WcsUser wcsUser = new WcsUser( "user", "password", "accessToken", Collections.<WcsPermission> emptyList(),
                                        filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );

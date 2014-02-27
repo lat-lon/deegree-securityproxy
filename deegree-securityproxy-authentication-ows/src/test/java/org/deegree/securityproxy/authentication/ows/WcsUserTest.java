@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.WcsPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.junit.Test;
@@ -50,10 +50,10 @@ public class WcsUserTest {
     @Test
     public void testGetPermissionsShouldReturnInsertedFilters()
                             throws Exception {
-        List<WcsGeometryFilterInfo> insertedFilterList = createFilterList();
+        List<GeometryFilterInfo> insertedFilterList = createFilterList();
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
                                        insertedFilterList );
-        List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
+        List<GeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
     }
 
@@ -71,7 +71,7 @@ public class WcsUserTest {
                             throws Exception {
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
                                        createFilterList() );
-        List<WcsGeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
+        List<GeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
         filters.add( mockFilter() );
     }
 
@@ -79,7 +79,7 @@ public class WcsUserTest {
         return emptyList();
     }
 
-    private List<WcsGeometryFilterInfo> createEmptyFilterList() {
+    private List<GeometryFilterInfo> createEmptyFilterList() {
         return emptyList();
     }
 
@@ -87,7 +87,7 @@ public class WcsUserTest {
         return Collections.singletonList( mockWcsPermission() );
     }
 
-    private List<WcsGeometryFilterInfo> createFilterList() {
+    private List<GeometryFilterInfo> createFilterList() {
         return singletonList( mockFilter() );
     }
 
@@ -95,8 +95,8 @@ public class WcsUserTest {
         return mock( WcsPermission.class );
     }
 
-    private WcsGeometryFilterInfo mockFilter() {
-        return mock( WcsGeometryFilterInfo.class );
+    private GeometryFilterInfo mockFilter() {
+        return mock( GeometryFilterInfo.class );
     }
 
 }

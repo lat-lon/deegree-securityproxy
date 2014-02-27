@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
 import org.deegree.securityproxy.wcs.responsefilter.GeometryRetrieverImpl;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -154,33 +154,33 @@ public class GeometryRetrieverImplTest {
         assertThat( normalisedWkt, startsWith( "POLYGON" ) );
     }
 
-    private List<WcsGeometryFilterInfo> createEmptyWcsGeometryFilterInfoList() {
+    private List<GeometryFilterInfo> createEmptyWcsGeometryFilterInfoList() {
         return emptyList();
     }
 
-    private List<WcsGeometryFilterInfo> createWcsGeometryFilterInfoListWithoutGeometry() {
-        List<WcsGeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<WcsGeometryFilterInfo>();
-        wcsGeometryFilterInfos.add( new WcsGeometryFilterInfo( COVERAGE_NAME ) );
+    private List<GeometryFilterInfo> createWcsGeometryFilterInfoListWithoutGeometry() {
+        List<GeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<GeometryFilterInfo>();
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME ) );
         return wcsGeometryFilterInfos;
     }
 
-    private List<WcsGeometryFilterInfo> createWcsGeometryFilterInfoList() {
-        List<WcsGeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<WcsGeometryFilterInfo>();
-        wcsGeometryFilterInfos.add( new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY ) );
+    private List<GeometryFilterInfo> createWcsGeometryFilterInfoList() {
+        List<GeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<GeometryFilterInfo>();
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME, GEOMETRY ) );
         return wcsGeometryFilterInfos;
     }
 
-    private List<WcsGeometryFilterInfo> createWcsGeometryFilterInfoListWithSimpleGeometry() {
-        List<WcsGeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<WcsGeometryFilterInfo>();
-        wcsGeometryFilterInfos.add( new WcsGeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
+    private List<GeometryFilterInfo> createWcsGeometryFilterInfoListWithSimpleGeometry() {
+        List<GeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<GeometryFilterInfo>();
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
         return wcsGeometryFilterInfos;
     }
 
-    private List<WcsGeometryFilterInfo> createWcsGeometryFilterInfoListWithMultipleGeometries() {
-        List<WcsGeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<WcsGeometryFilterInfo>();
-        wcsGeometryFilterInfos.add( new WcsGeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
-        wcsGeometryFilterInfos.add( new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY ) );
-        wcsGeometryFilterInfos.add( new WcsGeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
+    private List<GeometryFilterInfo> createWcsGeometryFilterInfoListWithMultipleGeometries() {
+        List<GeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<GeometryFilterInfo>();
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME, GEOMETRY ) );
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
         return wcsGeometryFilterInfos;
     }
 
