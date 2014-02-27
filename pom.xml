@@ -35,6 +35,11 @@
         <artifactId>deegree-securityproxy-service-wcs</artifactId>
         <version>${project.version}</version>
       </dependency>
+        <dependency>
+            <groupId>org.deegree</groupId>
+            <artifactId>deegree-securityproxy-service-wms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -213,6 +218,7 @@
     <module>deegree-securityproxy-core</module>
     <module>deegree-securityproxy-packaging</module>
     <module>deegree-securityproxy-service-wcs</module>
+    <module>deegree-securityproxy-service-wms</module>
   </modules>
 
 </project>
