@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication.ows;
+package org.deegree.securityproxy.authentication.ows.raster;
 
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.junit.Test;
 
 /**

@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication.ows.repository;
+package org.deegree.securityproxy.authentication.ows.raster.repository;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -12,11 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.WcsUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.junit.After;
 import org.junit.Before;
@@ -37,7 +37,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/ows/repository/UserDaoTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/ows/raster/repository/UserDaoTestContext.xml" })
 public class WcsUserDaoImplTest {
 
     private static final String GETCAPABILITIES = "GetCapabilities";

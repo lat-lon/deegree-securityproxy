@@ -37,7 +37,7 @@ package org.deegree.securityproxy.wcs.responsefilter;
 
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;

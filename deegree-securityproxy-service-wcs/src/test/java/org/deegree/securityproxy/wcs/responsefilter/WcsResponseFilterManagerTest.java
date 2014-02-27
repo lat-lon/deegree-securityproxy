@@ -67,9 +67,9 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
-import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.WcsUser;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.WcsUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;

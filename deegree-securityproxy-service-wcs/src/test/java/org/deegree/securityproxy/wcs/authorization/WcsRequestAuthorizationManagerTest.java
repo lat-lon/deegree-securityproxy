@@ -58,9 +58,9 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.authentication.ows.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;

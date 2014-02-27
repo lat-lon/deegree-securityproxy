@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication.ows.repository;
+package org.deegree.securityproxy.authentication.ows.raster.repository;
 
 import static java.util.Arrays.asList;
 
@@ -12,10 +12,10 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.WcsUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;

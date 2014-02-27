@@ -33,13 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authentication.ows;
+package org.deegree.securityproxy.authentication.ows.raster;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.junit.Test;
 
 /**

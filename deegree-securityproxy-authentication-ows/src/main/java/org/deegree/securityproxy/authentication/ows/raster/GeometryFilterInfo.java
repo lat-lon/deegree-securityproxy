@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.authentication.ows;
+package org.deegree.securityproxy.authentication.ows.raster;
 
 /**
  * Encapulates a geometry filter, containing the layer name and geometry

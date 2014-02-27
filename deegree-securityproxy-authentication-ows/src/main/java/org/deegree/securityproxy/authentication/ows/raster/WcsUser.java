@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication.ows;
+package org.deegree.securityproxy.authentication.ows.raster;
 
 import static java.util.Collections.unmodifiableList;
 
