@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.authentication;
+package org.deegree.securityproxy.authentication.ows;
 
 import static java.util.Collections.unmodifiableList;
 

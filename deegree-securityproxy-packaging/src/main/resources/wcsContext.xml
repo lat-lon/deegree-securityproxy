@@ -26,7 +26,7 @@
 
   <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.GeotiffClipper"/>
 
-  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.wcs.authentication.repository.WcsUserDaoImpl">
+  <bean id="headerTokenDataSource" class="org.deegree.securityproxy.authentication.ows.repository.WcsUserDaoImpl">
     <constructor-arg value="ows_system_admin"/>
     <constructor-arg value="user_access_info"/>
     <constructor-arg value="access_token"/>

@@ -1,17 +1,17 @@
-package org.deegree.securityproxy.wcs.authentication;
+package org.deegree.securityproxy.authentication.ows;
 
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
-import org.junit.Test;
+import static java.util.Collections.emptyMap;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
+import org.junit.Test;
 
 /**
  * Tests for {@link WcsPermission}.

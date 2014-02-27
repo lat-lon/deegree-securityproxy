@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.authentication;
+package org.deegree.securityproxy.authentication.ows;
 
 /**
  * Encapulates a wcs coverage filter, containing the coverage name and geometry

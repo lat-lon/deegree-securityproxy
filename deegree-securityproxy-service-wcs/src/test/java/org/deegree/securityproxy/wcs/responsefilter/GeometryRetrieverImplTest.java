@@ -44,7 +44,7 @@ import static org.junit.Assert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
 import org.deegree.securityproxy.wcs.responsefilter.GeometryRetrieverImpl;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

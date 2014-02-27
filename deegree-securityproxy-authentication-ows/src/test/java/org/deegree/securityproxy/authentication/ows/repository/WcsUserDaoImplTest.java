@@ -1,8 +1,8 @@
-package org.deegree.securityproxy.wcs.auhentication.repository;
+package org.deegree.securityproxy.authentication.ows.repository;
 
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -15,10 +15,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
-import org.deegree.securityproxy.wcs.authentication.WcsUser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +38,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/wcs/authentication/repository/UserDaoTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/ows/repository/UserDaoTestContext.xml" })
 public class WcsUserDaoImplTest {
 
     private EmbeddedDatabase db;

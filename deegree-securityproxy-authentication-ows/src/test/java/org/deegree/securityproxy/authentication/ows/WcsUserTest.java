@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.auhentication;
+package org.deegree.securityproxy.authentication.ows;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -9,9 +9,9 @@ import static org.mockito.Mockito.mock;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
-import org.deegree.securityproxy.wcs.authentication.WcsUser;
+import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.junit.Test;
 
 /***

@@ -27,10 +27,21 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
+    <!--hsqldb-->
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- Logging -->
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
+    </dependency>
+    <!-- Apache Commons -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
     </dependency>
   </dependencies>
 

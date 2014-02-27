@@ -33,10 +33,10 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.authentication;
+package org.deegree.securityproxy.authentication.ows;
 
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collections;

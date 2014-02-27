@@ -7,11 +7,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;

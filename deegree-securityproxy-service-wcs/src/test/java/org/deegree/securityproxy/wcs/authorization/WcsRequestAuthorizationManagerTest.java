@@ -35,23 +35,24 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.authorization;
 
+import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.lang.reflect.Array;
 import java.util.*;
 
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.*;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_200;
 import static org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager.AUTHORIZED;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.*;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_200;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;

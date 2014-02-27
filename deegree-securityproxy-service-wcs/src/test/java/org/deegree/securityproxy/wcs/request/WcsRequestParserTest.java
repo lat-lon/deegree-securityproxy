@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.request;
 
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;

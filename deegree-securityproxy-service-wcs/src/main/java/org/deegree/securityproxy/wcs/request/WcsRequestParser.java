@@ -1,10 +1,10 @@
 package org.deegree.securityproxy.wcs.request;
 
 import static java.lang.String.format;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCAPABILITIES;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsOperationType.GETCOVERAGE;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +14,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
 
 /**
  * Parses an incoming {@link HttpServletRequest} into a {@link WcsRequest}.

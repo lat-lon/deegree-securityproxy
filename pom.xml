@@ -27,6 +27,11 @@
       </dependency>
       <dependency>
         <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-authentication-ows</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
         <artifactId>deegree-securityproxy-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -210,6 +215,7 @@
 
   <modules>
     <module>deegree-securityproxy-authentication</module>
+    <module>deegree-securityproxy-authentication-ows</module>
     <module>deegree-securityproxy-core</module>
     <module>deegree-securityproxy-packaging</module>
     <module>deegree-securityproxy-service-wcs</module>

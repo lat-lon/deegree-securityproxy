@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.domain;
+package org.deegree.securityproxy.authentication.ows.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;

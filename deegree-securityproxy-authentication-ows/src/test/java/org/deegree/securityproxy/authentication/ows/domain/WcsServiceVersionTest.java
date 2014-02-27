@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.domain;
+package org.deegree.securityproxy.authentication.ows.domain;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
 import org.junit.Test;
 
 public class WcsServiceVersionTest {

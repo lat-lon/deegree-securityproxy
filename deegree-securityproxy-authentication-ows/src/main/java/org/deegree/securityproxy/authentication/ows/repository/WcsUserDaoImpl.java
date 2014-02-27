@@ -1,7 +1,7 @@
-package org.deegree.securityproxy.wcs.authentication.repository;
+package org.deegree.securityproxy.authentication.ows.repository;
 
 import static java.util.Arrays.asList;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.parseVersions;
+import static org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion.parseVersions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,12 +13,12 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.deegree.securityproxy.authentication.ows.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.WcsUser;
+import org.deegree.securityproxy.authentication.ows.domain.WcsOperationType;
+import org.deegree.securityproxy.authentication.ows.domain.WcsServiceVersion;
 import org.deegree.securityproxy.authentication.repository.UserDao;
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
-import org.deegree.securityproxy.wcs.authentication.WcsUser;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
