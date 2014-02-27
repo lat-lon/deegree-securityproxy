@@ -58,7 +58,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
@@ -228,8 +228,8 @@ public class WcsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthentication() {
         Authentication authentication = mock( Authentication.class );
-        Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
                                             INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -237,10 +237,10 @@ public class WcsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
-        Collection<WcsPermission> authorities = new ArrayList<WcsPermission>();
-        authorities.add( new WcsPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
                                             INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new WcsPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+        authorities.add( new RasterPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
                                             INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;

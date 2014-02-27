@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
@@ -71,11 +71,11 @@ public class WcsUserDaoImplTest {
         UserDetails details = source.retrieveUserById( "VALID_HEADER_GETCAPABILITIES" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
+        RasterPermission firstAuthority = (RasterPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( GETCAPABILITIES ) );
         assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
-        assertThat( firstAuthority.getCoverageName(), is( nullValue() ) );
+        assertThat( firstAuthority.getLayerName(), is( nullValue() ) );
     }
 
     @Test
@@ -83,11 +83,11 @@ public class WcsUserDaoImplTest {
         UserDetails details = source.retrieveUserById( "VALID_HEADER_GETCOVERAGE" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        WcsPermission firstAuthority = (WcsPermission) authorities.iterator().next();
+        RasterPermission firstAuthority = (RasterPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( GETCOVERAGE ) );
         assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
-        assertThat( firstAuthority.getCoverageName(), is( "layerName" ) );
+        assertThat( firstAuthority.getLayerName(), is( "layerName" ) );
     }
 
     @Test
@@ -193,7 +193,7 @@ public class WcsUserDaoImplTest {
         UserDetails wcsUser = source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
         List<String> internalServiceUrls = new ArrayList<String>();
         for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
-            String internalServiceUrl = ( (WcsPermission) authority ).getInternalServiceUrl();
+            String internalServiceUrl = ( (RasterPermission) authority ).getInternalServiceUrl();
             internalServiceUrls.add( internalServiceUrl );
         }
         assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
@@ -234,7 +234,7 @@ public class WcsUserDaoImplTest {
         WcsUser wcsUser = (WcsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
         List<Map<String, String[]>> additionalKeyValuePairsList = new ArrayList<Map<String, String[]>>();
         for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
-            Map<String, String[]> additionalKeyValuePairs = ( (WcsPermission) authority ).getAdditionalKeyValuePairs();
+            Map<String, String[]> additionalKeyValuePairs = ( (RasterPermission) authority ).getAdditionalKeyValuePairs();
             additionalKeyValuePairsList.add( additionalKeyValuePairs );
         }
         Map<String, String[]> firstAdditionalKeyValuePairs = additionalKeyValuePairsList.get( 0 );
@@ -310,7 +310,7 @@ public class WcsUserDaoImplTest {
 
     private Map<String, String[]> retrieveFirstAdditionalKeyValuePair( WcsUser wcsUser ) {
         GrantedAuthority authority = wcsUser.getAuthorities().get( 0 );
-        return ( (WcsPermission) authority ).getAdditionalKeyValuePairs();
+        return ( (RasterPermission) authority ).getAdditionalKeyValuePairs();
     }
 
 }

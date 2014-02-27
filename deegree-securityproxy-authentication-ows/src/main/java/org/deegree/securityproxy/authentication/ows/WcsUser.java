@@ -10,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * {@link UserDetails} implementation encapsulating username, password, authorities ({@link WcsPermission}s) and
+ * {@link UserDetails} implementation encapsulating username, password, authorities ({@link RasterPermission}s) and
  * {@link GeometryFilterInfo}s.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -28,7 +28,7 @@ public class WcsUser extends OwsUserDetails {
 
     private final String password;
 
-    private final List<WcsPermission> authorities;
+    private final List<RasterPermission> authorities;
 
     private final List<GeometryFilterInfo> filters;
 
@@ -42,7 +42,7 @@ public class WcsUser extends OwsUserDetails {
      * @param filters
      *            may be <code>null</code> or empty
      */
-    public WcsUser( String username, String password, String accessToken, List<WcsPermission> authorities,
+    public WcsUser( String username, String password, String accessToken, List<RasterPermission> authorities,
                     List<GeometryFilterInfo> filters ) {
         super( accessToken );
         this.username = username;
@@ -51,7 +51,7 @@ public class WcsUser extends OwsUserDetails {
         if ( authorities != null )
             this.authorities = unmodifiableList( authorities );
         else
-            this.authorities = unmodifiableList( Collections.<WcsPermission> emptyList() );
+            this.authorities = unmodifiableList( Collections.<RasterPermission> emptyList() );
 
         if ( filters != null )
             this.filters = unmodifiableList( filters );
@@ -95,9 +95,9 @@ public class WcsUser extends OwsUserDetails {
     }
 
     /**
-     * @return authorities as list of {@link WcsPermission}s in a unmodifiable list, never <code>null</code>
+     * @return authorities as list of {@link RasterPermission}s in a unmodifiable list, never <code>null</code>
      */
-    public List<WcsPermission> getWcsPermissions() {
+    public List<RasterPermission> getWcsPermissions() {
         return authorities;
     }
 

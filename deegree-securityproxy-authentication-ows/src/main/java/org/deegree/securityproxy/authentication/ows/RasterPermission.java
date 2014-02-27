@@ -52,7 +52,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @author last edited by: $Author: erben $
  * @version $Revision: $, $Date: $
  */
-public class WcsPermission implements GrantedAuthority {
+public class RasterPermission implements GrantedAuthority {
 
     private static final long serialVersionUID = 5184855468635810194L;
 
@@ -60,7 +60,7 @@ public class WcsPermission implements GrantedAuthority {
 
     private final LimitedOwsServiceVersion serviceVersion;
 
-    private final String coverageName;
+    private final String layerName;
 
     private final String serviceName;
 
@@ -68,11 +68,11 @@ public class WcsPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public WcsPermission( String operationType, LimitedOwsServiceVersion serviceVersion, String coverageName,
+    public RasterPermission( String operationType, LimitedOwsServiceVersion serviceVersion, String coverageName,
                           String serviceName, String internalServiceUrl, Map<String, String[]> additionalKeyValuePairs ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
-        this.coverageName = coverageName;
+        this.layerName = coverageName;
         this.serviceName = serviceName;
         this.internalServiceUrl = internalServiceUrl;
 
@@ -106,8 +106,8 @@ public class WcsPermission implements GrantedAuthority {
     /**
      * @return the layerName
      */
-    public String getCoverageName() {
-        return coverageName;
+    public String getLayerName() {
+        return layerName;
     }
 
     /**

@@ -13,7 +13,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.repository.UserDao;
@@ -178,7 +178,7 @@ public class WcsUserDaoImpl implements UserDao {
         String username = null;
         String password = null;
         String accessToken = null;
-        List<WcsPermission> authorities = new ArrayList<WcsPermission>();
+        List<RasterPermission> authorities = new ArrayList<RasterPermission>();
         List<GeometryFilterInfo> geometrieFilter = new ArrayList<GeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
             if ( checkIfWcsServiceType( row ) ) {
@@ -194,14 +194,14 @@ public class WcsUserDaoImpl implements UserDao {
         return null;
     }
 
-    private void addAuthorities( Collection<WcsPermission> authorities, Map<String, Object> row ) {
+    private void addAuthorities( Collection<RasterPermission> authorities, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
         LimitedOwsServiceVersion serviceVersion = parseServiceVersion( row );
         String operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
-        authorities.add( new WcsPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl,
+        authorities.add( new RasterPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl,
                                             userRequestParameters ) );
     }
 

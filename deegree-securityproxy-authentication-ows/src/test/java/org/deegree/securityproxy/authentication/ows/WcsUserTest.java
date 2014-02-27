@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.junit.Test;
 
@@ -40,10 +40,10 @@ public class WcsUserTest {
     @Test
     public void testGetPermissionsShouldReturnInsertedPermissions()
                             throws Exception {
-        List<WcsPermission> insertedPermissionsList = createPermissionsList();
+        List<RasterPermission> insertedPermissionsList = createPermissionsList();
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, ACCESSTOKEN, insertedPermissionsList,
                                        createEmptyFilterList() );
-        List<WcsPermission> authorities = wcsUser.getWcsPermissions();
+        List<RasterPermission> authorities = wcsUser.getWcsPermissions();
         assertThat( authorities, is( insertedPermissionsList ) );
     }
 
@@ -62,7 +62,7 @@ public class WcsUserTest {
                             throws Exception {
         WcsUser wcsUser = new WcsUser( USERNAME, PASSWORD, ACCESSTOKEN, createPermissionsList(),
                                        createEmptyFilterList() );
-        List<WcsPermission> authorities = wcsUser.getWcsPermissions();
+        List<RasterPermission> authorities = wcsUser.getWcsPermissions();
         authorities.add( mockWcsPermission() );
     }
 
@@ -75,7 +75,7 @@ public class WcsUserTest {
         filters.add( mockFilter() );
     }
 
-    private List<WcsPermission> createEmptyPermissionsList() {
+    private List<RasterPermission> createEmptyPermissionsList() {
         return emptyList();
     }
 
@@ -83,7 +83,7 @@ public class WcsUserTest {
         return emptyList();
     }
 
-    private List<WcsPermission> createPermissionsList() {
+    private List<RasterPermission> createPermissionsList() {
         return Collections.singletonList( mockWcsPermission() );
     }
 
@@ -91,8 +91,8 @@ public class WcsUserTest {
         return singletonList( mockFilter() );
     }
 
-    private WcsPermission mockWcsPermission() {
-        return mock( WcsPermission.class );
+    private RasterPermission mockWcsPermission() {
+        return mock( RasterPermission.class );
     }
 
     private GeometryFilterInfo mockFilter() {

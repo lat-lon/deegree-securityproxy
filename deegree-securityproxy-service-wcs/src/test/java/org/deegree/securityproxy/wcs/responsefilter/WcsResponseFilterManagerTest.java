@@ -68,7 +68,7 @@ import java.util.List;
 import javax.servlet.ServletOutputStream;
 
 import org.deegree.securityproxy.authentication.ows.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.WcsPermission;
+import org.deegree.securityproxy.authentication.ows.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.WcsUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -483,7 +483,7 @@ public class WcsResponseFilterManagerTest {
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
-        WcsUser wcsUser = new WcsUser( "user", "password", "accessToken", Collections.<WcsPermission> emptyList(),
+        WcsUser wcsUser = new WcsUser( "user", "password", "accessToken", Collections.<RasterPermission> emptyList(),
                                        filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
