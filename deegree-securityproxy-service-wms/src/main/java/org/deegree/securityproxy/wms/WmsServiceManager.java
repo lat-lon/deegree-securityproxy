@@ -18,7 +18,7 @@ import java.io.IOException;
  * This is an implementation of a {@link ServiceManager} for wms-requests. It contains wms specific parser,
  * authorization-manager and filter-manager. It is possible to start parsing of wms-requests, wms-authorization,
  * wms-response-filtering and a check whether response-filtering is enabled.
- * 
+ *
  * @author <a href="wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -39,27 +39,30 @@ class WmsServiceManager implements ServiceManager {
     }
 
     @Override
-    public OwsRequest parse(HttpServletRequest httpRequest) throws UnsupportedRequestTypeException {
+    public OwsRequest parse( HttpServletRequest httpRequest ) throws UnsupportedRequestTypeException {
         return null;
     }
 
     @Override
-    public AuthorizationReport authorize(Authentication authentication, OwsRequest owsRequest) {
+    public AuthorizationReport authorize( Authentication authentication, OwsRequest owsRequest ) {
         return null;
     }
 
     @Override
-    public boolean isResponseFilterEnabled(OwsRequest owsRequest) {
+    public boolean isResponseFilterEnabled( OwsRequest owsRequest ) {
         return false;
     }
 
     @Override
-    public ResponseFilterReport filterResponse(StatusCodeResponseBodyWrapper wrappedResponse, Authentication authentication, OwsRequest owsRequest) throws IOException {
+    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
+                                                Authentication authentication,
+                                                OwsRequest owsRequest ) throws IOException {
         return null;
     }
 
     @Override
-    public boolean isServiceTypeSupported(HttpServletRequest request) {
+    public boolean isServiceTypeSupported( HttpServletRequest request ) {
         return false;
     }
+
 }
