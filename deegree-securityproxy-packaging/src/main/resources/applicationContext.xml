@@ -53,6 +53,7 @@
     <constructor-arg>
       <list>
         <ref bean="wcsServiceManager" />
+        <ref bean="wmsServiceManager" />
       </list>
     </constructor-arg>
   </bean>

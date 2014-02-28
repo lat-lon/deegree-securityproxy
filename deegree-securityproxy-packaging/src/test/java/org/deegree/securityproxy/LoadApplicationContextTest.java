@@ -49,7 +49,9 @@ public class LoadApplicationContextTest {
 
     @Test
     public void testLoadApplicationContext() {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml", "authenticationContext.xml" );
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml",
+                                                                                 "authenticationContext.xml",
+                                                                                 "wmsContext.xml" );
         ctx.close();
     }
 
