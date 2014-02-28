@@ -92,7 +92,7 @@ public class WmsServiceManagerTest {
     @Test
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
           throws Exception {
-        HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
+        HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );
@@ -124,6 +124,10 @@ public class WmsServiceManagerTest {
 
     private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper() {
         return mock( StatusCodeResponseBodyWrapper.class );
+    }
+
+    private HttpServletRequest mockHttpServletRequestWithWcsServiceParameter() {
+        return mockHttpServletRequestWithServiceParameter( "wcs" );
     }
 
     private HttpServletRequest mockHttpServletRequestWithWmsServiceParameter() {
