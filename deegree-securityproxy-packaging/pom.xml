@@ -22,10 +22,10 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-service-wcs</artifactId>
     </dependency>
-      <dependency>
-          <groupId>org.deegree</groupId>
-          <artifactId>deegree-securityproxy-service-wms</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-wms</artifactId>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
