@@ -307,13 +307,13 @@ public class WcsRequestParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingRequestParameterShouldFail()
                             throws UnsupportedRequestTypeException {
-        parser.parse( mockInvalidWcsRequestMissingRequestParameter( "wcs" ) );
+        parser.parse( mockInvalidWcsRequestMissingRequestParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingServiceParameterShouldFail()
                             throws UnsupportedRequestTypeException {
-        parser.parse( mockInvalidWcsRequestMissingServiceParameter( "wcs" ) );
+        parser.parse( mockInvalidWcsRequestMissingServiceParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -331,7 +331,7 @@ public class WcsRequestParserTest {
     @Test
     public void testParseWithMissingVersionParameter()
                             throws UnsupportedRequestTypeException {
-        parser.parse( mockValidWcsRequestMissingVersionParameter( "wcs" ) );
+        parser.parse( mockValidWcsRequestMissingVersionParameter() );
     }
 
     private HttpServletRequest mockWcsGetCapabilitiesRequestMissingServiceName() {
@@ -487,19 +487,19 @@ public class WcsRequestParserTest {
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter( String serviceType ) {
+    private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter() {
         Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( REQUEST_PARAM );
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter( String serviceType ) {
+    private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter() {
         Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( SERVICE_PARAM );
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockValidWcsRequestMissingVersionParameter( String serviceType ) {
+    private HttpServletRequest mockValidWcsRequestMissingVersionParameter() {
         Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( VERSION_PARAM );
         return mockRequest( parameterMap );

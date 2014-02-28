@@ -36,7 +36,7 @@
 package org.deegree.securityproxy.authentication.ows.raster;
 
 /**
- * Encapulates a geometry filter, containing the layer name and geometry
+ * Encapsulates a geometry filter, containing the layer name and geometry.
  * 
  * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
