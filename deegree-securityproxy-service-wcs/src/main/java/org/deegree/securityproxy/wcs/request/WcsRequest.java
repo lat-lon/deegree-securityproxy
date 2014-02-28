@@ -44,7 +44,7 @@ import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequest;
 
 /**
- * Encapulates a WCS request.
+ * Encapsulates a WCS request.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $
