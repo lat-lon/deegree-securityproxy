@@ -8,7 +8,6 @@ import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
@@ -31,13 +30,9 @@ class WmsServiceManager implements ServiceManager {
 
     private final RequestAuthorizationManager requestAuthorizationManager;
 
-    private final ResponseFilterManager filterManager;
-
-    public WmsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager,
-                              ResponseFilterManager filterManager ) {
+    public WmsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager ) {
         this.parser = parser;
         this.requestAuthorizationManager = requestAuthorizationManager;
-        this.filterManager = filterManager;
     }
 
     @Override
@@ -52,14 +47,14 @@ class WmsServiceManager implements ServiceManager {
 
     @Override
     public boolean isResponseFilterEnabled( OwsRequest owsRequest ) {
-        return filterManager.supports( owsRequest.getClass() );
+        return false;
     }
 
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
                                                 Authentication authentication,
                                                 OwsRequest owsRequest ) throws IOException {
-        return filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
+        return null;
     }
 
     @Override

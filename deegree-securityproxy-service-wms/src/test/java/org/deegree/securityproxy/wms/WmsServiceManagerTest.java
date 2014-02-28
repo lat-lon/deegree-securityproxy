@@ -5,6 +5,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -31,14 +33,11 @@ public class WmsServiceManagerTest {
 
     private RequestAuthorizationManager requestAuthorizationManager;
 
-    private ResponseFilterManager filterManager;
-
     @Before
     public void reset() {
         parser = mockOwsRequestParser();
         requestAuthorizationManager = mockRequestAuthorizationManager();
-        filterManager = mockResponseFilterManager();
-        wmsServiceManager = new WmsServiceManager( parser, requestAuthorizationManager, filterManager );
+        wmsServiceManager = new WmsServiceManager( parser, requestAuthorizationManager );
     }
 
     @Test
@@ -64,9 +63,9 @@ public class WmsServiceManagerTest {
     public void testIsResponseFilterEnabled()
           throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
-        wmsServiceManager.isResponseFilterEnabled( owsRequest );
+        boolean isEnabled = wmsServiceManager.isResponseFilterEnabled( owsRequest );
 
-        verify( filterManager ).supports( owsRequest.getClass() );
+        assertThat( isEnabled, is( false ) );
     }
 
     @Test
@@ -75,9 +74,11 @@ public class WmsServiceManagerTest {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
-        wmsServiceManager.filterResponse( wrappedResponse, authentication, owsRequest );
+        ResponseFilterReport responseFilterReport = wmsServiceManager.filterResponse( wrappedResponse,
+                                                                                      authentication,
+                                                                                      owsRequest );
 
-        verify( filterManager ).filterResponse( wrappedResponse, owsRequest, authentication );
+        assertThat( responseFilterReport, nullValue() );
     }
 
     @Test
