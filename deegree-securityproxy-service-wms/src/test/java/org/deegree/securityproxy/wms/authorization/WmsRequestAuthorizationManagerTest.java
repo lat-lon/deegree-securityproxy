@@ -65,7 +65,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     private static final boolean NOT_AUTHORIZED = false;
 
-    private static final LimitedOwsServiceVersion VERSION_LESS_EQUAL_100 = new LimitedOwsServiceVersion( "<= 1.3.0" );
+    private static final LimitedOwsServiceVersion VERSION_LESS_EQUAL_130 = new LimitedOwsServiceVersion( "<= 1.3.0" );
 
     private static final String OPERATION_TYPE = GETMAP;
 
@@ -218,7 +218,7 @@ public class WmsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, LAYER_NAME, SERVICE_NAME,
+        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -227,9 +227,9 @@ public class WmsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, LAYER_NAME, SERVICE_NAME,
+        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+        authorities.add( new RasterPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
