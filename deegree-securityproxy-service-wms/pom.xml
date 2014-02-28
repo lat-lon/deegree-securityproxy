@@ -20,6 +20,10 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-authentication-ows</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-core</artifactId>
     </dependency>
     <!-- Test -->
@@ -93,20 +97,6 @@
     <dependency>
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
-    </dependency>
-    <!-- geotools -->
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-geotiff</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-epsg-hsql</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>compile</scope>
     </dependency>
     <!-- Servlet API -->
     <dependency>
