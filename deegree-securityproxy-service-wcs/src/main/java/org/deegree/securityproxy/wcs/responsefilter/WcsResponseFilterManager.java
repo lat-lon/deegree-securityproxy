@@ -37,7 +37,7 @@ package org.deegree.securityproxy.wcs.responsefilter;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -52,12 +52,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
-import org.deegree.securityproxy.wcs.authentication.WcsUser;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -225,18 +225,18 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
 
     private Geometry retrieveGeometryUseForClipping( Authentication auth, WcsRequest wcsRequest )
                             throws IllegalArgumentException, ParseException {
-        WcsUser wcsUser = retrieveWcsUser( auth );
-        List<WcsGeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
+        RasterUser wcsUser = retrieveWcsUser( auth );
+        List<GeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
         String coverageName = retrieveCoverageName( wcsRequest );
         return geometryRetriever.retrieveGeometry( coverageName, geometryFilterInfos );
     }
 
-    private WcsUser retrieveWcsUser( Authentication auth ) {
+    private RasterUser retrieveWcsUser( Authentication auth ) {
         Object principal = auth.getPrincipal();
-        if ( !( principal instanceof WcsUser ) ) {
+        if ( !( principal instanceof RasterUser ) ) {
             throw new IllegalArgumentException( "Principal is not a WcsUser!" );
         }
-        return (WcsUser) principal;
+        return (RasterUser) principal;
     }
 
     private String retrieveCoverageName( WcsRequest wcsRequest ) {

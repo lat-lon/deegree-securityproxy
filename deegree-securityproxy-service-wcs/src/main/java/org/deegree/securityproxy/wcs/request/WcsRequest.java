@@ -40,9 +40,8 @@ import static java.util.Collections.singletonList;
 import java.util.Collections;
 import java.util.List;
 
+import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
 
 /**
  * Encapulates a WCS request.
@@ -54,9 +53,9 @@ import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
  */
 public class WcsRequest implements OwsRequest {
 
-    private final WcsOperationType operationType;
+    private final String operationType;
 
-    private final WcsServiceVersion serviceVersion;
+    private final OwsServiceVersion serviceVersion;
 
     private final List<String> coverageNames;
 
@@ -72,7 +71,7 @@ public class WcsRequest implements OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      */
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String serviceName ) {
+    public WcsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
         this( operationType, serviceVersion, Collections.<String> emptyList(), serviceName );
     }
 
@@ -88,8 +87,7 @@ public class WcsRequest implements OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      */
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
-                       String serviceName ) {
+    public WcsRequest( String operationType, OwsServiceVersion serviceVersion, String coverageName, String serviceName ) {
         this( operationType, serviceVersion, singletonList( coverageName ), serviceName );
     }
 
@@ -105,7 +103,7 @@ public class WcsRequest implements OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      */
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames,
+    public WcsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> coverageNames,
                        String serviceName ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
@@ -116,14 +114,14 @@ public class WcsRequest implements OwsRequest {
     /**
      * @return the operationType, never <code>null</code>
      */
-    public WcsOperationType getOperationType() {
+    public String getOperationType() {
         return operationType;
     }
 
     /**
      * @return the serviceVersion, never <code>null</code>
      */
-    public WcsServiceVersion getServiceVersion() {
+    public OwsServiceVersion getServiceVersion() {
         return serviceVersion;
     }
 

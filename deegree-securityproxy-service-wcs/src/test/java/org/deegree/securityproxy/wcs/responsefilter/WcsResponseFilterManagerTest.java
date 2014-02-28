@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter;
 
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_110;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
 import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.DEFAULT_BODY;
 import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
 import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
@@ -67,12 +67,12 @@ import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
-import org.deegree.securityproxy.wcs.authentication.WcsPermission;
-import org.deegree.securityproxy.wcs.authentication.WcsUser;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -478,12 +478,12 @@ public class WcsResponseFilterManagerTest {
 
     private Authentication mockAuthentication() {
         Authentication mockedAuthentication = mock( Authentication.class );
-        List<WcsGeometryFilterInfo> filters = new ArrayList<WcsGeometryFilterInfo>();
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME, GEOMETRY_SIMPLE ) );
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
-        filters.add( new WcsGeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
-        WcsUser wcsUser = new WcsUser( "user", "password", "accessToken", Collections.<WcsPermission> emptyList(),
+        List<GeometryFilterInfo> filters = new ArrayList<GeometryFilterInfo>();
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME, GEOMETRY_SIMPLE ) );
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
+        filters.add( new GeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
+        RasterUser wcsUser = new RasterUser( "user", "password", "accessToken", Collections.<RasterPermission> emptyList(),
                                        filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;

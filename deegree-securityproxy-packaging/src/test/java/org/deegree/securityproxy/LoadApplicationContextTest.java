@@ -49,7 +49,7 @@ public class LoadApplicationContextTest {
 
     @Test
     public void testLoadApplicationContext() {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml" );
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml", "authenticationContext.xml" );
         ctx.close();
     }
 

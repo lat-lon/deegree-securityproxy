@@ -108,10 +108,11 @@ public class AddHeaderHttpServletRequestWrapper extends HttpServletRequestWrappe
             values.add( additionalHeaderValue );
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void addOriginalHeader( String name, List<String> values ) {
         Enumeration headers = super.getHeaders( name );
         if ( headers != null )
             values.addAll( Collections.list( headers ) );
     }
+
 }

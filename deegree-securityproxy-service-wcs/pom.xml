@@ -20,6 +20,10 @@
     </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-authentication-ows</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-core</artifactId>
     </dependency>
     <!-- Test -->

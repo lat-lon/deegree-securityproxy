@@ -1,10 +1,8 @@
 package org.deegree.securityproxy.wcs.request;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +12,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
 
 /**
  * Parses an incoming {@link HttpServletRequest} into a {@link WcsRequest}.
@@ -52,6 +49,20 @@ public class WcsRequestParser implements OwsRequestParser {
 
     private static final String FORMAT = "format";
 
+    public static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( 1, 0, 0 );
+
+    public static final OwsServiceVersion VERSION_110 = new OwsServiceVersion( 1, 1, 0 );
+
+    public static final OwsServiceVersion VERSION_200 = new OwsServiceVersion( 2, 0, 0 );
+
+    public static final String GETCAPABILITIES = "GetCapabilities";
+
+    public static final String DESCRIBECOVERAGE = "DescribeCoverage";
+
+    public static final String GETCOVERAGE = "GetCoverage";
+
+    private final List<OwsServiceVersion> supportedVersion = asList( VERSION_100, VERSION_110, VERSION_200 );
+
     @Override
     @SuppressWarnings("unchecked")
     public WcsRequest parse( HttpServletRequest request )
@@ -65,22 +76,19 @@ public class WcsRequestParser implements OwsRequestParser {
     }
 
     private WcsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
-        WcsOperationType type = evaluateOperationType( normalizedParameterMap );
-        switch ( type ) {
-        case GETCAPABILITIES:
+        String type = normalizedParameterMap.get( REQUEST )[0];
+        if ( GETCAPABILITIES.equalsIgnoreCase( type ) )
             return parseGetCapabilitiesRequest( serviceName, normalizedParameterMap );
-        case DESCRIBECOVERAGE:
+        if ( DESCRIBECOVERAGE.equalsIgnoreCase( type ) )
             return parseDescribeCoverageRequest( serviceName, normalizedParameterMap );
-        case GETCOVERAGE:
+        if ( GETCOVERAGE.equalsIgnoreCase( type ) )
             return parseGetCoverageRequest( serviceName, normalizedParameterMap );
-        default:
-            throw new IllegalArgumentException( "Unrecognized operation type: " + type );
-        }
+        throw new IllegalArgumentException( "Unrecognized operation type: " + type );
     }
 
     private WcsRequest parseGetCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         checkGetCoverageParameters( normalizedParameterMap );
-        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
         if ( isNotSet( coverageParameter ) )
             return new WcsRequest( GETCOVERAGE, version, serviceName );
@@ -92,7 +100,7 @@ public class WcsRequestParser implements OwsRequestParser {
     }
 
     private WcsRequest parseDescribeCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
-        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
         if ( isNotSet( coverageParameter ) )
             return new WcsRequest( DESCRIBECOVERAGE, version, serviceName );
@@ -110,35 +118,21 @@ public class WcsRequestParser implements OwsRequestParser {
     }
 
     private WcsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
-        WcsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         return new WcsRequest( GETCAPABILITIES, version, serviceName );
     }
 
-    private WcsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {
+    private OwsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {
         String[] versionParameters = normalizedParameterMap.get( VERSION );
-        if ( versionParameters == null )
+        if ( versionParameters == null || versionParameters.length == 0 )
             return null;
-        else {
-            String value = versionParameters[0];
-            if ( "1.0.0".equalsIgnoreCase( value ) )
-                return WcsServiceVersion.VERSION_100;
-            if ( "1.1.0".equalsIgnoreCase( value ) )
-                return WcsServiceVersion.VERSION_110;
-            if ( "2.0.0".equalsIgnoreCase( value ) )
-                return WcsServiceVersion.VERSION_200;
-            throw new IllegalArgumentException( "Unrecognized version " + value );
+        String versionParam = versionParameters[0];
+        if ( versionParam != null && !versionParam.isEmpty() ) {
+            OwsServiceVersion version = new OwsServiceVersion( versionParam );
+            if ( supportedVersion.contains( version ) )
+                return version;
         }
-    }
-
-    private WcsOperationType evaluateOperationType( Map<String, String[]> normalizedParameterMap ) {
-        String value = normalizedParameterMap.get( REQUEST )[0];
-        if ( "GetCapabilities".equalsIgnoreCase( value ) )
-            return WcsOperationType.GETCAPABILITIES;
-        if ( "DescribeCoverage".equalsIgnoreCase( value ) )
-            return WcsOperationType.DESCRIBECOVERAGE;
-        if ( "GetCoverage".equalsIgnoreCase( value ) )
-            return WcsOperationType.GETCOVERAGE;
-        throw new IllegalArgumentException( "Unrecognized operation " + value );
+        throw new IllegalArgumentException( "Unrecognized version " + versionParam );
     }
 
     private String evaluateServiceName( HttpServletRequest request ) {
