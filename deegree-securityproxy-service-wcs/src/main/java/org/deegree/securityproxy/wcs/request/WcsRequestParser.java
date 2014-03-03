@@ -1,11 +1,13 @@
 package org.deegree.securityproxy.wcs.request;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSet;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSingle;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.throwException;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -99,9 +101,9 @@ public class WcsRequestParser implements OwsRequestParser {
         return new WcsRequest( GETCOVERAGE, version, separatedCoverages.get( 0 ), serviceName );
     }
 
-    private WcsRequest parseDescribeCoverageRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
-        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
-        String[] coverageParameter = normalizedParameterMap.get( COVERAGE );
+    private WcsRequest parseDescribeCoverageRequest( String serviceName, Map<String, String[]> normalizedParamMap ) {
+        OwsServiceVersion version = evaluateVersion( normalizedParamMap );
+        String[] coverageParameter = normalizedParamMap.get( COVERAGE );
         if ( isNotSet( coverageParameter ) )
             return new WcsRequest( DESCRIBECOVERAGE, version, serviceName );
         else {
@@ -226,41 +228,4 @@ public class WcsRequestParser implements OwsRequestParser {
         checkSingleRequiredParameter( normalizedParameterMap, FORMAT );
     }
 
-    private String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap, String parameterName ) {
-        String[] parameterValue = checkRequiredParameter( normalizedParameterMap, parameterName );
-        if ( isNotSingle( parameterValue ) ) {
-            throwException( parameterName, parameterValue );
-        }
-        return parameterValue[0];
-    }
-
-    private String[] checkRequiredParameter( Map<String, String[]> normalizedParameterMap, String parameterName ) {
-        String[] parameterValue = normalizedParameterMap.get( parameterName );
-        if ( isNotSet( parameterValue ) ) {
-            throwException( parameterName );
-        }
-        return parameterValue;
-    }
-
-    private void throwException( String parameterName ) {
-        String msg = "Request must contain exactly one %s parameter, ignoring the casing. None Given.";
-        throw new IllegalArgumentException( format( msg, parameterName ) );
-    }
-
-    private void throwException( String parameterName, String[] parameterValue ) {
-        String msg = "Request must contain exactly one '%s' parameter, ignoring the casing. Given parameters: %s";
-        throw new IllegalArgumentException( format( msg, parameterName, asString( parameterValue ) ) );
-    }
-
-    private boolean isNotSet( String[] parameterValue ) {
-        return parameterValue == null || parameterValue.length == 0;
-    }
-
-    private boolean isNotSingle( String[] parameterValue ) {
-        return parameterValue.length > 1;
-    }
-
-    private String asString( String[] arrayParameter ) {
-        return Arrays.toString( arrayParameter );
-    }
 }

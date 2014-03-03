@@ -1,20 +1,24 @@
 package org.deegree.securityproxy.wms.request;
 
+import static java.util.Arrays.asList;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.*;
-
-import static java.lang.String.format;
-import static java.util.Arrays.asList;
-import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-
 /**
- * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a {@link org.deegree.securityproxy.wms.request.WmsRequest}.
- *
+ * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a
+ * {@link org.deegree.securityproxy.wms.request.WmsRequest}.
+ * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -62,7 +66,7 @@ public class WmsRequestParser implements OwsRequestParser {
     @Override
     @SuppressWarnings("unchecked")
     public WmsRequest parse( HttpServletRequest request )
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         if ( request == null )
             throw new IllegalArgumentException( "Request must not be null!" );
         String serviceName = evaluateServiceName( request );
@@ -71,8 +75,8 @@ public class WmsRequestParser implements OwsRequestParser {
         return parseRequest( serviceName, normalizedParameterMap );
     }
 
-    private WmsRequest parseRequest( String serviceName,
-                                     Map<String, String[]> normalizedParameterMap ) throws UnsupportedRequestTypeException {
+    private WmsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
+                            throws UnsupportedRequestTypeException {
         String type = normalizedParameterMap.get( REQUEST )[0];
         if ( GETCAPABILITIES.equalsIgnoreCase( type ) )
             return parseGetCapabilitiesRequest( serviceName, normalizedParameterMap );
@@ -108,8 +112,8 @@ public class WmsRequestParser implements OwsRequestParser {
         return separatedLayers;
     }
 
-    private WmsRequest parseGetCapabilitiesRequest( String serviceName,
-                                                    Map<String, String[]> normalizedParameterMap ) throws UnsupportedRequestTypeException {
+    private WmsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
+                            throws UnsupportedRequestTypeException {
         checkGetCapabilitiesParameters( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         return new WmsRequest( GETCAPABILITIES, version, serviceName );
@@ -144,7 +148,7 @@ public class WmsRequestParser implements OwsRequestParser {
     }
 
     private void checkServiceParameter( Map<String, String[]> normalizedParameterMap )
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         String serviceType = checkSingleRequiredParameter( normalizedParameterMap, SERVICE );
         if ( !"wms".equalsIgnoreCase( serviceType ) ) {
             String msg = "Request must contain a \"service\" parameter with value \"wms\"";
@@ -179,8 +183,8 @@ public class WmsRequestParser implements OwsRequestParser {
         checkHeightParameter( normalizedParameterMap );
     }
 
-    private void checkGetCapabilitiesParameters(
-          Map<String, String[]> normalizedParameterMap ) throws UnsupportedRequestTypeException {
+    private void checkGetCapabilitiesParameters( Map<String, String[]> normalizedParameterMap )
+                            throws UnsupportedRequestTypeException {
         checkServiceParameter( normalizedParameterMap );
     }
 
@@ -226,44 +230,6 @@ public class WmsRequestParser implements OwsRequestParser {
 
     private void checkFormatParameter( Map<String, String[]> normalizedParameterMap ) {
         checkSingleRequiredParameter( normalizedParameterMap, FORMAT );
-    }
-
-    private String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap, String parameterName ) {
-        String[] parameterValue = checkRequiredParameter( normalizedParameterMap, parameterName );
-        if ( isNotSingle( parameterValue ) ) {
-            throwException( parameterName, parameterValue );
-        }
-        return parameterValue[0];
-    }
-
-    private String[] checkRequiredParameter( Map<String, String[]> normalizedParameterMap, String parameterName ) {
-        String[] parameterValue = normalizedParameterMap.get( parameterName );
-        if ( isNotSet( parameterValue ) ) {
-            throwException( parameterName );
-        }
-        return parameterValue;
-    }
-
-    private void throwException( String parameterName ) {
-        String msg = "Request must contain exactly one %s parameter, ignoring the casing. None Given.";
-        throw new IllegalArgumentException( format( msg, parameterName ) );
-    }
-
-    private void throwException( String parameterName, String[] parameterValue ) {
-        String msg = "Request must contain exactly one '%s' parameter, ignoring the casing. Given parameters: %s";
-        throw new IllegalArgumentException( format( msg, parameterName, asString( parameterValue ) ) );
-    }
-
-    private boolean isNotSet( String[] parameterValue ) {
-        return parameterValue == null || parameterValue.length == 0;
-    }
-
-    private boolean isNotSingle( String[] parameterValue ) {
-        return parameterValue.length > 1;
-    }
-
-    private String asString( String[] arrayParameter ) {
-        return Arrays.toString( arrayParameter );
     }
 
 }

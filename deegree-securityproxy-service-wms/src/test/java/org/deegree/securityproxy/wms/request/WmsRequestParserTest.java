@@ -35,32 +35,34 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.request;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.junit.Test;
-import org.mockito.Mockito;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.VERSION_130;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Tests for {@link WmsRequestParser}.
- *
+ * 
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
 public class WmsRequestParserTest {
-
-    private final OwsRequestParser parser = new WmsRequestParser();
 
     private static final String WIDTH_PARAM = "WIDTH";
 
@@ -116,10 +118,12 @@ public class WmsRequestParserTest {
 
     private static final String J_NAME = "50";
 
+    private final OwsRequestParser parser = new WmsRequestParser();
+
     /* Tests for valid requests for WMS GetCapabilities */
     @Test
     public void testParseFromGetCapabilitiesRequestShouldIgnoreLayerNames()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetCapabilitiesRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         assertThat( wmsRequest.getLayerNames().isEmpty(), is( true ) );
@@ -127,7 +131,7 @@ public class WmsRequestParserTest {
 
     @Test
     public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersionAndServiceName()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetCapabilitiesRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         assertThat( wmsRequest.getOperationType(), is( GETCAPABILITIES ) );
@@ -137,7 +141,7 @@ public class WmsRequestParserTest {
 
     @Test
     public void testParseFromGetCapabilitiesRequestWithExtendedPathShouldParseServiceName()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetCapabilitiesRequestWithExtendedPath();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         assertThat( wmsRequest.getOperationType(), is( GETCAPABILITIES ) );
@@ -148,7 +152,7 @@ public class WmsRequestParserTest {
     /* Test for valid requests for WMS GetFeatureInfo */
     @Test
     public void testParseFromGetFeatureInfoRequestShouldParseLayersAndOperationTypeAndServiceVersionAndServiceName()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetFeatureInfoRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         List<String> layerNames = wmsRequest.getLayerNames();
@@ -163,7 +167,7 @@ public class WmsRequestParserTest {
     /* Test for valid requests for WMS GetMap */
     @Test
     public void testParseFromGetMapRequestShouldParseLayerAndOperationTypeAndServiceVersionAndServiceName()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         List<String> layerNames = wmsRequest.getLayerNames();
@@ -177,107 +181,107 @@ public class WmsRequestParserTest {
     /* Test for invalid requests */
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCapabilitiesRequestMissingServiceNameShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetCapabilitiesRequestMissingServiceName();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestMultipleLayersShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestMultipleLayerParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestTwoLayersShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestTwoLayerParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestMissingLayersShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestMissingLayersParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestTwoCrsShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestTwoCrsParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestMissingCrsShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestMissingCrsParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestTwoBboxShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestTwoBboxParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestMissingBboxShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestMissingBbox();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestTwoFormatShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestTwoFormatParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetMapRequestMissingFormatShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetMapRequestMissingFormatParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithNullRequestShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         parser.parse( null );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingRequestParameterShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockInvalidWmsRequestMissingRequestParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingServiceParameterShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockInvalidWmsRequestMissingServiceParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithDoubleServiceParameterShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockInvalidWmsRequestDoubleServiceParameter( "wms" ) );
     }
 
     @Test(expected = UnsupportedRequestTypeException.class)
     public void testParseWmsRequestShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockWcsGetRequest() );
     }
 
     @Test
     public void testParseWithMissingVersionParameter()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         parser.parse( mockValidWmsRequestMissingVersionParameter() );
     }
 

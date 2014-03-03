@@ -62,8 +62,6 @@ import org.mockito.Mockito;
  */
 public class WcsRequestParserTest {
 
-    private final OwsRequestParser parser = new WcsRequestParser();
-
     private static final String WIDTH_PARAM = "WIDTH";
 
     private static final String HEIGHT_PARAM = "HEIGHT";
@@ -105,6 +103,8 @@ public class WcsRequestParserTest {
     private static final String RESY_NAME = "50";
 
     private static final String FORMAT_NAME = "GEOTIFF_INT16";
+
+    private final OwsRequestParser parser = new WcsRequestParser();
 
     /* Tests for valid requests for WCS GetCapabilities */
     @Test
