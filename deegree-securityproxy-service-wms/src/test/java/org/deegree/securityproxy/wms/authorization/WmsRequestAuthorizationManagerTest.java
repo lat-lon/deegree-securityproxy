@@ -35,6 +35,27 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.authorization;
 
+import static org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager.AUTHORIZED;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.VERSION_130;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
@@ -44,20 +65,9 @@ import org.deegree.securityproxy.wms.request.WmsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.*;
-
-import static org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager.AUTHORIZED;
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
-
 /**
  * Tests for {@link WmsRequestAuthorizationManager}.
- *
+ * 
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -82,21 +92,21 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testSupportsWcsRequestShouldBeSupported()
-          throws Exception {
+                            throws Exception {
         boolean isSupported = authorizationManager.supports( WmsRequest.class );
         assertThat( isSupported, is( true ) );
     }
 
     @Test
     public void testSupportsHttpServletRequestShouldBeUnsupported()
-          throws Exception {
+                            throws Exception {
         boolean isSupported = authorizationManager.supports( HttpServletRequest.class );
         assertThat( isSupported, is( false ) );
     }
 
     @Test
     public void testDecideWithSingleAuthorization()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WmsRequest request = mockDefaultRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -105,7 +115,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideWithMultipleAuthorizations()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithMultiplePermissions();
         WmsRequest request = mockGetCapabilitiesRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -114,7 +124,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideMultipleAuthorizationsShouldBeRefusedCauseOfVersion()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithMultiplePermissions();
         WmsRequest request = mockGetCapabilitiesRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -124,7 +134,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfVersion()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WmsRequest request = mockRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -135,7 +145,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfOperationType()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WmsRequest request = mockRequestWithUnsupportedOperationType();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -144,7 +154,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfCovName()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WmsRequest request = mockRequestWithUnsupportedLayerName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -154,7 +164,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WmsRequest request = mockRequestWithUnsupportedServiceName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -164,7 +174,7 @@ public class WmsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideSingleAuthorizationShouldIdentifyAdditionalKeyValuePairs()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockDefaultAuthentication();
         WmsRequest request = mockDefaultRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -174,8 +184,8 @@ public class WmsRequestAuthorizationManagerTest {
         Set<String> actualKeySet = report.getAdditionalKeyValuePairs().keySet();
         String[] actualValue = report.getAdditionalKeyValuePairs().get( expectedAdditionalKey );
 
-        assertTrue( actualKeySet.contains( expectedAdditionalKey ) );
-        assertTrue( Arrays.equals( actualValue, expectedAdditionalValue ) );
+        assertThat( actualKeySet, hasItem( expectedAdditionalKey ) );
+        assertThat( actualValue, is( expectedAdditionalValue ) );
     }
 
     private WmsRequest mockDefaultRequest() {
