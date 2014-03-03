@@ -1,5 +1,10 @@
 package org.deegree.securityproxy.wms;
 
+import java.io.IOException;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.filter.ServiceManager;
@@ -11,15 +16,11 @@ import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Map;
-
 /**
  * This is an implementation of a {@link ServiceManager} for wms-requests. It contains wms specific parser,
  * authorization-manager and filter-manager. It is possible to start parsing of wms-requests, wms-authorization,
  * wms-response-filtering and a check whether response-filtering is enabled.
- *
+ * 
  * @author <a href="wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -36,7 +37,8 @@ class WmsServiceManager implements ServiceManager {
     }
 
     @Override
-    public OwsRequest parse( HttpServletRequest httpRequest ) throws UnsupportedRequestTypeException {
+    public OwsRequest parse( HttpServletRequest httpRequest )
+                            throws UnsupportedRequestTypeException {
         return parser.parse( httpRequest );
     }
 
@@ -52,8 +54,8 @@ class WmsServiceManager implements ServiceManager {
 
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
-                                                Authentication authentication,
-                                                OwsRequest owsRequest ) throws IOException {
+                                                Authentication authentication, OwsRequest owsRequest )
+                            throws IOException {
         return null;
     }
 

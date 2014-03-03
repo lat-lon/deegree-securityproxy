@@ -1,24 +1,25 @@
 package org.deegree.securityproxy.wms;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
-
 
 /**
  * @author <a href="wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
@@ -42,7 +43,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testParse()
-          throws Exception {
+                            throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
         wmsServiceManager.parse( request );
 
@@ -51,7 +52,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testAuthorize()
-          throws Exception {
+                            throws Exception {
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wmsServiceManager.authorize( authentication, owsRequest );
@@ -61,7 +62,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabled()
-          throws Exception {
+                            throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = wmsServiceManager.isResponseFilterEnabled( owsRequest );
 
@@ -70,12 +71,11 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testFilterResponse()
-          throws Exception {
+                            throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
-        ResponseFilterReport responseFilterReport = wmsServiceManager.filterResponse( wrappedResponse,
-                                                                                      authentication,
+        ResponseFilterReport responseFilterReport = wmsServiceManager.filterResponse( wrappedResponse, authentication,
                                                                                       owsRequest );
 
         assertThat( responseFilterReport, nullValue() );
@@ -83,7 +83,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnTrue()
-          throws Exception {
+                            throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
         boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
 
@@ -92,15 +92,11 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
-          throws Exception {
+                            throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );
-    }
-
-    private ResponseFilterManager mockResponseFilterManager() {
-        return mock( ResponseFilterManager.class );
     }
 
     private RequestAuthorizationManager mockRequestAuthorizationManager() {
