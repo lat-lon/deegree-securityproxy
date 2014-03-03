@@ -86,9 +86,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wcsPermission = (RasterPermission) authority;
-                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
-                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
+                if ( areBaseParamsAuthorized( wcsRequest, wcsPermission ) ) {
                     grantedCoverages.add( wcsPermission.getLayerName() );
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
                     // DSP always chooses the url of the last permission.
@@ -111,9 +109,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wcsPermission = (RasterPermission) authority;
                 if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
-                     && isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
-                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
+                     && areBaseParamsAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
                                                     wcsPermission.getInternalServiceUrl(),
                                                     wcsPermission.getAdditionalKeyValuePairs() );
@@ -128,9 +124,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wcsPermission = (RasterPermission) authority;
-                if ( isOperationTypeAuthorized( wcsRequest, wcsPermission )
-                     && isServiceVersionAuthorized( wcsRequest, wcsPermission )
-                     && isServiceNameAuthorized( wcsRequest, wcsPermission ) ) {
+                if ( areBaseParamsAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
                                                     wcsPermission.getInternalServiceUrl(),
                                                     wcsPermission.getAdditionalKeyValuePairs() );
@@ -152,6 +146,18 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         return GETCAPABILITIES.equals( wcsRequest.getOperationType() );
     }
 
+    private boolean areBaseParamsAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+        return isServiceTypeAuthorized( wcsRequest, wcsPermission )
+               && isOperationTypeAuthorized( wcsRequest, wcsPermission )
+               && isServiceVersionAuthorized( wcsRequest, wcsPermission )
+               && isServiceNameAuthorized( wcsRequest, wcsPermission );
+    }
+
+    private boolean isServiceTypeAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+        return wcsRequest.getServiceType() != null
+               && wcsRequest.getServiceType().equalsIgnoreCase( wcsPermission.getServiceType() );
+    }
+
     private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
         return wcsRequest.getOperationType() != null
                && wcsRequest.getOperationType().equalsIgnoreCase( wcsPermission.getOperationType() );
@@ -159,7 +165,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
 
     private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
         OwsServiceVersion requestedServiceVersion = wcsRequest.getServiceVersion();
-        if(requestedServiceVersion == null)
+        if ( requestedServiceVersion == null )
             return false;
         LimitedOwsServiceVersion serviceVersionLimit = wcsPermission.getServiceVersion();
         return serviceVersionLimit.contains( requestedServiceVersion );
@@ -177,4 +183,5 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         return wcsRequest.getServiceName() != null
                && wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
     }
+
 }

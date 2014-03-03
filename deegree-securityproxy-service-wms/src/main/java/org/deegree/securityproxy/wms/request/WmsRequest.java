@@ -52,6 +52,10 @@ import org.deegree.securityproxy.request.OwsServiceVersion;
  */
 public class WmsRequest extends OwsRequest {
 
+    private static final String WMS_TYPE = "wms";
+
+    private final String serviceName;
+
     private final List<String> layerNames;
 
     /**
@@ -98,8 +102,16 @@ public class WmsRequest extends OwsRequest {
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
                        String serviceName ) {
-        super( operationType, serviceVersion, serviceName );
+        super( WMS_TYPE, operationType, serviceVersion );
+        this.serviceName = serviceName;
         this.layerNames = layerNames;
+    }
+
+    /**
+     * @return the serviceName, never <code>null</code>
+     */
+    public String getServiceName() {
+        return serviceName;
     }
 
     /**
@@ -112,7 +124,7 @@ public class WmsRequest extends OwsRequest {
     @Override
     public String toString() {
         return "WmsRequest [operationType=" + getOperationType() + ", serviceVersion=" + getServiceVersion()
-               + ", layerNames=" + layerNames + ", serviceName=" + getServiceName() + "]";
+               + ", layerNames=" + layerNames + ", serviceName=" + serviceName + "]";
     }
 
 }

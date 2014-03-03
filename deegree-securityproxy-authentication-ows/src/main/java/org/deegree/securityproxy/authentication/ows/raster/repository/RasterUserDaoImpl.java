@@ -3,7 +3,6 @@ package org.deegree.securityproxy.authentication.ows.raster.repository;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class RasterUserDaoImpl implements UserDao {
 
-    private static final String SERVICE_NAME = "WCS";
+    private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS" } );
 
     @Autowired
     private DataSource source;
@@ -69,20 +68,20 @@ public class RasterUserDaoImpl implements UserDao {
     private List<String> additionalRequestParameters;
 
     public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                           String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
-                           String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
-                           String layerNameColumn, String subscriptionStart, String subscriptionEnd,
-                           String geometryLimitColumn ) {
+                              String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
+                              String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
+                              String layerNameColumn, String subscriptionStart, String subscriptionEnd,
+                              String geometryLimitColumn ) {
         this( schemaName, tableName, headerColumn, userNameColumn, passwordColumn, serviceTypeColumn,
               serviceVersionColumn, operationTypeColumn, serviceNameColumn, internalServiceUrlColumn, layerNameColumn,
               subscriptionStart, subscriptionEnd, geometryLimitColumn, null );
     }
 
     public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                           String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
-                           String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
-                           String layerNameColumn, String subscriptionStart, String subscriptionEnd,
-                           String geometryLimitColumn, String[] additionalRequestParameters ) {
+                              String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
+                              String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
+                              String layerNameColumn, String subscriptionStart, String subscriptionEnd,
+                              String geometryLimitColumn, String[] additionalRequestParameters ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
@@ -181,11 +180,12 @@ public class RasterUserDaoImpl implements UserDao {
         List<RasterPermission> authorities = new ArrayList<RasterPermission>();
         List<GeometryFilterInfo> geometrieFilter = new ArrayList<GeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
-            if ( checkIfWcsServiceType( row ) ) {
+            String serviceType = getAsString( row, serviceTypeColumn );
+            if ( checkIfServiceTypeisSupported( serviceType ) ) {
                 username = getAsString( row, userNameColumn );
                 password = getAsString( row, passwordColumn );
                 accessToken = getAsString( row, headerColumn );
-                addAuthorities( authorities, row );
+                authorities.add( createAuthority( serviceType, row ) );
                 createGeometryFilter( geometrieFilter, row );
             }
         }
@@ -194,15 +194,15 @@ public class RasterUserDaoImpl implements UserDao {
         return null;
     }
 
-    private void addAuthorities( Collection<RasterPermission> authorities, Map<String, Object> row ) {
+    private RasterPermission createAuthority( String serviceType, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
         LimitedOwsServiceVersion serviceVersion = parseServiceVersion( row );
         String operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
-        authorities.add( new RasterPermission( operationType, serviceVersion, layerName, serviceName, internalServiceUrl,
-                                            userRequestParameters ) );
+        return new RasterPermission( serviceType, operationType, serviceVersion, layerName, serviceName,
+                                     internalServiceUrl, userRequestParameters );
     }
 
     private Map<String, String[]> retrieveAdditionalRequestParams( Map<String, Object> row ) {
@@ -224,9 +224,8 @@ public class RasterUserDaoImpl implements UserDao {
         }
     }
 
-    private boolean checkIfWcsServiceType( Map<String, Object> row ) {
-        String serviceType = getAsString( row, serviceTypeColumn );
-        return SERVICE_NAME.equals( serviceType.toUpperCase() );
+    private boolean checkIfServiceTypeisSupported( String serviceType ) {
+        return SUPPORTED_SERVICE_NAMES.contains( serviceType.toUpperCase() );
     }
 
     private String retrieveOperationType( Map<String, Object> row ) {

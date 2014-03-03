@@ -78,7 +78,9 @@ public class WmsRequestAuthorizationManagerTest {
 
     private static final LimitedOwsServiceVersion VERSION_LESS_EQUAL_130 = new LimitedOwsServiceVersion( "<= 1.3.0" );
 
-    private static final String OPERATION_TYPE = GETMAP;
+    private static final String WMS_TYPE = "wms";
+
+    private static final String WCS_TYPE = "wcs";
 
     private static final String SERVICE_NAME = "serviceName";
 
@@ -107,8 +109,8 @@ public class WmsRequestAuthorizationManagerTest {
     @Test
     public void testDecideWithSingleAuthorization()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
-        WmsRequest request = mockDefaultRequest();
+        Authentication authentication = mockGetMapAuthentication();
+        WmsRequest request = mockGetMapRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( AUTHORIZED ) );
     }
@@ -120,6 +122,33 @@ public class WmsRequestAuthorizationManagerTest {
         WmsRequest request = mockGetCapabilitiesRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( AUTHORIZED ) );
+    }
+
+    @Test
+    public void testDecideGetMapWithNonWmsAuthorizations()
+                            throws Exception {
+        Authentication authentication = mockAllAuthenticationWithNonWmsPermissions();
+        WmsRequest request = mockGetMapRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+    }
+
+    @Test
+    public void testDecideGetCapabilitiesWithNonWmsAuthorizations()
+                            throws Exception {
+        Authentication authentication = mockAllAuthenticationWithNonWmsPermissions();
+        WmsRequest request = mockGetCapabilitiesRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+    }
+
+    @Test
+    public void testDecideGetFeatureinfoWithNonWmsAuthorizations()
+                            throws Exception {
+        Authentication authentication = mockAllAuthenticationWithNonWmsPermissions();
+        WmsRequest request = mockGetFeatureinfoRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
     }
 
     @Test
@@ -135,7 +164,7 @@ public class WmsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfVersion()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetMapAuthentication();
         WmsRequest request = mockRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -146,7 +175,7 @@ public class WmsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfOperationType()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetMapAuthentication();
         WmsRequest request = mockRequestWithUnsupportedOperationType();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -155,7 +184,7 @@ public class WmsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfCovName()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetMapAuthentication();
         WmsRequest request = mockRequestWithUnsupportedLayerName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -165,7 +194,7 @@ public class WmsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetMapAuthentication();
         WmsRequest request = mockRequestWithUnsupportedServiceName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -175,8 +204,8 @@ public class WmsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldIdentifyAdditionalKeyValuePairs()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
-        WmsRequest request = mockDefaultRequest();
+        Authentication authentication = mockGetMapAuthentication();
+        WmsRequest request = mockGetMapRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
 
         String expectedAdditionalKey = "additionalKey";
@@ -188,12 +217,16 @@ public class WmsRequestAuthorizationManagerTest {
         assertThat( actualValue, is( expectedAdditionalValue ) );
     }
 
-    private WmsRequest mockDefaultRequest() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_130 );
+    private WmsRequest mockGetMapRequest() {
+        return mockRequest( LAYER_NAME, GETMAP, SERVICE_NAME, VERSION_130 );
     }
 
     private WmsRequest mockGetCapabilitiesRequest() {
         return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION_130 );
+    }
+
+    private WmsRequest mockGetFeatureinfoRequest() {
+        return mockRequest( null, GETFEATUREINFO, SERVICE_NAME, VERSION_130 );
     }
 
     private WmsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
@@ -201,7 +234,7 @@ public class WmsRequestAuthorizationManagerTest {
     }
 
     private WmsRequest mockRequestWithUnsupportedVersion() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, SERVICE_NAME, new OwsServiceVersion( 2, 0, 0 ) );
+        return mockRequest( LAYER_NAME, GETMAP, SERVICE_NAME, new OwsServiceVersion( 2, 0, 0 ) );
     }
 
     private WmsRequest mockRequestWithUnsupportedOperationType() {
@@ -209,11 +242,11 @@ public class WmsRequestAuthorizationManagerTest {
     }
 
     private WmsRequest mockRequestWithUnsupportedLayerName() {
-        return mockRequest( "unknown", OPERATION_TYPE, SERVICE_NAME, VERSION_130 );
+        return mockRequest( "unknown", GETMAP, SERVICE_NAME, VERSION_130 );
     }
 
     private WmsRequest mockRequestWithUnsupportedServiceName() {
-        return mockRequest( LAYER_NAME, OPERATION_TYPE, "unknown", VERSION_130 );
+        return mockRequest( LAYER_NAME, GETMAP, "unknown", VERSION_130 );
     }
 
     private WmsRequest mockRequest( String layerName, String operationType, String serviceName,
@@ -223,13 +256,14 @@ public class WmsRequestAuthorizationManagerTest {
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
         when( mock.getServiceName() ).thenReturn( serviceName );
+        when( mock.getServiceType() ).thenReturn( WMS_TYPE );
         return mock;
     }
 
-    private Authentication mockDefaultAuthentication() {
+    private Authentication mockGetMapAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -238,9 +272,22 @@ public class WmsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
+        authorities.add( new RasterPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        doReturn( authorities ).when( authentication ).getAuthorities();
+        return authentication;
+    }
+
+    private Authentication mockAllAuthenticationWithNonWmsPermissions() {
+        Authentication authentication = mock( Authentication.class );
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( WCS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WCS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WCS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;

@@ -74,11 +74,13 @@ import org.springframework.security.core.Authentication;
  */
 public class WcsRequestAuthorizationManagerTest {
 
+    private static final String WCS_TYPE = "wcs";
+
+    private static final String WMS_TYPE = "wms";
+
     private static final boolean NOT_AUTHORIZED = false;
 
     private static final LimitedOwsServiceVersion VERSION_LESS_EQUAL_100 = new LimitedOwsServiceVersion( "<= 1.0.0" );
-
-    private static final String OPERATION_TYPE = GETCOVERAGE;
 
     private static final String SERVICE_NAME = "serviceName";
 
@@ -107,8 +109,8 @@ public class WcsRequestAuthorizationManagerTest {
     @Test
     public void testDecideWithSingleAuthorization()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
-        WcsRequest request = mockDefaultRequest();
+        Authentication authentication = mockGetCoverageAuthentication();
+        WcsRequest request = mockGetCoverageRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( AUTHORIZED ) );
     }
@@ -120,6 +122,33 @@ public class WcsRequestAuthorizationManagerTest {
         WcsRequest request = mockGetCapabilitiesRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( AUTHORIZED ) );
+    }
+
+    @Test
+    public void testDecideGetCoverageWithNonWcsPermissions()
+                            throws Exception {
+        Authentication authentication = mockAllAuthenticationsWithNonWcsPermission();
+        WcsRequest request = mockGetCoverageRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+    }
+
+    @Test
+    public void testDecideGetCapabilitiesWithNonWcsPermissions()
+                            throws Exception {
+        Authentication authentication = mockAllAuthenticationsWithNonWcsPermission();
+        WcsRequest request = mockGetCapabilitiesRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+    }
+
+    @Test
+    public void testDecideDescribeCoverageWithNonWcsPermissions()
+                            throws Exception {
+        Authentication authentication = mockAllAuthenticationsWithNonWcsPermission();
+        WcsRequest request = mockDescribeCoverageRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
     }
 
     @Test
@@ -135,7 +164,7 @@ public class WcsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfVersion()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetCoverageAuthentication();
         WcsRequest request = mockRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -146,7 +175,7 @@ public class WcsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedCauseOfOperationType()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetCoverageAuthentication();
         WcsRequest request = mockRequestWithUnsupportedOperationType();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -155,7 +184,7 @@ public class WcsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfCovName()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetCoverageAuthentication();
         WcsRequest request = mockRequestWithUnsupportedLayerName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -165,7 +194,7 @@ public class WcsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldBeRefusedBecauseOfServiceName()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
+        Authentication authentication = mockGetCoverageAuthentication();
         WcsRequest request = mockRequestWithUnsupportedServiceName();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
@@ -175,8 +204,8 @@ public class WcsRequestAuthorizationManagerTest {
     @Test
     public void testDecideSingleAuthorizationShouldIdentifyAdditionalKeyValuePairs()
                             throws Exception {
-        Authentication authentication = mockDefaultAuthentication();
-        WcsRequest request = mockDefaultRequest();
+        Authentication authentication = mockGetCoverageAuthentication();
+        WcsRequest request = mockGetCoverageRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
 
         String expectedAdditionalKey = "additionalKey";
@@ -188,12 +217,16 @@ public class WcsRequestAuthorizationManagerTest {
         assertTrue( Arrays.equals( actualValue, expectedAdditionalValue ) );
     }
 
-    private WcsRequest mockDefaultRequest() {
-        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_100 );
+    private WcsRequest mockGetCoverageRequest() {
+        return mockRequest( COVERAGE_NAME, GETCOVERAGE, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockGetCapabilitiesRequest() {
         return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION_100 );
+    }
+
+    private WcsRequest mockDescribeCoverageRequest() {
+        return mockRequest( null, DESCRIBECOVERAGE, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
@@ -201,7 +234,7 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockRequestWithUnsupportedVersion() {
-        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, SERVICE_NAME, VERSION_200 );
+        return mockRequest( COVERAGE_NAME, GETCOVERAGE, SERVICE_NAME, VERSION_200 );
     }
 
     private WcsRequest mockRequestWithUnsupportedOperationType() {
@@ -209,11 +242,11 @@ public class WcsRequestAuthorizationManagerTest {
     }
 
     private WcsRequest mockRequestWithUnsupportedLayerName() {
-        return mockRequest( "unknown", OPERATION_TYPE, SERVICE_NAME, VERSION_100 );
+        return mockRequest( "unknown", GETCOVERAGE, SERVICE_NAME, VERSION_100 );
     }
 
     private WcsRequest mockRequestWithUnsupportedServiceName() {
-        return mockRequest( COVERAGE_NAME, OPERATION_TYPE, "unknown", VERSION_100 );
+        return mockRequest( COVERAGE_NAME, GETCOVERAGE, "unknown", VERSION_100 );
     }
 
     private WcsRequest mockRequest( String layerName, String operationType, String serviceName,
@@ -223,14 +256,15 @@ public class WcsRequestAuthorizationManagerTest {
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
         when( mock.getServiceName() ).thenReturn( serviceName );
+        when( mock.getServiceType() ).thenReturn( WCS_TYPE );
         return mock;
     }
 
-    private Authentication mockDefaultAuthentication() {
+    private Authentication mockGetCoverageAuthentication() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
-                                            INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WCS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
+                                               SERVICE_NAME, INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -238,10 +272,23 @@ public class WcsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( OPERATION_TYPE, VERSION_LESS_EQUAL_100, COVERAGE_NAME, SERVICE_NAME,
-                                            INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
-                                            INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WCS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
+                                               SERVICE_NAME, INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WCS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        doReturn( authorities ).when( authentication ).getAuthorities();
+        return authentication;
+    }
+
+    private Authentication mockAllAuthenticationsWithNonWcsPermission() {
+        Authentication authentication = mock( Authentication.class );
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( WMS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
+                                               SERVICE_NAME, INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WMS_TYPE, DESCRIBECOVERAGE, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }

@@ -45,7 +45,7 @@ package org.deegree.securityproxy.request;
  */
 public abstract class OwsRequest {
 
-    private final String serviceName;
+    private final String serviceType;
 
     private final OwsServiceVersion serviceVersion;
 
@@ -58,20 +58,20 @@ public abstract class OwsRequest {
      *            the type of the operation, never <code>null</code>
      * @param serviceVersion
      *            the version of the service, never <code>null</code>
-     * @param serviceName
-     *            the name of the service, never <code>null</code>
+     * @param serviceType
+     *            the type of the service (wms, wcs, ...), never <code>null</code>
      */
-    public OwsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
+    public OwsRequest( String serviceType, String operationType, OwsServiceVersion serviceVersion ) {
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
-        this.serviceName = serviceName;
+        this.serviceType = serviceType;
     }
 
     /**
-     * @return the serviceName, never <code>null</code>
+     * @return the serviceType in lower cases(wms, wcs, ...), never <code>null</code>
      */
-    public String getServiceName() {
-        return serviceName;
+    public String getServiceType() {
+        return serviceType.toLowerCase();
     }
 
     /**

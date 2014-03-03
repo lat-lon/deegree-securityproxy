@@ -56,6 +56,8 @@ public class RasterPermission implements GrantedAuthority {
 
     private static final long serialVersionUID = 5184855468635810194L;
 
+    private final String serviceType;
+
     private final String operationType;
 
     private final LimitedOwsServiceVersion serviceVersion;
@@ -68,8 +70,10 @@ public class RasterPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public RasterPermission( String operationType, LimitedOwsServiceVersion serviceVersion, String coverageName,
-                          String serviceName, String internalServiceUrl, Map<String, String[]> additionalKeyValuePairs ) {
+    public RasterPermission( String serviceType, String operationType, LimitedOwsServiceVersion serviceVersion,
+                             String coverageName, String serviceName, String internalServiceUrl,
+                             Map<String, String[]> additionalKeyValuePairs ) {
+        this.serviceType = serviceType;
         this.operationType = operationType;
         this.serviceVersion = serviceVersion;
         this.layerName = coverageName;
@@ -87,6 +91,13 @@ public class RasterPermission implements GrantedAuthority {
         // This permission cannot be represented as a String!
         // Spring Security requires the return value null in this case
         return null;
+    }
+
+    /**
+     * @return the serviceType
+     */
+    public String getServiceType() {
+        return serviceType;
     }
 
     /**

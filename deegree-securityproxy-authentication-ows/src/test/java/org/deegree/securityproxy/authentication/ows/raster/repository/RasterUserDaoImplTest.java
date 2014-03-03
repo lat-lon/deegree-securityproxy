@@ -111,8 +111,28 @@ public class RasterUserDaoImplTest {
     }
 
     @Test
-    public void testLoadUserDetailsForUserWithNotWcsPermissionFails() {
+    public void testRetrieveUserByIdWithWcsPermissionsShouldHaveCorrectAuthority() {
+        UserDetails details = source.retrieveUserById( "VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wcs" ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithWmsPermissionsShouldHaveCorrectAuthority() {
         UserDetails details = source.retrieveUserById( "WMS_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wms" ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithNotRasterPermissionFails() {
+        UserDetails details = source.retrieveUserById( "CSW_VALID_HEADER" );
         assertThat( details, nullValue() );
     }
 

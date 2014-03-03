@@ -82,7 +82,7 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
-                if ( areOwsParamsAuthorized( wmsRequest, wmsPermission ) ) {
+                if ( areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     grantedLayers.add( wmsPermission.getLayerName() );
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
                     // DSP always chooses the url of the last permission.
@@ -105,7 +105,7 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
                 if ( isFirstLayerNameAuthorized( wmsRequest, wmsPermission )
-                     && areOwsParamsAuthorized( wmsRequest, wmsPermission ) ) {
+                     && areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     return createAuthorizedReport( wmsPermission );
                 }
             }
@@ -118,7 +118,7 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
-                if ( areOwsParamsAuthorized( wmsRequest, wmsPermission ) ) {
+                if ( areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     return createAuthorizedReport( wmsPermission );
                 }
             }
@@ -132,8 +132,9 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl, additionalKVPs );
     }
 
-    private boolean areOwsParamsAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
-        return isOperationTypeAuthorized( wmsRequest, wmsPermission )
+    private boolean areCommonParamsAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+        return isServiceTypeAuthorized( wmsRequest, wmsPermission )
+               && isOperationTypeAuthorized( wmsRequest, wmsPermission )
                && isServiceVersionAuthorized( wmsRequest, wmsPermission )
                && isServiceNameAuthorized( wmsRequest, wmsPermission );
     }
@@ -148,6 +149,11 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
 
     private boolean isGetCapabilitiesRequest( WmsRequest wmsRequest ) {
         return GETCAPABILITIES.equals( wmsRequest.getOperationType() );
+    }
+
+    private boolean isServiceTypeAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+        return wmsRequest.getServiceType() != null
+               && wmsRequest.getServiceType().equalsIgnoreCase( wmsPermission.getServiceType() );
     }
 
     private boolean isOperationTypeAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {

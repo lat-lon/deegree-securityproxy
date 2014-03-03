@@ -53,6 +53,10 @@ import org.deegree.securityproxy.request.OwsServiceVersion;
  */
 public class WcsRequest extends OwsRequest {
 
+    private static final String WCS_TYPE = "wcs";
+
+    private final String serviceName;
+
     private final List<String> coverageNames;
 
     /**
@@ -99,8 +103,16 @@ public class WcsRequest extends OwsRequest {
      */
     public WcsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> coverageNames,
                        String serviceName ) {
-        super( operationType, serviceVersion, serviceName );
+        super( WCS_TYPE, operationType, serviceVersion );
         this.coverageNames = coverageNames;
+        this.serviceName = serviceName;
+    }
+
+    /**
+     * @return the serviceName, never <code>null</code>
+     */
+    public String getServiceName() {
+        return serviceName;
     }
 
     /**
@@ -113,7 +125,7 @@ public class WcsRequest extends OwsRequest {
     @Override
     public String toString() {
         return "WcsRequest [operationType=" + getOperationType() + ", serviceVersion=" + getServiceVersion()
-               + ", coverageNames=" + coverageNames + ", serviceName=" + getServiceName() + "]";
+               + ", coverageNames=" + coverageNames + ", serviceName=" + serviceName + "]";
     }
 
 }
