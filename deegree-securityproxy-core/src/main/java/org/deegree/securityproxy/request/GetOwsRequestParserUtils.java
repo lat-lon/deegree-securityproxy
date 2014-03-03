@@ -82,6 +82,9 @@ public class GetOwsRequestParserUtils {
     }
 
     public static boolean isNotSingle( String[] parameterValue ) {
+        if ( isNotSet( parameterValue ) )
+            throw new IllegalArgumentException( "parameter value must not be null or empty! Is: "
+                                                + asString( parameterValue ) );
         return parameterValue.length > 1;
     }
 
