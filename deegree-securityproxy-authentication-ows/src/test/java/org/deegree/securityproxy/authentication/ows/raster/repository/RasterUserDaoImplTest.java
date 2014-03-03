@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

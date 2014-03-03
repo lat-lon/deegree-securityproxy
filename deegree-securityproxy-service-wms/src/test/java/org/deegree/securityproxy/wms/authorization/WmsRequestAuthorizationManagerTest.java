@@ -36,15 +36,16 @@
 package org.deegree.securityproxy.wms.authorization;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.wms.request.WmsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.*;
 
 import static org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager.AUTHORIZED;

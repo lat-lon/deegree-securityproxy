@@ -12,8 +12,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 /**

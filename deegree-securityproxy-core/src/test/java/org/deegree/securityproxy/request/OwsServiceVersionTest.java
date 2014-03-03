@@ -1,8 +1,9 @@
-package org.deegree.securityproxy.authentication.ows.domain;
+package org.deegree.securityproxy.request;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.junit.Test;
 
 /**

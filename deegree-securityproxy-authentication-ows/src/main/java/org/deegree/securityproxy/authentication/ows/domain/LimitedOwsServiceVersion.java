@@ -38,6 +38,8 @@ package org.deegree.securityproxy.authentication.ows.domain;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.deegree.securityproxy.request.OwsServiceVersion;
+
 /**
  * Encapsulates a version range (less than, greater than ... a specified version)
  * 

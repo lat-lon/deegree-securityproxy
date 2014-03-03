@@ -1,10 +1,11 @@
 package org.deegree.securityproxy.wms.request;
 
-import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.*;
 
 import static java.lang.String.format;

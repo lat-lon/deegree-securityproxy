@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.authentication.ows.domain;
+package org.deegree.securityproxy.request;
 
 /**
  * 

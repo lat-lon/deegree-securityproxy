@@ -40,8 +40,8 @@ import static java.util.Collections.singletonList;
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.ows.domain.OwsServiceVersion;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 
 /**
  * Encapsulates a WCS request.
@@ -51,15 +51,9 @@ import org.deegree.securityproxy.request.OwsRequest;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsRequest implements OwsRequest {
-
-    private final String operationType;
-
-    private final OwsServiceVersion serviceVersion;
+public class WcsRequest extends OwsRequest {
 
     private final List<String> coverageNames;
-
-    private final String serviceName;
 
     /**
      * Instantiates a new {@link WcsRequest} with an empty {@link List} of coverage names.
@@ -105,24 +99,8 @@ public class WcsRequest implements OwsRequest {
      */
     public WcsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> coverageNames,
                        String serviceName ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
+        super( operationType, serviceVersion, serviceName );
         this.coverageNames = coverageNames;
-        this.serviceName = serviceName;
-    }
-
-    /**
-     * @return the operationType, never <code>null</code>
-     */
-    public String getOperationType() {
-        return operationType;
-    }
-
-    /**
-     * @return the serviceVersion, never <code>null</code>
-     */
-    public OwsServiceVersion getServiceVersion() {
-        return serviceVersion;
     }
 
     /**
@@ -132,17 +110,10 @@ public class WcsRequest implements OwsRequest {
         return Collections.unmodifiableList( coverageNames );
     }
 
-    /**
-     * @return the serviceName, never <code>null</code>
-     */
-    public String getServiceName() {
-        return serviceName;
-    }
-
     @Override
     public String toString() {
-        return "WcsRequest [operationType=" + operationType + ", serviceVersion=" + serviceVersion + ", coverageNames="
-               + coverageNames + ", serviceName=" + serviceName + "]";
+        return "WcsRequest [operationType=" + getOperationType() + ", serviceVersion=" + getServiceVersion()
+               + ", coverageNames=" + coverageNames + ", serviceName=" + getServiceName() + "]";
     }
 
 }

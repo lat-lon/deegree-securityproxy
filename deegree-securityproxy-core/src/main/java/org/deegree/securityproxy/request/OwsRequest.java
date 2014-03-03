@@ -36,15 +36,56 @@
 package org.deegree.securityproxy.request;
 
 /**
- * Encapulates OWS request.
+ * Encapsulates OWS request.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OwsRequest {
+public abstract class OwsRequest {
 
-    // TODO: provide methods to access service and operation name
+    private final String serviceName;
+
+    private final OwsServiceVersion serviceVersion;
+
+    private final String operationType;
+
+    /**
+     * Instantiates a new {@link WcsRequest}.
+     * 
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     */
+    public OwsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
+        this.operationType = operationType;
+        this.serviceVersion = serviceVersion;
+        this.serviceName = serviceName;
+    }
+
+    /**
+     * @return the serviceName, never <code>null</code>
+     */
+    public String getServiceName() {
+        return serviceName;
+    }
+
+    /**
+     * @return the operationType, never <code>null</code>
+     */
+    public String getOperationType() {
+        return operationType;
+    }
+
+    /**
+     * @return the serviceVersion, never <code>null</code>
+     */
+    public OwsServiceVersion getServiceVersion() {
+        return serviceVersion;
+    }
 
 }
