@@ -1,5 +1,14 @@
 package org.deegree.securityproxy.wms.authorization;
 
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
@@ -11,17 +20,10 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.*;
-
 /**
  * Checks if a authenticated User is permitted to perform an incoming {@link javax.servlet.http.HttpServletRequest}
  * against a WMS.
- *
+ * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
@@ -80,9 +82,7 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
-                if ( isOperationTypeAuthorized( wmsRequest, wmsPermission )
-                     && isServiceVersionAuthorized( wmsRequest, wmsPermission )
-                     && isServiceNameAuthorized( wmsRequest, wmsPermission ) ) {
+                if ( areOwsParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     grantedLayers.add( wmsPermission.getLayerName() );
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
                     // DSP always chooses the url of the last permission.
@@ -105,12 +105,8 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
                 if ( isFirstLayerNameAuthorized( wmsRequest, wmsPermission )
-                     && isOperationTypeAuthorized( wmsRequest, wmsPermission )
-                     && isServiceVersionAuthorized( wmsRequest, wmsPermission )
-                     && isServiceNameAuthorized( wmsRequest, wmsPermission ) ) {
-                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
-                                                    wmsPermission.getInternalServiceUrl(),
-                                                    wmsPermission.getAdditionalKeyValuePairs() );
+                     && areOwsParamsAuthorized( wmsRequest, wmsPermission ) ) {
+                    return createAuthorizedReport( wmsPermission );
                 }
             }
         }
@@ -122,16 +118,24 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
-                if ( isOperationTypeAuthorized( wmsRequest, wmsPermission )
-                     && isServiceVersionAuthorized( wmsRequest, wmsPermission )
-                     && isServiceNameAuthorized( wmsRequest, wmsPermission ) ) {
-                    return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
-                                                    wmsPermission.getInternalServiceUrl(),
-                                                    wmsPermission.getAdditionalKeyValuePairs() );
+                if ( areOwsParamsAuthorized( wmsRequest, wmsPermission ) ) {
+                    return createAuthorizedReport( wmsPermission );
                 }
             }
         }
         return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG );
+    }
+
+    private AuthorizationReport createAuthorizedReport( RasterPermission wmsPermission ) {
+        String internalServiceUrl = wmsPermission.getInternalServiceUrl();
+        Map<String, String[]> additionalKVPs = wmsPermission.getAdditionalKeyValuePairs();
+        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl, additionalKVPs );
+    }
+
+    private boolean areOwsParamsAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+        return isOperationTypeAuthorized( wmsRequest, wmsPermission )
+               && isServiceVersionAuthorized( wmsRequest, wmsPermission )
+               && isServiceNameAuthorized( wmsRequest, wmsPermission );
     }
 
     private boolean isGetFeatureInfoRequest( WmsRequest wmsRequest ) {
