@@ -250,6 +250,20 @@ public class WmsRequestParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetFeatureInfoRequestTwoFormatShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetFeatureInfoRequestTwoFormatParameters();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseFromGetFeatureInfoRequestMissingFormatShouldFail()
+          throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetFeatureInfoRequestMissingFormatParameter();
+        parser.parse( request );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testParseWithNullRequestShouldFail()
                             throws UnsupportedRequestTypeException {
         parser.parse( null );
@@ -353,8 +367,20 @@ public class WmsRequestParserTest {
         return mockRequest( parameterMap );
     }
 
+    private HttpServletRequest mockWmsGetFeatureInfoRequestTwoFormatParameters() {
+        Map<String, String[]> parameterMap = createValidGetFeatureInfoParameterMap();
+        parameterMap.put( FORMAT_PARAM, new String[] { FORMAT_NAME, FORMAT_NAME } );
+        return mockRequest( parameterMap );
+    }
+
     private HttpServletRequest mockWmsGetMapRequestMissingFormatParameter() {
         Map<String, String[]> parameterMap = createValidGetMapParameterMap();
+        parameterMap.remove( FORMAT_PARAM );
+        return mockRequest( parameterMap );
+    }
+
+    private HttpServletRequest mockWmsGetFeatureInfoRequestMissingFormatParameter() {
+        Map<String, String[]> parameterMap = createValidGetFeatureInfoParameterMap();
         parameterMap.remove( FORMAT_PARAM );
         return mockRequest( parameterMap );
     }
@@ -416,6 +442,7 @@ public class WmsRequestParserTest {
         parameterMap.put( BBOX_PARAM, new String[] { BBOX_NAME } );
         parameterMap.put( WIDTH_PARAM, new String[] { WIDTH_NAME } );
         parameterMap.put( HEIGHT_PARAM, new String[] { HEIGHT_NAME } );
+        parameterMap.put( FORMAT_PARAM, new String[] { FORMAT_NAME } );
         return parameterMap;
     }
 

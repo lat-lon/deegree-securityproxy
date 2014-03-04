@@ -189,6 +189,7 @@ public class WmsRequestParser implements OwsRequestParser {
         checkBboxParameter( normalizedParameterMap );
         checkWidthParameter( normalizedParameterMap );
         checkHeightParameter( normalizedParameterMap );
+        checkFormatParameter( normalizedParameterMap );
     }
 
     private void checkGetCapabilitiesParameters( Map<String, String[]> normalizedParameterMap )
