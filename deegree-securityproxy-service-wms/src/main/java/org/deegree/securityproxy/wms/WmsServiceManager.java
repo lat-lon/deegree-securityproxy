@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.ServiceExceptionManager;
+import org.deegree.securityproxy.ServiceExceptionWrapper;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.filter.ServiceManager;
@@ -25,15 +27,22 @@ import org.springframework.security.core.Authentication;
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-class WmsServiceManager implements ServiceManager {
+class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     private final OwsRequestParser parser;
 
     private final RequestAuthorizationManager requestAuthorizationManager;
 
-    public WmsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager ) {
+    private final ServiceExceptionWrapper serviceExceptionWrapper;
+
+    public WmsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager,
+                              ServiceExceptionWrapper serviceExceptionWrapper ) {
         this.parser = parser;
         this.requestAuthorizationManager = requestAuthorizationManager;
+        if ( serviceExceptionWrapper != null )
+            this.serviceExceptionWrapper = serviceExceptionWrapper;
+        else
+            this.serviceExceptionWrapper = new ServiceExceptionWrapper();
     }
 
     @Override
@@ -57,6 +66,11 @@ class WmsServiceManager implements ServiceManager {
                                                 Authentication authentication, OwsRequest owsRequest )
                             throws IOException {
         return null;
+    }
+
+    @Override
+    public ServiceExceptionWrapper retrieveServiceExceptionWrapper() {
+        return serviceExceptionWrapper;
     }
 
     @Override

@@ -2,9 +2,10 @@ package org.deegree.securityproxy.wms;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
@@ -12,11 +13,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.ServiceExceptionWrapper;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -34,11 +37,14 @@ public class WmsServiceManagerTest {
 
     private RequestAuthorizationManager requestAuthorizationManager;
 
+    private ServiceExceptionWrapper serviceExceptionWrapper = mock( ServiceExceptionWrapper.class );
+
     @Before
-    public void reset() {
+    public void resetMocks() {
+        reset( serviceExceptionWrapper );
         parser = mockOwsRequestParser();
         requestAuthorizationManager = mockRequestAuthorizationManager();
-        wmsServiceManager = new WmsServiceManager( parser, requestAuthorizationManager );
+        wmsServiceManager = new WmsServiceManager( parser, requestAuthorizationManager, serviceExceptionWrapper );
     }
 
     @Test
@@ -79,6 +85,14 @@ public class WmsServiceManagerTest {
                                                                                       owsRequest );
 
         assertThat( responseFilterReport, nullValue() );
+    }
+
+    @Test
+    public void testretrieveServiceExceptionWrapper()
+                            throws Exception {
+        ServiceExceptionWrapper retrievedServiceExceptionWrapper = wmsServiceManager.retrieveServiceExceptionWrapper();
+
+        assertThat( retrievedServiceExceptionWrapper, CoreMatchers.is( serviceExceptionWrapper ) );
     }
 
     @Test

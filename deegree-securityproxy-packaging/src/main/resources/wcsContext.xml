@@ -10,6 +10,7 @@
     <constructor-arg ref="wcsRequestParser"/>
     <constructor-arg ref="wcsRequestAuthorizationManager"/>
     <constructor-arg ref="responseFilterManager"/>
+    <constructor-arg ref="wcsServiceExceptionWrapper"/>
   </bean>
 
   <bean id="wcsRequestAuthorizationManager"
@@ -26,4 +27,10 @@
 
   <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.GeotiffClipper"/>
 
+  <bean id="wcsServiceExceptionWrapper" class="org.deegree.securityproxy.ServiceExceptionWrapper">
+    <constructor-arg value="${exception_file_path}" />
+    <constructor-arg value="${authentication_denied_status_code}" />
+    <constructor-arg value="${authorization_denied_status_code}" />
+  </bean>
+  
 </beans>

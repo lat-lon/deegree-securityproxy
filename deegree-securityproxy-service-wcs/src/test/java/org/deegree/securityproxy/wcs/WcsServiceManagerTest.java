@@ -1,7 +1,7 @@
 package org.deegree.securityproxy.wcs;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,11 +11,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.ServiceExceptionWrapper;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -37,12 +39,16 @@ public class WcsServiceManagerTest {
 
     private ResponseFilterManager filterManager;
 
+    private ServiceExceptionWrapper serviceExceptionWrapper;
+
     @Before
     public void reset() {
         parser = mockOwsRequestParser();
         requestAuthorizationManager = mockRequestAuthorizationManager();
         filterManager = mockResponseFilterManager();
-        wcsServiceManager = new WcsServiceManager( parser, requestAuthorizationManager, filterManager );
+        serviceExceptionWrapper = mockServiceExceptionWrapper();
+        wcsServiceManager = new WcsServiceManager( parser, requestAuthorizationManager, filterManager,
+                                                   serviceExceptionWrapper );
     }
 
     @Test
@@ -85,6 +91,14 @@ public class WcsServiceManagerTest {
     }
 
     @Test
+    public void testretrieveServiceExceptionWrapper()
+                            throws Exception {
+        ServiceExceptionWrapper retrievedServiceExceptionWrapper = wcsServiceManager.retrieveServiceExceptionWrapper();
+
+        assertThat( retrievedServiceExceptionWrapper, CoreMatchers.is( serviceExceptionWrapper ) );
+    }
+
+    @Test
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnTrue()
                             throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
@@ -108,6 +122,10 @@ public class WcsServiceManagerTest {
 
     private RequestAuthorizationManager mockRequestAuthorizationManager() {
         return mock( RequestAuthorizationManager.class );
+    }
+
+    private ServiceExceptionWrapper mockServiceExceptionWrapper() {
+        return mock( ServiceExceptionWrapper.class );
     }
 
     private OwsRequestParser mockOwsRequestParser() {

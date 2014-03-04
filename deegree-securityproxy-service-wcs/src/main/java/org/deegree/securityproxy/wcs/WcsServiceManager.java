@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.ServiceExceptionManager;
+import org.deegree.securityproxy.ServiceExceptionWrapper;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.filter.ServiceManager;
@@ -27,7 +29,7 @@ import org.springframework.security.core.Authentication;
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-class WcsServiceManager implements ServiceManager {
+class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     private final OwsRequestParser parser;
 
@@ -35,11 +37,18 @@ class WcsServiceManager implements ServiceManager {
 
     private final ResponseFilterManager filterManager;
 
+    private final ServiceExceptionWrapper serviceExceptionWrapper;
+
     public WcsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager,
-                              ResponseFilterManager filterManager ) {
+                              ResponseFilterManager filterManager, ServiceExceptionWrapper serviceExceptionWrapper ) {
         this.parser = parser;
         this.requestAuthorizationManager = requestAuthorizationManager;
         this.filterManager = filterManager;
+        
+        if ( serviceExceptionWrapper != null )
+            this.serviceExceptionWrapper = serviceExceptionWrapper;
+        else
+            this.serviceExceptionWrapper = new ServiceExceptionWrapper();
     }
 
     @Override
@@ -70,6 +79,11 @@ class WcsServiceManager implements ServiceManager {
         @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
         return "wcs".equalsIgnoreCase( kvpMap.get( "service" )[0] );
+    }
+
+    @Override
+    public ServiceExceptionWrapper retrieveServiceExceptionWrapper() {
+        return serviceExceptionWrapper;
     }
 
 }

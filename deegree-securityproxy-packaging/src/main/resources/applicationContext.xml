@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
   <context:annotation-config />
@@ -11,9 +13,7 @@
   <import resource="wcsContext.xml" />
 
   <bean id="serviceExceptionHandler" class="org.deegree.securityproxy.ServiceExceptionHandler">
-    <constructor-arg value="${exception_file_path}" />
-    <constructor-arg value="${authentication_denied_status_code}" />
-    <constructor-arg value="${authorization_denied_status_code}" />
+    <constructor-arg ref="exceptionManagers" />
   </bean>
 
   <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
@@ -25,8 +25,9 @@
     </constructor-arg>
   </bean>
 
-  <bean name="headerAuthenticationProvider" class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationProvider" />
-  
+  <bean name="headerAuthenticationProvider"
+    class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationProvider" />
+
   <bean name="headerAuthenticationManager" class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationManager">
     <constructor-arg ref="headerAuthenticationProvider" />
   </bean>
@@ -49,17 +50,20 @@
     <constructor-arg ref="log4JReportLogger" />
   </bean>
 
-  <bean id="serviceManagers" class="java.util.ArrayList">
-    <constructor-arg>
-      <list>
-        <ref bean="wcsServiceManager" />
-        <ref bean="wmsServiceManager" />
-      </list>
-    </constructor-arg>
-  </bean>
+  <util:list id="serviceManagers" list-class="java.util.LinkedList"
+    value-type="org.deegree.securityproxy.filter.ServiceManager">
+    <ref bean="wcsServiceManager" />
+    <ref bean="wmsServiceManager" />
+  </util:list>
+
+  <util:list id="exceptionManagers" list-class="java.util.LinkedList"
+    value-type="org.deegree.securityproxy.ServiceExceptionManager">
+    <ref bean="wcsServiceManager" />
+    <ref bean="wmsServiceManager" />
+  </util:list>
 
   <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter">
-    <constructor-arg value="${access_token_header_field_name}"/>
+    <constructor-arg value="${access_token_header_field_name}" />
     <property name="authenticationManager" ref="basicAuthenticationManager" />
     <property name="authenticationEntryPoint" ref="serviceExceptionHandler" />
   </bean>

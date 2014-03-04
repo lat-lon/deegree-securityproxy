@@ -1,25 +1,25 @@
 package org.deegree.securityproxy;
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.deegree.securityproxy.ServiceExceptionHandler.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.ServiceExceptionHandler.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.ServiceExceptionHandler.DEFAULT_BODY;
+import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_BODY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 
 /**
@@ -31,11 +31,19 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class ServiceExceptionHandlerTest {
 
-    private static final String PATH_TO_EXCEPTION_FILE = "/ogc_wcs_100_serviceexception.xml";
+    private static final int AUTHENTICATION_DENIED_STATUS_CODE = 401;
+
+    private static final String AUTHENTICATION_DENIED_BODY = "Authentication denied";
+
+    private static final int AUTHOTIZATION_DENIED_STATUS_CODE = 303;
+
+    private static final String AUTHOTIZATION_DENIED_BODY = "Authorization denied";
 
     private final HttpServletRequest mockRequest = mock( HttpServletRequest.class );
 
     private final AuthenticationException mockException = mock( AuthenticationException.class );
+
+    private final AccessDeniedException mockAccessDeniedException = mock( AccessDeniedException.class );
 
     private HttpServletResponse mockResponse = mockResponse();
 
@@ -46,53 +54,104 @@ public class ServiceExceptionHandlerTest {
     }
 
     @Test
-    public void testCommenceWithDefaultException()
+    public void testCommenceWithResponsibleManager()
                             throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler();
+        HttpServletRequest request = mockRequest;
+        ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithManager( request );
+
+        entryPoint.commence( request, mockResponse, mockException );
+
+        verify( mockResponse.getWriter() ).write( AUTHENTICATION_DENIED_BODY );
+        verify( mockResponse ).setStatus( AUTHENTICATION_DENIED_STATUS_CODE );
+    }
+
+    @Test
+    public void testCommenceWithoutResponsibleManagers()
+                            throws IOException, ServletException {
+        ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutResponibleManager();
+
         entryPoint.commence( mockRequest, mockResponse, mockException );
+
         verify( mockResponse ).setStatus( DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE );
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
     }
 
     @Test
-    public void testCommenceWithValidPathToExceptionException()
+    public void testCommenceWithoutManagers()
                             throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( getPathToException(),
-                                                                                DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
+        ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutManagers();
+
         entryPoint.commence( mockRequest, mockResponse, mockException );
 
-        String expectedBody = readResponseBodyFromFile();
-        verify( mockResponse.getWriter() ).write( expectedBody );
-    }
-
-    @Test
-    public void testCommenceWithCustomStatusCode()
-                            throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( getPathToException(), SC_BAD_REQUEST, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
-        entryPoint.commence( mockRequest, mockResponse, mockException );
-        verify( mockResponse ).setStatus( SC_BAD_REQUEST );
-    }
-
-    @Test
-    public void testCommenceWithNullExceptionPathShouldWriteDefaultBody()
-                            throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( null, DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
-        entryPoint.commence( mockRequest, mockResponse, mockException );
-
+        verify( mockResponse ).setStatus( DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE );
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
     }
 
     @Test
-    public void testCommenceWithEmptyExceptionPathShouldWriteDefaultBody()
+    public void testHandleWithResponsibleManager()
                             throws IOException, ServletException {
-        ServiceExceptionHandler entryPoint = new ServiceExceptionHandler( "", DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE, DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
-        entryPoint.commence( mockRequest, mockResponse, mockException );
+        HttpServletRequest request = mockRequest;
+        ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithManager( request );
 
+        entryPoint.handle( mockRequest, mockResponse, mockAccessDeniedException );
+
+        verify( mockResponse.getWriter() ).write( AUTHOTIZATION_DENIED_BODY );
+        verify( mockResponse ).setStatus( AUTHOTIZATION_DENIED_STATUS_CODE );
+    }
+
+    @Test
+    public void testHandleWithoutResponsibleManagers()
+                            throws IOException, ServletException {
+        ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutResponibleManager();
+
+        entryPoint.handle( mockRequest, mockResponse, mockAccessDeniedException );
+
+        verify( mockResponse ).setStatus( DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
         verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
     }
 
-    private String getPathToException() {
-        return ServiceExceptionHandlerTest.class.getResource( PATH_TO_EXCEPTION_FILE ).getPath();
+    @Test
+    public void testHandleWithoutManagers()
+                            throws IOException, ServletException {
+        ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutManagers();
+
+        entryPoint.handle( mockRequest, mockResponse, mockAccessDeniedException );
+
+        verify( mockResponse ).setStatus( DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE );
+        verify( mockResponse.getWriter() ).write( DEFAULT_BODY );
+    }
+
+    private ServiceExceptionHandler createServiceExceptionHandlerWithoutManagers() {
+        List<ServiceExceptionManager> serviceExceptionManagers = new ArrayList<ServiceExceptionManager>();
+        return new ServiceExceptionHandler( serviceExceptionManagers );
+    }
+
+    private ServiceExceptionHandler createServiceExceptionHandlerWithoutResponibleManager() {
+        return createServiceExceptionHandler( mockRequest, false );
+    }
+
+    private ServiceExceptionHandler createServiceExceptionHandlerWithManager( HttpServletRequest httpServletRequest ) {
+        return createServiceExceptionHandler( mockRequest, true );
+    }
+
+    private ServiceExceptionHandler createServiceExceptionHandler( HttpServletRequest httpServletRequest,
+                                                                   boolean isSupported ) {
+        List<ServiceExceptionManager> serviceExceptionManagers = new ArrayList<ServiceExceptionManager>();
+        ServiceExceptionManager serviceExceptionManager = mock( ServiceExceptionManager.class );
+        when( serviceExceptionManager.isServiceTypeSupported( httpServletRequest ) ).thenReturn( isSupported );
+        ServiceExceptionWrapper serviceExceptionWrapper = mockServiceExceptionWrapper();
+        when( serviceExceptionManager.retrieveServiceExceptionWrapper() ).thenReturn( serviceExceptionWrapper );
+        serviceExceptionManagers.add( serviceExceptionManager );
+        return new ServiceExceptionHandler( serviceExceptionManagers );
+    }
+
+    private ServiceExceptionWrapper mockServiceExceptionWrapper() {
+        ServiceExceptionWrapper serviceExceptionWrapper = mock( ServiceExceptionWrapper.class );
+        when( serviceExceptionWrapper.retrieveAuthenticationDeniedStatusCode() ).thenReturn( AUTHENTICATION_DENIED_STATUS_CODE );
+        when( serviceExceptionWrapper.retrieveAuthenticationDeniedExceptionBody() ).thenReturn( AUTHENTICATION_DENIED_BODY );
+        when( serviceExceptionWrapper.retrieveAuthorizationDeniedExceptionBody() ).thenReturn( AUTHOTIZATION_DENIED_BODY );
+        when( serviceExceptionWrapper.retrieveAuthorizationDeniedStatusCode() ).thenReturn( AUTHOTIZATION_DENIED_STATUS_CODE );
+        return serviceExceptionWrapper;
     }
 
     private HttpServletResponse mockResponse() {
@@ -102,12 +161,6 @@ public class ServiceExceptionHandlerTest {
         } catch ( Exception e ) {
         }
         return mock;
-    }
-
-    private String readResponseBodyFromFile()
-                            throws IOException {
-        InputStream resourceAsStream = ServiceExceptionHandlerTest.class.getResourceAsStream( PATH_TO_EXCEPTION_FILE );
-        return IOUtils.toString( resourceAsStream );
     }
 
 }
