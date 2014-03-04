@@ -81,6 +81,8 @@ public class WmsRequestAuthorizationManagerTest {
 
     private static final String LAYER_NAME = "layerName";
 
+    private static final String LAYER_NAME_2 = "layerName2";
+
     private static final String INTERNAL_SERVICE_URL = "serviceUrl";
 
     private final Map<String, String[]> ADDITIONAL_KEY_VALUE_PAIRS = createAdditionalKeyValuePairs();
@@ -320,6 +322,8 @@ public class WmsRequestAuthorizationManagerTest {
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
         authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -329,10 +333,15 @@ public class WmsRequestAuthorizationManagerTest {
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
         authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
+                                               INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         authorities.add( new RasterPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         authorities
               .add( new RasterPermission( WMS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+                                          INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
+        authorities
+              .add( new RasterPermission( WMS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
                                           INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -360,7 +369,7 @@ public class WmsRequestAuthorizationManagerTest {
     private List<String> createListWithLayerNames() {
         List<String> layerNames = new ArrayList<String>();
         layerNames.add( LAYER_NAME );
-        layerNames.add( LAYER_NAME );
+        layerNames.add( LAYER_NAME_2 );
         return layerNames;
     }
 
