@@ -104,16 +104,26 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
 
     private AuthorizationReport authorizeGetMap( WmsRequest wmsRequest,
                                                  Collection<? extends GrantedAuthority> authorities ) {
+        List<String> grantedLayers = new ArrayList<String>();
+        String internalServiceUrl = null;
+        Map<String, String[]> additionalKeyValuePairs = null;
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wmsPermission = (RasterPermission) authority;
-                if ( isFirstLayerNameAuthorized( wmsRequest, wmsPermission )
-                     && areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
-                    return createAuthorizedReport( wmsPermission );
+                if ( areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
+                    grantedLayers.add( wmsPermission.getLayerName() );
+                    // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
+                    // DSP always chooses the url of the last permission.
+                    internalServiceUrl = wmsPermission.getInternalServiceUrl();
+                    additionalKeyValuePairs = wmsPermission.getAdditionalKeyValuePairs();
                 }
             }
         }
-        return new AuthorizationReport( GETMAP_UNAUTHORIZED_MSG );
+        for ( String layerName : wmsRequest.getLayerNames() ) {
+            if ( !grantedLayers.contains( layerName ) )
+                return new AuthorizationReport( GETMAP_UNAUTHORIZED_MSG );
+        }
+        return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl, additionalKeyValuePairs );
     }
 
     private AuthorizationReport authorizeGetCapabilities( WmsRequest wmsRequest,

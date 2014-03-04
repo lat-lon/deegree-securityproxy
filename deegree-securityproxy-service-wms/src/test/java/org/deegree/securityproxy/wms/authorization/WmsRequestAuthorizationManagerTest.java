@@ -129,6 +129,15 @@ public class WmsRequestAuthorizationManagerTest {
     }
 
     @Test
+    public void testDecideGetMapWithOneAuthorizedAndOneUnauthorizedLayer()
+          throws Exception {
+        Authentication authentication = mockGetMapAuthentication();
+        WmsRequest request = mockGetMapRequestWithOneAuthorizedAndOneUnauthorizedLayer();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( NOT_AUTHORIZED ) );
+    }
+
+    @Test
     public void testDecideGetCapabilitiesWithNonWmsAuthorizations()
                             throws Exception {
         Authentication authentication = mockAllAuthenticationWithNonWmsPermissions();
@@ -240,7 +249,13 @@ public class WmsRequestAuthorizationManagerTest {
     }
 
     private WmsRequest mockGetMapRequest() {
-        return mockRequest( LAYER_NAME, GETMAP, SERVICE_NAME, VERSION_130, null );
+        List<String> layerNames = createListWithLayerNames();
+        return mockRequest( layerNames, GETMAP, SERVICE_NAME, VERSION_130, null );
+    }
+
+    private WmsRequest mockGetMapRequestWithOneAuthorizedAndOneUnauthorizedLayer() {
+        List<String> layerNames = createListWithLayerNamesWithOneAuthorizedAndOneUnauthorizedLayer();
+        return mockRequest( layerNames, GETMAP, SERVICE_NAME, VERSION_130, null );
     }
 
     private WmsRequest mockGetCapabilitiesRequest() {
@@ -248,21 +263,20 @@ public class WmsRequestAuthorizationManagerTest {
     }
 
     private WmsRequest mockGetFeatureInfoRequest() {
-        List<String> queryLayerNames = new ArrayList<String>();
-        queryLayerNames.add( LAYER_NAME );
-        return mockRequest( LAYER_NAME, GETFEATUREINFO, SERVICE_NAME, VERSION_130, queryLayerNames );
+        List<String> layerNames = createListWithLayerNames();
+        return mockRequest( layerNames, GETFEATUREINFO, SERVICE_NAME, VERSION_130, layerNames );
     }
 
     private WmsRequest mockGetFeatureInfoRequestWithUnauthorizedLayers() {
-        List<String> queryLayerNames = new ArrayList<String>();
-        queryLayerNames.add( LAYER_NAME );
-        return mockRequest( "unauthorized-layer", GETFEATUREINFO, SERVICE_NAME, VERSION_130, queryLayerNames );
+        List<String> layerNames = createListWithLayerNames();
+        List<String> unauthorizedLayerName = createListWithUnauthorizedLayerName();
+        return mockRequest( unauthorizedLayerName, GETFEATUREINFO, SERVICE_NAME, VERSION_130, layerNames );
     }
 
     private WmsRequest mockGetFeatureInfoRequestWithUnauthorizedQueryLayers() {
-        List<String> queryLayerNames = new ArrayList<String>();
-        queryLayerNames.add( "unauthorized-layer" );
-        return mockRequest( LAYER_NAME, GETFEATUREINFO, SERVICE_NAME, VERSION_130, queryLayerNames );
+        List<String> layerNames = createListWithLayerNames();
+        List<String> unauthorizedLayerName = createListWithUnauthorizedLayerName();
+        return mockRequest( layerNames, GETFEATUREINFO, SERVICE_NAME, VERSION_130, unauthorizedLayerName );
     }
 
     private WmsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
@@ -270,25 +284,29 @@ public class WmsRequestAuthorizationManagerTest {
     }
 
     private WmsRequest mockRequestWithUnsupportedVersion() {
-        return mockRequest( LAYER_NAME, GETMAP, SERVICE_NAME, new OwsServiceVersion( 2, 0, 0 ), null );
+        List<String> layerNames = createListWithLayerNames();
+        return mockRequest( layerNames, GETMAP, SERVICE_NAME, new OwsServiceVersion( 2, 0, 0 ), null );
     }
 
     private WmsRequest mockRequestWithUnsupportedOperationType() {
-        return mockRequest( LAYER_NAME, GETFEATUREINFO, SERVICE_NAME, VERSION_130, null );
+        List<String> layerNames = createListWithLayerNames();
+        return mockRequest( layerNames, GETFEATUREINFO, SERVICE_NAME, VERSION_130, layerNames );
     }
 
     private WmsRequest mockRequestWithUnsupportedLayerName() {
-        return mockRequest( "unknown", GETMAP, SERVICE_NAME, VERSION_130, null );
+        List<String> unauthorizedLayerName = createListWithUnauthorizedLayerName();
+        return mockRequest( unauthorizedLayerName, GETMAP, SERVICE_NAME, VERSION_130, null );
     }
 
     private WmsRequest mockRequestWithUnsupportedServiceName() {
-        return mockRequest( LAYER_NAME, GETMAP, "unknown", VERSION_130, null );
+        List<String> layerNames = createListWithLayerNames();
+        return mockRequest( layerNames, GETMAP, "unknown", VERSION_130, null );
     }
 
-    private WmsRequest mockRequest( String layerName, String operationType, String serviceName,
+    private WmsRequest mockRequest( List<String> layerNames, String operationType, String serviceName,
                                     OwsServiceVersion version, List<String> queryLayerNames ) {
         WmsRequest mock = mock( WmsRequest.class );
-        when( mock.getLayerNames() ).thenReturn( Collections.singletonList( layerName ) );
+        when( mock.getLayerNames() ).thenReturn( layerNames );
         when( mock.getOperationType() ).thenReturn( operationType );
         when( mock.getServiceVersion() ).thenReturn( version );
         when( mock.getServiceName() ).thenReturn( serviceName );
@@ -337,6 +355,26 @@ public class WmsRequestAuthorizationManagerTest {
         Map<String, String[]> additionalKeyValuePairs = new HashMap<String, String[]>();
         additionalKeyValuePairs.put( "additionalKey", new String[] { "additionalValue" } );
         return additionalKeyValuePairs;
+    }
+
+    private List<String> createListWithLayerNames() {
+        List<String> layerNames = new ArrayList<String>();
+        layerNames.add( LAYER_NAME );
+        layerNames.add( LAYER_NAME );
+        return layerNames;
+    }
+
+    private List<String> createListWithLayerNamesWithOneAuthorizedAndOneUnauthorizedLayer() {
+        List<String> layerNames = new ArrayList<String>();
+        layerNames.add( LAYER_NAME );
+        layerNames.add( "unauthorized-layer" );
+        return layerNames;
+    }
+
+    private List<String> createListWithUnauthorizedLayerName() {
+        List<String> unauthorizedLayerName = new ArrayList<String>();
+        unauthorizedLayerName.add( "unauthorized-layer" );
+        return unauthorizedLayerName;
     }
 
 }
