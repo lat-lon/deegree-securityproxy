@@ -2,6 +2,7 @@ package org.deegree.securityproxy.wms.request;
 
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSet;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;
@@ -91,6 +92,9 @@ public class WmsRequestParser implements OwsRequestParser {
         checkGetMapParameters( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] layersParameter = normalizedParameterMap.get( LAYERS );
+        if ( isNotSet( layersParameter ) )
+            return new WmsRequest( GETMAP, version, serviceName );
+
         List<String> separatedLayers = extractLayers( layersParameter );
         if ( separatedLayers.size() != 1 )
             throw new IllegalArgumentException( "GetMap requires exactly one layer parameter!" );
@@ -101,8 +105,12 @@ public class WmsRequestParser implements OwsRequestParser {
         checkGetFeatureInfoParameters( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] layersParameter = normalizedParameterMap.get( LAYERS );
-        List<String> separatedLayers = extractLayers( layersParameter );
-        return new WmsRequest( GETFEATUREINFO, version, separatedLayers, serviceName );
+        if ( isNotSet( layersParameter ) )
+            return new WmsRequest( GETFEATUREINFO, version, serviceName );
+        else {
+            List<String> separatedLayers = extractLayers( layersParameter );
+            return new WmsRequest( GETFEATUREINFO, version, separatedLayers, serviceName );
+        }
     }
 
     private List<String> extractLayers( String[] layerParameter ) {
