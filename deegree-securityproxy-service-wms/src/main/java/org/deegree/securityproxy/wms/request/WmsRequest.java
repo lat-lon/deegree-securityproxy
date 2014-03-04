@@ -58,6 +58,8 @@ public class WmsRequest extends OwsRequest {
 
     private final List<String> layerNames;
 
+    private final List<String> queryLayerNames;
+
     /**
      * Instantiates a new {@link WmsRequest} with an empty {@link List} of layer names.
      * 
@@ -69,7 +71,8 @@ public class WmsRequest extends OwsRequest {
      *            the name of the service, never <code>null</code>
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
-        this( operationType, serviceVersion, Collections.<String> emptyList(), serviceName );
+        this( operationType, serviceVersion, Collections.<String>emptyList(), Collections.<String>emptyList(),
+              serviceName );
     }
 
     /**
@@ -85,7 +88,7 @@ public class WmsRequest extends OwsRequest {
      *            the name of the service, never <code>null</code>
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, String layerName, String serviceName ) {
-        this( operationType, serviceVersion, singletonList( layerName ), serviceName );
+        this( operationType, serviceVersion, singletonList( layerName ), Collections.<String>emptyList(), serviceName );
     }
 
     /**
@@ -102,9 +105,29 @@ public class WmsRequest extends OwsRequest {
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
                        String serviceName ) {
+        this( operationType, serviceVersion, layerNames, Collections.<String>emptyList(), serviceName );
+    }
+
+    /**
+     * Instantiates a new {@link WmsRequest}.
+     *
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param layerNames
+     *            a {@link List} of layer names, may be empty but never <code>null</code>
+     * @param queryLayerNames
+     *            a {@link List} of query layer names, may be empty but never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     */
+    public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
+                       List<String> queryLayerNames, String serviceName ) {
         super( WMS_TYPE, operationType, serviceVersion );
-        this.serviceName = serviceName;
         this.layerNames = layerNames;
+        this.queryLayerNames = queryLayerNames;
+        this.serviceName = serviceName;
     }
 
     /**
@@ -121,10 +144,17 @@ public class WmsRequest extends OwsRequest {
         return Collections.unmodifiableList( layerNames );
     }
 
+    /**
+     * @return the queryLayerNames as unmodifiable list, may be empty but never <code>null</code>
+     */
+    public List<String> getQueryLayerNames() {
+        return Collections.unmodifiableList( queryLayerNames );
+    }
+
     @Override
     public String toString() {
         return "WmsRequest [operationType=" + getOperationType() + ", serviceVersion=" + getServiceVersion()
-               + ", layerNames=" + layerNames + ", serviceName=" + serviceName + "]";
+               + ", layerNames=" + layerNames + ", queryLayerNames=" + queryLayerNames + ", serviceName=" + serviceName + "]";
     }
 
 }
