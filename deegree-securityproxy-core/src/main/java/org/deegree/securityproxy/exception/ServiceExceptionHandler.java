@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.deegree.securityproxy.filter.ServiceManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -27,11 +26,11 @@ public class ServiceExceptionHandler implements AuthenticationEntryPoint, Access
     private final List<ServiceExceptionManager> serviceExceptionManagers;
 
     /**
-     * @param serviceManagers
-     *            list of {@link ServiceManager}
+     * @param serviceExceptionManagers
+     *            list of {@link ServiceExceptionManager}
      */
-    public ServiceExceptionHandler( List<ServiceExceptionManager> serviceManagers ) {
-        this.serviceExceptionManagers = serviceManagers;
+    public ServiceExceptionHandler( List<ServiceExceptionManager> serviceExceptionManagers ) {
+        this.serviceExceptionManagers = serviceExceptionManagers;
     }
 
     @Override
