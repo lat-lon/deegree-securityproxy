@@ -1,9 +1,9 @@
-package org.deegree.securityproxy;
+package org.deegree.securityproxy.exception;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_BODY;
+import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_BODY;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 

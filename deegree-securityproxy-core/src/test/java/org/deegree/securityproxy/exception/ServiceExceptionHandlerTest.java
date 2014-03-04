@@ -1,8 +1,8 @@
-package org.deegree.securityproxy;
+package org.deegree.securityproxy.exception;
 
-import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
-import static org.deegree.securityproxy.ServiceExceptionWrapper.DEFAULT_BODY;
+import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
+import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_BODY;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
