@@ -94,7 +94,10 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( String layerName : wmsRequest.getLayerNames() ) {
             if ( !grantedLayers.contains( layerName ) )
                 return new AuthorizationReport( GETFEATUREINFO_UNAUTHORIZED_MSG );
-
+        }
+        for ( String queryLayerName : wmsRequest.getQueryLayerNames() ) {
+            if ( !grantedLayers.contains( queryLayerName ) )
+                return new AuthorizationReport( GETFEATUREINFO_UNAUTHORIZED_MSG );
         }
         return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl, additionalKeyValuePairs );
     }
