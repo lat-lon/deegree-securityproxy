@@ -39,6 +39,7 @@ import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILI
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.VERSION_130;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -93,6 +94,8 @@ public class WmsRequestParserTest {
     private static final String J_PARAM = "J";
 
     private static final String LAYER_NAME = "layerName";
+
+    private static final String LAYER_NAME_2 = "layerName";
 
     private static final String STYLES_NAME = "stylesName";
 
@@ -152,14 +155,14 @@ public class WmsRequestParserTest {
     /* Test for valid requests for WMS GetFeatureInfo */
     @Test
     public void testParseFromGetFeatureInfoRequestShouldParseLayersAndOperationTypeAndServiceVersionAndServiceName()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetFeatureInfoRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         List<String> layerNames = wmsRequest.getLayerNames();
         List<String> queryLayerNames = wmsRequest.getQueryLayerNames();
+        assertThat( layerNames.size(), is( 2 ) );
         assertThat( layerNames.get( 0 ), is( LAYER_NAME ) );
         assertThat( layerNames.get( 1 ), is( LAYER_NAME ) );
-        assertThat( layerNames.size(), is( 2 ) );
         assertThat( queryLayerNames.get( 0 ), is( QUERY_LAYER_NAME ) );
         assertThat( queryLayerNames.get( 1 ), is( QUERY_LAYER_NAME ) );
         assertThat( queryLayerNames.size(), is( 2 ) );
@@ -175,11 +178,33 @@ public class WmsRequestParserTest {
         HttpServletRequest request = mockWmsGetMapRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         List<String> layerNames = wmsRequest.getLayerNames();
-        assertThat( layerNames.get( 0 ), is( LAYER_NAME ) );
         assertThat( layerNames.size(), is( 1 ) );
+        assertThat( layerNames.get( 0 ), is( LAYER_NAME ) );
         assertThat( wmsRequest.getOperationType(), is( GETMAP ) );
         assertThat( wmsRequest.getServiceVersion(), is( VERSION_130 ) );
         assertThat( wmsRequest.getServiceName(), is( SERVICE_NAME ) );
+    }
+
+    @Test
+    public void testParseFromGetMapRequestWithTwoLayers()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetMapRequestTwoLayerParameters();
+        WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
+        List<String> layerNames = wmsRequest.getLayerNames();
+        assertThat( layerNames.size(), is( 2 ) );
+        assertThat( layerNames, hasItem( LAYER_NAME ) );
+        assertThat( layerNames, hasItem( LAYER_NAME_2 ) );
+    }
+
+    @Test
+    public void testParseFromGetMapRequestMultipleLayers()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetMapRequestMultipleLayerParameter();
+        WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
+        List<String> layerNames = wmsRequest.getLayerNames();
+        assertThat( layerNames.size(), is( 2 ) );
+        assertThat( layerNames, hasItem( LAYER_NAME ) );
+        assertThat( layerNames, hasItem( LAYER_NAME_2 ) );
     }
 
     /* Test for invalid requests */
@@ -187,20 +212,6 @@ public class WmsRequestParserTest {
     public void testParseFromGetCapabilitiesRequestMissingServiceNameShouldFail()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetCapabilitiesRequestMissingServiceName();
-        parser.parse( request );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseFromGetMapRequestMultipleLayersShouldFail()
-                            throws UnsupportedRequestTypeException {
-        HttpServletRequest request = mockWmsGetMapRequestMultipleLayerParameter();
-        parser.parse( request );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseFromGetMapRequestTwoLayersShouldFail()
-                            throws UnsupportedRequestTypeException {
-        HttpServletRequest request = mockWmsGetMapRequestTwoLayerParameters();
         parser.parse( request );
     }
 
@@ -255,14 +266,14 @@ public class WmsRequestParserTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetFeatureInfoRequestTwoFormatShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetFeatureInfoRequestTwoFormatParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetFeatureInfoRequestMissingFormatShouldFail()
-          throws UnsupportedRequestTypeException {
+                            throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetFeatureInfoRequestMissingFormatParameter();
         parser.parse( request );
     }
@@ -325,13 +336,13 @@ public class WmsRequestParserTest {
 
     private HttpServletRequest mockWmsGetMapRequestMultipleLayerParameter() {
         Map<String, String[]> parameterMap = createValidGetMapParameterMap();
-        parameterMap.put( LAYERS_PARAM, new String[] { LAYER_NAME + "," + LAYER_NAME } );
+        parameterMap.put( LAYERS_PARAM, new String[] { LAYER_NAME + "," + LAYER_NAME_2 } );
         return mockRequest( parameterMap );
     }
 
     private HttpServletRequest mockWmsGetMapRequestTwoLayerParameters() {
         Map<String, String[]> parameterMap = createValidGetMapParameterMap();
-        parameterMap.put( LAYERS_PARAM, new String[] { LAYER_NAME, LAYER_NAME } );
+        parameterMap.put( LAYERS_PARAM, new String[] { LAYER_NAME, LAYER_NAME_2 } );
         return mockRequest( parameterMap );
     }
 

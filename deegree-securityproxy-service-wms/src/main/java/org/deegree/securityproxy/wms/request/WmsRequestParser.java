@@ -1,8 +1,8 @@
 package org.deegree.securityproxy.wms.request;
 
 import static java.util.Arrays.asList;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSet;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;
@@ -90,43 +90,19 @@ public class WmsRequestParser implements OwsRequestParser {
 
     private WmsRequest parseGetMapRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         checkGetMapParameters( normalizedParameterMap );
+
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
-        String[] layersParameter = normalizedParameterMap.get( LAYERS );
-        if ( isNotSet( layersParameter ) )
-            return new WmsRequest( GETMAP, version, serviceName );
-        List<String> separatedLayers = extractLayers( layersParameter );
-        if ( separatedLayers.size() != 1 )
-            throw new IllegalArgumentException( "GetMap requires exactly one layer parameter!" );
-        return new WmsRequest( GETMAP, version, separatedLayers.get( 0 ), serviceName );
+        List<String> separatedLayers = extractLayers( normalizedParameterMap.get( LAYERS ) );
+        return new WmsRequest( GETMAP, version, separatedLayers, serviceName );
     }
 
     private WmsRequest parseGetFeatureInfoRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         checkGetFeatureInfoParameters( normalizedParameterMap );
-        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
-        String[] layersParameter = normalizedParameterMap.get( LAYERS );
-        String[] queryLayersParameter = normalizedParameterMap.get( QUERY_LAYERS );
-        if ( isNotSet( layersParameter ) && isNotSet( queryLayersParameter ) ) {
-            return new WmsRequest( GETFEATUREINFO, version, serviceName );
-        } else if ( isNotSet( queryLayersParameter ) ) {
-            List<String> separatedLayers = extractLayers( layersParameter );
-            return new WmsRequest( GETFEATUREINFO, version, separatedLayers, Collections.<String>emptyList(),
-                                   serviceName );
-        } else if ( isNotSet( layersParameter ) ) {
-            List<String> separatedQueryLayers = extractLayers( queryLayersParameter );
-            return new WmsRequest( GETFEATUREINFO, version, Collections.<String>emptyList(), separatedQueryLayers,
-                                   serviceName );
-        } else {
-            List<String> separatedLayers = extractLayers( layersParameter );
-            List<String> separatedQueryLayers = extractLayers( queryLayersParameter );
-            return new WmsRequest( GETFEATUREINFO, version, separatedLayers, separatedQueryLayers, serviceName );
-        }
-    }
 
-    private List<String> extractLayers( String[] layerParameter ) {
-        String firstLayerParameter = layerParameter[0];
-        List<String> separatedLayers = new ArrayList<String>();
-        Collections.addAll( separatedLayers, firstLayerParameter.split( "," ) );
-        return separatedLayers;
+        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        List<String> separatedLayers = extractLayers( normalizedParameterMap.get( LAYERS ) );
+        List<String> separatedQueryLayers = extractLayers( normalizedParameterMap.get( QUERY_LAYERS ) );
+        return new WmsRequest( GETFEATUREINFO, version, separatedLayers, separatedQueryLayers, serviceName );
     }
 
     private WmsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
@@ -158,6 +134,16 @@ public class WmsRequestParser implements OwsRequestParser {
             return splittedServletPath[splittedServletPath.length - 1];
         }
         return servletPath;
+    }
+
+    private List<String> extractLayers( String[] layerParameters ) {
+        List<String> separatedLayers = new ArrayList<String>();
+        if ( layerParameters != null ) {
+            for ( String layerParameter : layerParameters ) {
+                Collections.addAll( separatedLayers, layerParameter.split( "," ) );
+            }
+        }
+        return separatedLayers;
     }
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap ) {
@@ -207,7 +193,7 @@ public class WmsRequestParser implements OwsRequestParser {
     }
 
     private void checkLayersParameter( Map<String, String[]> normalizedParameterMap ) {
-        checkSingleRequiredParameter( normalizedParameterMap, LAYERS );
+        checkRequiredParameter( normalizedParameterMap, LAYERS );
     }
 
     private void checkStylesParameter( Map<String, String[]> normalizedParameterMap ) {
@@ -231,7 +217,7 @@ public class WmsRequestParser implements OwsRequestParser {
     }
 
     private void checkQueryLayersParameter( Map<String, String[]> normalizedParameterMap ) {
-        checkSingleRequiredParameter( normalizedParameterMap, QUERY_LAYERS );
+        checkRequiredParameter( normalizedParameterMap, QUERY_LAYERS );
     }
 
     private void checkInfoFormatParameter( Map<String, String[]> normalizedParameterMap ) {
