@@ -152,13 +152,17 @@ public class WmsRequestParserTest {
     /* Test for valid requests for WMS GetFeatureInfo */
     @Test
     public void testParseFromGetFeatureInfoRequestShouldParseLayersAndOperationTypeAndServiceVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+          throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWmsGetFeatureInfoRequest();
         WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
         List<String> layerNames = wmsRequest.getLayerNames();
+        List<String> queryLayerNames = wmsRequest.getQueryLayerNames();
         assertThat( layerNames.get( 0 ), is( LAYER_NAME ) );
         assertThat( layerNames.get( 1 ), is( LAYER_NAME ) );
         assertThat( layerNames.size(), is( 2 ) );
+        assertThat( queryLayerNames.get( 0 ), is( QUERY_LAYER_NAME ) );
+        assertThat( queryLayerNames.get( 1 ), is( QUERY_LAYER_NAME ) );
+        assertThat( queryLayerNames.size(), is( 2 ) );
         assertThat( wmsRequest.getOperationType(), is( GETFEATUREINFO ) );
         assertThat( wmsRequest.getServiceVersion(), is( VERSION_130 ) );
         assertThat( wmsRequest.getServiceName(), is( SERVICE_NAME ) );
@@ -431,7 +435,7 @@ public class WmsRequestParserTest {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_130.getVersionString() } );
         parameterMap.put( REQUEST_PARAM, new String[] { GETFEATUREINFO } );
-        parameterMap.put( QUERY_LAYERS_PARAM, new String[] { QUERY_LAYER_NAME } );
+        parameterMap.put( QUERY_LAYERS_PARAM, new String[] { QUERY_LAYER_NAME + "," + QUERY_LAYER_NAME } );
         parameterMap.put( INFO_FORMAT_PARAM, new String[] { INFO_FORMAT_NAME } );
         parameterMap.put( I_PARAM, new String[] { I_NAME } );
         parameterMap.put( J_PARAM, new String[] { J_NAME } );

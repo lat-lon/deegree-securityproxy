@@ -94,7 +94,6 @@ public class WmsRequestParser implements OwsRequestParser {
         String[] layersParameter = normalizedParameterMap.get( LAYERS );
         if ( isNotSet( layersParameter ) )
             return new WmsRequest( GETMAP, version, serviceName );
-
         List<String> separatedLayers = extractLayers( layersParameter );
         if ( separatedLayers.size() != 1 )
             throw new IllegalArgumentException( "GetMap requires exactly one layer parameter!" );
@@ -105,11 +104,21 @@ public class WmsRequestParser implements OwsRequestParser {
         checkGetFeatureInfoParameters( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         String[] layersParameter = normalizedParameterMap.get( LAYERS );
-        if ( isNotSet( layersParameter ) )
+        String[] queryLayersParameter = normalizedParameterMap.get( QUERY_LAYERS );
+        if ( isNotSet( layersParameter ) && isNotSet( queryLayersParameter ) ) {
             return new WmsRequest( GETFEATUREINFO, version, serviceName );
-        else {
+        } else if ( isNotSet( queryLayersParameter ) ) {
             List<String> separatedLayers = extractLayers( layersParameter );
-            return new WmsRequest( GETFEATUREINFO, version, separatedLayers, serviceName );
+            return new WmsRequest( GETFEATUREINFO, version, separatedLayers, Collections.<String>emptyList(),
+                                   serviceName );
+        } else if ( isNotSet( layersParameter ) ) {
+            List<String> separatedQueryLayers = extractLayers( queryLayersParameter );
+            return new WmsRequest( GETFEATUREINFO, version, Collections.<String>emptyList(), separatedQueryLayers,
+                                   serviceName );
+        } else {
+            List<String> separatedLayers = extractLayers( layersParameter );
+            List<String> separatedQueryLayers = extractLayers( queryLayersParameter );
+            return new WmsRequest( GETFEATUREINFO, version, separatedLayers, separatedQueryLayers, serviceName );
         }
     }
 
