@@ -13,8 +13,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.ServiceExceptionWrapper;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
+import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;

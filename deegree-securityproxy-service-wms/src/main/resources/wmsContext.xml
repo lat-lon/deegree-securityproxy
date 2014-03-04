@@ -17,10 +17,10 @@
 
   <bean id="wmsRequestParser" class="org.deegree.securityproxy.wms.request.WmsRequestParser"/>
 
-  <bean id="wmsServiceExceptionWrapper" class="org.deegree.securityproxy.ServiceExceptionWrapper">
-    <constructor-arg value="${exception_file_path}" />
-    <constructor-arg value="${authentication_denied_status_code}" />
-    <constructor-arg value="${authorization_denied_status_code}" />
+  <bean id="wmsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
+    <constructor-arg value="${wms_exception_file_path}" />
+    <constructor-arg value="${wms_authentication_denied_status_code}" />
+    <constructor-arg value="${wms_authorization_denied_status_code}" />
   </bean>
   
 </beans>

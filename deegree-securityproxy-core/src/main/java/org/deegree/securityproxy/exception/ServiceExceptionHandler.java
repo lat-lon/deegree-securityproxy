@@ -1,4 +1,4 @@
-package org.deegree.securityproxy;
+package org.deegree.securityproxy.exception;
 
 import java.io.IOException;
 import java.util.List;
