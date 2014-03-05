@@ -37,15 +37,15 @@ package org.deegree.securityproxy.wcs.responsefilter;
 
 import java.util.List;
 
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 /**
- * Retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s. If multiple
- * {@link WcsGeometryFilterInfo} for one coverage exist the first one is parsed as geometry. There is no mechanism to
+ * Retrieve the clipping geometry from a list of {@link GeometryFilterInfo}s. If multiple
+ * {@link GeometryFilterInfo} for one coverage exist the first one is parsed as geometry. There is no mechanism to
  * detect inconsistent data.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -56,7 +56,7 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeometryRetrieverImpl implements GeometryRetriever {
 
     @Override
-    public Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
+    public Geometry retrieveGeometry( String coverageName, List<GeometryFilterInfo> geometryFilterInfos )
                             throws IllegalArgumentException, ParseException {
         checkParameters( coverageName, geometryFilterInfos );
 
@@ -66,16 +66,16 @@ public class GeometryRetrieverImpl implements GeometryRetriever {
         return null;
     }
 
-    private void checkParameters( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
+    private void checkParameters( String coverageName, List<GeometryFilterInfo> geometryFilterInfos ) {
         if ( coverageName == null )
             throw new IllegalArgumentException( "Coverage name must not be null!" );
         if ( geometryFilterInfos == null )
             throw new IllegalArgumentException( "GeometryFilterInfos name must not be null!" );
     }
 
-    private String retrieveGeometryFromList( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos ) {
-        for ( WcsGeometryFilterInfo wcsGeometryFilterInfo : geometryFilterInfos ) {
-            if ( coverageName.equals( wcsGeometryFilterInfo.getCoverageName() ) ) {
+    private String retrieveGeometryFromList( String coverageName, List<GeometryFilterInfo> geometryFilterInfos ) {
+        for ( GeometryFilterInfo wcsGeometryFilterInfo : geometryFilterInfos ) {
+            if ( coverageName.equals( wcsGeometryFilterInfo.getLayerName() ) ) {
                 return wcsGeometryFilterInfo.getGeometryString();
             }
         }

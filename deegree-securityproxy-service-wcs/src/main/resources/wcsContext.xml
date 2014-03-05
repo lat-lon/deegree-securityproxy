@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <bean id="wcsServiceManager" class="org.deegree.securityproxy.wcs.WcsServiceManager">
+    <constructor-arg ref="wcsRequestParser"/>
+    <constructor-arg ref="wcsRequestAuthorizationManager"/>
+    <constructor-arg ref="responseFilterManager"/>
+    <constructor-arg ref="wcsServiceExceptionWrapper"/>
+  </bean>
+
+  <bean id="wcsRequestAuthorizationManager"
+        class="org.deegree.securityproxy.wcs.authorization.WcsRequestAuthorizationManager"/>
+
+  <bean id="wcsRequestParser" class="org.deegree.securityproxy.wcs.request.WcsRequestParser"/>
+
+  <bean name="responseFilterManager" class="org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager">
+    <constructor-arg value="${clipping_exception_file_path}"/>
+    <constructor-arg value="${clipping_failed_status_code}"/>
+  </bean>
+
+  <bean name="geometryRetriever" class="org.deegree.securityproxy.wcs.responsefilter.GeometryRetrieverImpl"/>
+
+  <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.GeotiffClipper"/>
+
+  <bean id="wcsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
+    <constructor-arg value="${wcs_exception_file_path}" />
+    <constructor-arg value="${wcs_authentication_denied_status_code}" />
+    <constructor-arg value="${wcs_authorization_denied_status_code}" />
+  </bean>
+  
+</beans>

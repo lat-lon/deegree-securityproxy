@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.request;
 
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.DESCRIBECOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCAPABILITIES;
-import static org.deegree.securityproxy.wcs.domain.WcsOperationType.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.domain.WcsServiceVersion.VERSION_100;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.DESCRIBECOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -61,8 +61,6 @@ import org.mockito.Mockito;
  * @version $Revision: $, $Date: $
  */
 public class WcsRequestParserTest {
-
-    private final OwsRequestParser parser = new WcsRequestParser();
 
     private static final String WIDTH_PARAM = "WIDTH";
 
@@ -105,6 +103,8 @@ public class WcsRequestParserTest {
     private static final String RESY_NAME = "50";
 
     private static final String FORMAT_NAME = "GEOTIFF_INT16";
+
+    private final OwsRequestParser parser = new WcsRequestParser();
 
     /* Tests for valid requests for WCS GetCapabilities */
     @Test
@@ -307,13 +307,13 @@ public class WcsRequestParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingRequestParameterShouldFail()
                             throws UnsupportedRequestTypeException {
-        parser.parse( mockInvalidWcsRequestMissingRequestParameter( "wcs" ) );
+        parser.parse( mockInvalidWcsRequestMissingRequestParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingServiceParameterShouldFail()
                             throws UnsupportedRequestTypeException {
-        parser.parse( mockInvalidWcsRequestMissingServiceParameter( "wcs" ) );
+        parser.parse( mockInvalidWcsRequestMissingServiceParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -331,7 +331,7 @@ public class WcsRequestParserTest {
     @Test
     public void testParseWithMissingVersionParameter()
                             throws UnsupportedRequestTypeException {
-        parser.parse( mockValidWcsRequestMissingVersionParameter( "wcs" ) );
+        parser.parse( mockValidWcsRequestMissingVersionParameter() );
     }
 
     private HttpServletRequest mockWcsGetCapabilitiesRequestMissingServiceName() {
@@ -487,19 +487,19 @@ public class WcsRequestParserTest {
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter( String serviceType ) {
+    private HttpServletRequest mockInvalidWcsRequestMissingRequestParameter() {
         Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( REQUEST_PARAM );
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter( String serviceType ) {
+    private HttpServletRequest mockInvalidWcsRequestMissingServiceParameter() {
         Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( SERVICE_PARAM );
         return mockRequest( parameterMap );
     }
 
-    private HttpServletRequest mockValidWcsRequestMissingVersionParameter( String serviceType ) {
+    private HttpServletRequest mockValidWcsRequestMissingVersionParameter() {
         Map<String, String[]> parameterMap = createValidGetCapabilitiesParameterMap();
         parameterMap.remove( VERSION_PARAM );
         return mockRequest( parameterMap );
@@ -514,7 +514,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createWmsParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wms" } );
         return parameterMap;
     }
@@ -522,7 +522,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createValidDescribeCoverageParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { DESCRIBECOVERAGE.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { DESCRIBECOVERAGE } );
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME + "," + COVERAGE_NAME } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         return parameterMap;
@@ -531,7 +531,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createValidGetCapabilitiesParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         return parameterMap;
     }
@@ -539,7 +539,7 @@ public class WcsRequestParserTest {
     private Map<String, String[]> createValidGetCoverageParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
         parameterMap.put( VERSION_PARAM, new String[] { VERSION_100.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE.name() } );
+        parameterMap.put( REQUEST_PARAM, new String[] { GETCOVERAGE } );
         parameterMap.put( COVERAGE_PARAM, new String[] { COVERAGE_NAME } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         parameterMap.put( CRS_PARAM, new String[] { CRS_NAME } );
@@ -600,4 +600,5 @@ public class WcsRequestParserTest {
         }
         return servletRequest;
     }
+
 }

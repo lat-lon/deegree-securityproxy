@@ -18,6 +18,6 @@
   
 
   <bean id="authenticationProvider"
-    class="org.deegree.securityproxy.authentication.HeaderTokenAuthenticationProvider" />
+    class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationProvider" />
 
 </beans>

@@ -41,26 +41,23 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.wcs.domain.WcsOperationType;
-import org.deegree.securityproxy.wcs.domain.WcsServiceVersion;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 
 /**
- * Encapulates a WCS request.
+ * Encapsulates a WCS request.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
  * @author last edited by: $Author: erben $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsRequest implements OwsRequest {
+public class WcsRequest extends OwsRequest {
 
-    private final WcsOperationType operationType;
-
-    private final WcsServiceVersion serviceVersion;
-
-    private final List<String> coverageNames;
+    private static final String WCS_TYPE = "wcs";
 
     private final String serviceName;
+
+    private final List<String> coverageNames;
 
     /**
      * Instantiates a new {@link WcsRequest} with an empty {@link List} of coverage names.
@@ -72,7 +69,7 @@ public class WcsRequest implements OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      */
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String serviceName ) {
+    public WcsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
         this( operationType, serviceVersion, Collections.<String> emptyList(), serviceName );
     }
 
@@ -88,8 +85,7 @@ public class WcsRequest implements OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      */
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, String coverageName,
-                       String serviceName ) {
+    public WcsRequest( String operationType, OwsServiceVersion serviceVersion, String coverageName, String serviceName ) {
         this( operationType, serviceVersion, singletonList( coverageName ), serviceName );
     }
 
@@ -105,33 +101,11 @@ public class WcsRequest implements OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      */
-    public WcsRequest( WcsOperationType operationType, WcsServiceVersion serviceVersion, List<String> coverageNames,
+    public WcsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> coverageNames,
                        String serviceName ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
+        super( WCS_TYPE, operationType, serviceVersion );
         this.coverageNames = coverageNames;
         this.serviceName = serviceName;
-    }
-
-    /**
-     * @return the operationType, never <code>null</code>
-     */
-    public WcsOperationType getOperationType() {
-        return operationType;
-    }
-
-    /**
-     * @return the serviceVersion, never <code>null</code>
-     */
-    public WcsServiceVersion getServiceVersion() {
-        return serviceVersion;
-    }
-
-    /**
-     * @return the coverageNames as unmodifiable list, may be empty but never <code>null</code>
-     */
-    public List<String> getCoverageNames() {
-        return Collections.unmodifiableList( coverageNames );
     }
 
     /**
@@ -141,10 +115,17 @@ public class WcsRequest implements OwsRequest {
         return serviceName;
     }
 
+    /**
+     * @return the coverageNames as unmodifiable list, may be empty but never <code>null</code>
+     */
+    public List<String> getCoverageNames() {
+        return Collections.unmodifiableList( coverageNames );
+    }
+
     @Override
     public String toString() {
-        return "WcsRequest [operationType=" + operationType + ", serviceVersion=" + serviceVersion + ", coverageNames="
-               + coverageNames + ", serviceName=" + serviceName + "]";
+        return "WcsRequest [operationType=" + getOperationType() + ", serviceVersion=" + getServiceVersion()
+               + ", coverageNames=" + coverageNames + ", serviceName=" + serviceName + "]";
     }
 
 }

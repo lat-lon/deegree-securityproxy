@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <context:property-placeholder location="file:${PROXY_CONFIG}/config.properties" />
+  <context:annotation-config />
+  <import resource="securityContext.xml" />
+  <import resource="persistenceContext.xml" />
+
+  <bean id="serviceExceptionHandler" class="org.deegree.securityproxy.exception.ServiceExceptionHandler">
+    <constructor-arg ref="exceptionManagers" />
+  </bean>
+
+  <bean name="log4JReportLogger" class="org.deegree.securityproxy.logger.Log4jSecurityRequestResponseLogger">
+    <constructor-arg type="java.lang.String">
+      <value>PROXY_CONFIG</value>
+    </constructor-arg>
+    <constructor-arg type="java.lang.String">
+      <value>log4j.properties</value>
+    </constructor-arg>
+  </bean>
+
+  <bean name="headerAuthenticationProvider"
+    class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationProvider" />
+
+  <bean name="headerAuthenticationManager" class="org.deegree.securityproxy.authentication.header.HeaderTokenAuthenticationManager">
+    <constructor-arg ref="headerAuthenticationProvider" />
+  </bean>
+
+  <bean id="headerAuthenticationFilter"
+    class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+    <property name="principalRequestHeader" value="${access_token_header_field_name}" />
+    <property name="authenticationManager" ref="headerAuthenticationManager" />
+    <property name="exceptionIfHeaderMissing" value="false" />
+    <property name="checkForPrincipalChanges" value="true" />
+  </bean>
+
+  <bean id="userService" class="org.deegree.securityproxy.authentication.basic.UserService">
+    <constructor-arg ref="headerTokenDataSource" />
+  </bean>
+
+  <bean id="securityFilter" class="org.deegree.securityproxy.filter.SecurityFilter">
+    <constructor-arg ref="serviceManagers" />
+    <constructor-arg ref="log4JReportLogger" />
+    <constructor-arg ref="log4JReportLogger" />
+  </bean>
+
+  <util:list id="serviceManagers" list-class="java.util.LinkedList"
+    value-type="org.deegree.securityproxy.filter.ServiceManager">
+    <ref bean="wcsServiceManager" />
+    <ref bean="wmsServiceManager" />
+  </util:list>
+
+  <util:list id="exceptionManagers" list-class="java.util.LinkedList"
+    value-type="org.deegree.securityproxy.ServiceExceptionManager">
+    <ref bean="wcsServiceManager" />
+    <ref bean="wmsServiceManager" />
+  </util:list>
+
+  <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter">
+    <constructor-arg value="${access_token_header_field_name}" />
+    <property name="authenticationManager" ref="basicAuthenticationManager" />
+    <property name="authenticationEntryPoint" ref="serviceExceptionHandler" />
+  </bean>
+
+</beans>

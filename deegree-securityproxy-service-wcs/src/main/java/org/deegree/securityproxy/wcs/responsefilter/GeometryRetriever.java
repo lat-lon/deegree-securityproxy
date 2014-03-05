@@ -37,13 +37,13 @@ package org.deegree.securityproxy.wcs.responsefilter;
 
 import java.util.List;
 
-import org.deegree.securityproxy.wcs.authentication.WcsGeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Contains method to retrieve the clipping geometry from a list of {@link WcsGeometryFilterInfo}s
+ * Contains method to retrieve the clipping geometry from a list of {@link GeometryFilterInfo}s
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -53,13 +53,13 @@ import com.vividsolutions.jts.io.ParseException;
 interface GeometryRetriever {
 
     /**
-     * Retrieves or calculates the parsed geometry to use from the list of {@link WcsGeometryFilterInfo}s identified by
+     * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by
      * the given coverage name. The algorithm to detect or calculate the geometry is left to the implementations.
      * 
      * @param coverageName
      *            the name of the coverage the geometries should be retrieved for, never <code>null</code>
      * @param geometryFilterInfos
-     *            the list of {@link WcsGeometryFilterInfo}s containing the geometries, never <code>null</code> may be
+     *            the list of {@link GeometryFilterInfo}s containing the geometries, never <code>null</code> may be
      *            empty
      * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
      * @throws IllegalArgumentException
@@ -67,7 +67,7 @@ interface GeometryRetriever {
      * @throws ParseException
      *             if the geometry could not be parsed or calculated
      */
-    Geometry retrieveGeometry( String coverageName, List<WcsGeometryFilterInfo> geometryFilterInfos )
+    Geometry retrieveGeometry( String coverageName, List<GeometryFilterInfo> geometryFilterInfos )
                             throws IllegalArgumentException, ParseException;
 
 }
