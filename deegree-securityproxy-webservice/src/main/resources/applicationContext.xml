@@ -10,7 +10,6 @@
   <context:annotation-config />
   <import resource="securityContext.xml" />
   <import resource="persistenceContext.xml" />
-  <import resource="wcsContext.xml" />
 
   <bean id="serviceExceptionHandler" class="org.deegree.securityproxy.exception.ServiceExceptionHandler">
     <constructor-arg ref="exceptionManagers" />
