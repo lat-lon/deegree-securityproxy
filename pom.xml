@@ -222,7 +222,7 @@
     <module>deegree-securityproxy-authentication</module>
     <module>deegree-securityproxy-authentication-ows</module>
     <module>deegree-securityproxy-core</module>
-    <module>deegree-securityproxy-packaging</module>
+    <module>deegree-securityproxy-webservice</module>
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
   </modules>

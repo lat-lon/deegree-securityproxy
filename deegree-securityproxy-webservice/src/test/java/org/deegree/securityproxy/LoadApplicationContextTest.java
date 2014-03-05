@@ -51,7 +51,7 @@ public class LoadApplicationContextTest {
     public void testLoadApplicationContext() {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml",
                                                                                  "authenticationContext.xml",
-                                                                                 "wmsContext.xml" );
+                                                                                 "wmsContext.xml", "wcsContext.xml" );
         ctx.close();
     }
 
