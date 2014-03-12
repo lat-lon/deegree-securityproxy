@@ -3,13 +3,15 @@
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <bean id="wcsServiceManager" class="org.deegree.securityproxy.wcs.WcsServiceManager">
     <constructor-arg ref="wcsRequestParser"/>
     <constructor-arg ref="wcsRequestAuthorizationManager"/>
-    <constructor-arg ref="responseFilterManager"/>
+    <constructor-arg ref="responseFilterManagers"/>
     <constructor-arg ref="wcsServiceExceptionWrapper"/>
   </bean>
 
@@ -18,7 +20,8 @@
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.wcs.request.WcsRequestParser"/>
 
-  <bean name="responseFilterManager" class="org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager">
+  <bean name="responseFilterManager"
+        class="org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager">
     <constructor-arg value="${clipping_exception_file_path}"/>
     <constructor-arg value="${clipping_failed_status_code}"/>
   </bean>
@@ -27,10 +30,19 @@
 
   <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.clipping.GeotiffClipper"/>
 
+  <bean name="capabilitiesResponseFilterManager"
+        class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager"/>
+
+  <util:list id="responseFilterManagers" list-class="java.util.LinkedList"
+             value-type="org.deegree.securityproxy.responsefilter.ResponseFilterManager">
+    <ref bean="responseFilterManager"/>
+    <ref bean="capabilitiesResponseFilterManager"/>
+  </util:list>
+
   <bean id="wcsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
-    <constructor-arg value="${wcs_exception_file_path}" />
-    <constructor-arg value="${wcs_authentication_denied_status_code}" />
-    <constructor-arg value="${wcs_authorization_denied_status_code}" />
+    <constructor-arg value="${wcs_exception_file_path}"/>
+    <constructor-arg value="${wcs_authentication_denied_status_code}"/>
+    <constructor-arg value="${wcs_authorization_denied_status_code}"/>
   </bean>
-  
+
 </beans>

@@ -85,4 +85,14 @@ public interface ResponseFilterManager {
      */
     <T extends OwsRequest> boolean supports( Class<T> clazz );
 
+    /**
+     * Checks if the passed request can be filtered or not.
+     * 
+     * @param request
+     *            to check if can handled by this {@link ResponseFilterManager}
+     * @return true if the {@link ResponseFilterManager} can handle the passed request, false otherwise or if request
+     *         parameter is <code>null</code>
+     */
+    boolean canBeFiltered( OwsRequest request );
+
 }

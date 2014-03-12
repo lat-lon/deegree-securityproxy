@@ -66,4 +66,9 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
         return WcsRequest.class.equals( clazz );
     }
 
+    @Override
+    public boolean canBeFiltered( OwsRequest request ) {
+        return false;
+    }
+
 }

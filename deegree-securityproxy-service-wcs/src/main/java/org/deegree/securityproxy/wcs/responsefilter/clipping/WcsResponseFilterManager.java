@@ -158,6 +158,13 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         return WcsRequest.class.equals( clazz );
     }
 
+    @Override
+    public boolean canBeFiltered( OwsRequest request ) {
+        if ( supports( request.getClass() ) )
+            return isGetCoverageRequest( (WcsRequest) request );
+        return false;
+    }
+
     private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
         if ( servletResponse == null )
             throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );

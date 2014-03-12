@@ -2,17 +2,18 @@ package org.deegree.securityproxy.wcs;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
+import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
@@ -20,6 +21,7 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -37,7 +39,7 @@ public class WcsServiceManagerTest {
 
     private RequestAuthorizationManager requestAuthorizationManager;
 
-    private ResponseFilterManager filterManager;
+    private List<ResponseFilterManager> filterManagers;
 
     private ServiceExceptionWrapper serviceExceptionWrapper;
 
@@ -45,9 +47,9 @@ public class WcsServiceManagerTest {
     public void reset() {
         parser = mockOwsRequestParser();
         requestAuthorizationManager = mockRequestAuthorizationManager();
-        filterManager = mockResponseFilterManager();
+        filterManagers = mockResponseFilterManagers();
         serviceExceptionWrapper = mockServiceExceptionWrapper();
-        wcsServiceManager = new WcsServiceManager( parser, requestAuthorizationManager, filterManager,
+        wcsServiceManager = new WcsServiceManager( parser, requestAuthorizationManager, filterManagers,
                                                    serviceExceptionWrapper );
     }
 
@@ -73,25 +75,34 @@ public class WcsServiceManagerTest {
     @Test
     public void testIsResponseFilterEnabled()
                             throws Exception {
+        ResponseFilterManager filterManager1 = mockEnabledResponseFilterManager();
+        ResponseFilterManager filterManager2 = mockEnabledResponseFilterManager();
+        ServiceManager wcsServiceManager = createWcsServiceManagerWithTwoFilterManager( filterManager1, filterManager2 );
         OwsRequest owsRequest = mockOwsRequest();
-        wcsServiceManager.isResponseFilterEnabled( owsRequest );
+        boolean isResponseFilterEnabled = wcsServiceManager.isResponseFilterEnabled( owsRequest );
 
-        verify( filterManager ).supports( owsRequest.getClass() );
+        assertThat( isResponseFilterEnabled, is( true ) );
+        verify( filterManager1, times( 1 ) ).canBeFiltered( owsRequest );
+        verify( filterManager2, never() ).canBeFiltered( owsRequest );
     }
 
     @Test
     public void testFilterResponse()
                             throws Exception {
+        ResponseFilterManager filterManager1 = mockEnabledResponseFilterManager();
+        ResponseFilterManager filterManager2 = mockEnabledResponseFilterManager();
+        ServiceManager wcsServiceManager = createWcsServiceManagerWithTwoFilterManager( filterManager1, filterManager2 );
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wcsServiceManager.filterResponse( wrappedResponse, authentication, owsRequest );
 
-        verify( filterManager ).filterResponse( wrappedResponse, owsRequest, authentication );
+        verify( filterManager1, times( 1 ) ).filterResponse( wrappedResponse, owsRequest, authentication );
+        verify( filterManager2, never() ).filterResponse( wrappedResponse, owsRequest, authentication );
     }
 
     @Test
-    public void testretrieveServiceExceptionWrapper()
+    public void testRetrieveServiceExceptionWrapper()
                             throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wcsServiceManager.retrieveServiceExceptionWrapper();
 
@@ -116,8 +127,14 @@ public class WcsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
-    private ResponseFilterManager mockResponseFilterManager() {
-        return mock( ResponseFilterManager.class );
+    private List<ResponseFilterManager> mockResponseFilterManagers() {
+        return mock( List.class );
+    }
+
+    private ResponseFilterManager mockEnabledResponseFilterManager() {
+        ResponseFilterManager responseFilterManager = mock( ResponseFilterManager.class );
+        doReturn( true ).when( responseFilterManager ).canBeFiltered( Matchers.any( OwsRequest.class ) );
+        return responseFilterManager;
     }
 
     private RequestAuthorizationManager mockRequestAuthorizationManager() {
@@ -168,6 +185,21 @@ public class WcsServiceManagerTest {
         String[] serviceTypes = { serviceValue };
         kvpMap.put( "service", serviceTypes );
         return kvpMap;
+    }
+
+    private ServiceManager createWcsServiceManagerWithTwoFilterManager( ResponseFilterManager filterManager1,
+                                                                        ResponseFilterManager filterManager2 ) {
+        List<ResponseFilterManager> filterManagers = createFilterManagersWithTwoFilterManager( filterManager1,
+                                                                                               filterManager2 );
+        return new WcsServiceManager( parser, requestAuthorizationManager, filterManagers, serviceExceptionWrapper );
+    }
+
+    private List<ResponseFilterManager> createFilterManagersWithTwoFilterManager( ResponseFilterManager filterManager1,
+                                                                                  ResponseFilterManager filterManager2 ) {
+        List<ResponseFilterManager> filterManagers = new ArrayList<ResponseFilterManager>();
+        filterManagers.add( filterManager1 );
+        filterManagers.add( filterManager2 );
+        return filterManagers;
     }
 
 }
