@@ -4,12 +4,12 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="geometryRetriever" class="org.deegree.securityproxy.wcs.responsefilter.GeometryRetrieverImpl" />
+  <bean id="geometryRetriever" class="org.deegree.securityproxy.wcs.responsefilter.clipping.GeometryRetrieverImpl" />
 
   <bean id="imageClipper" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.deegree.securityproxy.wcs.responsefilter.ImageClipper" />
+    <constructor-arg value="org.deegree.securityproxy.wcs.responsefilter.clipping.ImageClipper" />
   </bean>
 
-  <bean id="wcsRespnseFilter" class="org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager" />
+  <bean id="wcsRespnseFilter" class="org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager" />
 
 </beans>

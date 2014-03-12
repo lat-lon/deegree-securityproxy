@@ -33,16 +33,16 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter;
+package org.deegree.securityproxy.wcs.responsefilter.clipping;
 
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
-import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.DEFAULT_BODY;
-import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
-import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
-import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
-import static org.deegree.securityproxy.wcs.responsefilter.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
+import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager.DEFAULT_BODY;
+import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager.DEFAULT_STATUS_CODE;
+import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
+import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager.REQUEST_AREA_HEADER_KEY;
+import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -96,7 +96,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * @version $Revision: $, $Date: $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/wcs/responsefilter/WcsResponseFilterManagerTestContext.xml" })
+@ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/wcs/responsefilter/clipping/WcsResponseFilterManagerTestContext.xml" })
 public class WcsResponseFilterManagerTest {
 
     private static final String COVERAGE_NAME = "coverageName";
