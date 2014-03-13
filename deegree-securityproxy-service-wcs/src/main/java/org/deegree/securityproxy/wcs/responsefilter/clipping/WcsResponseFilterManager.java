@@ -154,14 +154,9 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     }
 
     @Override
-    public <T extends OwsRequest> boolean supports( Class<T> clazz ) {
-        return WcsRequest.class.equals( clazz );
-    }
-
-    @Override
     public boolean canBeFiltered( OwsRequest request ) {
         checkIfRequestEqualsNull( request );
-        if ( supports( request.getClass() ) )
+        if ( WcsRequest.class.equals( request.getClass() ) )
             return isGetCoverageRequest( (WcsRequest) request );
         return false;
     }
@@ -176,7 +171,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
         if ( request == null )
             throw new IllegalArgumentException( "Parameter request may not be null!" );
-        if ( !supports( request.getClass() ) )
+        if ( !WcsRequest.class.equals( request.getClass() ) )
             throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
                                                 + " is not supported!" );
     }

@@ -169,27 +169,6 @@ public class WcsResponseFilterManagerTest {
                                                   (OutputStream) anyObject() ) ).thenReturn( mockReport );
     }
 
-    @Test
-    public void testSupportsShouldSupportWcsRequests()
-                            throws Exception {
-        boolean isSupported = wcsResponseFilterManager.supports( WcsRequest.class );
-        assertThat( isSupported, is( true ) );
-    }
-
-    @Test
-    public void testSupportsShouldNotSupportOwsRequests()
-                            throws Exception {
-        boolean isSupported = wcsResponseFilterManager.supports( OwsRequest.class );
-        assertThat( isSupported, is( false ) );
-    }
-
-    @Test
-    public void testSupportsShouldNotSupportNull()
-                            throws Exception {
-        boolean isSupported = wcsResponseFilterManager.supports( null );
-        assertThat( isSupported, is( false ) );
-    }
-
     /*
      * #filterResponse()
      */

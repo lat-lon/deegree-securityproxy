@@ -41,7 +41,6 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -59,11 +58,6 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
                             throws IllegalArgumentException, IOException {
         // TODO implement this!
         return null;
-    }
-
-    @Override
-    public <T extends OwsRequest> boolean supports( Class<T> clazz ) {
-        return WcsRequest.class.equals( clazz );
     }
 
     @Override

@@ -60,8 +60,8 @@ public interface ResponseFilterManager {
      * @param servletResponse
      *            the response to filter, the response may be adjusted during filtering, never <code>null</code>
      * @param request
-     *            parsed request, never <code>null</code>; If not supported (check with {@link #supports(Class)}) an
-     *            {@link IllegalArgumentException} is thrown
+     *            parsed request, never <code>null</code>; If not supported an {@link IllegalArgumentException} is
+     *            thrown
      * @param auth
      *            may be <code>null</code>
      * @return the report containing detailed information about the filtering, never <code>null</code>
@@ -74,16 +74,6 @@ public interface ResponseFilterManager {
     ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                          Authentication auth )
                             throws IllegalArgumentException, IOException;
-
-    /**
-     * Checks if the passed class can be filtered or not.
-     * 
-     * @param clazz
-     *            to check if can handled by this {@link ResponseFilterManager}
-     * @return true if the {@link ResponseFilterManager} can handle {@link OwsRequest} implementations of the passed
-     *         class, false otherwise or if clazz parameter is <code>null</code>
-     */
-    <T extends OwsRequest> boolean supports( Class<T> clazz );
 
     /**
      * Checks if the passed request can be filtered or not.
