@@ -35,12 +35,15 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+
 import java.io.IOException;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -54,7 +57,8 @@ import org.springframework.security.core.Authentication;
 public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManager {
 
     @Override
-    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper arg0, OwsRequest arg1, Authentication arg2 )
+    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+                                                Authentication auth )
                             throws IllegalArgumentException, IOException {
         // TODO implement this!
         return null;
@@ -62,7 +66,19 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
 
     @Override
     public boolean canBeFiltered( OwsRequest request ) {
+        checkIfRequestEqualsNull( request );
+        if ( WcsRequest.class.equals( request.getClass() ) )
+            return isGetCapabilitiesRequest( (WcsRequest) request );
         return false;
+    }
+
+    private void checkIfRequestEqualsNull( OwsRequest request ) {
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
+    }
+
+    private boolean isGetCapabilitiesRequest( WcsRequest wcsRequest ) {
+        return GETCAPABILITIES.equals( wcsRequest.getOperationType() );
     }
 
 }
