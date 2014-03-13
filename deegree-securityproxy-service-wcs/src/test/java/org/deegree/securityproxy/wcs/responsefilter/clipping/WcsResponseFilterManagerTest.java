@@ -76,7 +76,6 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -401,12 +400,9 @@ public class WcsResponseFilterManagerTest {
         assertThat( canBeFiltered, is( true ) );
     }
 
-    @Ignore("Implementation and/or test must be fixed")
-    @Test
-    public void testCanBeFilteredWithNullRequestShouldReturnFalse() {
-        boolean canBeFiltered = wcsResponseFilterManager.canBeFiltered( null );
-
-        assertThat( canBeFiltered, is( false ) );
+    @Test(expected = IllegalArgumentException.class)
+    public void testCanBeFilteredWithNullRequestShouldThrowIllegalArgumentException() {
+        wcsResponseFilterManager.canBeFiltered( null );
     }
 
     @Test

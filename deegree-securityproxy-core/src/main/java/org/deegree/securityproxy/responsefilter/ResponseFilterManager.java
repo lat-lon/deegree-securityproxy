@@ -90,9 +90,11 @@ public interface ResponseFilterManager {
      * 
      * @param request
      *            to check if can handled by this {@link ResponseFilterManager}
-     * @return true if the {@link ResponseFilterManager} can handle the passed request, false otherwise or if request
-     *         parameter is <code>null</code>
+     * @return true if the {@link ResponseFilterManager} can handle the passed request, false otherwise
+     * @throws IllegalArgumentException
+     *             if the passed {@link OwsRequest} is <code>null</code>
      */
-    boolean canBeFiltered( OwsRequest request );
+    boolean canBeFiltered( OwsRequest request )
+                            throws IllegalArgumentException;
 
 }
