@@ -39,6 +39,9 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILI
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
@@ -50,17 +53,33 @@ import org.springframework.security.core.Authentication;
  * {@link ResponseFilterManager} filtering capabilities documents by user permissions.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author last edited by: $Author: lyn $
+ * @author <a href="mailto:goltz@lat-lon.de">Dirk Stenger</a>
+ * @author last edited by: $Author: stenger $
  * 
  * @version $Revision: $, $Date: $
  */
 public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManager {
 
+    private static final Logger LOG = Logger.getLogger( WcsCapabilitiesResponseFilterManager.class );
+
+    private final CapabilitiesFilter capabilitiesFilter;
+
+    public WcsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter ) {
+        this.capabilitiesFilter = capabilitiesFilter;
+    }
+
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                 Authentication auth )
                             throws IllegalArgumentException, IOException {
-        // TODO implement this!
+        checkParameters( servletResponse, request );
+        WcsRequest wcsRequest = (WcsRequest) request;
+        if ( isGetCapabilitiesRequest( wcsRequest ) ) {
+            LOG.info( "Apply wcs capabilities filter for response of request " + wcsRequest );
+            capabilitiesFilter.filterCapabilities( servletResponse, auth );
+        }
+
+        // TODO implement this! Return ResponseFilterReport.
         return null;
     }
 
@@ -79,6 +98,16 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
 
     private boolean isGetCapabilitiesRequest( WcsRequest wcsRequest ) {
         return GETCAPABILITIES.equals( wcsRequest.getOperationType() );
+    }
+
+    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
+        if ( servletResponse == null )
+            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
+        if ( request == null )
+            throw new IllegalArgumentException( "Parameter request may not be null!" );
+        if ( !WcsRequest.class.equals( request.getClass() ) )
+            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
+                                                + " is not supported!" );
     }
 
 }

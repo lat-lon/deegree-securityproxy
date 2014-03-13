@@ -6,12 +6,15 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
 
+import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
+import org.springframework.security.core.Authentication;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -26,7 +29,24 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private static final String COVERAGE_NAME = "coverageName";
 
-    private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager();
+    private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+
+    private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
+                                                                                                                                        capabilitiesFilter );
+
+    @Test
+    public void testFilterResponseShouldCallFilterCapabilities()
+                            throws Exception {
+        CapabilitiesFilter capabilitiesFilter = mockCapabilitiesFilter();
+        WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
+                                                                                                                              capabilitiesFilter );
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
+        WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
+        Authentication authentication = mockAuthentication();
+        wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
+
+        verify( capabilitiesFilter ).filterCapabilities( response, authentication );
+    }
 
     @Test
     public void testCanBeFilteredWithWcsGetCapabilitiesRequestRequestShouldReturnTrue() {
@@ -64,6 +84,18 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private WcsRequest createWcsGetCoverageRequest() {
         return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME ), SERVICE_NAME );
+    }
+
+    private Authentication mockAuthentication() {
+        return mock( Authentication.class );
+    }
+
+    private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper() {
+        return mock( StatusCodeResponseBodyWrapper.class );
+    }
+
+    private CapabilitiesFilter mockCapabilitiesFilter() {
+        return mock( CapabilitiesFilter.class );
     }
 
 }
