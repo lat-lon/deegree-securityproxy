@@ -76,6 +76,7 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -393,6 +394,35 @@ public class WcsResponseFilterManagerTest {
                                                  mockAuthentication() );
     }
 
+    @Test
+    public void testCanBeFilteredWithWcsGetCoverageRequestShouldReturnTrue() {
+        boolean canBeFiltered = wcsResponseFilterManager.canBeFiltered( createWcsGetCoverageRequest() );
+
+        assertThat( canBeFiltered, is( true ) );
+    }
+
+    @Ignore("Implementation and/or test must be fixed")
+    @Test
+    public void testCanBeFilteredWithNullRequestShouldReturnFalse() {
+        boolean canBeFiltered = wcsResponseFilterManager.canBeFiltered( null );
+
+        assertThat( canBeFiltered, is( false ) );
+    }
+
+    @Test
+    public void testCanBeFilteredWithWcsGetCapabilitiesRequestRequestShouldReturnFalse() {
+        boolean canBeFiltered = wcsResponseFilterManager.canBeFiltered( createWcsGetCapabilitiesRequest() );
+
+        assertThat( canBeFiltered, is( false ) );
+    }
+
+    @Test
+    public void testCanBeFilteredWithNotWcsRequestRequestShouldReturnFalse() {
+        boolean canBeFiltered = wcsResponseFilterManager.canBeFiltered( mockOwsRequest() );
+
+        assertThat( canBeFiltered, is( false ) );
+    }
+
     private OwsRequest mockOwsRequest() {
         return mock( OwsRequest.class );
     }
@@ -483,8 +513,8 @@ public class WcsResponseFilterManagerTest {
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
-        RasterUser wcsUser = new RasterUser( "user", "password", "accessToken", Collections.<RasterPermission> emptyList(),
-                                       filters );
+        RasterUser wcsUser = new RasterUser( "user", "password", "accessToken",
+                                             Collections.<RasterPermission> emptyList(), filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
     }
