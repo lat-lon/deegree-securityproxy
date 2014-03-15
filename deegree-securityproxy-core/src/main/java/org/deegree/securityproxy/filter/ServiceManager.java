@@ -1,12 +1,11 @@
 package org.deegree.securityproxy.filter;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
@@ -63,12 +62,12 @@ public interface ServiceManager {
      * @param owsRequest
      *            parsed request, never <code>null</code>.
      * @return
-     * @throws IOException
-     *             if an I/O error occurred during writing in the real output stream.
+     * @throws ResponseFilterException
+     *             if an error occurred during writing in the real output stream.
      */
     ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, Authentication authentication,
                                          OwsRequest owsRequest )
-                            throws IOException;
+                            throws ResponseFilterException;
 
     /**
      * Check if a given request is supported by the {@link ServiceManager}.

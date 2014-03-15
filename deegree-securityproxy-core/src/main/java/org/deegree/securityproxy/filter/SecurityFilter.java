@@ -24,6 +24,7 @@ import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -90,16 +91,28 @@ public class SecurityFilter implements Filter {
             KvpRequestWrapper wrappedRequest = new KvpRequestWrapper( httpRequest, additionalKeyValuePairs );
             chain.doFilter( wrappedRequest, wrappedResponse );
             if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
-                ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
-                                                                                     owsRequest );
-                filterReportLogger.logResponseFilterReport( filterResponse, uuid );
-                LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
+                filterResponse( wrappedResponse, uuid, authentication, owsRequest, serviceManager );
             } else {
                 LOG.debug( "No filter configured for " + owsRequest.getClass() );
                 wrappedResponse.copyBufferedStreamToRealStream();
             }
         }
         handleAuthorizationReport( uuid, httpRequest, wrappedResponse, authorizationReport );
+    }
+
+    private void filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, String uuid,
+                                 Authentication authentication, OwsRequest owsRequest, ServiceManager serviceManager )
+                            throws ServletException {
+        try {
+            ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
+                                                                                 owsRequest );
+            filterReportLogger.logResponseFilterReport( filterResponse, uuid );
+            LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
+        } catch ( ResponseFilterException e ) {
+            LOG.error( "Response filtering failed. " + e.getMessage() );
+            LOG.trace( "Response filtering failed!", e );
+            throw new ServletException( "Response filtering failed", e );
+        }
     }
 
     @Override

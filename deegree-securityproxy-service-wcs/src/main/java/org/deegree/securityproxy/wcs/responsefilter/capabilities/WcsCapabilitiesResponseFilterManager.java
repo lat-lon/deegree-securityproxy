@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
@@ -71,12 +72,16 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                 Authentication auth )
-                            throws IllegalArgumentException, IOException {
+                            throws IllegalArgumentException, ResponseFilterException {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCapabilitiesRequest( wcsRequest ) ) {
             LOG.info( "Apply wcs capabilities filter for response of request " + wcsRequest );
-            capabilitiesFilter.filterCapabilities( servletResponse, auth );
+            try {
+                capabilitiesFilter.filterCapabilities( servletResponse, auth );
+            } catch ( IOException e ) {
+                throw new ResponseFilterException( e );
+            }
         }
 
         // TODO implement this! Return ResponseFilterReport.

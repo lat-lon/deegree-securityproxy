@@ -1,6 +1,5 @@
 package org.deegree.securityproxy.wcs;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +15,7 @@ import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
@@ -41,7 +41,8 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
     private final ServiceExceptionWrapper serviceExceptionWrapper;
 
     public WcsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager,
-                              List<ResponseFilterManager> filterManagers, ServiceExceptionWrapper serviceExceptionWrapper ) {
+                              List<ResponseFilterManager> filterManagers,
+                              ServiceExceptionWrapper serviceExceptionWrapper ) {
         this.parser = parser;
         this.requestAuthorizationManager = requestAuthorizationManager;
         this.filterManagers = filterManagers;
@@ -75,7 +76,7 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
                                                 Authentication authentication, OwsRequest owsRequest )
-                            throws IOException {
+                            throws ResponseFilterException {
         for ( ResponseFilterManager filterManager : filterManagers ) {
             if ( filterManager.canBeFiltered( owsRequest ) )
                 return filterManager.filterResponse( wrappedResponse, owsRequest, authentication );

@@ -56,6 +56,7 @@ import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
@@ -125,7 +126,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     @Override
     public ResponseClippingReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                   Authentication auth )
-                            throws IOException {
+                            throws ResponseFilterException {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
@@ -220,8 +221,12 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     }
 
     private void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
-                            throws IOException {
-        servletResponse.copyBufferedStreamToRealStream();
+                            throws ResponseFilterException {
+        try {
+            servletResponse.copyBufferedStreamToRealStream();
+        } catch ( IOException e ) {
+            throw new ResponseFilterException( "Buffered response stream could not be copied into real stream", e );
+        }
     }
 
     private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse,
