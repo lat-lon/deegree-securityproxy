@@ -127,6 +127,7 @@ public class WcsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
+    @SuppressWarnings("unchecked")
     private List<ResponseFilterManager> mockResponseFilterManagers() {
         return mock( List.class );
     }
