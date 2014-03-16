@@ -86,7 +86,6 @@ public class CapabilitiesFilterTest {
     }
 
     private Source asXml( ByteArrayOutputStream bufferingStream ) {
-        System.out.println( bufferingStream.toString() );
         return the( new StreamSource( new ByteArrayInputStream( bufferingStream.toByteArray() ) ) );
     }
 
@@ -104,4 +103,5 @@ public class CapabilitiesFilterTest {
     private Authentication mockAuth() {
         return mock( Authentication.class );
     }
+
 }

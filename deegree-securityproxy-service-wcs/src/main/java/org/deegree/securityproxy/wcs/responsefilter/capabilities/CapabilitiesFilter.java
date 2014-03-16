@@ -92,17 +92,23 @@ public class CapabilitiesFilter {
             reader = createReader( servletResponse );
             writer = createWriter( servletResponse );
 
-            while ( reader.hasNext() ) {
-                XMLEvent next = reader.nextEvent();
-                if ( next.isStartElement() && ignoreElement( next ) ) {
-                    LOG.info( "Event " + next + " is ignored." );
-                    skipElementContent( reader );
-                } else
-                    writer.add( next );
-            }
+            copyResponse( reader, writer );
+
         } finally {
             closeQuietly( reader );
             closeQuietly( writer );
+        }
+    }
+
+    private void copyResponse( XMLEventReader reader, XMLEventWriter writer )
+                            throws XMLStreamException {
+        while ( reader.hasNext() ) {
+            XMLEvent next = reader.nextEvent();
+            if ( next.isStartElement() && ignoreElement( next ) ) {
+                LOG.info( "Event " + next + " is ignored." );
+                skipElementContent( reader );
+            } else
+                writer.add( next );
         }
     }
 
