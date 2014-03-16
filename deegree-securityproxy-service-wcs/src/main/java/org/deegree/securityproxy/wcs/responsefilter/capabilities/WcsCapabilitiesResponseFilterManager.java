@@ -40,6 +40,7 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILI
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
@@ -80,6 +81,8 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
             try {
                 capabilitiesFilter.filterCapabilities( servletResponse, auth );
             } catch ( IOException e ) {
+                throw new ResponseFilterException( e );
+            } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
         }

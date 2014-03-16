@@ -35,13 +35,19 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
-import static org.apache.commons.io.IOUtils.copy;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.XMLEvent;
 
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.springframework.security.core.Authentication;
 
@@ -57,6 +63,17 @@ import org.springframework.security.core.Authentication;
  */
 public class CapabilitiesFilter {
 
+    private static final Logger LOG = Logger.getLogger( CapabilitiesFilter.class );
+
+    private final ElementDecisionRule elementDecisionRule;
+
+    /**
+     * @param elementDecisionRule
+     */
+    public CapabilitiesFilter( ElementDecisionRule elementDecisionRule ) {
+        this.elementDecisionRule = elementDecisionRule;
+    }
+
     /**
      * Filters the incoming response.
      * 
@@ -65,16 +82,80 @@ public class CapabilitiesFilter {
      * @param auth
      *            containing rules to apply for filtering, never <code>null</code>
      * @throws IOException
+     * @throws XMLStreamException
      */
     public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, Authentication auth )
-                            throws IOException {
-        InputStream originalCapabilities = servletResponse.getBufferedStream();
+                            throws IOException, XMLStreamException {
+        XMLEventReader reader = null;
+        XMLEventWriter writer = null;
+        try {
+            reader = createReader( servletResponse );
+            writer = createWriter( servletResponse );
+
+            while ( reader.hasNext() ) {
+                XMLEvent next = reader.nextEvent();
+                if ( next.isStartElement() && ignoreElement( next ) ) {
+                    LOG.info( "Event " + next + " is ignored." );
+                    skipElementContent( reader );
+                } else
+                    writer.add( next );
+            }
+        } finally {
+            closeQuietly( reader );
+            closeQuietly( writer );
+        }
+    }
+
+    private boolean ignoreElement( XMLEvent next ) {
+        return elementDecisionRule != null && elementDecisionRule.ignore( next );
+    }
+
+    private XMLEventWriter createWriter( StatusCodeResponseBodyWrapper servletResponse )
+                            throws IOException, FactoryConfigurationError, XMLStreamException {
         ServletOutputStream filteredCapabilitiesStreamToWriteIn = servletResponse.getRealOutputStream();
 
-        // TODO: filter originalCapabilities, write result in filteredCapabilitiesStreamToWriteIn
+        XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
+        XMLEventWriter writer = outFactory.createXMLEventWriter( filteredCapabilitiesStreamToWriteIn );
+        return writer;
+    }
 
-        InputStream filteredResource = CapabilitiesFilter.class.getResourceAsStream( "simpleFilteredF.xml" );
-        copy( filteredResource, filteredCapabilitiesStreamToWriteIn );
+    private XMLEventReader createReader( StatusCodeResponseBodyWrapper servletResponse )
+                            throws FactoryConfigurationError, XMLStreamException {
+        InputStream originalCapabilities = servletResponse.getBufferedStream();
+        XMLInputFactory inFactory = XMLInputFactory.newInstance();
+        XMLEventReader reader = inFactory.createXMLEventReader( originalCapabilities );
+        return reader;
+    }
+
+    private void skipElementContent( XMLEventReader reader )
+                            throws XMLStreamException {
+        int depth = 0;
+        while ( depth >= 0 ) {
+            XMLEvent nextEvent = reader.nextEvent();
+            if ( nextEvent.isStartElement() ) {
+                depth++;
+            } else if ( nextEvent.isEndElement() ) {
+                depth--;
+            }
+        }
+    }
+
+    private void closeQuietly( XMLEventReader reader ) {
+        try {
+            if ( reader != null )
+                reader.close();
+        } catch ( XMLStreamException e ) {
+            LOG.warn( "Reader could not be closed: " + e.getMessage() );
+        }
+    }
+
+    private void closeQuietly( XMLEventWriter writer ) {
+        try {
+            if ( writer != null )
+                writer.close();
+        } catch ( XMLStreamException e ) {
+            LOG.warn( "Reader could not be closed: " + e.getMessage() );
+        }
     }
 
 }

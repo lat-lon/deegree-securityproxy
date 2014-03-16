@@ -29,7 +29,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private static final String COVERAGE_NAME = "coverageName";
 
-    private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+    private final CapabilitiesFilter capabilitiesFilter = mock( CapabilitiesFilter.class );
 
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
                                                                                                                                         capabilitiesFilter );

@@ -16,7 +16,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
@@ -28,15 +27,25 @@ import org.springframework.security.core.Authentication;
  */
 public class CapabilitiesFilterTest {
 
-    private CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+    @Test
+    public void testFilterCapabilitiesWithoutFilter()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-    @Ignore("fix me")
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter();
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleResponse.xml" ) ) );
+    }
+
     @Test
     public void testFilterCapabilitiesSimpleFilteredE()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "e" );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredE.xml" ) ) );
@@ -48,9 +57,19 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f" );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredF.xml" ) ) );
+    }
+
+    private CapabilitiesFilter createCapabilitiesFilter() {
+        return new CapabilitiesFilter( null );
+    }
+
+    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter ) {
+        ElementDecisionRule eventFilter = new ElementDecisionRule( nameToFilter );
+        return new CapabilitiesFilter( eventFilter );
     }
 
     private StatusCodeResponseBodyWrapper mockResponse( String originalXmlFileName, ByteArrayOutputStream filteredStream )
@@ -67,6 +86,7 @@ public class CapabilitiesFilterTest {
     }
 
     private Source asXml( ByteArrayOutputStream bufferingStream ) {
+        System.out.println( bufferingStream.toString() );
         return the( new StreamSource( new ByteArrayInputStream( bufferingStream.toByteArray() ) ) );
     }
 
