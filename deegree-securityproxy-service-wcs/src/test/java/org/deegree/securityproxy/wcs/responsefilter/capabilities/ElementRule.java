@@ -35,50 +35,81 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.events.XMLEvent;
-
 /**
- * Decides if an element should be writer or not.
+ * TODO add class documentation here
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementDecisionMaker {
+public class ElementRule {
 
-    private final ElementRule elementRule;
+    private final String name;
+
+    private final String namespace;
+
+    private final String text;
 
     /**
-     * @param elementRule
+     * Use this if only the name of the element is interesting for filtering.
+     * 
+     * @param name
      *            never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if the elementRule is <code>null</code>
      */
-    public ElementDecisionMaker( ElementRule elementRule ) {
-        this.elementRule = elementRule;
-        checkNameToFilter( elementRule );
+    public ElementRule( String name ) {
+        this( name, null );
     }
 
     /**
-     * @param event
-     *            the current event to filter, never <code>null</code>
-     * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
+     * 
+     * Use this if name and namespace are interesting for filtering.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
      */
-    public boolean ignore( XMLEvent event ) {
-        if ( event.isStartElement() && hasStartElementNameToFilter( event ) ) {
-            return true;
-        }
-        return false;
+    public ElementRule( String name, String namespace ) {
+        this( name, namespace, null );
     }
 
-    private boolean hasStartElementNameToFilter( XMLEvent event ) {
-        return new QName( elementRule.getNamespace(), elementRule.getName() ).equals( event.asStartElement().getName() );
+    /**
+     * 
+     * Use this if name and namespace as well as the element text are interesting for filtering.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param text
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, String text ) {
+        this.name = name;
+        this.namespace = namespace;
+        this.text = text;
     }
 
-    private void checkNameToFilter( ElementRule elementRule ) {
-        if ( elementRule == null )
-            throw new IllegalArgumentException( "nameToFilter must not be null or empty!" );
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
     }
+
+    /**
+     * @return the namespace
+     */
+    public String getNamespace() {
+        return namespace;
+    }
+
+    /**
+     * @return the text
+     */
+    public String getText() {
+        return text;
+    }
+
 }

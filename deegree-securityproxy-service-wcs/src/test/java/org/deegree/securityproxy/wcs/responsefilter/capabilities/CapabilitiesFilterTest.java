@@ -72,7 +72,8 @@ public class CapabilitiesFilterTest {
     }
 
     private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace ) {
-        ElementDecisionMaker eventFilter = new ElementDecisionMaker( nameToFilter, namespace );
+        ElementRule rule = new ElementRule( nameToFilter, namespace );
+        ElementDecisionMaker eventFilter = new ElementDecisionMaker( rule );
         return new CapabilitiesFilter( eventFilter );
     }
 
