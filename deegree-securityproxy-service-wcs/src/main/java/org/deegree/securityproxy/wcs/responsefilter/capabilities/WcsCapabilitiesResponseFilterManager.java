@@ -47,6 +47,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.core.Authentication;
@@ -64,6 +65,8 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
 
     private static final Logger LOG = Logger.getLogger( WcsCapabilitiesResponseFilterManager.class );
 
+    static final String NOT_A_CAPABILITIES_REQUEST_MSG = "Request was not a GetCapabilities-Request - filtering not required.";
+
     private final CapabilitiesFilter capabilitiesFilter;
 
     public WcsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter ) {
@@ -80,15 +83,14 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
             LOG.info( "Apply wcs capabilities filter for response of request " + wcsRequest );
             try {
                 capabilitiesFilter.filterCapabilities( servletResponse, auth );
+                return new ResponseCapabilitiesReport( "Capabilities of request were filtered successfully.", true );
             } catch ( IOException e ) {
                 throw new ResponseFilterException( e );
             } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
         }
-
-        // TODO implement this! Return ResponseFilterReport.
-        return null;
+        return new ResponseCapabilitiesReport( NOT_A_CAPABILITIES_REQUEST_MSG );
     }
 
     @Override

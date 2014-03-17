@@ -15,14 +15,34 @@ public class ResponseCapabilitiesReport implements ResponseFilterReport {
     private boolean isFiltered;
 
     /**
+     * Instantiates a new {@link ResponseCapabilitiesReport} with an error message , isFiltered is set to
+     * <code>false</code>.
+     * 
+     * @param failureMessage
+     *            the error message, may not be <code>null</code>
+     * @throws IllegalArgumentException
+     *             if required parameter is null
+     */
+    public ResponseCapabilitiesReport( String failureMessage ) {
+        if ( failureMessage == null )
+            throw new IllegalArgumentException( "failureMessage must not be null!" );
+        this.message = failureMessage;
+        this.isFiltered = false;
+    }
+
+    /**
      * Instantiates a new {@link ResponseCapabilitiesReport} with detailed information about the capabilities filtering.
      * 
      * @param message
-     *            message gives information about the capabilities filtering
+     *            message gives information about the capabilities filtering, never <code>null</code>
      * @param isFiltered
-     *            if clipping was required or not
+     *            if filtering was required or not
+     * @throws IllegalArgumentException
+     *             if required parameter is null
      */
     public ResponseCapabilitiesReport( String message, boolean isFiltered ) {
+        if ( message == null )
+            throw new IllegalArgumentException( "message must not be null!" );
         this.message = message;
         this.isFiltered = isFiltered;
     }
