@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.events.XMLEvent;
 
 /**
@@ -49,15 +50,20 @@ public class ElementDecisionRule {
 
     private final String nameToFilter;
 
+    private final String namespace;
+
     /**
      * @param nameToFilter
      *            used to compare with the element name, never <code>null</code> or empty
+     * @param namespace
+     *            namespace uri may be <code>null</code> if the namespace uri is not set
      * @throws IllegalArgumentException
      *             if the parameter is <code>null</code>
      */
-    public ElementDecisionRule( String nameToFilter ) {
+    public ElementDecisionRule( String nameToFilter, String namespace ) {
         checkNameToFilter( nameToFilter );
         this.nameToFilter = nameToFilter;
+        this.namespace = namespace;
     }
 
     /**
@@ -73,7 +79,7 @@ public class ElementDecisionRule {
     }
 
     private boolean hasStartElementNameToFilter( XMLEvent event ) {
-        return event.asStartElement().getName().getLocalPart().equals( nameToFilter );
+        return new QName( namespace, nameToFilter ).equals( event.asStartElement().getName() );
     }
 
     private void checkNameToFilter( String nameToFilter ) {

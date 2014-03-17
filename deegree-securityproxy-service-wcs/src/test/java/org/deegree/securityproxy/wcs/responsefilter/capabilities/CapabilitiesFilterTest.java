@@ -68,7 +68,7 @@ public class CapabilitiesFilterTest {
     }
 
     private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter ) {
-        ElementDecisionRule eventFilter = new ElementDecisionRule( nameToFilter );
+        ElementDecisionRule eventFilter = new ElementDecisionRule( nameToFilter, null );
         return new CapabilitiesFilter( eventFilter );
     }
 
