@@ -16,7 +16,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
@@ -64,7 +63,6 @@ public class CapabilitiesFilterTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredByNamespace.xml" ) ) );
     }
 
-    @Ignore
     @Test
     public void testFilterCapabilitiesSimpleFilteredWithNamespaceAndText()
                             throws Exception {
@@ -78,14 +76,13 @@ public class CapabilitiesFilterTest {
                     isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndText.xml" ) ) );
     }
 
-    @Ignore
     @Test
     public void testFilterCapabilitiesSimpleFilteredWithNamespaceAndTextAndttribute()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "d", "http://simple1.de", "dtext" );
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "d", "http://simple1.de", "2nddtext" );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
         assertThat( asXml( filteredCapabilities ),
