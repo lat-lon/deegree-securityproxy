@@ -36,7 +36,6 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -72,7 +71,7 @@ public class ElementDecisionMaker {
      * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
      * @throws XMLStreamException
      */
-    public boolean ignore( XMLEventReader reader, XMLEvent event )
+    public boolean ignore( BufferingXMLEventReader reader, XMLEvent event )
                             throws XMLStreamException {
         if ( event.isStartElement() && matchesElementRule( reader, event ) ) {
             return true;
@@ -80,20 +79,38 @@ public class ElementDecisionMaker {
         return false;
     }
 
-    private boolean matchesElementRule( XMLEventReader reader, XMLEvent event )
+    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event )
                             throws XMLStreamException {
         StartElement startElement = event.asStartElement();
         QName ignoredQName = new QName( elementRule.getNamespace(), elementRule.getName() );
         boolean isNameMatching = ignoredQName.equals( startElement.getName() );
         if ( isNameMatching && elementRule.getText() != null ) {
-            XMLEvent peek = reader.peek();
-            boolean characters = peek.isCharacters();
-            if ( characters )
-                return elementRule.getText().equals( peek.asCharacters().getData() );
-            else 
-                return false;
+            return hasSameText( reader );
         }
         return isNameMatching;
+    }
+
+    private boolean hasSameText( BufferingXMLEventReader reader )
+                            throws XMLStreamException {
+        int depth = 0;
+        while ( depth >= 0 ) {
+            XMLEvent peeked = reader.peekNextEvent();
+            if ( peeked.isStartElement() ) {
+                depth++;
+            } else if ( peeked.isEndElement() ) {
+                depth--;
+            } else if ( peeked.isCharacters() ) {
+                if ( elementRule.getText().equals( peeked.asCharacters().getData() ) )
+                    return true;
+            }
+        }
+
+        // XMLEvent peek = reader.peek();
+        // boolean characters = peek.isCharacters();
+        // if ( characters )
+        // return elementRule.getText().equals( peek.asCharacters().getData() );
+        // else
+        return false;
     }
 
     private void checkNameToFilter( ElementRule elementRule ) {

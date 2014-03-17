@@ -89,6 +89,18 @@ public class CapabilitiesFilterTest {
                     isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndTextWithAttribute.xml" ) ) );
     }
 
+    @Test
+    public void testFilterCapabilitiesExtendedFilteredFromSubelement()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
+
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", "idG" );
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedFilteredBySubelement.xml" ) ) );
+    }
+
     private CapabilitiesFilter createCapabilitiesFilter() {
         return new CapabilitiesFilter( null );
     }

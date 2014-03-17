@@ -89,7 +89,7 @@ public class CapabilitiesFilter {
      */
     public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, Authentication auth )
                             throws IOException, XMLStreamException {
-        XMLEventReader reader = null;
+        BufferingXMLEventReader reader = null;
         XMLEventWriter writer = null;
         try {
             reader = createReader( servletResponse );
@@ -103,7 +103,7 @@ public class CapabilitiesFilter {
         }
     }
 
-    private void copyResponse( XMLEventReader reader, XMLEventWriter writer )
+    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer )
                             throws XMLStreamException {
         while ( reader.hasNext() ) {
             XMLEvent next = reader.nextEvent();
@@ -115,7 +115,7 @@ public class CapabilitiesFilter {
         }
     }
 
-    private boolean ignoreElement( XMLEventReader reader, XMLEvent next )
+    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent next )
                             throws XMLStreamException {
         return elementDecisionRule != null && elementDecisionRule.ignore( reader, next );
     }
@@ -128,11 +128,12 @@ public class CapabilitiesFilter {
         return outFactory.createXMLEventWriter( filteredCapabilitiesStreamToWriteIn );
     }
 
-    private XMLEventReader createReader( StatusCodeResponseBodyWrapper servletResponse )
+    private BufferingXMLEventReader createReader( StatusCodeResponseBodyWrapper servletResponse )
                             throws FactoryConfigurationError, XMLStreamException {
         InputStream originalCapabilities = servletResponse.getBufferedStream();
         XMLInputFactory inFactory = XMLInputFactory.newInstance();
-        return inFactory.createXMLEventReader( originalCapabilities );
+        XMLEventReader reader = inFactory.createXMLEventReader( originalCapabilities );
+        return new BufferingXMLEventReader( reader );
     }
 
     private void skipElementContent( XMLEventReader reader )

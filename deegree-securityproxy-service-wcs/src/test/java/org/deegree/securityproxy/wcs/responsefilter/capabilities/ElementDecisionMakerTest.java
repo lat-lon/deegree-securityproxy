@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -79,8 +78,8 @@ public class ElementDecisionMakerTest {
         assertThat( ignore, is( false ) );
     }
 
-    private XMLEventReader mockXmlEventReader() {
-        return mock( XMLEventReader.class );
+    private BufferingXMLEventReader mockXmlEventReader() {
+        return mock( BufferingXMLEventReader.class );
     }
 
     private XMLEvent mockEventToIgnore() {
