@@ -49,7 +49,6 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.springframework.security.core.Authentication;
 
 /**
  * Filters capabilities documents.
@@ -65,29 +64,20 @@ public class CapabilitiesFilter {
 
     private static final Logger LOG = Logger.getLogger( CapabilitiesFilter.class );
 
-    private final ElementDecisionMaker elementDecisionRule;
-
-    /**
-     * @param elementDecisionMaker
-     *            never <code>null</code>
-     */
-    public CapabilitiesFilter( ElementDecisionMaker elementDecisionMaker ) {
-        this.elementDecisionRule = elementDecisionMaker;
-    }
-
     /**
      * Filters the incoming response.
      * 
      * @param servletResponse
      *            containing the response to filter, never <code>null</code>
-     * @param auth
-     *            containing rules to apply for filtering, never <code>null</code>
+     * @param elementDecisionMaker
+     *            decides if elements should be written or not, never <code>null</code>
      * @throws IOException
      *             if an error occurred during stream handling
      * @throws XMLStreamException
      *             if an error occurred during reading or writing the response
      */
-    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, Authentication auth )
+    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse,
+                                    ElementDecisionMaker elementDecisionMaker )
                             throws IOException, XMLStreamException {
         BufferingXMLEventReader reader = null;
         XMLEventWriter writer = null;
@@ -95,7 +85,7 @@ public class CapabilitiesFilter {
             reader = createReader( servletResponse );
             writer = createWriter( servletResponse );
 
-            copyResponse( reader, writer );
+            copyResponse( reader, writer, elementDecisionMaker );
 
         } finally {
             closeQuietly( reader );
@@ -103,30 +93,33 @@ public class CapabilitiesFilter {
         }
     }
 
-    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer )
+    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer,
+                               ElementDecisionMaker elementDecisionMaker )
                             throws XMLStreamException {
         while ( reader.hasNext() ) {
             XMLEvent next = reader.nextEvent();
             if ( next.isStartElement() ) {
-                processStartElement( reader, writer, next );
+                processStartElement( reader, writer, next, elementDecisionMaker );
             } else
                 writer.add( next );
         }
     }
 
-    private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent next )
+    private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent next,
+                                      ElementDecisionMaker elementDecisionMaker )
                             throws XMLStreamException {
         LOG.debug( "Found StartElement " + next );
-        if ( ignoreElement( reader, next ) ) {
+        if ( ignoreElement( reader, next, elementDecisionMaker ) ) {
             LOG.info( "Event " + next + " is ignored." );
             skipElementContent( reader );
         } else
             writer.add( next );
     }
 
-    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent next )
+    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent next,
+                                   ElementDecisionMaker elementDecisionMaker )
                             throws XMLStreamException {
-        return elementDecisionRule != null && elementDecisionRule.ignore( reader, next );
+        return elementDecisionMaker != null && elementDecisionMaker.ignore( reader, next );
     }
 
     private XMLEventWriter createWriter( StatusCodeResponseBodyWrapper servletResponse )

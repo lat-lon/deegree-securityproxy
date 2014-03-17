@@ -81,7 +81,7 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
         if ( canBeFiltered( request ) ) {
             LOG.info( "Apply wcs capabilities filter for response of request " + request );
             try {
-                capabilitiesFilter.filterCapabilities( servletResponse, auth );
+                capabilitiesFilter.filterCapabilities( servletResponse, null );
                 return new ResponseCapabilitiesReport( "Capabilities of request were filtered successfully.", true );
             } catch ( IOException e ) {
                 throw new ResponseFilterException( e );

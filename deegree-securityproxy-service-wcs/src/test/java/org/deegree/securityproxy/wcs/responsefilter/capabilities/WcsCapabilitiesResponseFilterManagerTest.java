@@ -6,6 +6,8 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -49,7 +51,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         Authentication authentication = mockAuthentication();
         wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
 
-        verify( capabilitiesFilter ).filterCapabilities( response, authentication );
+        verify( capabilitiesFilter ).filterCapabilities( eq( response ), any( ElementDecisionMaker.class ) );
     }
 
     @Test

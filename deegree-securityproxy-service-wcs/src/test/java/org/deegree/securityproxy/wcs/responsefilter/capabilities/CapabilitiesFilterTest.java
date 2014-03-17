@@ -17,7 +17,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.junit.Test;
-import org.springframework.security.core.Authentication;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -27,14 +26,15 @@ import org.springframework.security.core.Authentication;
  */
 public class CapabilitiesFilterTest {
 
+    private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+
     @Test
     public void testFilterCapabilitiesWithoutFilter()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter();
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, null );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleResponse.xml" ) ) );
     }
@@ -45,8 +45,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f" );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f" ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFiltered.xml" ) ) );
     }
@@ -57,8 +56,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "e", "http://simple.de" );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "e", "http://simple.de" ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredByNamespace.xml" ) ) );
     }
@@ -69,8 +67,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "d", "http://simple1.de", "dtext" );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "d", "http://simple1.de", "dtext" ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndText.xml" ) ) );
@@ -82,8 +79,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "d", "http://simple1.de", "2nddtext" );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "d", "http://simple1.de", "2nddtext" ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndTextWithAttribute.xml" ) ) );
@@ -96,8 +92,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         ElementRule subRule = new ElementRule( "i", "http://extended.de", "idH" );
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", "http://extended.de", subRule ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponse.xml" ) ) );
     }
@@ -109,8 +104,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         ElementRule subRule = new ElementRule( "g", "http://extended.de", "idG" );
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", "http://extended.de", subRule ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedFilteredBySubelement.xml" ) ) );
     }
@@ -122,36 +116,28 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         ElementRule subRule = new ElementRule( "l", "http://extended.de", "idL" );
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", "http://extended.de", subRule ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "extendedFilteredByNestedSubelement.xml" ) ) );
     }
 
-    private CapabilitiesFilter createCapabilitiesFilter() {
-        return new CapabilitiesFilter( null );
+    private ElementDecisionMaker createEventFilter( String nameToFilter ) {
+        return createEventFilter( nameToFilter, null );
     }
 
-    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter ) {
-        return createCapabilitiesFilter( nameToFilter, null );
+    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace ) {
+        return createEventFilter( nameToFilter, namespace, (String) null );
     }
 
-    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace ) {
-        String text = null;
-        return createCapabilitiesFilter( nameToFilter, namespace, text );
-    }
-
-    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace, String text ) {
+    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, String text ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text );
-        ElementDecisionMaker eventFilter = new ElementDecisionMaker( rule );
-        return new CapabilitiesFilter( eventFilter );
+        return new ElementDecisionMaker( rule );
     }
 
-    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace, ElementRule subRule ) {
+    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, ElementRule subRule ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, subRule );
-        ElementDecisionMaker eventFilter = new ElementDecisionMaker( rule );
-        return new CapabilitiesFilter( eventFilter );
+        return new ElementDecisionMaker( rule );
     }
 
     private StatusCodeResponseBodyWrapper mockResponse( String originalXmlFileName, ByteArrayOutputStream filteredStream )
@@ -181,10 +167,6 @@ public class CapabilitiesFilterTest {
             }
         };
         return stream;
-    }
-
-    private Authentication mockAuth() {
-        return mock( Authentication.class );
     }
 
 }
