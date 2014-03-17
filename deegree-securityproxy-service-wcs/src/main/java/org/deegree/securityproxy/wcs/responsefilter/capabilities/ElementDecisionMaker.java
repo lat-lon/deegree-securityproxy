@@ -46,7 +46,7 @@ import javax.xml.stream.events.XMLEvent;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementDecisionRule {
+public class ElementDecisionMaker {
 
     private final String nameToFilter;
 
@@ -60,7 +60,7 @@ public class ElementDecisionRule {
      * @throws IllegalArgumentException
      *             if the parameter is <code>null</code>
      */
-    public ElementDecisionRule( String nameToFilter, String namespace ) {
+    public ElementDecisionMaker( String nameToFilter, String namespace ) {
         checkNameToFilter( nameToFilter );
         this.nameToFilter = nameToFilter;
         this.namespace = namespace;

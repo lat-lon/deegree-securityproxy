@@ -65,13 +65,13 @@ public class CapabilitiesFilter {
 
     private static final Logger LOG = Logger.getLogger( CapabilitiesFilter.class );
 
-    private final ElementDecisionRule elementDecisionRule;
+    private final ElementDecisionMaker elementDecisionRule;
 
     /**
-     * @param elementDecisionRule
+     * @param elementDecisionMaker
      */
-    public CapabilitiesFilter( ElementDecisionRule elementDecisionRule ) {
-        this.elementDecisionRule = elementDecisionRule;
+    public CapabilitiesFilter( ElementDecisionMaker elementDecisionMaker ) {
+        this.elementDecisionRule = elementDecisionMaker;
     }
 
     /**

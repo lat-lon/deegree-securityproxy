@@ -17,26 +17,26 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementDecisionRuleTest {
+public class ElementDecisionMakerTest {
 
     private static final String NAMESPACE_URI = "http://namespace.uri.de";
 
     private static final String NAME_TO_FILTER = "nameToFilter";
 
-    private final ElementDecisionRule elementDecisionRule = new ElementDecisionRule( NAME_TO_FILTER, NAMESPACE_URI );
+    private final ElementDecisionMaker elementDecisionRule = new ElementDecisionMaker( NAME_TO_FILTER, NAMESPACE_URI );
 
-    private final ElementDecisionRule elementDecisionRuleUnsetNamespace = new ElementDecisionRule( NAME_TO_FILTER, null );
+    private final ElementDecisionMaker elementDecisionRuleUnsetNamespace = new ElementDecisionMaker( NAME_TO_FILTER, null );
 
     @Test(expected = IllegalArgumentException.class)
     public void testElementDecisionRuleWithNullName()
                             throws Exception {
-        new ElementDecisionRule( null, null );
+        new ElementDecisionMaker( null, null );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testElementDecisionRuleWithEmptyName()
                             throws Exception {
-        new ElementDecisionRule( "", null );
+        new ElementDecisionMaker( "", null );
     }
 
     @Test
