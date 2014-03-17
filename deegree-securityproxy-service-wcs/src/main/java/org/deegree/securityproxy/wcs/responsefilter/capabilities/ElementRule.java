@@ -51,6 +51,8 @@ public class ElementRule {
 
     private final String text;
 
+    private final ElementRule subRule;
+
     /**
      * Use this if only the name of the element is interesting for filtering.
      * 
@@ -71,7 +73,7 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace ) {
-        this( name, namespace, null );
+        this( name, namespace, (String) null );
     }
 
     /**
@@ -86,9 +88,43 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace, String text ) {
+        this( name, namespace, text, null );
+    }
+
+    /**
+     * 
+     * Use this if name and namespace are interesting for filtering. Furthermore a sub element may be passed.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param subRule
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, ElementRule subRule ) {
+        this( name, namespace, null, subRule );
+    }
+
+    /**
+     * 
+     * Use this if name and namespace as well as the element text are interesting for filtering. Furthermore a sub
+     * element may be passed.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param text
+     *            may be <code>null</code>
+     * @param subRule
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, String text, ElementRule subRule ) {
         this.name = name;
         this.namespace = namespace;
         this.text = text;
+        this.subRule = subRule;
     }
 
     /**
@@ -110,6 +146,13 @@ public class ElementRule {
      */
     public String getText() {
         return text;
+    }
+
+    /**
+     * @return the subRule
+     */
+    public ElementRule getSubRule() {
+        return subRule;
     }
 
 }

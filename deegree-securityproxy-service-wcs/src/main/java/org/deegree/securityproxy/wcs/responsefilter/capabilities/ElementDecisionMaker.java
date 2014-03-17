@@ -73,43 +73,64 @@ public class ElementDecisionMaker {
      */
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent event )
                             throws XMLStreamException {
-        if ( event.isStartElement() && matchesElementRule( reader, event ) ) {
+        if ( event.isStartElement() && matchesElementRule( reader, event, elementRule ) ) {
             return true;
         }
         return false;
     }
 
-    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event )
+    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule )
                             throws XMLStreamException {
         StartElement startElement = event.asStartElement();
-        QName ignoredQName = new QName( elementRule.getNamespace(), elementRule.getName() );
-        boolean isNameMatching = ignoredQName.equals( startElement.getName() );
-        if ( isNameMatching && elementRule.getText() != null ) {
-            return hasSameText( reader );
-        }
-        return isNameMatching;
+        QName ignoredQName = new QName( rule.getNamespace(), rule.getName() );
+        final boolean isNameMatching = ignoredQName.equals( startElement.getName() );
+
+        if ( !isNameMatching )
+            return false;
+
+        boolean isTextMatching = true;
+        if ( rule.getText() != null )
+            isTextMatching = isTextMatching( reader, rule );
+
+        if ( !isTextMatching )
+            return false;
+
+        if ( rule.getSubRule() != null )
+            return isSubRuleMatching( reader );
+
+        return isTextMatching;
     }
 
-    private boolean hasSameText( BufferingXMLEventReader reader )
+    private boolean isTextMatching( BufferingXMLEventReader reader, ElementRule rule )
                             throws XMLStreamException {
-        int depth = 0;
-        while ( depth >= 0 ) {
-            XMLEvent peeked = reader.peekNextEvent();
-            if ( peeked.isStartElement() ) {
-                depth++;
-            } else if ( peeked.isEndElement() ) {
-                depth--;
-            } else if ( peeked.isCharacters() ) {
-                if ( elementRule.getText().equals( peeked.asCharacters().getData() ) )
+        XMLEvent peeked = reader.peekNextEvent();
+        while ( !peeked.isStartElement() && !peeked.isEndElement() ) {
+            if ( peeked.isCharacters() ) {
+                if ( rule.getText().equals( peeked.asCharacters().getData() ) )
                     return true;
             }
+            peeked = reader.peekNextEvent();
         }
+        return false;
+    }
 
-        // XMLEvent peek = reader.peek();
-        // boolean characters = peek.isCharacters();
-        // if ( characters )
-        // return elementRule.getText().equals( peek.asCharacters().getData() );
-        // else
+    private boolean isSubRuleMatching( BufferingXMLEventReader reader )
+                            throws XMLStreamException {
+        ElementRule subRule = elementRule.getSubRule();
+        if ( subRule != null ) {
+            int depth = 0;
+            while ( depth >= 0 ) {
+                XMLEvent peeked = reader.peekNextEvent();
+                if ( peeked.isStartElement() ) {
+                    boolean matchesElementRule = matchesElementRule( reader, peeked, subRule );
+                    if ( matchesElementRule )
+                        return true;
+                    depth++;
+                } else if ( peeked.isEndElement() ) {
+                    depth--;
+                }
+            }
+        }
         return false;
     }
 

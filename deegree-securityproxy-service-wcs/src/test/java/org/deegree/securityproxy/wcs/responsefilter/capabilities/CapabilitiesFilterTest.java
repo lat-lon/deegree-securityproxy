@@ -16,6 +16,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
@@ -95,10 +96,25 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", "idG" );
+        ElementRule subRule = new ElementRule( "g", "http://extended.de", "idG" );
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedFilteredBySubelement.xml" ) ) );
+    }
+
+    @Ignore
+    @Test
+    public void testFilterCapabilitiesExtendedFiltered()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
+
+        ElementRule subRule = new ElementRule( "i", "http://extended.de", "idH" );
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponse.xml" ) ) );
     }
 
     private CapabilitiesFilter createCapabilitiesFilter() {
@@ -110,11 +126,18 @@ public class CapabilitiesFilterTest {
     }
 
     private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace ) {
-        return createCapabilitiesFilter( nameToFilter, namespace, null );
+        String text = null;
+        return createCapabilitiesFilter( nameToFilter, namespace, text );
     }
 
     private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace, String text ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text );
+        ElementDecisionMaker eventFilter = new ElementDecisionMaker( rule );
+        return new CapabilitiesFilter( eventFilter );
+    }
+
+    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace, ElementRule subRule ) {
+        ElementRule rule = new ElementRule( nameToFilter, namespace, subRule );
         ElementDecisionMaker eventFilter = new ElementDecisionMaker( rule );
         return new CapabilitiesFilter( eventFilter );
     }
