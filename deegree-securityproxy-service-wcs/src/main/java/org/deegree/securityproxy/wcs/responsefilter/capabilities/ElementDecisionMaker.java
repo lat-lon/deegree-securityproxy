@@ -40,6 +40,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -111,7 +112,7 @@ public class ElementDecisionMaker {
         if ( rule.getSubRule() != null )
             return isSubRuleMatching( reader, event );
 
-        return isTextMatching;
+        return isPathMatching;
     }
 
     private boolean isTextMatching( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule )
@@ -129,16 +130,33 @@ public class ElementDecisionMaker {
     }
 
     private boolean isPathMatching( ElementRule rule, List<StartElement> visitedElements ) {
-        List<QName> path = rule.getPath();
+        List<ElementPathStep> path = rule.getPath();
         if ( path != null ) {
             if ( path.size() != visitedElements.size() )
                 return false;
             for ( int pathIndex = 0; pathIndex < path.size(); pathIndex++ ) {
-                if ( !path.get( pathIndex ).equals( visitedElements.get( pathIndex ).getName() ) )
+                ElementPathStep ruleElementPathStep = path.get( pathIndex );
+                StartElement visitedElement = visitedElements.get( pathIndex );
+                if ( !( hasSameName( ruleElementPathStep, visitedElement ) && hasSameAttribute( ruleElementPathStep,
+                                                                                                visitedElement ) ) )
                     return false;
             }
             return true;
         }
+        return false;
+    }
+
+    private boolean hasSameName( ElementPathStep ruleElementPathStep, StartElement visitedElement ) {
+        return ruleElementPathStep.getElementName().equals( visitedElement.getName() );
+    }
+
+    private boolean hasSameAttribute( ElementPathStep ruleElementPathStep, StartElement visitedElement ) {
+        QName ruleAttributeName = ruleElementPathStep.getAttributeName();
+        if ( ruleAttributeName == null )
+            return true;
+        Attribute attributeByName = visitedElement.getAttributeByName( ruleAttributeName );
+        if ( attributeByName != null )
+            return ruleElementPathStep.getAttributeValue().equals( attributeByName.getValue() );
         return false;
     }
 

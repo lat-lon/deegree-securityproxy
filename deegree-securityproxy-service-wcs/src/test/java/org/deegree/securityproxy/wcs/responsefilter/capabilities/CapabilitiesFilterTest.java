@@ -136,20 +136,44 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        List<QName> path = createPath();
+        List<ElementPathStep> path = createPath();
         capabilitiesFilter.filterCapabilities( response, createEventFilter( "k", EXTENDED_NS_URI, "idK2", path ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponseByPath.xml" ) ) );
     }
 
-    private List<QName> createPath() {
-        List<QName> path = new ArrayList<QName>();
-        path.add( new QName( EXTENDED_NS_URI, "A" ) );
-        path.add( new QName( EXTENDED_NS_URI, "B" ) );
-        path.add( new QName( EXTENDED_NS_URI, "e" ) );
-        path.add( new QName( EXTENDED_NS_URI, "f" ) );
-        path.add( new QName( EXTENDED_NS_URI, "f" ) );
-        path.add( new QName( EXTENDED_NS_URI, "j" ) );
+    @Test
+    public void testFilterCapabilitiesExtendedFilteredByPathWithAttribute()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
+
+        List<ElementPathStep> path = createPathWithAttribute();
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "k", EXTENDED_NS_URI, "idK1", path ) );
+
+        assertThat( asXml( filteredCapabilities ),
+                    isEquivalentTo( expectedXml( "extendedResponseByPathWithAttributes.xml" ) ) );
+    }
+
+    private List<ElementPathStep> createPath() {
+        List<ElementPathStep> path = new ArrayList<ElementPathStep>();
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "A" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "B" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "e" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "f" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "f" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "j" ) ) );
+        return path;
+    }
+
+    private List<ElementPathStep> createPathWithAttribute() {
+        List<ElementPathStep> path = new ArrayList<ElementPathStep>();
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "A" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "B" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "e" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "f" ) ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "f" ), new QName( "att" ), "zwei" ) );
+        path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "j" ) ) );
         return path;
     }
 
@@ -171,7 +195,8 @@ public class CapabilitiesFilterTest {
         return new ElementDecisionMaker( rule );
     }
 
-    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, String text, List<QName> path ) {
+    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, String text,
+                                                    List<ElementPathStep> path ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text, path );
         return new ElementDecisionMaker( rule );
     }

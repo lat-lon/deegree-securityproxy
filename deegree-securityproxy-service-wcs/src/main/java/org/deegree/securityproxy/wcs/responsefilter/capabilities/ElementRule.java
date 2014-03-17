@@ -37,8 +37,6 @@ package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 /**
  * Encapsulates the elements to check for filtering.
  * 
@@ -57,7 +55,7 @@ public class ElementRule {
 
     private final ElementRule subRule;
 
-    private final List<QName> path;
+    private final List<ElementPathStep> path;
 
     /**
      * Use this if only the name of the element is interesting for filtering.
@@ -144,7 +142,7 @@ public class ElementRule {
      * @param path
      *            may be <code>null</code>
      */
-    public ElementRule( String name, String namespace, String text, List<QName> path ) {
+    public ElementRule( String name, String namespace, String text, List<ElementPathStep> path ) {
         this( name, namespace, text, null, path );
     }
 
@@ -164,7 +162,7 @@ public class ElementRule {
      * @param path
      *            may be <code>null</code>
      */
-    public ElementRule( String name, String namespace, String text, ElementRule subRule, List<QName> path ) {
+    public ElementRule( String name, String namespace, String text, ElementRule subRule, List<ElementPathStep> path ) {
         this.name = name;
         this.namespace = namespace;
         this.text = text;
@@ -203,7 +201,7 @@ public class ElementRule {
     /**
      * @return the path, may be <code>null</code> if the path should not be applied
      */
-    public List<QName> getPath() {
+    public List<ElementPathStep> getPath() {
         return path;
     }
 

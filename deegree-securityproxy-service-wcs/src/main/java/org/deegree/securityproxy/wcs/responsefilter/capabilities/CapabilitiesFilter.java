@@ -120,6 +120,7 @@ public class CapabilitiesFilter {
         if ( ignoreElement( reader, currentEvent, elementDecisionMaker, visitedElements ) ) {
             LOG.info( "Event " + currentEvent + " is ignored." );
             skipElementContent( reader );
+            visitedElements.removeLast();
         } else
             writer.add( currentEvent );
     }

@@ -10,7 +10,13 @@
         </h>
       </f>
       <f>
-        <f>
+        <f att="eins">
+          <j>
+            <k>idK1</k>
+            <k>idK2</k>
+          </j>
+        </f>
+        <f att="zwei">
           <j>
             <k>idK1</k>
             <k>idK2</k>
