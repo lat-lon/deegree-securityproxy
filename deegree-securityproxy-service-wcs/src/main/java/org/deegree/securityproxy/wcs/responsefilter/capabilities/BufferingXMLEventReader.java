@@ -36,13 +36,14 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 /**
- * TODO add class documentation here
+ * Encapsulates a {@link XMLEventReader} and allows to look ahead the coming {@link XMLEvent}.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -57,6 +58,7 @@ public class BufferingXMLEventReader implements XMLEventReader {
 
     /**
      * @param reader
+     *            wrapped reader to buffer, never <code>null</code>
      */
     public BufferingXMLEventReader( XMLEventReader reader ) {
         this.reader = reader;
@@ -115,6 +117,15 @@ public class BufferingXMLEventReader implements XMLEventReader {
         reader.close();
     }
 
+    /**
+     * Peek to the next {@link XMLEvent}. May be called multiple times to retrieve the next bit one...
+     * 
+     * @return the next {@link XMLEvent}, never <code>null</code>
+     * @throws XMLStreamException
+     *             -if there is an error with the underlying XML
+     * @throws NoSuchElementException
+     *             - iteration has no more elements.
+     */
     public XMLEvent peekNextEvent()
                             throws XMLStreamException {
         XMLEvent nextEvent = reader.nextEvent();
