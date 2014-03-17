@@ -35,6 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
 /**
  * Encapsulates the elements to check for filtering.
  * 
@@ -52,6 +56,8 @@ public class ElementRule {
     private final String text;
 
     private final ElementRule subRule;
+
+    private final List<QName> path;
 
     /**
      * Use this if only the name of the element is interesting for filtering.
@@ -88,7 +94,7 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace, String text ) {
-        this( name, namespace, text, null );
+        this( name, namespace, text, (ElementRule) null );
     }
 
     /**
@@ -121,10 +127,49 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace, String text, ElementRule subRule ) {
+        this( name, namespace, text, subRule, null );
+    }
+
+    /**
+     * 
+     * Use this if name and namespace as well as the element text are interesting for filtering. Furthermore a sub
+     * element may be passed.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param text
+     *            may be <code>null</code>
+     * @param path
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, String text, List<QName> path ) {
+        this( name, namespace, text, null, path );
+    }
+
+    /**
+     * 
+     * Use this if name and namespace as well as the element text are interesting for filtering. Furthermore a sub
+     * element may be passed.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param text
+     *            may be <code>null</code>
+     * @param subRule
+     *            may be <code>null</code>
+     * @param path
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, String text, ElementRule subRule, List<QName> path ) {
         this.name = name;
         this.namespace = namespace;
         this.text = text;
         this.subRule = subRule;
+        this.path = path;
     }
 
     /**
@@ -149,10 +194,17 @@ public class ElementRule {
     }
 
     /**
-     * @return the subRule
+     * @return the subRule, may be <code>null</code> if a subRule should not be applied
      */
     public ElementRule getSubRule() {
         return subRule;
+    }
+
+    /**
+     * @return the path, may be <code>null</code> if the path should not be applied
+     */
+    public List<QName> getPath() {
+        return path;
     }
 
     @Override

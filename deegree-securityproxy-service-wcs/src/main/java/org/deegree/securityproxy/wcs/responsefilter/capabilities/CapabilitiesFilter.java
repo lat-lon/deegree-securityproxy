@@ -37,6 +37,7 @@ package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.LinkedList;
 
 import javax.servlet.ServletOutputStream;
 import javax.xml.stream.FactoryConfigurationError;
@@ -45,6 +46,7 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 import org.apache.log4j.Logger;
@@ -96,30 +98,36 @@ public class CapabilitiesFilter {
     private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer,
                                ElementDecisionMaker elementDecisionMaker )
                             throws XMLStreamException {
+        LinkedList<StartElement> visitedElements = new LinkedList<StartElement>();
         while ( reader.hasNext() ) {
-            XMLEvent next = reader.nextEvent();
-            if ( next.isStartElement() ) {
-                processStartElement( reader, writer, next, elementDecisionMaker );
-            } else
-                writer.add( next );
+            XMLEvent currentEvent = reader.nextEvent();
+            if ( currentEvent.isStartElement() ) {
+                processStartElement( reader, writer, currentEvent, elementDecisionMaker, visitedElements );
+                visitedElements.add( currentEvent.asStartElement() );
+            } else {
+                if ( currentEvent.isEndElement() )
+                    visitedElements.removeLast();
+                writer.add( currentEvent );
+            }
         }
     }
 
-    private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent next,
-                                      ElementDecisionMaker elementDecisionMaker )
+    private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent currentEvent,
+                                      ElementDecisionMaker elementDecisionMaker,
+                                      LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
-        LOG.debug( "Found StartElement " + next );
-        if ( ignoreElement( reader, next, elementDecisionMaker ) ) {
-            LOG.info( "Event " + next + " is ignored." );
+        LOG.debug( "Found StartElement " + currentEvent );
+        if ( ignoreElement( reader, currentEvent, elementDecisionMaker, visitedElements ) ) {
+            LOG.info( "Event " + currentEvent + " is ignored." );
             skipElementContent( reader );
         } else
-            writer.add( next );
+            writer.add( currentEvent );
     }
 
-    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent next,
-                                   ElementDecisionMaker elementDecisionMaker )
+    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent currentEvent,
+                                   ElementDecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
-        return elementDecisionMaker != null && elementDecisionMaker.ignore( reader, next );
+        return elementDecisionMaker != null && elementDecisionMaker.ignore( reader, currentEvent, visitedElements );
     }
 
     private XMLEventWriter createWriter( StatusCodeResponseBodyWrapper servletResponse )

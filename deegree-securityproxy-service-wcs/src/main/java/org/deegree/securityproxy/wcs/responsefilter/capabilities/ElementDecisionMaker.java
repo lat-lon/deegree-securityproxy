@@ -36,6 +36,7 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -70,18 +71,21 @@ public class ElementDecisionMaker {
      *            the event reader currently read, never <code>null</code>
      * @param event
      *            the current event to filter, never <code>null</code>
+     * @param visitedElements
+     *            a list of already visited elements, never <code>null</code>
      * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
      * @throws XMLStreamException
      */
-    public boolean ignore( BufferingXMLEventReader reader, XMLEvent event )
+    public boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
                             throws XMLStreamException {
-        if ( event.isStartElement() && matchesElementRule( reader, event, elementRule ) ) {
+        if ( event.isStartElement() && matchesElementRule( reader, event, elementRule, visitedElements ) ) {
             return true;
         }
         return false;
     }
 
-    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule )
+    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule,
+                                        List<StartElement> visitedElements )
                             throws XMLStreamException {
         StartElement startElement = event.asStartElement();
         QName ignoredQName = new QName( rule.getNamespace(), rule.getName() );
@@ -95,6 +99,13 @@ public class ElementDecisionMaker {
             isTextMatching = isTextMatching( reader, event, rule );
 
         if ( !isTextMatching )
+            return false;
+
+        boolean isPathMatching = true;
+        if ( elementRule.getPath() != null )
+            isPathMatching = isPathMatching( rule, visitedElements );
+
+        if ( !isPathMatching )
             return false;
 
         if ( rule.getSubRule() != null )
@@ -117,6 +128,20 @@ public class ElementDecisionMaker {
         return false;
     }
 
+    private boolean isPathMatching( ElementRule rule, List<StartElement> visitedElements ) {
+        List<QName> path = rule.getPath();
+        if ( path != null ) {
+            if ( path.size() != visitedElements.size() )
+                return false;
+            for ( int pathIndex = 0; pathIndex < path.size(); pathIndex++ ) {
+                if ( !path.get( pathIndex ).equals( visitedElements.get( pathIndex ).getName() ) )
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
+
     private boolean isSubRuleMatching( BufferingXMLEventReader reader, XMLEvent event )
                             throws XMLStreamException {
         ElementRule subRule = elementRule.getSubRule();
@@ -127,7 +152,7 @@ public class ElementDecisionMaker {
                 XMLEvent peeked = peekIterator.next();
                 if ( peeked.isStartElement() ) {
                     if ( isPrimaryDescendantOfCurrentElement( depth ) ) {
-                        boolean matchesElementRule = matchesElementRule( reader, peeked, subRule );
+                        boolean matchesElementRule = matchesElementRule( reader, peeked, subRule, null );
                         if ( matchesElementRule )
                             return true;
                     }

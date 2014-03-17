@@ -5,6 +5,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.LinkedList;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -40,7 +42,7 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithStartElementAndFilteredNameShouldReturnTrue()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventToIgnore() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventToIgnore(), mockVisitedElements() );
 
         assertThat( ignore, is( true ) );
     }
@@ -49,7 +51,8 @@ public class ElementDecisionMakerTest {
     public void testIgnoreWithoutNamespaceReturnTrue()
                             throws Exception {
         boolean ignore = elementDecisionRuleUnsetNamespace.ignore( mockXmlEventReader(),
-                                                                   mockEventIgnoredNameWithoutNamespaceUri() );
+                                                                   mockEventIgnoredNameWithoutNamespaceUri(),
+                                                                   mockVisitedElements() );
 
         assertThat( ignore, is( true ) );
     }
@@ -57,7 +60,7 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithNotStartElementAndFilteredNameShouldReturnFalse()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventNotStart() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventNotStart(), mockVisitedElements() );
 
         assertThat( ignore, is( false ) );
     }
@@ -65,7 +68,8 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithStartElementAndOtherNameShouldReturnFalse()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventNotIgnoredName() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventNotIgnoredName(),
+                                                     mockVisitedElements() );
 
         assertThat( ignore, is( false ) );
     }
@@ -73,13 +77,19 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithStartElementAndNameToFilterButOtherNamespaceShouldReturnFalse()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventIgnoredNameOtherNamespaceUri() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventIgnoredNameOtherNamespaceUri(),
+                                                     mockVisitedElements() );
 
         assertThat( ignore, is( false ) );
     }
 
     private BufferingXMLEventReader mockXmlEventReader() {
         return mock( BufferingXMLEventReader.class );
+    }
+
+    @SuppressWarnings("unchecked")
+    private LinkedList<StartElement> mockVisitedElements() {
+        return mock( LinkedList.class );
     }
 
     private XMLEvent mockEventToIgnore() {

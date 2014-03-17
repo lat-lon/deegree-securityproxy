@@ -10,8 +10,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
+import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -25,6 +28,11 @@ import org.junit.Test;
  * @version $Revision: $, $Date: $
  */
 public class CapabilitiesFilterTest {
+
+    /**
+     * 
+     */
+    private static final String EXTENDED_NS_URI = "http://extended.de";
 
     private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
 
@@ -91,8 +99,8 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        ElementRule subRule = new ElementRule( "i", "http://extended.de", "idH" );
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", "http://extended.de", subRule ) );
+        ElementRule subRule = new ElementRule( "i", EXTENDED_NS_URI, "idH" );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", EXTENDED_NS_URI, subRule ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponse.xml" ) ) );
     }
@@ -103,8 +111,8 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        ElementRule subRule = new ElementRule( "g", "http://extended.de", "idG" );
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", "http://extended.de", subRule ) );
+        ElementRule subRule = new ElementRule( "g", EXTENDED_NS_URI, "idG" );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", EXTENDED_NS_URI, subRule ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedFilteredBySubelement.xml" ) ) );
     }
@@ -115,11 +123,34 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        ElementRule subRule = new ElementRule( "l", "http://extended.de", "idL" );
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", "http://extended.de", subRule ) );
+        ElementRule subRule = new ElementRule( "l", EXTENDED_NS_URI, "idL" );
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", EXTENDED_NS_URI, subRule ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "extendedFilteredByNestedSubelement.xml" ) ) );
+    }
+
+    @Test
+    public void testFilterCapabilitiesExtendedFilteredByPath()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
+
+        List<QName> path = createPath();
+        capabilitiesFilter.filterCapabilities( response, createEventFilter( "k", EXTENDED_NS_URI, "idK2", path ) );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponseByPath.xml" ) ) );
+    }
+
+    private List<QName> createPath() {
+        List<QName> path = new ArrayList<QName>();
+        path.add( new QName( EXTENDED_NS_URI, "A" ) );
+        path.add( new QName( EXTENDED_NS_URI, "B" ) );
+        path.add( new QName( EXTENDED_NS_URI, "e" ) );
+        path.add( new QName( EXTENDED_NS_URI, "f" ) );
+        path.add( new QName( EXTENDED_NS_URI, "f" ) );
+        path.add( new QName( EXTENDED_NS_URI, "j" ) );
+        return path;
     }
 
     private ElementDecisionMaker createEventFilter( String nameToFilter ) {
@@ -137,6 +168,11 @@ public class CapabilitiesFilterTest {
 
     private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, ElementRule subRule ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, subRule );
+        return new ElementDecisionMaker( rule );
+    }
+
+    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, String text, List<QName> path ) {
+        ElementRule rule = new ElementRule( nameToFilter, namespace, text, path );
         return new ElementDecisionMaker( rule );
     }
 
