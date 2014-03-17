@@ -74,28 +74,26 @@ public class ElementDecisionMaker {
      */
     public boolean ignore( XMLEventReader reader, XMLEvent event )
                             throws XMLStreamException {
-        if ( event.isStartElement() && hasStartElementNameToFilter( event ) && hasExpectedElementText( reader ) ) {
+        if ( event.isStartElement() && matchesElementRule( reader, event ) ) {
             return true;
         }
         return false;
     }
 
-    private boolean hasStartElementNameToFilter( XMLEvent event ) {
+    private boolean matchesElementRule( XMLEventReader reader, XMLEvent event )
+                            throws XMLStreamException {
         StartElement startElement = event.asStartElement();
         QName ignoredQName = new QName( elementRule.getNamespace(), elementRule.getName() );
-        return ignoredQName.equals( startElement.getName() );
-    }
-
-    private boolean hasExpectedElementText( XMLEventReader reader )
-                            throws XMLStreamException {
-        // String text = elementRule.getText();
-        // if ( text != null ) {
-        // XMLEvent peek = reader.peek();
-        // if ( peek.isCharacters() )
-        // return text.equals( peek.asCharacters().getData() );
-        // }
-        // return false;
-        return true;
+        boolean isNameMatching = ignoredQName.equals( startElement.getName() );
+        if ( isNameMatching && elementRule.getText() != null ) {
+            XMLEvent peek = reader.peek();
+            boolean characters = peek.isCharacters();
+            if ( characters )
+                return elementRule.getText().equals( peek.asCharacters().getData() );
+            else 
+                return false;
+        }
+        return isNameMatching;
     }
 
     private void checkNameToFilter( ElementRule elementRule ) {
