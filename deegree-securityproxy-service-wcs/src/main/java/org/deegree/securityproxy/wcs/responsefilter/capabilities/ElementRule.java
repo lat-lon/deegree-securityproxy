@@ -36,7 +36,7 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 /**
- * TODO add class documentation here
+ * Encapsulates the elements to check for filtering.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $

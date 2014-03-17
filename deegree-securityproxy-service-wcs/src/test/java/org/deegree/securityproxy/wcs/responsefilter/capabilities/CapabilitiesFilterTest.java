@@ -16,6 +16,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
@@ -60,7 +61,35 @@ public class CapabilitiesFilterTest {
         CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "e", "http://simple.de" );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredWithNamespace.xml" ) ) );
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredByNamespace.xml" ) ) );
+    }
+
+    @Ignore
+    @Test
+    public void testFilterCapabilitiesSimpleFilteredWithNamespaceAndText()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
+
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "d", "http://simple1.de", "dtext" );
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ),
+                    isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndText.xml" ) ) );
+    }
+
+    @Ignore
+    @Test
+    public void testFilterCapabilitiesSimpleFilteredWithNamespaceAndTextAndttribute()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
+
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "d", "http://simple1.de", "dtext" );
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ),
+                    isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndTextWithAttribute.xml" ) ) );
     }
 
     private CapabilitiesFilter createCapabilitiesFilter() {
@@ -72,7 +101,11 @@ public class CapabilitiesFilterTest {
     }
 
     private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace ) {
-        ElementRule rule = new ElementRule( nameToFilter, namespace );
+        return createCapabilitiesFilter( nameToFilter, namespace, null );
+    }
+
+    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace, String text ) {
+        ElementRule rule = new ElementRule( nameToFilter, namespace, text );
         ElementDecisionMaker eventFilter = new ElementDecisionMaker( rule );
         return new CapabilitiesFilter( eventFilter );
     }
@@ -91,6 +124,7 @@ public class CapabilitiesFilterTest {
     }
 
     private Source asXml( ByteArrayOutputStream bufferingStream ) {
+        System.out.println( bufferingStream.toString() );
         return the( new StreamSource( new ByteArrayInputStream( bufferingStream.toByteArray() ) ) );
     }
 

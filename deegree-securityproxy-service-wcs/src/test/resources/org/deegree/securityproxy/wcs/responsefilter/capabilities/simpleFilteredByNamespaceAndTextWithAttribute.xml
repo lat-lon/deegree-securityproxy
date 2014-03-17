@@ -4,7 +4,6 @@
     <c>ctext</c>
     <sp1:d />
     <sp1:d>dtext</sp1:d>
-    <sp1:d datt="d_att_ext">2nddtext</sp1:d>
     <sp:e>
       <f>ftext</f>
     </sp:e>

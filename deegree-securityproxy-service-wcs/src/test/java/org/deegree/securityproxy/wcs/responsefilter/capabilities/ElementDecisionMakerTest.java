@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -40,7 +41,7 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithStartElementAndFilteredNameShouldReturnTrue()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockEventToIgnore() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventToIgnore() );
 
         assertThat( ignore, is( true ) );
     }
@@ -48,7 +49,8 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithoutNamespaceReturnTrue()
                             throws Exception {
-        boolean ignore = elementDecisionRuleUnsetNamespace.ignore( mockEventIgnoredNameWithoutNamespaceUri() );
+        boolean ignore = elementDecisionRuleUnsetNamespace.ignore( mockXmlEventReader(),
+                                                                   mockEventIgnoredNameWithoutNamespaceUri() );
 
         assertThat( ignore, is( true ) );
     }
@@ -56,7 +58,7 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithNotStartElementAndFilteredNameShouldReturnFalse()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockEventNotStart() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventNotStart() );
 
         assertThat( ignore, is( false ) );
     }
@@ -64,7 +66,7 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithStartElementAndOtherNameShouldReturnFalse()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockEventNotIgnoredName() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventNotIgnoredName() );
 
         assertThat( ignore, is( false ) );
     }
@@ -72,9 +74,13 @@ public class ElementDecisionMakerTest {
     @Test
     public void testIgnoreWithStartElementAndNameToFilterButOtherNamespaceShouldReturnFalse()
                             throws Exception {
-        boolean ignore = elementDecisionRule.ignore( mockEventIgnoredNameOtherNamespaceUri() );
+        boolean ignore = elementDecisionRule.ignore( mockXmlEventReader(), mockEventIgnoredNameOtherNamespaceUri() );
 
         assertThat( ignore, is( false ) );
+    }
+
+    private XMLEventReader mockXmlEventReader() {
+        return mock( XMLEventReader.class );
     }
 
     private XMLEvent mockEventToIgnore() {

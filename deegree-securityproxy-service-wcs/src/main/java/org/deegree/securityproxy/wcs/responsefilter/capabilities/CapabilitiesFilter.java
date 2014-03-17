@@ -69,6 +69,7 @@ public class CapabilitiesFilter {
 
     /**
      * @param elementDecisionMaker
+     *            never <code>null</code>
      */
     public CapabilitiesFilter( ElementDecisionMaker elementDecisionMaker ) {
         this.elementDecisionRule = elementDecisionMaker;
@@ -82,7 +83,9 @@ public class CapabilitiesFilter {
      * @param auth
      *            containing rules to apply for filtering, never <code>null</code>
      * @throws IOException
+     *             if an error occurred during stream handling
      * @throws XMLStreamException
+     *             if an error occurred during reading or writing the response
      */
     public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, Authentication auth )
                             throws IOException, XMLStreamException {
@@ -104,7 +107,7 @@ public class CapabilitiesFilter {
                             throws XMLStreamException {
         while ( reader.hasNext() ) {
             XMLEvent next = reader.nextEvent();
-            if ( next.isStartElement() && ignoreElement( next ) ) {
+            if ( next.isStartElement() && ignoreElement( reader, next ) ) {
                 LOG.info( "Event " + next + " is ignored." );
                 skipElementContent( reader );
             } else
@@ -112,8 +115,9 @@ public class CapabilitiesFilter {
         }
     }
 
-    private boolean ignoreElement( XMLEvent next ) {
-        return elementDecisionRule != null && elementDecisionRule.ignore( next );
+    private boolean ignoreElement( XMLEventReader reader, XMLEvent next )
+                            throws XMLStreamException {
+        return elementDecisionRule != null && elementDecisionRule.ignore( reader, next );
     }
 
     private XMLEventWriter createWriter( StatusCodeResponseBodyWrapper servletResponse )
@@ -121,16 +125,14 @@ public class CapabilitiesFilter {
         ServletOutputStream filteredCapabilitiesStreamToWriteIn = servletResponse.getRealOutputStream();
 
         XMLOutputFactory outFactory = XMLOutputFactory.newInstance();
-        XMLEventWriter writer = outFactory.createXMLEventWriter( filteredCapabilitiesStreamToWriteIn );
-        return writer;
+        return outFactory.createXMLEventWriter( filteredCapabilitiesStreamToWriteIn );
     }
 
     private XMLEventReader createReader( StatusCodeResponseBodyWrapper servletResponse )
                             throws FactoryConfigurationError, XMLStreamException {
         InputStream originalCapabilities = servletResponse.getBufferedStream();
         XMLInputFactory inFactory = XMLInputFactory.newInstance();
-        XMLEventReader reader = inFactory.createXMLEventReader( originalCapabilities );
-        return reader;
+        return inFactory.createXMLEventReader( originalCapabilities );
     }
 
     private void skipElementContent( XMLEventReader reader )

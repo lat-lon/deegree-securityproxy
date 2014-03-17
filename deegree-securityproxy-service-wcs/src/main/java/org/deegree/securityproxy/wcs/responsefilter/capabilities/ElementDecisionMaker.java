@@ -36,6 +36,9 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 /**
@@ -62,23 +65,42 @@ public class ElementDecisionMaker {
     }
 
     /**
+     * @param reader
+     *            the event reader currently read, never <code>null</code>
      * @param event
      *            the current event to filter, never <code>null</code>
      * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
+     * @throws XMLStreamException
      */
-    public boolean ignore( XMLEvent event ) {
-        if ( event.isStartElement() && hasStartElementNameToFilter( event ) ) {
+    public boolean ignore( XMLEventReader reader, XMLEvent event )
+                            throws XMLStreamException {
+        if ( event.isStartElement() && hasStartElementNameToFilter( event ) && hasExpectedElementText( reader ) ) {
             return true;
         }
         return false;
     }
 
     private boolean hasStartElementNameToFilter( XMLEvent event ) {
-        return new QName( elementRule.getNamespace(), elementRule.getName() ).equals( event.asStartElement().getName() );
+        StartElement startElement = event.asStartElement();
+        QName ignoredQName = new QName( elementRule.getNamespace(), elementRule.getName() );
+        return ignoredQName.equals( startElement.getName() );
+    }
+
+    private boolean hasExpectedElementText( XMLEventReader reader )
+                            throws XMLStreamException {
+        // String text = elementRule.getText();
+        // if ( text != null ) {
+        // XMLEvent peek = reader.peek();
+        // if ( peek.isCharacters() )
+        // return text.equals( peek.asCharacters().getData() );
+        // }
+        // return false;
+        return true;
     }
 
     private void checkNameToFilter( ElementRule elementRule ) {
         if ( elementRule == null )
             throw new IllegalArgumentException( "nameToFilter must not be null or empty!" );
     }
+
 }
