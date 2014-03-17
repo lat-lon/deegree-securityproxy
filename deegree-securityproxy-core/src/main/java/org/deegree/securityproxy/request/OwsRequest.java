@@ -52,7 +52,7 @@ public abstract class OwsRequest {
     private final String operationType;
 
     /**
-     * Instantiates a new {@link WcsRequest}.
+     * Instantiates a new {@link OwsRequest}.
      * 
      * @param operationType
      *            the type of the operation, never <code>null</code>

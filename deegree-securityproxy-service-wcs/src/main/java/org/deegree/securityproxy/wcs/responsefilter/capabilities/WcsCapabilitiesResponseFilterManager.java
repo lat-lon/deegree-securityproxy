@@ -78,9 +78,8 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
                                                 Authentication auth )
                             throws IllegalArgumentException, ResponseFilterException {
         checkParameters( servletResponse, request );
-        WcsRequest wcsRequest = (WcsRequest) request;
-        if ( isGetCapabilitiesRequest( wcsRequest ) ) {
-            LOG.info( "Apply wcs capabilities filter for response of request " + wcsRequest );
+        if ( canBeFiltered( request ) ) {
+            LOG.info( "Apply wcs capabilities filter for response of request " + request );
             try {
                 capabilitiesFilter.filterCapabilities( servletResponse, auth );
                 return new ResponseCapabilitiesReport( "Capabilities of request were filtered successfully.", true );
@@ -96,9 +95,7 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
     @Override
     public boolean canBeFiltered( OwsRequest request ) {
         checkIfRequestEqualsNull( request );
-        if ( WcsRequest.class.equals( request.getClass() ) )
-            return isGetCapabilitiesRequest( (WcsRequest) request );
-        return false;
+        return WcsRequest.class.equals( request.getClass() ) && isGetCapabilitiesRequest( (WcsRequest) request );
     }
 
     private void checkIfRequestEqualsNull( OwsRequest request ) {

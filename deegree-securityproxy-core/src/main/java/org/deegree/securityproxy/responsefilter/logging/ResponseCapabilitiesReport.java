@@ -15,7 +15,7 @@ public class ResponseCapabilitiesReport implements ResponseFilterReport {
     private boolean isFiltered;
 
     /**
-     * Instantiates a new {@link ResponseCapabilitiesReport} with an error message , isFiltered is set to
+     * Instantiates a new {@link ResponseCapabilitiesReport} with an error message, isFiltered is set to
      * <code>false</code>.
      * 
      * @param failureMessage
