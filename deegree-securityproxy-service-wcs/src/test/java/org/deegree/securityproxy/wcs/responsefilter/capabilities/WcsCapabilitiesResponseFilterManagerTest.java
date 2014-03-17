@@ -4,6 +4,7 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILI
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import java.util.Collections;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -28,6 +30,8 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     private static final String SERVICE_NAME = "serviceName";
 
     private static final String COVERAGE_NAME = "coverageName";
+
+    private static final String SUCCESSFUL_FILTERING_MESSAGE = "Capabilities of request were filtered successfully.";
 
     private final CapabilitiesFilter capabilitiesFilter = mock( CapabilitiesFilter.class );
 
@@ -46,6 +50,20 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
 
         verify( capabilitiesFilter ).filterCapabilities( response, authentication );
+    }
+
+    @Test
+    public void testFilterResponseShouldReturnFilterReport()
+                            throws Exception {
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
+        WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
+        Authentication authentication = mockAuthentication();
+        ResponseFilterReport filterReport = wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest,
+                                                                                                 authentication );
+
+        assertThat( filterReport, notNullValue() );
+        assertThat( filterReport.getMessage(), is( SUCCESSFUL_FILTERING_MESSAGE ) );
+        assertThat( filterReport.isFiltered(), is( true ) );
     }
 
     @Test
