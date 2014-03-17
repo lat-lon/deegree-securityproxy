@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -44,6 +45,8 @@ import javax.xml.stream.events.XMLEvent;
 
 /**
  * Encapsulates a {@link XMLEventReader} and allows to look ahead the coming {@link XMLEvent}.
+ * 
+ * This class is not thread safe!
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -118,7 +121,9 @@ public class BufferingXMLEventReader implements XMLEventReader {
     }
 
     /**
-     * Peek to the next {@link XMLEvent}. May be called multiple times to retrieve the next bit one...
+     * Peek to the next {@link XMLEvent}. May be called multiple times to retrieve the next one... Use
+     * #retrievePeekIterator() to control the start element. This method starts at the position of the underlying
+     * {@link XMLEventReader}.
      * 
      * @return the next {@link XMLEvent}, never <code>null</code>
      * @throws XMLStreamException
@@ -131,6 +136,54 @@ public class BufferingXMLEventReader implements XMLEventReader {
         XMLEvent nextEvent = reader.nextEvent();
         events.add( nextEvent );
         return nextEvent;
+    }
+
+    /**
+     * @param event
+     *            used as start element if this event is already read from underlying {@link XMLEventReader}
+     * @return the {@link Iterator} over all {@link XMLEvent}s beginning at the passed position or at the already
+     *         retrieved {@link XMLEvent} if the passed event is null or not yet read. Iterates until the end of the
+     *         xml.
+     */
+    public Iterator<XMLEvent> retrievePeekIterator( XMLEvent event ) {
+        return new PeekIterator( event );
+    }
+
+    class PeekIterator implements Iterator<XMLEvent> {
+
+        private int indexOfNextEvents = 0;
+
+        /**
+         * @param event
+         *            current event, may be <code>null</code>
+         */
+        public PeekIterator( XMLEvent event ) {
+            if ( event != null && events.contains( event ) )
+                indexOfNextEvents = events.indexOf( event );
+        }
+
+        @Override
+        public boolean hasNext() {
+            if ( !events.isEmpty() )
+                return true;
+            return reader.hasNext();
+        }
+
+        @Override
+        public XMLEvent next() {
+            if ( indexOfNextEvents < events.size() )
+                return events.get( indexOfNextEvents++ );
+            try {
+                return peekNextEvent();
+            } catch ( XMLStreamException e ) {
+            }
+            throw new NoSuchElementException();
+        }
+
+        @Override
+        public void remove() {
+            throw new IllegalArgumentException();
+        }
     }
 
 }

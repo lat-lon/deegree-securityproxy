@@ -107,12 +107,21 @@ public class CapabilitiesFilter {
                             throws XMLStreamException {
         while ( reader.hasNext() ) {
             XMLEvent next = reader.nextEvent();
-            if ( next.isStartElement() && ignoreElement( reader, next ) ) {
-                LOG.info( "Event " + next + " is ignored." );
-                skipElementContent( reader );
+            if ( next.isStartElement() ) {
+                processStartElement( reader, writer, next );
             } else
                 writer.add( next );
         }
+    }
+
+    private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent next )
+                            throws XMLStreamException {
+        LOG.debug( "Found StartElement " + next );
+        if ( ignoreElement( reader, next ) ) {
+            LOG.info( "Event " + next + " is ignored." );
+            skipElementContent( reader );
+        } else
+            writer.add( next );
     }
 
     private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent next )

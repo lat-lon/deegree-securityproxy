@@ -90,6 +90,19 @@ public class CapabilitiesFilterTest {
     }
 
     @Test
+    public void testFilterCapabilitiesExtendedFiltered()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
+
+        ElementRule subRule = new ElementRule( "i", "http://extended.de", "idH" );
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponse.xml" ) ) );
+    }
+
+    @Test
     public void testFilterCapabilitiesExtendedFilteredFromSubelement()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
@@ -103,16 +116,17 @@ public class CapabilitiesFilterTest {
     }
 
     @Test
-    public void testFilterCapabilitiesExtendedFiltered()
+    public void testFilterCapabilitiesExtendedFilteredByNestedSubelement()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        ElementRule subRule = new ElementRule( "i", "http://extended.de", "idH" );
+        ElementRule subRule = new ElementRule( "l", "http://extended.de", "idL" );
         CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f", "http://extended.de", subRule );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponse.xml" ) ) );
+        assertThat( asXml( filteredCapabilities ),
+                    isEquivalentTo( expectedXml( "extendedFilteredByNestedSubelement.xml" ) ) );
     }
 
     private CapabilitiesFilter createCapabilitiesFilter() {

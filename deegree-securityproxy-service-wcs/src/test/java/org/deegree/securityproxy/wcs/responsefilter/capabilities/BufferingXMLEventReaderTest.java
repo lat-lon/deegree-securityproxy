@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Iterator;
 
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
@@ -121,6 +122,63 @@ public class BufferingXMLEventReaderTest {
         nextEvent = bufferingReader.nextEvent();
         assertThat( nextEvent.isCharacters(), is( true ) );
         assertThat( nextEvent.asCharacters().getData(), is( "ctext" ) );
+    }
+
+    @Test
+    public void testRetrievePeekIteratorFromStartDocument()
+                            throws Exception {
+        Iterator<XMLEvent> peekIterator = bufferingReader.retrievePeekIterator( null );
+        XMLEvent next = peekIterator.next();
+
+        assertThat( next.isStartDocument(), is( true ) );
+    }
+
+    @Test
+    public void testRetrievePeekIteratorShouldStartAtNext()
+                            throws Exception {
+        bufferingReader.nextEvent();
+        bufferingReader.nextEvent();
+        bufferingReader.nextEvent();
+
+        Iterator<XMLEvent> peekIterator = bufferingReader.retrievePeekIterator( null );
+        XMLEvent next = peekIterator.next();
+
+        assertThat( next.isStartElement(), is( true ) );
+        assertThat( next.asStartElement().getName().getLocalPart(), is( "c" ) );
+    }
+
+    @Test
+    public void testRetrievePeekIteratorShouldStartAtPeeked()
+                            throws Exception {
+        bufferingReader.nextEvent();
+        bufferingReader.nextEvent();
+        bufferingReader.nextEvent();
+        bufferingReader.peekNextEvent();
+        bufferingReader.peekNextEvent();
+
+        Iterator<XMLEvent> peekIterator = bufferingReader.retrievePeekIterator( null );
+        XMLEvent next = peekIterator.next();
+
+        assertThat( next.isStartElement(), is( true ) );
+        assertThat( next.asStartElement().getName().getLocalPart(), is( "c" ) );
+    }
+
+    @Test
+    public void testRetrievePeekIteratorShouldStartAtStartEvent()
+                            throws Exception {
+        bufferingReader.nextEvent();
+        bufferingReader.nextEvent();
+        bufferingReader.nextEvent();
+        bufferingReader.peekNextEvent();
+        XMLEvent startEvent = bufferingReader.peekNextEvent();
+        bufferingReader.peekNextEvent();
+        bufferingReader.peekNextEvent();
+
+        Iterator<XMLEvent> peekIterator = bufferingReader.retrievePeekIterator( startEvent );
+        XMLEvent next = peekIterator.next();
+
+        assertThat( next.isCharacters(), is( true ) );
+        assertThat( next.asCharacters().getData(), is( "ctext" ) );
     }
 
 }

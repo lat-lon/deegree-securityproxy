@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import java.util.Iterator;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
@@ -90,37 +92,39 @@ public class ElementDecisionMaker {
 
         boolean isTextMatching = true;
         if ( rule.getText() != null )
-            isTextMatching = isTextMatching( reader, rule );
+            isTextMatching = isTextMatching( reader, event, rule );
 
         if ( !isTextMatching )
             return false;
 
         if ( rule.getSubRule() != null )
-            return isSubRuleMatching( reader );
+            return isSubRuleMatching( reader, event );
 
         return isTextMatching;
     }
 
-    private boolean isTextMatching( BufferingXMLEventReader reader, ElementRule rule )
+    private boolean isTextMatching( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule )
                             throws XMLStreamException {
-        XMLEvent peeked = reader.peekNextEvent();
-        while ( !peeked.isStartElement() && !peeked.isEndElement() ) {
+        Iterator<XMLEvent> peekIterator = reader.retrievePeekIterator( event );
+        XMLEvent peeked = skipCurrentEvent( event, peekIterator );
+        while ( endElementIsNotReached( peeked ) ) {
             if ( peeked.isCharacters() ) {
-                if ( rule.getText().equals( peeked.asCharacters().getData() ) )
+                if ( elementTextIsAsExpected( rule, peeked ) )
                     return true;
             }
-            peeked = reader.peekNextEvent();
+            peeked = peekIterator.next();
         }
         return false;
     }
 
-    private boolean isSubRuleMatching( BufferingXMLEventReader reader )
+    private boolean isSubRuleMatching( BufferingXMLEventReader reader, XMLEvent event )
                             throws XMLStreamException {
         ElementRule subRule = elementRule.getSubRule();
         if ( subRule != null ) {
+            Iterator<XMLEvent> peekIterator = reader.retrievePeekIterator( event );
             int depth = 0;
-            while ( depth >= 0 ) {
-                XMLEvent peeked = reader.peekNextEvent();
+            while ( peekIterator.hasNext() && depth >= 0 ) {
+                XMLEvent peeked = peekIterator.next();
                 if ( peeked.isStartElement() ) {
                     if ( isPrimaryDescendantOfCurrentElement( depth ) ) {
                         boolean matchesElementRule = matchesElementRule( reader, peeked, subRule );
@@ -134,6 +138,21 @@ public class ElementDecisionMaker {
             }
         }
         return false;
+    }
+
+    private boolean elementTextIsAsExpected( ElementRule rule, XMLEvent peeked ) {
+        return rule.getText().equals( peeked.asCharacters().getData() );
+    }
+
+    private boolean endElementIsNotReached( XMLEvent peeked ) {
+        return !peeked.isEndElement();
+    }
+
+    private XMLEvent skipCurrentEvent( XMLEvent event, Iterator<XMLEvent> peekIterator ) {
+        XMLEvent peeked = peekIterator.next();
+        if ( peeked == event )
+            peeked = peekIterator.next();
+        return peeked;
     }
 
     private boolean isPrimaryDescendantOfCurrentElement( int depth ) {

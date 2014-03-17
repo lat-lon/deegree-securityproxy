@@ -155,4 +155,10 @@ public class ElementRule {
         return subRule;
     }
 
+    @Override
+    public String toString() {
+        return "ElementRule [name=" + name + ", namespace=" + namespace + ", text=" + text + ", subRule=" + subRule
+               + "]";
+    }
+
 }

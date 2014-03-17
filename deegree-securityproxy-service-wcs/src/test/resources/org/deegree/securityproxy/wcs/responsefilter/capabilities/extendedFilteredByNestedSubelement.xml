@@ -5,6 +5,9 @@
     <d>dtext</d>
     <e>
       <f>
+        <g>idG</g>
+      </f>
+      <f>
         <h>
           <i>idH</i>
         </h>
@@ -14,9 +17,6 @@
           <j>
             <k>idK</k>
           </j>
-        </f>
-        <f>
-          <l>idL</l>
         </f>
       </f>
     </e>
