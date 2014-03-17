@@ -48,7 +48,7 @@ public class CapabilitiesFilterTest {
         CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "f" );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredF.xml" ) ) );
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFiltered.xml" ) ) );
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CapabilitiesFilterTest {
         CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "e", "http://simple.de" );
         capabilitiesFilter.filterCapabilities( response, mockAuth() );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredE.xml" ) ) );
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredWithNamespace.xml" ) ) );
     }
 
     private CapabilitiesFilter createCapabilitiesFilter() {
