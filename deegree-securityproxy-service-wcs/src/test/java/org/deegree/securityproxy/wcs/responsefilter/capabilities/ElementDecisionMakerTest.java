@@ -23,20 +23,18 @@ public class ElementDecisionMakerTest {
 
     private static final String NAME_TO_FILTER = "nameToFilter";
 
-    private final ElementDecisionMaker elementDecisionRule = new ElementDecisionMaker( NAME_TO_FILTER, NAMESPACE_URI );
+    private final ElementRule nameAndNamespaceRule = new ElementRule( NAME_TO_FILTER, NAMESPACE_URI );
 
-    private final ElementDecisionMaker elementDecisionRuleUnsetNamespace = new ElementDecisionMaker( NAME_TO_FILTER, null );
+    private final ElementRule nameRule = new ElementRule( NAME_TO_FILTER );
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testElementDecisionRuleWithNullName()
-                            throws Exception {
-        new ElementDecisionMaker( null, null );
-    }
+    private final ElementDecisionMaker elementDecisionRule = new ElementDecisionMaker( nameAndNamespaceRule );
+
+    private final ElementDecisionMaker elementDecisionRuleUnsetNamespace = new ElementDecisionMaker( nameRule );
 
     @Test(expected = IllegalArgumentException.class)
-    public void testElementDecisionRuleWithEmptyName()
+    public void testElementDecisionMakerWithNullRule()
                             throws Exception {
-        new ElementDecisionMaker( "", null );
+        new ElementDecisionMaker( null );
     }
 
     @Test
