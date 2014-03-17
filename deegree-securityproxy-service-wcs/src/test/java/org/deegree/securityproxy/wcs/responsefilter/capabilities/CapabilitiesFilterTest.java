@@ -16,7 +16,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
@@ -103,7 +102,6 @@ public class CapabilitiesFilterTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedFilteredBySubelement.xml" ) ) );
     }
 
-    @Ignore
     @Test
     public void testFilterCapabilitiesExtendedFiltered()
                             throws Exception {

@@ -122,9 +122,11 @@ public class ElementDecisionMaker {
             while ( depth >= 0 ) {
                 XMLEvent peeked = reader.peekNextEvent();
                 if ( peeked.isStartElement() ) {
-                    boolean matchesElementRule = matchesElementRule( reader, peeked, subRule );
-                    if ( matchesElementRule )
-                        return true;
+                    if ( isPrimaryDescendantOfCurrentElement( depth ) ) {
+                        boolean matchesElementRule = matchesElementRule( reader, peeked, subRule );
+                        if ( matchesElementRule )
+                            return true;
+                    }
                     depth++;
                 } else if ( peeked.isEndElement() ) {
                     depth--;
@@ -132,6 +134,10 @@ public class ElementDecisionMaker {
             }
         }
         return false;
+    }
+
+    private boolean isPrimaryDescendantOfCurrentElement( int depth ) {
+        return depth == 0;
     }
 
     private void checkNameToFilter( ElementRule elementRule ) {
