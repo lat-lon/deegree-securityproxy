@@ -65,7 +65,7 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
                                                 Authentication authentication, OwsRequest owsRequest )
                             throws ResponseFilterException {
-        return null;
+        return createEmptyFilterReport();
     }
 
     @Override
@@ -78,6 +78,20 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
         @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
         return "wms".equalsIgnoreCase( kvpMap.get( "service" )[0] );
+    }
+
+    private ResponseFilterReport createEmptyFilterReport() {
+        return new ResponseFilterReport() {
+            @Override
+            public boolean isFiltered() {
+                return false;
+            }
+
+            @Override
+            public String getMessage() {
+                return "Response was not filtered! No response filter manager was found!";
+            }
+        };
     }
 
 }

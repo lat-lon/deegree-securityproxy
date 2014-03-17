@@ -105,7 +105,7 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
 
             @Override
             public String getMessage() {
-                return "Response was not filtered!";
+                return "Response was not filtered! No response filter manager was found!";
             }
         };
     }
