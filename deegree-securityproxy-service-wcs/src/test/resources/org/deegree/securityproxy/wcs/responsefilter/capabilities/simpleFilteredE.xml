@@ -1,4 +1,5 @@
-<A>
+<?xml version="1.0" encoding="UTF-8"?>
+<A xmlns:sp="http://simple.de">
   <B>
     <c>ctext</c>
     <d>dtext</d>

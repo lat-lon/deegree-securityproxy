@@ -40,19 +40,7 @@ public class CapabilitiesFilterTest {
     }
 
     @Test
-    public void testFilterCapabilitiesSimpleFilteredE()
-                            throws Exception {
-        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
-        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
-
-        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "e" );
-        capabilitiesFilter.filterCapabilities( response, mockAuth() );
-
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredE.xml" ) ) );
-    }
-
-    @Test
-    public void testFilterCapabilitiesSimpleFilteredF()
+    public void testFilterCapabilitiesSimpleFiltered()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
@@ -63,12 +51,28 @@ public class CapabilitiesFilterTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredF.xml" ) ) );
     }
 
+    @Test
+    public void testFilterCapabilitiesSimpleFilteredWithNamespace()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
+
+        CapabilitiesFilter capabilitiesFilter = createCapabilitiesFilter( "e", "http://simple.de" );
+        capabilitiesFilter.filterCapabilities( response, mockAuth() );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredE.xml" ) ) );
+    }
+
     private CapabilitiesFilter createCapabilitiesFilter() {
         return new CapabilitiesFilter( null );
     }
 
     private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter ) {
-        ElementDecisionRule eventFilter = new ElementDecisionRule( nameToFilter, null );
+        return createCapabilitiesFilter( nameToFilter, null );
+    }
+
+    private CapabilitiesFilter createCapabilitiesFilter( String nameToFilter, String namespace ) {
+        ElementDecisionRule eventFilter = new ElementDecisionRule( nameToFilter, namespace );
         return new CapabilitiesFilter( eventFilter );
     }
 
