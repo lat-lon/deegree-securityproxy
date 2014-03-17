@@ -38,6 +38,7 @@ package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
@@ -81,6 +82,9 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
         if ( canBeFiltered( request ) ) {
             LOG.info( "Apply wcs capabilities filter for response of request " + request );
             try {
+                ElementRuleCreator elementRuleCreator = new ElementRuleCreator();
+                List<ElementRule> elementRules = elementRuleCreator.createElementRules( auth );
+                // new ElementDecisionMaker( elementRules )
                 capabilitiesFilter.filterCapabilities( servletResponse, null );
                 return new ResponseCapabilitiesReport( "Capabilities of request were filtered successfully.", true );
             } catch ( IOException e ) {
