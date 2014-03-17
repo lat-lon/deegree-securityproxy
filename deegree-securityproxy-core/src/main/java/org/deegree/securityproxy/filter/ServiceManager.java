@@ -61,7 +61,7 @@ public interface ServiceManager {
      *            may be <code>null</code>.
      * @param owsRequest
      *            parsed request, never <code>null</code>.
-     * @return
+     * @return never <code>null</code>, returns empty report if no response filter manager is found.
      * @throws ResponseFilterException
      *             if an error occurred during writing in the real output stream.
      */
@@ -75,7 +75,7 @@ public interface ServiceManager {
      * @param request
      *            never <code>null</code>.
      * @return <code>true</code> if this {@link ServiceManager} can handle the requested {@link HttpServletRequest},
-     *         <code>false</code> otherwise
+     *         <code>false</code> otherwise.
      */
     boolean isServiceTypeSupported( HttpServletRequest request );
 
