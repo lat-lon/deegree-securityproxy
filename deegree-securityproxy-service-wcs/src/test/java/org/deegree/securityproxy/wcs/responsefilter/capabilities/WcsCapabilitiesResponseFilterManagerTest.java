@@ -38,6 +38,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

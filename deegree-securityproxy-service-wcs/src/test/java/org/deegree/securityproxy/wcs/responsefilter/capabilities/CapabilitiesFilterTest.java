@@ -20,6 +20,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementPathStep;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
 import org.junit.Test;
 
 /**
@@ -161,7 +164,7 @@ public class CapabilitiesFilterTest {
 
         ElementRule elementRule1 = new ElementRule( "d", EXTENDED_NS_URI, "dtext" );
         ElementRule elementRule2 = new ElementRule( "k", EXTENDED_NS_URI, "idK2" );
-        ElementDecisionMaker decisionMaker = createDecisionMaker( elementRule1, elementRule2 );
+        DecisionMaker decisionMaker = createDecisionMaker( elementRule1, elementRule2 );
         capabilitiesFilter.filterCapabilities( response, decisionMaker );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponseByTwoRules.xml" ) ) );
@@ -189,31 +192,31 @@ public class CapabilitiesFilterTest {
         return path;
     }
 
-    private ElementDecisionMaker createDecisionMaker( String nameToFilter ) {
+    private DecisionMaker createDecisionMaker( String nameToFilter ) {
         return createDecisionMaker( nameToFilter, null );
     }
 
-    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace ) {
+    private DecisionMaker createDecisionMaker( String nameToFilter, String namespace ) {
         return createDecisionMaker( nameToFilter, namespace, (String) null );
     }
 
-    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text ) {
+    private DecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text );
         return new ElementDecisionMaker( rule );
     }
 
-    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace, ElementRule subRule ) {
+    private DecisionMaker createDecisionMaker( String nameToFilter, String namespace, ElementRule subRule ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, subRule );
         return new ElementDecisionMaker( rule );
     }
 
-    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text,
+    private DecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text,
                                                       List<ElementPathStep> path ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text, path );
         return new ElementDecisionMaker( rule );
     }
 
-    private ElementDecisionMaker createDecisionMaker( ElementRule... elementRules ) {
+    private DecisionMaker createDecisionMaker( ElementRule... elementRules ) {
         List<ElementRule> rules = asList( elementRules );
         return new ElementDecisionMaker( rules );
     }

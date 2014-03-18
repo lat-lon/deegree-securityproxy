@@ -35,66 +35,36 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
-import javax.xml.namespace.QName;
+import java.util.List;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 /**
- * Encapsulates an element, may contain one attribute and text to check as path hierarchy.
+ * Implementations can decide if an xml element, attribute ... should be ignored or not.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementPathStep {
-
-    private final QName elementName;
-
-    private final String attributeValue;
-
-    private final QName attributeName;
+public interface DecisionMaker {
 
     /**
-     * @param elementName
-     *            never <code>null</code>
-     */
-    public ElementPathStep( QName elementName ) {
-        this( elementName, null, null );
-    }
-
-    /**
+     * Checks if the passed {@link XMLEvent} should be ignored.
      * 
-     * @param elementName
-     *            never <code>null</code>
-     * @param attributeName
-     *            may be <code>null</code>
-     * @param attributeValue
-     *            may be <code>null</code>, but not when attributeName is not <code>null</code>
+     * @param reader
+     *            the event reader currently read, never <code>null</code>
+     * @param event
+     *            the current event to filter, never <code>null</code>
+     * @param visitedElements
+     *            a list of already visited start elements, never <code>null</code>
+     * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
+     * @throws XMLStreamException
+     *             -if there is an error with the underlying XML
      */
-    public ElementPathStep( QName elementName, QName attributeName, String attributeValue ) {
-        this.elementName = elementName;
-        this.attributeName = attributeName;
-        this.attributeValue = attributeValue;
-    }
-
-    /**
-     * @return the elementName never <code>null</code>
-     */
-    public QName getElementName() {
-        return elementName;
-    }
-
-    /**
-     * @return the attributeName may be <code>null</code>
-     */
-    public QName getAttributeName() {
-        return attributeName;
-    }
-
-    /**
-     * @return the attributeValue may be <code>null</code> if attributeName is <code>null</code>
-     */
-    public String getAttributeValue() {
-        return attributeValue;
-    }
+    boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
+                            throws XMLStreamException;
 
 }

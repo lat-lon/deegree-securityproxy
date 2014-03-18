@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.capabilities;
+package org.deegree.securityproxy.wcs.responsefilter.capabilities.element;
 
 import static java.util.Collections.singletonList;
 
@@ -46,6 +46,9 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEventReader;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.DecisionMaker;
+
 /**
  * Decides if an element should be writer or not.
  * 
@@ -54,7 +57,7 @@ import javax.xml.stream.events.XMLEvent;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementDecisionMaker {
+public class ElementDecisionMaker implements DecisionMaker {
 
     private final List<ElementRule> elementRules;
 
@@ -84,20 +87,7 @@ public class ElementDecisionMaker {
         this.elementRules = elementRules;
     }
 
-    /**
-     * Checks if the passed {@link XMLEvent} should be ignored. The {@link XMLEvent} will be ignored if at least one of
-     * the {@link ElementRule}s matches.
-     * 
-     * @param reader
-     *            the event reader currently read, never <code>null</code>
-     * @param event
-     *            the current event to filter, never <code>null</code>
-     * @param visitedElements
-     *            a list of already visited elements, never <code>null</code>
-     * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
-     * @throws XMLStreamException
-     *             -if there is an error with the underlying XML
-     */
+    @Override
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
                             throws XMLStreamException {
         if ( event.isStartElement() && atLeastOneElementRuleIsMatching( reader, event, visitedElements ) ) {

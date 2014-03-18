@@ -54,6 +54,8 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesRepo
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -102,7 +104,7 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
                     copyBufferedStream( servletResponse );
                     return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE, false );
                 } else {
-                    ElementDecisionMaker decisionMaker = new ElementDecisionMaker( elementRules );
+                    DecisionMaker decisionMaker = new ElementDecisionMaker( elementRules );
                     capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
                     return new ResponseCapabilitiesReport( SUCCESSFUL_FILTERING_MESSAGE, true );
                 }

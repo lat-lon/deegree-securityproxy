@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.responsefilter.capabilities;
+package org.deegree.securityproxy.wcs.responsefilter.capabilities.element;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,6 +14,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEventReader;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.DecisionMaker;
 import org.junit.Test;
 
 /**
@@ -32,13 +34,12 @@ public class ElementDecisionMakerTest {
 
     private final ElementRule nameRule = new ElementRule( NAME_TO_FILTER );
 
-    private final ElementDecisionMaker elementDecisionRule = new ElementDecisionMaker( nameAndNamespaceRule );
+    private final DecisionMaker elementDecisionRule = new ElementDecisionMaker( nameAndNamespaceRule );
 
-    private final ElementDecisionMaker elementDecisionRuleUnsetNamespace = new ElementDecisionMaker( nameRule );
+    private final DecisionMaker elementDecisionRuleUnsetNamespace = new ElementDecisionMaker( nameRule );
 
-    private final ElementDecisionMaker elementDecisionRuleTwoRules = new ElementDecisionMaker(
-                                                                                               asList( nameRule,
-                                                                                                       nameAndNamespaceRule ) );
+    private final DecisionMaker elementDecisionRuleTwoRules = new ElementDecisionMaker( asList( nameRule,
+                                                                                                nameAndNamespaceRule ) );
 
     @Test(expected = IllegalArgumentException.class)
     public void testElementDecisionMakerWithNullRule()

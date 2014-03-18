@@ -79,7 +79,7 @@ public class CapabilitiesFilter {
      *             if an error occurred during reading or writing the response
      */
     public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse,
-                                    ElementDecisionMaker elementDecisionMaker )
+                                    DecisionMaker elementDecisionMaker )
                             throws IOException, XMLStreamException {
         BufferingXMLEventReader reader = null;
         XMLEventWriter writer = null;
@@ -96,7 +96,7 @@ public class CapabilitiesFilter {
     }
 
     private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer,
-                               ElementDecisionMaker elementDecisionMaker )
+                               DecisionMaker elementDecisionMaker )
                             throws XMLStreamException {
         LinkedList<StartElement> visitedElements = new LinkedList<StartElement>();
         while ( reader.hasNext() ) {
@@ -113,7 +113,7 @@ public class CapabilitiesFilter {
     }
 
     private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent currentEvent,
-                                      ElementDecisionMaker elementDecisionMaker,
+                                      DecisionMaker elementDecisionMaker,
                                       LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
         LOG.debug( "Found StartElement " + currentEvent );
@@ -126,7 +126,7 @@ public class CapabilitiesFilter {
     }
 
     private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent currentEvent,
-                                   ElementDecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
+                                   DecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
         return elementDecisionMaker != null && elementDecisionMaker.ignore( reader, currentEvent, visitedElements );
     }
