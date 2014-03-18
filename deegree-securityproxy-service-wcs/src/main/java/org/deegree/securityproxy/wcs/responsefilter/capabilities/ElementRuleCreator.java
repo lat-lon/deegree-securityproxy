@@ -39,9 +39,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -55,11 +54,20 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class ElementRuleCreator {
 
-    private static final String WCS_NS_URI = "http://www.opengis.net/wcs/1.1";
+    private static final OwsServiceVersion VERSION_1_0_0 = new OwsServiceVersion( 1, 0, 0 );
 
-    private static final String OWCS_NS_URI = "http://www.opengis.net/wcs/1.1/ows";
+    static final String WCS_1_0_0_NS_URI = "http://www.opengis.net/wcs";
 
-    public List<ElementRule> createElementRules( Authentication authentication ) {
+    /**
+     * Creates a {@link List} of {@link ElementRule}s for WCS 1.0.0 specifying the elements to remove from the
+     * capabilities document.
+     * 
+     * @param authentication
+     *            containing the user rules to use as filters, never <code>null</code>
+     * @return a list of {@link ElementRule}s to use as specifying the elements to remove from the capabilities
+     *         document, never <code>null</code>
+     */
+    public List<ElementRule> createElementRulesForWcs100( Authentication authentication ) {
         List<ElementRule> elementRules = new ArrayList<ElementRule>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {
@@ -70,10 +78,10 @@ public class ElementRuleCreator {
         return elementRules;
     }
 
-    ElementRule createElementRule( GrantedAuthority grantedAuthority ) {
+    private ElementRule createElementRule( GrantedAuthority grantedAuthority ) {
         if ( grantedAuthority instanceof RasterPermission ) {
             RasterPermission permission = (RasterPermission) grantedAuthority;
-            if ( "WCS".equalsIgnoreCase( permission.getServiceType() ) ) {
+            if ( isWcs100Permission( permission ) ) {
                 return createWcsRule( permission );
             }
         }
@@ -81,30 +89,20 @@ public class ElementRuleCreator {
     }
 
     private ElementRule createWcsRule( RasterPermission permission ) {
-        if ( "describecoverage".equalsIgnoreCase( permission.getOperationType() ) ) {
-            return createDescribeCoverageRule( permission );
-        } else if ( "getcoverage".equalsIgnoreCase( permission.getOperationType() ) ) {
+        if ( "getcoverage".equalsIgnoreCase( permission.getOperationType() ) ) {
             return createGetCoverageRule( permission );
         }
         return null;
     }
 
-    // TODO: consider version in namespace uri and path
     private ElementRule createGetCoverageRule( RasterPermission rasterPermission ) {
-        ElementRule subRule = new ElementRule( "Identifier", WCS_NS_URI, rasterPermission.getLayerName() );
-        return new ElementRule( "CoverageSummary", WCS_NS_URI, subRule );
+        ElementRule subRule = new ElementRule( "name", WCS_1_0_0_NS_URI, rasterPermission.getLayerName() );
+        return new ElementRule( "CoverageOfferingBrief", WCS_1_0_0_NS_URI, subRule );
     }
 
-    // TODO: consider version in namespace uri and path
-    private ElementRule createDescribeCoverageRule( RasterPermission rasterPermission ) {
-        List<ElementPathStep> path = new ArrayList<ElementPathStep>();
-        path.add( new ElementPathStep( new QName( WCS_NS_URI, "Capabilities" ) ) );
-        path.add( new ElementPathStep( new QName( OWCS_NS_URI, "OperationsMetadata" ) ) );
-        path.add( new ElementPathStep( new QName( OWCS_NS_URI, "Operation" ), new QName( "name" ), "DescribeCoverage" ) );
-        path.add( new ElementPathStep( new QName( OWCS_NS_URI, "Parameter" ), new QName( "name" ), "Identifier" ) );
-        path.add( new ElementPathStep( new QName( OWCS_NS_URI, "AllowedValues" ) ) );
-        path.add( new ElementPathStep( new QName( OWCS_NS_URI, "Parameter" ) ) );
-        return new ElementRule( "value", OWCS_NS_URI, rasterPermission.getLayerName(), path );
+    private boolean isWcs100Permission( RasterPermission permission ) {
+        return "wcs".equalsIgnoreCase( permission.getServiceType() )
+               && permission.getServiceVersion().contains( VERSION_1_0_0 );
     }
 
 }

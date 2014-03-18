@@ -83,7 +83,7 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
             LOG.info( "Apply wcs capabilities filter for response of request " + request );
             try {
                 ElementRuleCreator elementRuleCreator = new ElementRuleCreator();
-                List<ElementRule> elementRules = elementRuleCreator.createElementRules( auth );
+                List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( auth );
                 // new ElementDecisionMaker( elementRules )
                 capabilitiesFilter.filterCapabilities( servletResponse, null );
                 return new ResponseCapabilitiesReport( "Capabilities of request were filtered successfully.", true );
