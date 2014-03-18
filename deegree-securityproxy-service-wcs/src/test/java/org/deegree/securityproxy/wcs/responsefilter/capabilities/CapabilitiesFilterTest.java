@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,9 +30,6 @@ import org.junit.Test;
  */
 public class CapabilitiesFilterTest {
 
-    /**
-     * 
-     */
     private static final String EXTENDED_NS_URI = "http://extended.de";
 
     private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
@@ -53,7 +51,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f" ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "f" ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFiltered.xml" ) ) );
     }
@@ -64,7 +62,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "e", "http://simple.de" ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "e", "http://simple.de" ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleFilteredByNamespace.xml" ) ) );
     }
@@ -75,7 +73,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "d", "http://simple1.de", "dtext" ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "d", "http://simple1.de", "dtext" ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndText.xml" ) ) );
@@ -87,7 +85,7 @@ public class CapabilitiesFilterTest {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "d", "http://simple1.de", "2nddtext" ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "d", "http://simple1.de", "2nddtext" ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "simpleFilteredByNamespaceAndTextWithAttribute.xml" ) ) );
@@ -100,7 +98,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         ElementRule subRule = new ElementRule( "i", EXTENDED_NS_URI, "idH" );
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", EXTENDED_NS_URI, subRule ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "f", EXTENDED_NS_URI, subRule ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponse.xml" ) ) );
     }
@@ -112,7 +110,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         ElementRule subRule = new ElementRule( "g", EXTENDED_NS_URI, "idG" );
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", EXTENDED_NS_URI, subRule ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "f", EXTENDED_NS_URI, subRule ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedFilteredBySubelement.xml" ) ) );
     }
@@ -124,7 +122,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         ElementRule subRule = new ElementRule( "l", EXTENDED_NS_URI, "idL" );
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "f", EXTENDED_NS_URI, subRule ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "f", EXTENDED_NS_URI, subRule ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "extendedFilteredByNestedSubelement.xml" ) ) );
@@ -137,7 +135,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         List<ElementPathStep> path = createPath();
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "k", EXTENDED_NS_URI, "idK2", path ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "k", EXTENDED_NS_URI, "idK2", path ) );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponseByPath.xml" ) ) );
     }
@@ -149,10 +147,24 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
         List<ElementPathStep> path = createPathWithAttribute();
-        capabilitiesFilter.filterCapabilities( response, createEventFilter( "k", EXTENDED_NS_URI, "idK1", path ) );
+        capabilitiesFilter.filterCapabilities( response, createDecisionMaker( "k", EXTENDED_NS_URI, "idK1", path ) );
 
         assertThat( asXml( filteredCapabilities ),
                     isEquivalentTo( expectedXml( "extendedResponseByPathWithAttributes.xml" ) ) );
+    }
+
+    @Test
+    public void testFilterCapabilitiesExtendedFilteredByTwoRules()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
+
+        ElementRule elementRule1 = new ElementRule( "d", EXTENDED_NS_URI, "dtext" );
+        ElementRule elementRule2 = new ElementRule( "k", EXTENDED_NS_URI, "idK2" );
+        ElementDecisionMaker decisionMaker = createDecisionMaker( elementRule1, elementRule2 );
+        capabilitiesFilter.filterCapabilities( response, decisionMaker );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponseByTwoRules.xml" ) ) );
     }
 
     private List<ElementPathStep> createPath() {
@@ -177,28 +189,33 @@ public class CapabilitiesFilterTest {
         return path;
     }
 
-    private ElementDecisionMaker createEventFilter( String nameToFilter ) {
-        return createEventFilter( nameToFilter, null );
+    private ElementDecisionMaker createDecisionMaker( String nameToFilter ) {
+        return createDecisionMaker( nameToFilter, null );
     }
 
-    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace ) {
-        return createEventFilter( nameToFilter, namespace, (String) null );
+    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace ) {
+        return createDecisionMaker( nameToFilter, namespace, (String) null );
     }
 
-    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, String text ) {
+    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text );
         return new ElementDecisionMaker( rule );
     }
 
-    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, ElementRule subRule ) {
+    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace, ElementRule subRule ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, subRule );
         return new ElementDecisionMaker( rule );
     }
 
-    private ElementDecisionMaker createEventFilter( String nameToFilter, String namespace, String text,
-                                                    List<ElementPathStep> path ) {
+    private ElementDecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text,
+                                                      List<ElementPathStep> path ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text, path );
         return new ElementDecisionMaker( rule );
+    }
+
+    private ElementDecisionMaker createDecisionMaker( ElementRule... elementRules ) {
+        List<ElementRule> rules = asList( elementRules );
+        return new ElementDecisionMaker( rules );
     }
 
     private StatusCodeResponseBodyWrapper mockResponse( String originalXmlFileName, ByteArrayOutputStream filteredStream )
