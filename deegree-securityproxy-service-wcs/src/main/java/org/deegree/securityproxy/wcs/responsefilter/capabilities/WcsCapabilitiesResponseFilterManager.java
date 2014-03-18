@@ -66,6 +66,10 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
 
     private static final Logger LOG = Logger.getLogger( WcsCapabilitiesResponseFilterManager.class );
 
+    static final String SUCCESSFUL_FILTERING_MESSAGE = "Capabilities of request were filtered successfully.";
+
+    static final String FILTERING_NOT_REQUIRED_MESSAGE = "Capabilities of request must not be filtered.";
+
     static final String NOT_A_CAPABILITIES_REQUEST_MSG = "Request was not a GetCapabilities-Request - filtering not required.";
 
     private final CapabilitiesFilter capabilitiesFilter;
@@ -84,15 +88,21 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
             try {
                 ElementRuleCreator elementRuleCreator = new ElementRuleCreator();
                 List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( auth );
-                // new ElementDecisionMaker( elementRules )
-                capabilitiesFilter.filterCapabilities( servletResponse, null );
-                return new ResponseCapabilitiesReport( "Capabilities of request were filtered successfully.", true );
+                if ( elementRules.isEmpty() ) {
+                    copyBufferedStream( servletResponse );
+                    return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE, false );
+                } else {
+                    ElementDecisionMaker decisionMaker = new ElementDecisionMaker( elementRules );
+                    capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
+                    return new ResponseCapabilitiesReport( SUCCESSFUL_FILTERING_MESSAGE, true );
+                }
             } catch ( IOException e ) {
                 throw new ResponseFilterException( e );
             } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
         }
+        copyBufferedStream( servletResponse );
         return new ResponseCapabilitiesReport( NOT_A_CAPABILITIES_REQUEST_MSG );
     }
 
@@ -100,6 +110,15 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
     public boolean canBeFiltered( OwsRequest request ) {
         checkIfRequestEqualsNull( request );
         return WcsRequest.class.equals( request.getClass() ) && isGetCapabilitiesRequest( (WcsRequest) request );
+    }
+
+    private void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
+                            throws ResponseFilterException {
+        try {
+            servletResponse.copyBufferedStreamToRealStream();
+        } catch ( IOException e ) {
+            throw new ResponseFilterException( "Buffered response stream could not be copied into real stream", e );
+        }
     }
 
     private void checkIfRequestEqualsNull( OwsRequest request ) {
