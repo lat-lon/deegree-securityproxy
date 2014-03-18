@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static java.util.Collections.singletonList;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,20 +56,38 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class ElementDecisionMaker {
 
-    private final ElementRule elementRule;
+    private final List<ElementRule> elementRules;
 
     /**
+     * Instantiates a {@link ElementDecisionMaker} with exactly one rule.
+     * 
      * @param elementRule
      *            never <code>null</code>
      * @throws IllegalArgumentException
      *             if the elementRule is <code>null</code>
      */
     public ElementDecisionMaker( ElementRule elementRule ) {
-        this.elementRule = elementRule;
-        checkNameToFilter( elementRule );
+        checkElementRule( elementRule );
+        this.elementRules = singletonList( elementRule );
     }
 
     /**
+     * Instantiates a {@link ElementDecisionMaker} with multiple rules.
+     * 
+     * @param elementRule
+     *            never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if the elementRule is <code>null</code>
+     */
+    public ElementDecisionMaker( List<ElementRule> elementRules ) {
+        checkElementRules( elementRules );
+        this.elementRules = elementRules;
+    }
+
+    /**
+     * Checks if the passed {@link XMLEvent} should be ignored. The {@link XMLEvent} will be ignored if at least one of
+     * the {@link ElementRule}s matches.
+     * 
      * @param reader
      *            the event reader currently read, never <code>null</code>
      * @param event
@@ -76,41 +96,53 @@ public class ElementDecisionMaker {
      *            a list of already visited elements, never <code>null</code>
      * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
      * @throws XMLStreamException
+     *             -if there is an error with the underlying XML
      */
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
                             throws XMLStreamException {
-        if ( event.isStartElement() && matchesElementRule( reader, event, elementRule, visitedElements ) ) {
+        if ( event.isStartElement() && atLeastOneElementRuleIsMatching( reader, event, visitedElements ) ) {
             return true;
         }
         return false;
     }
 
-    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule,
+    private boolean atLeastOneElementRuleIsMatching( BufferingXMLEventReader reader, XMLEvent event,
+                                                     List<StartElement> visitedElements )
+                            throws XMLStreamException {
+        for ( ElementRule elementRule : elementRules ) {
+            boolean matchesElementRule = matchesElementRule( reader, event, elementRule, visitedElements );
+            if ( matchesElementRule )
+                return true;
+        }
+        return false;
+    }
+
+    private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event, ElementRule elementRule,
                                         List<StartElement> visitedElements )
                             throws XMLStreamException {
         StartElement startElement = event.asStartElement();
-        QName ignoredQName = new QName( rule.getNamespace(), rule.getName() );
+        QName ignoredQName = new QName( elementRule.getNamespace(), elementRule.getName() );
         final boolean isNameMatching = ignoredQName.equals( startElement.getName() );
 
         if ( !isNameMatching )
             return false;
 
         boolean isTextMatching = true;
-        if ( rule.getText() != null )
-            isTextMatching = isTextMatching( reader, event, rule );
+        if ( elementRule.getText() != null )
+            isTextMatching = isTextMatching( reader, event, elementRule );
 
         if ( !isTextMatching )
             return false;
 
         boolean isPathMatching = true;
         if ( elementRule.getPath() != null )
-            isPathMatching = isPathMatching( rule, visitedElements );
+            isPathMatching = isPathMatching( elementRule, visitedElements );
 
         if ( !isPathMatching )
             return false;
 
-        if ( rule.getSubRule() != null )
-            return isSubRuleMatching( reader, event );
+        if ( elementRule.getSubRule() != null )
+            return isSubRuleMatching( reader, event, elementRule );
 
         return isPathMatching;
     }
@@ -160,7 +192,7 @@ public class ElementDecisionMaker {
         return false;
     }
 
-    private boolean isSubRuleMatching( BufferingXMLEventReader reader, XMLEvent event )
+    private boolean isSubRuleMatching( BufferingXMLEventReader reader, XMLEvent event, ElementRule elementRule )
                             throws XMLStreamException {
         ElementRule subRule = elementRule.getSubRule();
         if ( subRule != null ) {
@@ -202,9 +234,14 @@ public class ElementDecisionMaker {
         return depth == 0;
     }
 
-    private void checkNameToFilter( ElementRule elementRule ) {
-        if ( elementRule == null )
-            throw new IllegalArgumentException( "nameToFilter must not be null or empty!" );
+    private void checkElementRule( ElementRule elementRuleToCheck ) {
+        if ( elementRuleToCheck == null )
+            throw new IllegalArgumentException( "elementRule must not be null!" );
+    }
+
+    private void checkElementRules( List<ElementRule> elementRulesToCheck ) {
+        if ( elementRulesToCheck == null || elementRulesToCheck.isEmpty() )
+            throw new IllegalArgumentException( "elementRules must not be null or empty!" );
     }
 
 }

@@ -1,11 +1,14 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.StartElement;
@@ -33,10 +36,26 @@ public class ElementDecisionMakerTest {
 
     private final ElementDecisionMaker elementDecisionRuleUnsetNamespace = new ElementDecisionMaker( nameRule );
 
+    private final ElementDecisionMaker elementDecisionRuleTwoRules = new ElementDecisionMaker(
+                                                                                               asList( nameRule,
+                                                                                                       nameAndNamespaceRule ) );
+
     @Test(expected = IllegalArgumentException.class)
     public void testElementDecisionMakerWithNullRule()
                             throws Exception {
-        new ElementDecisionMaker( null );
+        new ElementDecisionMaker( (ElementRule) null );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testElementDecisionMakerWithNullRules()
+                            throws Exception {
+        new ElementDecisionMaker( (List<ElementRule>) null );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testElementDecisionMakerWithEmptyRules()
+                            throws Exception {
+        new ElementDecisionMaker( Collections.<ElementRule> emptyList() );
     }
 
     @Test
@@ -81,6 +100,16 @@ public class ElementDecisionMakerTest {
                                                      mockVisitedElements() );
 
         assertThat( ignore, is( false ) );
+    }
+
+    @Test
+    public void testIgnoreWithTwoRulesShouldReturnTrue()
+                            throws Exception {
+        boolean ignore = elementDecisionRuleTwoRules.ignore( mockXmlEventReader(),
+                                                             mockEventIgnoredNameWithoutNamespaceUri(),
+                                                             mockVisitedElements() );
+
+        assertThat( ignore, is( true ) );
     }
 
     private BufferingXMLEventReader mockXmlEventReader() {
