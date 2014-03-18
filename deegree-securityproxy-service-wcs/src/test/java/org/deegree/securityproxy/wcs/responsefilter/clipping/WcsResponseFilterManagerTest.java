@@ -501,7 +501,7 @@ public class WcsResponseFilterManagerTest {
     }
 
     private InputStream parseServiceException() {
-        return WcsResponseFilterManagerTest.class.getResourceAsStream( "service_exception.xml" );
+        return WcsResponseFilterManagerTest.class.getResourceAsStream( "../service_exception.xml" );
     }
 
 }

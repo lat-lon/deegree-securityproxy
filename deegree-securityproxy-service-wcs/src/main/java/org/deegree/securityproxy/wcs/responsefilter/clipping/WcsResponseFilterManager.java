@@ -38,6 +38,8 @@ package org.deegree.securityproxy.wcs.responsefilter.clipping;
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.copyBufferedStream;
+import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -177,19 +179,6 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
                                                 + " is not supported!" );
     }
 
-    private boolean isException( StatusCodeResponseBodyWrapper servletResponse )
-                            throws IOException {
-        if ( servletResponse.getStatus() != 200 )
-            return true;
-        InputStream bufferedStream = servletResponse.getBufferedStream();
-        try {
-            String bodyAsString = IOUtils.toString( bufferedStream );
-            return bodyAsString.contains( "ServiceExceptionReport" );
-        } finally {
-            closeQuietly( bufferedStream );
-        }
-    }
-
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                     Geometry clippingGeometry )
                             throws IOException {
@@ -217,15 +206,6 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             writeExceptionBodyAndSetExceptionStatusCode( servletResponse, destination );
         } catch ( IOException e ) {
             LOG.error( "An error occurred during writing the exception response!", e );
-        }
-    }
-
-    private void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
-                            throws ResponseFilterException {
-        try {
-            servletResponse.copyBufferedStreamToRealStream();
-        } catch ( IOException e ) {
-            throw new ResponseFilterException( "Buffered response stream could not be copied into real stream", e );
         }
     }
 

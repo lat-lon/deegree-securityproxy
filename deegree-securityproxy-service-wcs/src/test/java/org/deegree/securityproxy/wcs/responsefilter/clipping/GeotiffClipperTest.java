@@ -521,7 +521,7 @@ public class GeotiffClipperTest {
     }
 
     private File createExceptionFile() {
-        return new File( GeotiffClipperTest.class.getResource( "service_exception.xml" ).getPath() );
+        return new File( GeotiffClipperTest.class.getResource( "../service_exception.xml" ).getPath() );
     }
 
     private InputStream createInputStreamFrom( File file )

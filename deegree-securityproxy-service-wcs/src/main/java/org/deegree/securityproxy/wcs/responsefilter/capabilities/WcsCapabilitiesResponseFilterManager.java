@@ -36,6 +36,8 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.copyBufferedStream;
+import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.IOException;
 import java.util.List;
@@ -49,6 +51,7 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.core.Authentication;
@@ -72,6 +75,8 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
 
     static final String NOT_A_CAPABILITIES_REQUEST_MSG = "Request was not a GetCapabilities-Request - filtering not required.";
 
+    static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
+
     private final CapabilitiesFilter capabilitiesFilter;
 
     public WcsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter ) {
@@ -86,6 +91,11 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
         if ( canBeFiltered( request ) ) {
             LOG.info( "Apply wcs capabilities filter for response of request " + request );
             try {
+                if ( isException( servletResponse ) ) {
+                    LOG.debug( "Response contains an exception!" );
+                    copyBufferedStream( servletResponse );
+                    return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
+                }
                 ElementRuleCreator elementRuleCreator = new ElementRuleCreator();
                 List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( auth );
                 if ( elementRules.isEmpty() ) {
@@ -110,15 +120,6 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
     public boolean canBeFiltered( OwsRequest request ) {
         checkIfRequestEqualsNull( request );
         return WcsRequest.class.equals( request.getClass() ) && isGetCapabilitiesRequest( (WcsRequest) request );
-    }
-
-    private void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
-                            throws ResponseFilterException {
-        try {
-            servletResponse.copyBufferedStreamToRealStream();
-        } catch ( IOException e ) {
-            throw new ResponseFilterException( "Buffered response stream could not be copied into real stream", e );
-        }
     }
 
     private void checkIfRequestEqualsNull( OwsRequest request ) {

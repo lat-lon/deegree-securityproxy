@@ -4,6 +4,7 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILI
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
 import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
+import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -109,6 +110,23 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
+    public void testFilterResponseWithExceptionShouldReturnFilterReport()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "../service_exception.xml" );
+        WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
+        Authentication authentication = createAuthenticationWithKnownCoverage();
+
+        ResponseFilterReport filterReport = wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest,
+                                                                                                 authentication );
+
+        assertThat( filterReport, notNullValue() );
+        assertThat( filterReport.getMessage(), is( SERVICE_EXCEPTION_MSG ) );
+        assertThat( filterReport.isFiltered(), is( false ) );
+    }
+
+    @Test
     public void testFilterResponseWithApplicablePermissionShouldFilterResponse()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
@@ -145,6 +163,19 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0.xml" ) ) );
+    }
+
+    @Test
+    public void testFilterResponseWithExceptionShouldReturnExceptionResponse()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "../service_exception.xml" );
+        Authentication mockAuthentication = createAuthenticationWithKnownCoverage();
+        wcsCapabilitiesResponseFilterManager.filterResponse( response, createWcsGetCoverageRequest(),
+                                                             mockAuthentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "../service_exception.xml" ) ) );
     }
 
     @Test
@@ -214,27 +245,37 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         return authenticationMock;
     }
 
-    private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper() {
-        return mock( StatusCodeResponseBodyWrapper.class );
+    private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper()
+                            throws IOException {
+        StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
+        when( mockedServletResponse.getStatus() ).thenReturn( 200 );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
+        when( mockedServletResponse.getOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        when( mockedServletResponse.getRealOutputStream() ).thenReturn( mock( ServletOutputStream.class ) );
+        return mockedServletResponse;
     }
 
     private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper( ByteArrayOutputStream filteredStream,
                                                                              String originalXmlFileName )
                             throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
-        InputStream resourceToFilter = CapabilitiesFilterTest.class.getResourceAsStream( originalXmlFileName );
-        when( mockedServletResponse.getBufferedStream() ).thenReturn( resourceToFilter );
+        when( mockedServletResponse.getStatus() ).thenReturn( 200 );
+        when( mockedServletResponse.getBufferedStream() ).thenReturn( retrieveResourceAsStream( originalXmlFileName ),
+                                                                      retrieveResourceAsStream( originalXmlFileName ) );
         when( mockedServletResponse.getRealOutputStream() ).thenReturn( createStream( filteredStream ) );
         doCallRealMethod().when( mockedServletResponse ).copyBufferedStreamToRealStream();
         return mockedServletResponse;
     }
 
+    private InputStream retrieveResourceAsStream( String originalXmlFileName ) {
+        return CapabilitiesFilterTest.class.getResourceAsStream( originalXmlFileName );
+    }
+
     private Source expectedXml( String expectedFile ) {
-        return new StreamSource( CapabilitiesFilterTest.class.getResourceAsStream( expectedFile ) );
+        return new StreamSource( retrieveResourceAsStream( expectedFile ) );
     }
 
     private Source asXml( ByteArrayOutputStream bufferingStream ) {
-        System.out.println( bufferingStream.toString() );
         return the( new StreamSource( new ByteArrayInputStream( bufferingStream.toByteArray() ) ) );
     }
 
