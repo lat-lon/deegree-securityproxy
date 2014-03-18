@@ -40,7 +40,6 @@ import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.c
 import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
@@ -54,8 +53,6 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesRepo
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -98,13 +95,12 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
                     copyBufferedStream( servletResponse );
                     return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
                 }
-                ElementRuleCreator elementRuleCreator = new ElementRuleCreator();
-                List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( auth );
-                if ( elementRules.isEmpty() ) {
+                Wcs100DecisionMakerCreator decisionMakerCreator = new Wcs100DecisionMakerCreator();
+                DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMakerForWcs100( auth );
+                if ( decisionMaker == null ) {
                     copyBufferedStream( servletResponse );
                     return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE, false );
                 } else {
-                    DecisionMaker decisionMaker = new ElementDecisionMaker( elementRules );
                     capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
                     return new ResponseCapabilitiesReport( SUCCESSFUL_FILTERING_MESSAGE, true );
                 }

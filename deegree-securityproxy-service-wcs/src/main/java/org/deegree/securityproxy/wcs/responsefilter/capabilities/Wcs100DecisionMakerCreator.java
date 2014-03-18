@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.wcs.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
 import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -53,57 +54,48 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementRuleCreator {
+public class Wcs100DecisionMakerCreator {
 
     private static final OwsServiceVersion VERSION_1_0_0 = new OwsServiceVersion( 1, 0, 0 );
 
     static final String WCS_1_0_0_NS_URI = "http://www.opengis.net/wcs";
 
+    private static final String ELEMENT_TO_FILTER = "CoverageOfferingBrief";
+
+    private static final String SUB_ELEMENT_NAME = "name";
+
     /**
-     * Creates a {@link List} of {@link ElementRule}s for WCS 1.0.0 specifying the elements to remove from the
-     * capabilities document.
+     * Creates a {@link DecisionMaker} for WCS 1.0.0 capabilities
      * 
      * @param authentication
      *            containing the user rules to use as filters, never <code>null</code>
-     * @return a list of {@link ElementRule}s to use as specifying the elements to remove from the capabilities
-     *         document, never <code>null</code>
+     * @return the {@link DecisionMaker} or <code>null</code>, if filtering is not required
      */
-    public List<ElementRule> createElementRulesForWcs100( Authentication authentication ) {
-        List<ElementRule> elementRules = new ArrayList<ElementRule>();
+    public DecisionMaker createDecisionMakerForWcs100( Authentication authentication ) {
+        List<String> blackListTextValues = new ArrayList<String>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {
-            ElementRule elementRule = createElementRule( grantedAuthority );
-            if ( elementRule != null )
-                elementRules.add( elementRule );
+            addBlackListValuesFromAuthorities( blackListTextValues, grantedAuthority );
         }
-        return elementRules;
+        if ( !blackListTextValues.isEmpty() )
+            return new BlackListDecisionMaker( ELEMENT_TO_FILTER, WCS_1_0_0_NS_URI, SUB_ELEMENT_NAME, WCS_1_0_0_NS_URI,
+                                               blackListTextValues );
+        return null;
     }
 
-    private ElementRule createElementRule( GrantedAuthority grantedAuthority ) {
+    private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority grantedAuthority ) {
         if ( grantedAuthority instanceof RasterPermission ) {
             RasterPermission permission = (RasterPermission) grantedAuthority;
-            if ( isWcs100Permission( permission ) ) {
-                return createWcsRule( permission );
+            if ( isWcs100GetCoveragePermission( permission ) ) {
+                blackListTextValues.add( permission.getLayerName() );
             }
         }
-        return null;
     }
 
-    private ElementRule createWcsRule( RasterPermission permission ) {
-        if ( "getcoverage".equalsIgnoreCase( permission.getOperationType() ) ) {
-            return createGetCoverageRule( permission );
-        }
-        return null;
-    }
-
-    private ElementRule createGetCoverageRule( RasterPermission rasterPermission ) {
-        ElementRule subRule = new ElementRule( "name", WCS_1_0_0_NS_URI, rasterPermission.getLayerName() );
-        return new ElementRule( "CoverageOfferingBrief", WCS_1_0_0_NS_URI, subRule );
-    }
-
-    private boolean isWcs100Permission( RasterPermission permission ) {
+    private boolean isWcs100GetCoveragePermission( RasterPermission permission ) {
         return "wcs".equalsIgnoreCase( permission.getServiceType() )
-               && permission.getServiceVersion().contains( VERSION_1_0_0 );
+               && permission.getServiceVersion().contains( VERSION_1_0_0 )
+               && "getcoverage".equalsIgnoreCase( permission.getOperationType() );
     }
 
 }

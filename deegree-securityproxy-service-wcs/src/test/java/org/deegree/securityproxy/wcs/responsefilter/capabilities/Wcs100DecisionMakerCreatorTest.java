@@ -1,8 +1,8 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.ElementRuleCreator.WCS_1_0_0_NS_URI;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,44 +23,36 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ElementRuleCreatorTest {
+public class Wcs100DecisionMakerCreatorTest {
 
     private static final String COVERAGE_NAME_1 = "123_6788";
 
     private static final String COVERAGE_NAME_2 = "567_8765";
 
-    private final ElementRuleCreator elementRuleCreator = new ElementRuleCreator();
+    private final Wcs100DecisionMakerCreator elementRuleCreator = new Wcs100DecisionMakerCreator();
 
     @Test
-    public void testCreateElementRulesForWcs100OneGetCoverage()
+    public void testCreateDecisionMakerForWcs100OneGetCoverage()
                             throws Exception {
-        List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( createAuthenticationWithOneGetCoverage() );
+        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMakerForWcs100( createAuthenticationWithOneGetCoverage() );
 
-        assertThat( elementRules.size(), is( 1 ) );
-        assertThat( elementRules, hasItem( expectedRule( COVERAGE_NAME_1 ) ) );
+        assertThat( decisionMaker, is( notNullValue() ) );
     }
 
     @Test
-    public void testCreateElementRulesForWcs100TwoGetCoverageOneDescribeCoverage()
+    public void testCreateDecisionMakerForWcs100TwoGetCoverageOneDescribeCoverage()
                             throws Exception {
-        List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( createAuthenticationWithTwoGetCoverageOneDescribeCoverage() );
+        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMakerForWcs100( createAuthenticationWithTwoGetCoverageOneDescribeCoverage() );
 
-        assertThat( elementRules.size(), is( 2 ) );
-        assertThat( elementRules, hasItem( expectedRule( COVERAGE_NAME_1 ) ) );
-        assertThat( elementRules, hasItem( expectedRule( COVERAGE_NAME_2 ) ) );
+        assertThat( decisionMaker, is( notNullValue() ) );
     }
 
     @Test
-    public void testCreateElementRulesForWcs100OneDescribeCoverage()
+    public void testCreateDecisionMakerForWcs100OneDescribeCoverage()
                             throws Exception {
-        List<ElementRule> elementRules = elementRuleCreator.createElementRulesForWcs100( createAuthenticationWithOneDescribeCoverage() );
+        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMakerForWcs100( createAuthenticationWithOneDescribeCoverage() );
 
-        assertThat( elementRules.size(), is( 0 ) );
-    }
-
-    private ElementRule expectedRule( String subRuleText ) {
-        ElementRule subRule = new ElementRule( "name", WCS_1_0_0_NS_URI, subRuleText );
-        return new ElementRule( "CoverageOfferingBrief", WCS_1_0_0_NS_URI, subRule );
+        assertThat( decisionMaker, is( nullValue() ) );
     }
 
     private Authentication createAuthenticationWithOneDescribeCoverage() {

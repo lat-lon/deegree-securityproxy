@@ -78,8 +78,7 @@ public class CapabilitiesFilter {
      * @throws XMLStreamException
      *             if an error occurred during reading or writing the response
      */
-    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse,
-                                    DecisionMaker elementDecisionMaker )
+    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, DecisionMaker elementDecisionMaker )
                             throws IOException, XMLStreamException {
         BufferingXMLEventReader reader = null;
         XMLEventWriter writer = null;
@@ -95,8 +94,7 @@ public class CapabilitiesFilter {
         }
     }
 
-    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer,
-                               DecisionMaker elementDecisionMaker )
+    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer, DecisionMaker elementDecisionMaker )
                             throws XMLStreamException {
         LinkedList<StartElement> visitedElements = new LinkedList<StartElement>();
         while ( reader.hasNext() ) {
@@ -113,8 +111,7 @@ public class CapabilitiesFilter {
     }
 
     private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent currentEvent,
-                                      DecisionMaker elementDecisionMaker,
-                                      LinkedList<StartElement> visitedElements )
+                                      DecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
         LOG.debug( "Found StartElement " + currentEvent );
         if ( ignoreElement( reader, currentEvent, elementDecisionMaker, visitedElements ) ) {

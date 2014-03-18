@@ -47,7 +47,8 @@ import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEve
 import org.deegree.securityproxy.wcs.responsefilter.capabilities.DecisionMaker;
 
 /**
- * TODO add class documentation here
+ * An implementation of the {@link DecisionMaker} using a list of blacklist text values which are not ignored, when
+ * elements with the same name/namspace and sub element are ignored.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -105,15 +106,30 @@ public class BlackListDecisionMaker implements DecisionMaker {
             if ( matchedSubElement == null )
                 return false;
 
-            if ( elementTextIsNotBlacklisted( matchedSubElement ) )
+            if ( elementTextIsNotBlacklisted( reader, matchedSubElement ) )
                 return true;
 
         }
         return false;
     }
 
-    private boolean elementTextIsNotBlacklisted( StartElement matchedSubElement ) {
-        return !blackListTextValues.contains( matchedSubElement.asCharacters().getData() );
+    private boolean elementTextIsNotBlacklisted( BufferingXMLEventReader reader, StartElement matchedSubElement )
+                            throws XMLStreamException {
+        String elementText = retrieveElementText( reader, matchedSubElement );
+        return !blackListTextValues.contains( elementText );
+    }
+
+    private String retrieveElementText( BufferingXMLEventReader reader, XMLEvent event )
+                            throws XMLStreamException {
+        Iterator<XMLEvent> peekIterator = reader.retrievePeekIterator( event );
+        XMLEvent peeked = skipCurrentEvent( event, peekIterator );
+        while ( endElementIsNotReached( peeked ) ) {
+            if ( peeked.isCharacters() ) {
+                return peeked.asCharacters().getData();
+            }
+            peeked = peekIterator.next();
+        }
+        return null;
     }
 
     private StartElement retrieveMatchingSubElement( BufferingXMLEventReader reader, XMLEvent event ) {
@@ -124,9 +140,9 @@ public class BlackListDecisionMaker implements DecisionMaker {
             if ( peeked.isStartElement() ) {
                 if ( isPrimaryDescendantOfCurrentElement( depth ) ) {
                     StartElement matchedStartElement = peeked.asStartElement();
-                    boolean matchesElementRule = isNameMatching( matchedStartElement, subElementName,
-                                                                 subElementNamespace );
-                    if ( matchesElementRule )
+                    boolean matchesSubElement = isNameMatching( matchedStartElement, subElementName,
+                                                                subElementNamespace );
+                    if ( matchesSubElement )
                         return matchedStartElement;
                 }
                 depth++;
@@ -144,6 +160,17 @@ public class BlackListDecisionMaker implements DecisionMaker {
 
     private boolean isPrimaryDescendantOfCurrentElement( int depth ) {
         return depth == 0;
+    }
+
+    private boolean endElementIsNotReached( XMLEvent peeked ) {
+        return !peeked.isEndElement();
+    }
+
+    private XMLEvent skipCurrentEvent( XMLEvent event, Iterator<XMLEvent> peekIterator ) {
+        XMLEvent peeked = peekIterator.next();
+        if ( peeked == event )
+            peeked = peekIterator.next();
+        return peeked;
     }
 
     private void checkParameters( String elementToSkipName, String subElementName, List<String> blackListTextValues ) {

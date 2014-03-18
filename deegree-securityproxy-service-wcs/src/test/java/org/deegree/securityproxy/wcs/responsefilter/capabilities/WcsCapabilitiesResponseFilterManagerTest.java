@@ -128,6 +128,19 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
+    public void testFilterResponseWithAllPermissionShouldFilterResponse()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "wcs_1_0_0.xml" );
+        WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
+        Authentication authentication = createAuthenticationWithAllCoverages();
+        wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0.xml" ) ) );
+    }
+
+    @Test
     public void testFilterResponseWithApplicablePermissionShouldFilterResponse()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
@@ -141,7 +154,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithoutApplicablePermissionShouldNotFilterResponse()
+    public void testFilterResponseWithoutApplicablePermissionShouldFilterResponseCompletly()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
@@ -150,7 +163,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         Authentication authentication = createAuthenticationWithUnknownCoverage();
         wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0.xml" ) ) );
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0-FilteredComplete.xml" ) ) );
     }
 
     @Test
@@ -220,6 +233,15 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     private Authentication createAuthenticationWithKnownCoverage() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( "GetCoverage", COVERAGE_NAME ) );
+        return mockAuthentication( authorities );
+    }
+
+    private Authentication createAuthenticationWithAllCoverages() {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add( createRasterPermission( "GetCoverage", COVERAGE_NAME ) );
+        authorities.add( createRasterPermission( "GetCoverage", "123_6788" ) );
+        authorities.add( createRasterPermission( "GetCoverage", "testdata_raw" ) );
+        authorities.add( createRasterPermission( "GetCoverage", "567_8765" ) );
         return mockAuthentication( authorities );
     }
 

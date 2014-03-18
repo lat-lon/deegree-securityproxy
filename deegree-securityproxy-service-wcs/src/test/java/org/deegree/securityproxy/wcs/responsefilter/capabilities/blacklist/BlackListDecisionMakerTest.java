@@ -120,7 +120,7 @@ public class BlackListDecisionMakerTest {
         BlackListDecisionMaker blackListDecisionMaker = new BlackListDecisionMaker( "e2", "http://text.de", "b1",
                                                                                     "http://text.de",
                                                                                     singletonList( TEXT_VALUE ) );
-        XMLEvent event = mockEvent( true, "zzz2", "http://text.de", "test" );
+        XMLEvent event = mockStartEvent( "zzz2", "http://text.de", "test" );
         boolean ignore = blackListDecisionMaker.ignore( mockXmlEventReader(), event, mockVisitedElements() );
 
         assertThat( ignore, is( false ) );
@@ -132,27 +132,35 @@ public class BlackListDecisionMakerTest {
         BlackListDecisionMaker blackListDecisionMaker = new BlackListDecisionMaker( "e2", "http://text.de", "b1",
                                                                                     "http://text.de",
                                                                                     singletonList( TEXT_VALUE ) );
-        XMLEvent event = mockEvent( true, "e2", "http://text.de", "test" );
+        XMLEvent event = mockStartEvent( "e2", "http://text.de", "test" );
         boolean ignore = blackListDecisionMaker.ignore( mockXmlEventReader(), event, mockVisitedElements() );
 
         assertThat( ignore, is( false ) );
     }
 
     private XMLEvent mockCurrentEvent() {
-        return mockEvent( true, ELEMENT_TO_FILTER_NAME, ELEMENT_TO_FILTER_NAMESPACE_URI, "test" );
+        return mockStartEvent( ELEMENT_TO_FILTER_NAME, ELEMENT_TO_FILTER_NAMESPACE_URI, "test" );
     }
 
     @SuppressWarnings("unchecked")
     private BufferingXMLEventReader mockXmlEventReader() {
         BufferingXMLEventReader mock = mock( BufferingXMLEventReader.class );
-        Iterator<XMLEvent> iterator = mock( Iterator.class );
-        XMLEvent xmlEvent1 = mockEvent( false, "name", null, null );
-        XMLEvent xmlEvent2 = mockEvent( true, SUB_ELEMENT_NAME, SUB_ELEMENT_NAMESPACE_URI, TEXT_VALUE );
-        XMLEvent xmlEvent3 = mockEvent( false, SUB_ELEMENT_NAME, SUB_ELEMENT_NAMESPACE_URI, TEXT_VALUE );
-        when( iterator.next() ).thenReturn( xmlEvent1, xmlEvent2, xmlEvent3 );
-        when( iterator.hasNext() ).thenReturn( true, true, true, false );
-        when( mock.retrievePeekIterator( any( XMLEvent.class ) ) ).thenReturn( iterator );
+        Iterator<XMLEvent> mockIteratorFirst = mockIterator();
+        Iterator<XMLEvent> mockIteratorSecond = mockIterator();
+        when( mock.retrievePeekIterator( any( XMLEvent.class ) ) ).thenReturn( mockIteratorFirst, mockIteratorSecond );
         return mock;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Iterator<XMLEvent> mockIterator() {
+        Iterator<XMLEvent> iterator = mock( Iterator.class );
+        XMLEvent xmlEvent1 = mockStartEvent( SUB_ELEMENT_NAME, SUB_ELEMENT_NAMESPACE_URI, TEXT_VALUE );
+        XMLEvent xmlEvent2 = mockCharacterEvent( TEXT_VALUE );
+        XMLEvent xmlEvent3 = mockEndEvent();
+        XMLEvent xmlEvent4 = mockEndEvent();
+        when( iterator.next() ).thenReturn( xmlEvent1, xmlEvent2, xmlEvent3, xmlEvent4 );
+        when( iterator.hasNext() ).thenReturn( true, true, true, true, false );
+        return iterator;
     }
 
     @SuppressWarnings("unchecked")
@@ -160,9 +168,10 @@ public class BlackListDecisionMakerTest {
         return mock( LinkedList.class );
     }
 
-    private XMLEvent mockEvent( boolean isStart, String elementName, String namespaceUri, String elementValue ) {
+    private XMLEvent mockStartEvent( String elementName, String namespaceUri, String elementValue ) {
         XMLEvent event = mock( XMLEvent.class );
-        when( event.isStartElement() ).thenReturn( isStart );
+        when( event.isStartElement() ).thenReturn( true );
+        when( event.isEndElement() ).thenReturn( false );
         StartElement startElement = mock( StartElement.class );
         QName elementQName = new QName( namespaceUri, elementName );
         when( startElement.getName() ).thenReturn( elementQName );
@@ -172,6 +181,24 @@ public class BlackListDecisionMakerTest {
             when( startElement.asCharacters() ).thenReturn( chars );
         }
         when( event.asStartElement() ).thenReturn( startElement );
+        return event;
+    }
+
+    private XMLEvent mockCharacterEvent( String textValue ) {
+        XMLEvent event = mock( XMLEvent.class );
+        when( event.isCharacters() ).thenReturn( true );
+
+        Characters chars = mock( Characters.class );
+        when( chars.getData() ).thenReturn( textValue );
+        when( event.asCharacters() ).thenReturn( chars );
+
+        return event;
+    }
+
+    private XMLEvent mockEndEvent() {
+        XMLEvent event = mock( XMLEvent.class );
+        when( event.isStartElement() ).thenReturn( false );
+        when( event.isEndElement() ).thenReturn( true );
         return event;
     }
 
