@@ -128,7 +128,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithAllPermissionShouldFilterResponse()
+    public void testFilterResponseWithAllPermissionShouldNotFilterResponse()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
