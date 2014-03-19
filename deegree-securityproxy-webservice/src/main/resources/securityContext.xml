@@ -10,15 +10,20 @@
     <custom-filter position="LAST" ref="securityFilter" />
   </http>
 
-<!--
-  Replaced by bean 'headerAuthenticationManager' configured in application.xml    
-  <authentication-manager alias="headerAuthenticationManager">
-    <authentication-provider ref="headerAuthenticationProvider" />
-  </authentication-manager>
- -->
- 
+  <!-- 
+  Replaced by bean 'headerAuthenticationManager' configured in application.xml 
+  <authentication-manager alias="headerAuthenticationManager"> 
+    <authentication-provider ref="headerAuthenticationProvider" /> 
+  </authentication-manager> 
+  -->
+
   <authentication-manager alias="basicAuthenticationManager">
-    <authentication-provider user-service-ref="userService" />
+    <authentication-provider user-service-ref="userService">
+      <password-encoder ref="encoder" />
+    </authentication-provider>
   </authentication-manager>
+
+  <beans:bean id="encoder"
+    class="org.springframework.security.authentication.encoding.Md5PasswordEncoder" />
 
 </beans:beans>
