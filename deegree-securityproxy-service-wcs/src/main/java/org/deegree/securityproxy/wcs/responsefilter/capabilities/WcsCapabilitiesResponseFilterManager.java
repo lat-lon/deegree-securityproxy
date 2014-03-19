@@ -99,7 +99,7 @@ public class WcsCapabilitiesResponseFilterManager implements ResponseFilterManag
                 DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMakerForWcs100( auth );
                 if ( decisionMaker == null ) {
                     copyBufferedStream( servletResponse );
-                    return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE, false );
+                    return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE );
                 } else {
                     capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
                     return new ResponseCapabilitiesReport( SUCCESSFUL_FILTERING_MESSAGE, true );

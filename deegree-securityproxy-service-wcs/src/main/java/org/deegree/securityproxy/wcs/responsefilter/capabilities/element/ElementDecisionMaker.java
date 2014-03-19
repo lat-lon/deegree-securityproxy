@@ -77,7 +77,7 @@ public class ElementDecisionMaker implements DecisionMaker {
     /**
      * Instantiates a {@link ElementDecisionMaker} with multiple rules.
      * 
-     * @param elementRule
+     * @param elementRules
      *            never <code>null</code>
      * @throws IllegalArgumentException
      *             if the elementRule is <code>null</code>
@@ -90,10 +90,7 @@ public class ElementDecisionMaker implements DecisionMaker {
     @Override
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
                             throws XMLStreamException {
-        if ( event.isStartElement() && atLeastOneElementRuleIsMatching( reader, event, visitedElements ) ) {
-            return true;
-        }
-        return false;
+        return event.isStartElement() && atLeastOneElementRuleIsMatching( reader, event, visitedElements );
     }
 
     private boolean atLeastOneElementRuleIsMatching( BufferingXMLEventReader reader, XMLEvent event,
