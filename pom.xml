@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.4</version>
+  <version>1.3-SNAPSHOT</version>
   <name>deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
