@@ -33,59 +33,41 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.wcs.responsefilter.clipping;
+
+import java.util.List;
+
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Encapsulates OWS request.
+ * Contains method to retrieve the clipping geometry from a list of {@link GeometryFilterInfo}s
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class OwsRequest {
-
-    private final String serviceType;
-
-    private final OwsServiceVersion serviceVersion;
-
-    private final String operationType;
+interface GeometryRetriever {
 
     /**
-     * Instantiates a new {@link OwsRequest}.
+     * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by
+     * the given coverage name. The algorithm to detect or calculate the geometry is left to the implementations.
      * 
-     * @param operationType
-     *            the type of the operation, never <code>null</code>
-     * @param serviceVersion
-     *            the version of the service, never <code>null</code>
-     * @param serviceType
-     *            the type of the service (wms, wcs, ...), never <code>null</code>
+     * @param coverageName
+     *            the name of the coverage the geometries should be retrieved for, never <code>null</code>
+     * @param geometryFilterInfos
+     *            the list of {@link GeometryFilterInfo}s containing the geometries, never <code>null</code> may be
+     *            empty
+     * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
+     * @throws IllegalArgumentException
+     *             if one of the parameters <code>null</code>
+     * @throws ParseException
+     *             if the geometry could not be parsed or calculated
      */
-    public OwsRequest( String serviceType, String operationType, OwsServiceVersion serviceVersion ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
-        this.serviceType = serviceType;
-    }
-
-    /**
-     * @return the serviceType in lower cases(wms, wcs, ...), never <code>null</code>
-     */
-    public String getServiceType() {
-        return serviceType.toLowerCase();
-    }
-
-    /**
-     * @return the operationType, never <code>null</code>
-     */
-    public String getOperationType() {
-        return operationType;
-    }
-
-    /**
-     * @return the serviceVersion, never <code>null</code>
-     */
-    public OwsServiceVersion getServiceVersion() {
-        return serviceVersion;
-    }
+    Geometry retrieveGeometry( String coverageName, List<GeometryFilterInfo> geometryFilterInfos )
+                            throws IllegalArgumentException, ParseException;
 
 }

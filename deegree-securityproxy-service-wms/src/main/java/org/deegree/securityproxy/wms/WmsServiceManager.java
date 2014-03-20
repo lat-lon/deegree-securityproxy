@@ -1,6 +1,5 @@
 package org.deegree.securityproxy.wms;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +14,7 @@ import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
@@ -64,8 +64,8 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
                                                 Authentication authentication, OwsRequest owsRequest )
-                            throws IOException {
-        return null;
+                            throws ResponseFilterException {
+        return createEmptyFilterReport();
     }
 
     @Override
@@ -78,6 +78,20 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
         @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
         return "wms".equalsIgnoreCase( kvpMap.get( "service" )[0] );
+    }
+
+    private ResponseFilterReport createEmptyFilterReport() {
+        return new ResponseFilterReport() {
+            @Override
+            public boolean isFiltered() {
+                return false;
+            }
+
+            @Override
+            public String getMessage() {
+                return "Response was not filtered! No response filter manager was found!";
+            }
+        };
     }
 
 }

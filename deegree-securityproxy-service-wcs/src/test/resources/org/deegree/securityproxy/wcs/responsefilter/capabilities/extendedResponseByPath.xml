@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<A xmlns="http://extended.de">
+  <B>
+    <c>ctext</c>
+    <d>dtext</d>
+    <e>
+      <f>
+        <g>idG</g>
+      </f>
+      <f>
+        <h>
+          <i>idH</i>
+        </h>
+      </f>
+      <f>
+        <f att="eins">
+          <j>
+            <k>idK1</k>
+          </j>
+        </f>
+        <f att="zwei">
+          <j>
+            <k>idK1</k>
+          </j>
+        </f>
+        <f>
+          <l>idL</l>
+        </f>
+      </f>
+    </e>
+  </B>
+</A>

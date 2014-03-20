@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.1</version>
+  <version>1.2.4</version>
   <name>deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
@@ -39,11 +39,11 @@
         <artifactId>deegree-securityproxy-service-wcs</artifactId>
         <version>${project.version}</version>
       </dependency>
-        <dependency>
-            <groupId>org.deegree</groupId>
-            <artifactId>deegree-securityproxy-service-wms</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-service-wms</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -55,6 +55,12 @@
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>1.9.5</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.xmlmatchers</groupId>
+        <artifactId>xml-matchers</artifactId>
+        <version>1.0-RC1</version>
         <scope>test</scope>
       </dependency>
       <dependency>

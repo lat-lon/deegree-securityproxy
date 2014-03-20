@@ -33,59 +33,68 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.wcs.responsefilter.capabilities.element;
+
+import javax.xml.namespace.QName;
 
 /**
- * Encapsulates OWS request.
+ * Encapsulates an element, may contain one attribute and text to check as path hierarchy.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class OwsRequest {
+public class ElementPathStep {
 
-    private final String serviceType;
+    private final QName elementName;
 
-    private final OwsServiceVersion serviceVersion;
+    private final String attributeValue;
 
-    private final String operationType;
+    private final QName attributeName;
 
     /**
-     * Instantiates a new {@link OwsRequest}.
+     * @param elementName
+     *            never <code>null</code>
+     */
+    public ElementPathStep( QName elementName ) {
+        this( elementName, null, null );
+    }
+
+    /**
      * 
-     * @param operationType
-     *            the type of the operation, never <code>null</code>
-     * @param serviceVersion
-     *            the version of the service, never <code>null</code>
-     * @param serviceType
-     *            the type of the service (wms, wcs, ...), never <code>null</code>
+     * @param elementName
+     *            never <code>null</code>
+     * @param attributeName
+     *            may be <code>null</code>
+     * @param attributeValue
+     *            may be <code>null</code>, but not when attributeName is not <code>null</code>
      */
-    public OwsRequest( String serviceType, String operationType, OwsServiceVersion serviceVersion ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
-        this.serviceType = serviceType;
+    public ElementPathStep( QName elementName, QName attributeName, String attributeValue ) {
+        this.elementName = elementName;
+        this.attributeName = attributeName;
+        this.attributeValue = attributeValue;
     }
 
     /**
-     * @return the serviceType in lower cases(wms, wcs, ...), never <code>null</code>
+     * @return the elementName never <code>null</code>
      */
-    public String getServiceType() {
-        return serviceType.toLowerCase();
+    public QName getElementName() {
+        return elementName;
     }
 
     /**
-     * @return the operationType, never <code>null</code>
+     * @return the attributeName may be <code>null</code>
      */
-    public String getOperationType() {
-        return operationType;
+    public QName getAttributeName() {
+        return attributeName;
     }
 
     /**
-     * @return the serviceVersion, never <code>null</code>
+     * @return the attributeValue may be <code>null</code> if attributeName is <code>null</code>
      */
-    public OwsServiceVersion getServiceVersion() {
-        return serviceVersion;
+    public String getAttributeValue() {
+        return attributeValue;
     }
 
 }

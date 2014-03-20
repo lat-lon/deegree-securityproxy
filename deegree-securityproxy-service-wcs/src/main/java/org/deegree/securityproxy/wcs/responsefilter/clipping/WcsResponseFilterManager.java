@@ -33,11 +33,13 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter;
+package org.deegree.securityproxy.wcs.responsefilter.clipping;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
+import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.copyBufferedStream;
+import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -56,6 +58,7 @@ import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
@@ -125,7 +128,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     @Override
     public ResponseClippingReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                   Authentication auth )
-                            throws IOException {
+                            throws ResponseFilterException {
         checkParameters( servletResponse, request );
         WcsRequest wcsRequest = (WcsRequest) request;
         if ( isGetCoverageRequest( wcsRequest ) ) {
@@ -154,8 +157,16 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
     }
 
     @Override
-    public <T extends OwsRequest> boolean supports( Class<T> clazz ) {
-        return WcsRequest.class.equals( clazz );
+    public boolean canBeFiltered( OwsRequest request ) {
+        checkIfRequestEqualsNull( request );
+        if ( WcsRequest.class.equals( request.getClass() ) )
+            return isGetCoverageRequest( (WcsRequest) request );
+        return false;
+    }
+
+    private void checkIfRequestEqualsNull( OwsRequest request ) {
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
     }
 
     private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
@@ -163,22 +174,9 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
             throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
         if ( request == null )
             throw new IllegalArgumentException( "Parameter request may not be null!" );
-        if ( !supports( request.getClass() ) )
+        if ( !WcsRequest.class.equals( request.getClass() ) )
             throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
                                                 + " is not supported!" );
-    }
-
-    private boolean isException( StatusCodeResponseBodyWrapper servletResponse )
-                            throws IOException {
-        if ( servletResponse.getStatus() != 200 )
-            return true;
-        InputStream bufferedStream = servletResponse.getBufferedStream();
-        try {
-            String bodyAsString = IOUtils.toString( bufferedStream );
-            return bodyAsString.contains( "ServiceExceptionReport" );
-        } finally {
-            closeQuietly( bufferedStream );
-        }
     }
 
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
@@ -209,11 +207,6 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
         } catch ( IOException e ) {
             LOG.error( "An error occurred during writing the exception response!", e );
         }
-    }
-
-    private void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
-                            throws IOException {
-        servletResponse.copyBufferedStreamToRealStream();
     }
 
     private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse,

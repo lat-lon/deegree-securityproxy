@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<A xmlns:sp="http://simple.de" xmlns:sp1="http://simple1.de">
+  <B>
+    <c>ctext</c>
+    <sp1:d />
+    <sp1:d datt="d_att_ext">2nddtext</sp1:d>
+    <sp:e>
+      <f>ftext</f>
+    </sp:e>
+  </B>
+</A>

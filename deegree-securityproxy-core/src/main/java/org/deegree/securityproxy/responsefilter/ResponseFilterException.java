@@ -33,59 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.responsefilter;
 
 /**
- * Encapsulates OWS request.
+ * Indicates an error during filtering the response.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class OwsRequest {
+public class ResponseFilterException extends Exception {
 
-    private final String serviceType;
+    private static final long serialVersionUID = -2244209792001815026L;
 
-    private final OwsServiceVersion serviceVersion;
-
-    private final String operationType;
-
-    /**
-     * Instantiates a new {@link OwsRequest}.
-     * 
-     * @param operationType
-     *            the type of the operation, never <code>null</code>
-     * @param serviceVersion
-     *            the version of the service, never <code>null</code>
-     * @param serviceType
-     *            the type of the service (wms, wcs, ...), never <code>null</code>
-     */
-    public OwsRequest( String serviceType, String operationType, OwsServiceVersion serviceVersion ) {
-        this.operationType = operationType;
-        this.serviceVersion = serviceVersion;
-        this.serviceType = serviceType;
+    public ResponseFilterException( Throwable cause ) {
+        super( cause );
     }
 
-    /**
-     * @return the serviceType in lower cases(wms, wcs, ...), never <code>null</code>
-     */
-    public String getServiceType() {
-        return serviceType.toLowerCase();
-    }
-
-    /**
-     * @return the operationType, never <code>null</code>
-     */
-    public String getOperationType() {
-        return operationType;
-    }
-
-    /**
-     * @return the serviceVersion, never <code>null</code>
-     */
-    public OwsServiceVersion getServiceVersion() {
-        return serviceVersion;
+    public ResponseFilterException( String message, Throwable cause ) {
+        super( message, cause );
     }
 
 }

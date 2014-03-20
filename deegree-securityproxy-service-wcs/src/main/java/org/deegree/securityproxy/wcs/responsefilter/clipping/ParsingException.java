@@ -33,41 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter;
-
-import java.util.List;
-
-import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
+package org.deegree.securityproxy.wcs.responsefilter.clipping;
 
 /**
- * Contains method to retrieve the clipping geometry from a list of {@link GeometryFilterInfo}s
+ * Indicates that an exception occurred during parsing a geometry.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-interface GeometryRetriever {
+public class ParsingException extends Exception {
 
-    /**
-     * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by
-     * the given coverage name. The algorithm to detect or calculate the geometry is left to the implementations.
-     * 
-     * @param coverageName
-     *            the name of the coverage the geometries should be retrieved for, never <code>null</code>
-     * @param geometryFilterInfos
-     *            the list of {@link GeometryFilterInfo}s containing the geometries, never <code>null</code> may be
-     *            empty
-     * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
-     * @throws IllegalArgumentException
-     *             if one of the parameters <code>null</code>
-     * @throws ParseException
-     *             if the geometry could not be parsed or calculated
-     */
-    Geometry retrieveGeometry( String coverageName, List<GeometryFilterInfo> geometryFilterInfos )
-                            throws IllegalArgumentException, ParseException;
+    private static final long serialVersionUID = -4059362131801392948L;
+
+    public ParsingException( Throwable t ) {
+        super( t );
+    }
 
 }

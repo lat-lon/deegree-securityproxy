@@ -33,22 +33,43 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter;
+package org.deegree.securityproxy.wcs.responsefilter.clipping;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Indicates that an exception occurred during parsing a geometry.
+ * Contains method to clip images.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ParsingException extends Exception {
+public interface ImageClipper {
 
-    private static final long serialVersionUID = -4059362131801392948L;
-
-    public ParsingException( Throwable t ) {
-        super( t );
-    }
+    /**
+     * Clips the passed image as defined in the clipping area.
+     * 
+     * @param coverageToClip
+     *            contains the coverage to clip - must contain an image! never <code>null</code>
+     * @param visibleArea
+     *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
+     * @param destination
+     *            {@link OutputStream} to write the image, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             if one one the parameter is <code>null</code>
+     * @throws ClippingException
+     *             if an error occurred during clipping
+     * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
+     *         geometry
+     */
+    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
+                                                  OutputStream destination )
+                            throws IllegalArgumentException, ClippingException;
 
 }

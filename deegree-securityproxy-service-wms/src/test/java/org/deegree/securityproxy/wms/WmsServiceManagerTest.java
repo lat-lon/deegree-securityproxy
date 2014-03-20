@@ -1,7 +1,7 @@
 package org.deegree.securityproxy.wms;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -19,7 +19,6 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -84,7 +83,7 @@ public class WmsServiceManagerTest {
         ResponseFilterReport responseFilterReport = wmsServiceManager.filterResponse( wrappedResponse, authentication,
                                                                                       owsRequest );
 
-        assertThat( responseFilterReport, nullValue() );
+        assertThat( responseFilterReport, notNullValue() );
     }
 
     @Test
@@ -92,7 +91,7 @@ public class WmsServiceManagerTest {
                             throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wmsServiceManager.retrieveServiceExceptionWrapper();
 
-        assertThat( retrievedServiceExceptionWrapper, CoreMatchers.is( serviceExceptionWrapper ) );
+        assertThat( retrievedServiceExceptionWrapper, is( serviceExceptionWrapper ) );
     }
 
     @Test

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter;
+package org.deegree.securityproxy.wcs.responsefilter.clipping;
 
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_COMPRESSION;
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_RESOLUTION_UNIT;
@@ -61,8 +61,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadataNode;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.deegree.securityproxy.wcs.responsefilter.ClippingException;
-import org.deegree.securityproxy.wcs.responsefilter.GeotiffClipper;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
@@ -523,7 +521,7 @@ public class GeotiffClipperTest {
     }
 
     private File createExceptionFile() {
-        return new File( GeotiffClipperTest.class.getResource( "service_exception.xml" ).getPath() );
+        return new File( GeotiffClipperTest.class.getResource( "../service_exception.xml" ).getPath() );
     }
 
     private InputStream createInputStreamFrom( File file )

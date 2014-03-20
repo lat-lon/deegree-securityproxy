@@ -33,43 +33,38 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter;
+package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.List;
 
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-
-import com.vividsolutions.jts.geom.Geometry;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 /**
- * Contains method to clip images.
+ * Implementations can decide if an xml element, attribute ... should be ignored or not.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ImageClipper {
+public interface DecisionMaker {
 
     /**
-     * Clips the passed image as defined in the clipping area.
+     * Checks if the passed {@link XMLEvent} should be ignored.
      * 
-     * @param coverageToClip
-     *            contains the coverage to clip - must contain an image! never <code>null</code>
-     * @param visibleArea
-     *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
-     * @param destination
-     *            {@link OutputStream} to write the image, never <code>null</code>
-     * @throws IllegalArgumentException
-     *             if one one the parameter is <code>null</code>
-     * @throws ClippingException
-     *             if an error occurred during clipping
-     * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
-     *         geometry
+     * @param reader
+     *            the event reader currently read, never <code>null</code>
+     * @param event
+     *            the current event to filter, never <code>null</code>
+     * @param visitedElements
+     *            a list of already visited start elements, never <code>null</code>
+     * @return <code>true</code> if the passed event should be skipped, <code>false</code> otherwise
+     * @throws XMLStreamException
+     *             -if there is an error with the underlying XML
      */
-    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
-                                                  OutputStream destination )
-                            throws IllegalArgumentException, ClippingException;
+    boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
+                            throws XMLStreamException;
 
 }

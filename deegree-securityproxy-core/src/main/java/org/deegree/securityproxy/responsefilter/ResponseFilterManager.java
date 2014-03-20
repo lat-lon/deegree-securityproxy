@@ -35,8 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter;
 
-import java.io.IOException;
-
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -60,29 +58,31 @@ public interface ResponseFilterManager {
      * @param servletResponse
      *            the response to filter, the response may be adjusted during filtering, never <code>null</code>
      * @param request
-     *            parsed request, never <code>null</code>; If not supported (check with {@link #supports(Class)}) an
-     *            {@link IllegalArgumentException} is thrown
+     *            parsed request, never <code>null</code>; If not supported an {@link IllegalArgumentException} is
+     *            thrown
      * @param auth
      *            may be <code>null</code>
      * @return the report containing detailed information about the filtering, never <code>null</code>
      * @throws IllegalArgumentException
      *             if one of the required arguments is <code>null</code> or the passed {@link OwsRequest} is not
      *             supported
-     * @throws IOException
-     *             if an I/O error occurres during writing in the real output stream
+     * @throws ResponseFilterException
+     *             if an error occured during writing in the real output stream
      */
     ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                          Authentication auth )
-                            throws IllegalArgumentException, IOException;
+                            throws IllegalArgumentException, ResponseFilterException;
 
     /**
-     * Checks if the passed class can be filtered or not.
+     * Checks if the passed request can be filtered or not.
      * 
-     * @param clazz
+     * @param request
      *            to check if can handled by this {@link ResponseFilterManager}
-     * @return true if the {@link ResponseFilterManager} can handle {@link OwsRequest} implementations of the passed
-     *         class, false otherwise or if clazz parameter is <code>null</code>
+     * @return true if the {@link ResponseFilterManager} can handle the passed request, false otherwise
+     * @throws IllegalArgumentException
+     *             if the passed {@link OwsRequest} is <code>null</code>
      */
-    <T extends OwsRequest> boolean supports( Class<T> clazz );
+    boolean canBeFiltered( OwsRequest request )
+                            throws IllegalArgumentException;
 
 }

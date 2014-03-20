@@ -3,7 +3,7 @@ package org.deegree.securityproxy.responsefilter.logging;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Encapsulates detailed information about the clipping result (geometry as well as failures)
+ * Encapsulates detailed information about the clipping result (geometry as well as failures).
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
