@@ -1,5 +1,5 @@
-deegree-securityproxy
-=====================
+deegree security proxy
+======================
 
 The deegree security proxy is lightweight security framework for protecting OGC Web Services against unauthorised access using the [Spring Security](http://projects.spring.io/spring-security/) framework. 
 
