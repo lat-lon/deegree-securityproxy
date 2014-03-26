@@ -22,5 +22,7 @@ For community support, please use the deegree mailing-list. More information how
 
 
 # Contributing
-
 Contributions are very welcome. Please get in contact with us via the mailing-list.
+
+# License
+deegree security proxy is distributed under the GNU Lesser General Public License (LGPL).
