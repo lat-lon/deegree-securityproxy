@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <bean id="wmsServiceManager" class="org.deegree.securityproxy.wms.WmsServiceManager">
-    <constructor-arg ref="wmsRequestParser"/>
-    <constructor-arg ref="wmsRequestAuthorizationManager"/>
+    <constructor-arg ref="wmsRequestParser" />
+    <constructor-arg ref="wmsRequestAuthorizationManager" />
+    <constructor-arg ref="wmsResponseFilterManagers" />
     <constructor-arg ref="wmsServiceExceptionWrapper" />
   </bean>
 
-  <bean id="wmsRequestAuthorizationManager"
-        class="org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager"/>
+  <bean id="wmsRequestAuthorizationManager" class="org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager" />
 
-  <bean id="wmsRequestParser" class="org.deegree.securityproxy.wms.request.WmsRequestParser"/>
+  <bean id="wmsRequestParser" class="org.deegree.securityproxy.wms.request.WmsRequestParser" />
 
   <bean id="wmsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
     <constructor-arg value="${wms_exception_file_path}" />
     <constructor-arg value="${wms_authentication_denied_status_code}" />
     <constructor-arg value="${wms_authorization_denied_status_code}" />
   </bean>
-  
+
+  <util:list id="wmsResponseFilterManagers" list-class="java.util.LinkedList"
+    value-type="org.deegree.securityproxy.responsefilter.ResponseFilterManager">
+  </util:list>
+
 </beans>
