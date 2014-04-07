@@ -1,11 +1,11 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SERVICE_EXCEPTION_MSG;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.SERVICE_EXCEPTION_MSG;
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -224,11 +224,11 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     private WcsRequest createWcsGetCapabilitiesRequest() {
-        return new WcsRequest( GETCAPABILITIES, VERSION_110, SERVICE_NAME );
+        return new WcsRequest( GETCAPABILITIES, VERSION_100, SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequest() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME ), SERVICE_NAME );
+        return new WcsRequest( GETCOVERAGE, VERSION_100, Collections.singletonList( COVERAGE_NAME ), SERVICE_NAME );
     }
 
     private Authentication createAuthenticationWithKnownCoverage() {

@@ -33,43 +33,30 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.capabilities;
-
-import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
-import org.deegree.securityproxy.wcs.request.WcsRequest;
+import org.springframework.security.core.Authentication;
 
 /**
- * {@link ResponseFilterManager} filtering capabilities documents by user permissions.
+ * Creates the {@link DecisionMaker} depends on the request and users permissions.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author <a href="mailto:goltz@lat-lon.de">Dirk Stenger</a>
- * @author last edited by: $Author: stenger $
+ * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsCapabilitiesResponseFilterManager extends AbstractCapabilitiesResponseFilterManager {
+public interface DecisionMakerCreator {
 
     /**
-     * @param capabilitiesFilter
-     *            used to filter the capabilties, never <code>null</code>
+     * Creates a {@link DecisionMaker} for the requested capabilities, filtering the capabilities by user permissions.
+     * 
+     * @param owsRequest
+     *            capabilities request, never <code>null</code>
+     * @param authentication
+     *            containing the user rules to use as filters, never <code>null</code>
+     * @return the {@link DecisionMaker} or <code>null</code>, if filtering is not required
      */
-    public WcsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter ) {
-        super( capabilitiesFilter, new WcsDecisionMakerCreator() );
-    }
-
-    @Override
-    protected boolean isCorrectRequestType( OwsRequest owsRequest ) {
-        return WcsRequest.class.equals( owsRequest.getClass() );
-    }
-
-    @Override
-    protected boolean isGetCapabilitiesRequest( OwsRequest owsRequest ) {
-        return GETCAPABILITIES.equals( owsRequest.getOperationType() );
-    }
+    DecisionMaker createDecisionMaker( OwsRequest owsRequest, Authentication authentication );
 
 }

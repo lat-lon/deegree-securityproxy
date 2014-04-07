@@ -40,8 +40,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
 import org.springframework.security.core.Authentication;
@@ -55,7 +57,7 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Wcs100DecisionMakerCreator {
+public class WcsDecisionMakerCreator implements DecisionMakerCreator {
 
     private static final OwsServiceVersion VERSION_1_0_0 = new OwsServiceVersion( 1, 0, 0 );
 
@@ -65,14 +67,9 @@ public class Wcs100DecisionMakerCreator {
 
     private static final String SUB_ELEMENT_NAME = "name";
 
-    /**
-     * Creates a {@link DecisionMaker} for WCS 1.0.0 capabilities
-     * 
-     * @param authentication
-     *            containing the user rules to use as filters, never <code>null</code>
-     * @return the {@link DecisionMaker} or <code>null</code>, if filtering is not required
-     */
-    public DecisionMaker createDecisionMakerForWcs100( Authentication authentication ) {
+    @Override
+    public DecisionMaker createDecisionMaker( OwsRequest owsRequest, Authentication authentication ) {
+        checkVersion( owsRequest );
         List<String> blackListTextValues = new ArrayList<String>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {
@@ -84,9 +81,15 @@ public class Wcs100DecisionMakerCreator {
         return null;
     }
 
-    private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority grantedAuthority ) {
-        if ( grantedAuthority instanceof RasterPermission ) {
-            RasterPermission permission = (RasterPermission) grantedAuthority;
+    private void checkVersion( OwsRequest owsRequest ) {
+        if ( !VERSION_1_0_0.equals( owsRequest.getServiceVersion() ) )
+            throw new IllegalArgumentException( "Capabilities request for version " + owsRequest.getServiceVersion()
+                                                + " is not supported yet!" );
+    }
+
+    private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority authority ) {
+        if ( authority instanceof RasterPermission ) {
+            RasterPermission permission = (RasterPermission) authority;
             if ( isWcs100GetCoveragePermission( permission ) ) {
                 blackListTextValues.add( permission.getLayerName() );
             }

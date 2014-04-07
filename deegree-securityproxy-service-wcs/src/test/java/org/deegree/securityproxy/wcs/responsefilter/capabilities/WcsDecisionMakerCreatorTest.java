@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,6 +14,8 @@ import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -24,18 +27,19 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class Wcs100DecisionMakerCreatorTest {
+public class WcsDecisionMakerCreatorTest {
 
     private static final String COVERAGE_NAME_1 = "123_6788";
 
     private static final String COVERAGE_NAME_2 = "567_8765";
 
-    private final Wcs100DecisionMakerCreator elementRuleCreator = new Wcs100DecisionMakerCreator();
+    private final WcsDecisionMakerCreator elementRuleCreator = new WcsDecisionMakerCreator();
 
     @Test
     public void testCreateDecisionMakerForWcs100OneGetCoverage()
                             throws Exception {
-        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMakerForWcs100( createAuthenticationWithOneGetCoverage() );
+        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
+                                                                              createAuthenticationWithOneGetCoverage() );
 
         assertThat( decisionMaker, is( notNullValue() ) );
     }
@@ -43,7 +47,8 @@ public class Wcs100DecisionMakerCreatorTest {
     @Test
     public void testCreateDecisionMakerForWcs100TwoGetCoverageOneDescribeCoverage()
                             throws Exception {
-        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMakerForWcs100( createAuthenticationWithTwoGetCoverageOneDescribeCoverage() );
+        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
+                                                                              createAuthenticationWithTwoGetCoverageOneDescribeCoverage() );
 
         assertThat( decisionMaker, is( notNullValue() ) );
     }
@@ -51,9 +56,16 @@ public class Wcs100DecisionMakerCreatorTest {
     @Test
     public void testCreateDecisionMakerForWcs100OneDescribeCoverage()
                             throws Exception {
-        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMakerForWcs100( createAuthenticationWithOneDescribeCoverage() );
+        DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
+                                                                              createAuthenticationWithOneDescribeCoverage() );
 
         assertThat( decisionMaker, is( nullValue() ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateDecisionMakerForWcs130ShouldFail()
+                            throws Exception {
+        elementRuleCreator.createDecisionMaker( mockOwsRequest130(), createAuthenticationWithOneDescribeCoverage() );
     }
 
     private Authentication createAuthenticationWithOneDescribeCoverage() {
@@ -87,4 +99,17 @@ public class Wcs100DecisionMakerCreatorTest {
         return authenticationMock;
     }
 
+    private OwsRequest mockOwsRequest() {
+        return mockOwsRequest( "1.0.0" );
+    }
+
+    private OwsRequest mockOwsRequest130() {
+        return mockOwsRequest( "1.3.0" );
+    }
+
+    private OwsRequest mockOwsRequest( String version ) {
+        OwsRequest request = mock( OwsRequest.class );
+        when( request.getServiceVersion() ).thenReturn( new OwsServiceVersion( version ) );
+        return request;
+    }
 }

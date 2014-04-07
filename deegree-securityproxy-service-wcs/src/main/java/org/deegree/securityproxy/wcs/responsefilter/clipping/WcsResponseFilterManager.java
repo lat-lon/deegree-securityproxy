@@ -37,9 +37,9 @@ package org.deegree.securityproxy.wcs.responsefilter.clipping;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
+import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.copyBufferedStream;
+import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.isException;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.copyBufferedStream;
-import static org.deegree.securityproxy.wcs.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
