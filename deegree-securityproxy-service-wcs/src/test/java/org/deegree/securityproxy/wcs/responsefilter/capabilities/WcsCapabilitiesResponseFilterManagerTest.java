@@ -37,8 +37,9 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -291,7 +292,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     private InputStream retrieveResourceAsStream( String originalXmlFileName ) {
-        return CapabilitiesFilterTest.class.getResourceAsStream( originalXmlFileName );
+        return WcsCapabilitiesResponseFilterManagerTest.class.getResourceAsStream( originalXmlFileName );
     }
 
     private Source expectedXml( String expectedFile ) {

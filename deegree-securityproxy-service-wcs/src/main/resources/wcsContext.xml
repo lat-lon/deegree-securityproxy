@@ -30,7 +30,7 @@
     <constructor-arg value="${clipping_failed_status_code}"/>
   </bean>
 
-  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.wcs.responsefilter.capabilities.CapabilitiesFilter"/>
+  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter"/>
 
   <bean name="capabilitiesResponseFilterManager"
         class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager">

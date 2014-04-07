@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.capabilities.element;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities.element;
 
 import java.util.List;
 

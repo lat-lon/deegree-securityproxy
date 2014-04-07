@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.capabilities.blacklist;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist;
 
 import java.util.Iterator;
 import java.util.List;
@@ -43,8 +43,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEventReader;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.BufferingXMLEventReader;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 
 /**
  * An implementation of the {@link DecisionMaker} using a list of blacklist text values which are not ignored, when

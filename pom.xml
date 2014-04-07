@@ -45,6 +45,11 @@
         <artifactId>deegree-securityproxy-service-wms</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-service-commons</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -229,6 +234,7 @@
     <module>deegree-securityproxy-authentication-ows</module>
     <module>deegree-securityproxy-core</module>
     <module>deegree-securityproxy-webservice</module>
+    <module>deegree-securityproxy-service-commons</module>
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
   </modules>

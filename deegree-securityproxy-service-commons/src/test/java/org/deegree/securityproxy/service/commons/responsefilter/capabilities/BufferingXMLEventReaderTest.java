@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.responsefilter.capabilities;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

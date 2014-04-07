@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.responsefilter.capabilities.blacklist;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist;
 
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
@@ -16,7 +16,7 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEventReader;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.BufferingXMLEventReader;
 import org.junit.Test;
 
 /**

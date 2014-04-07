@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.responsefilter.capabilities.element;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities.element;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
@@ -14,8 +14,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEventReader;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.BufferingXMLEventReader;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.junit.Test;
 
 /**

@@ -52,6 +52,8 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.security.core.Authentication;
 

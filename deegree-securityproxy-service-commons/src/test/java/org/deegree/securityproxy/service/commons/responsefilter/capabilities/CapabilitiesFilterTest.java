@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wcs.responsefilter.capabilities;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
@@ -20,9 +20,9 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementPathStep;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
 import org.junit.Test;
 
 /**

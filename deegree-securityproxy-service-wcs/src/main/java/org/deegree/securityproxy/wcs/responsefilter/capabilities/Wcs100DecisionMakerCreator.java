@@ -41,8 +41,9 @@ import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 

@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.capabilities.element;
+package org.deegree.securityproxy.service.commons.responsefilter.capabilities.element;
 
 import static java.util.Collections.singletonList;
 
@@ -46,8 +46,8 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.BufferingXMLEventReader;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.BufferingXMLEventReader;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 
 /**
  * Decides if an element should be writer or not.
