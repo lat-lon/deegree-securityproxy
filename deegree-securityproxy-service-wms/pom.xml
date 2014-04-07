@@ -15,6 +15,10 @@
     <!-- deegree-securityproxy -->
     <dependency>
       <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-commons</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication</artifactId>
     </dependency>
     <dependency>
