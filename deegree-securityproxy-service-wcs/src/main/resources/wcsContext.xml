@@ -32,9 +32,12 @@
 
   <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter"/>
 
+  <bean id="decisionMakerCreator" class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsDecisionMakerCreator"/>
+  
   <bean name="capabilitiesResponseFilterManager"
         class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager">
     <constructor-arg ref="capabilitiesFilter"/>
+    <constructor-arg ref="decisionMakerCreator"/>
   </bean>
 
   <util:list id="responseFilterManagers" list-class="java.util.LinkedList"

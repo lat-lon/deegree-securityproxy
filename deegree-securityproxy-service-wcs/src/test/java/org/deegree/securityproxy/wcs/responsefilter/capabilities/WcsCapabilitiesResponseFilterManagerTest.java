@@ -38,6 +38,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
@@ -59,20 +60,25 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private final CapabilitiesFilter mockedCapabilitiesFilter = mock( CapabilitiesFilter.class );
 
+    private final DecisionMakerCreator decisionMakerCreator = new WcsDecisionMakerCreator();
+
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManagerWithMock = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                                                mockedCapabilitiesFilter );
+                                                                                                                                                mockedCapabilitiesFilter,
+                                                                                                                                                decisionMakerCreator );
 
     private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
 
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                                        capabilitiesFilter );
+                                                                                                                                        capabilitiesFilter,
+                                                                                                                                        decisionMakerCreator );
 
     @Test
     public void testFilterResponseShouldCallFilterCapabilities()
                             throws Exception {
         CapabilitiesFilter capabilitiesFilter = mockCapabilitiesFilter();
         WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                              capabilitiesFilter );
+                                                                                                                              capabilitiesFilter,
+                                                                                                                              decisionMakerCreator );
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
         WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithKnownCoverage();

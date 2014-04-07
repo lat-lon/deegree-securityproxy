@@ -41,6 +41,8 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 
 /**
@@ -56,10 +58,13 @@ public class WcsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
 
     /**
      * @param capabilitiesFilter
-     *            used to filter the capabilties, never <code>null</code>
+     *            used to filter the capabilities, never <code>null</code>
+     * @param decisionMakerCreator
+     *            used to create the {@link DecisionMaker}, never <code>null</code>
      */
-    public WcsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter ) {
-        super( capabilitiesFilter, new WcsDecisionMakerCreator() );
+    public WcsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter,
+                                                 DecisionMakerCreator decisionMakerCreator ) {
+        super( capabilitiesFilter, decisionMakerCreator );
     }
 
     @Override
