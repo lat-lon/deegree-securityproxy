@@ -6,7 +6,6 @@ import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -70,9 +69,11 @@ public class WmsDecisionMakerCreatorTest {
     public void testCreateDecisionMakerForWmsNoGetMap()
                             throws Exception {
         DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                createAuthenticationWithOneGetFeatureInfo() );
+                                                                                createAuthenticationWithOneUnknownRequest() );
 
-        assertThat( decisionMaker, is( nullValue() ) );
+        assertThat( decisionMaker, is( notNullValue() ) );
+        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListLayers.size(), is( 0 ) );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -87,9 +88,9 @@ public class WmsDecisionMakerCreatorTest {
         return mockAuthentication( authorities );
     }
 
-    private Authentication createAuthenticationWithOneGetFeatureInfo() {
+    private Authentication createAuthenticationWithOneUnknownRequest() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add( createRasterPermission( GETFEATUREINFO, LAYER_NAME_1 ) );
+        authorities.add( createRasterPermission( "NotKnownOperation", "NotKnownLayer" ) );
         return mockAuthentication( authorities );
     }
 
@@ -98,6 +99,7 @@ public class WmsDecisionMakerCreatorTest {
         authorities.add( createRasterPermission( GETMAP, LAYER_NAME_1 ) );
         authorities.add( createRasterPermission( GETMAP, LAYER_NAME_2 ) );
         authorities.add( createRasterPermission( GETFEATUREINFO, LAYER_NAME_1 ) );
+        authorities.add( createRasterPermission( "NotKnownOperation", "NotKnownLayer" ) );
         return mockAuthentication( authorities );
     }
 

@@ -1,6 +1,7 @@
 package org.deegree.securityproxy.wms.responsefilter.capabilities;
 
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.VERSION_130;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE;
@@ -53,20 +54,33 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
         WmsRequest wmsRequest = createWms130CapabilitiesRequest();
-        Authentication authentication = createAuthenticationAllLayers();
+        Authentication authentication = createAuthenticationAllLayersGetMap();
         filterManager.filterResponse( response, wmsRequest, authentication );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0.xml" ) ) );
     }
 
     @Test
-    public void testFilterResponseWithApplicablePermissionShouldFilterResponse()
+    public void testFilterResponseWithGetMapPermissionShouldFilterResponse()
                             throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
         WmsRequest wmsRequest = createWms130CapabilitiesRequest();
-        Authentication authentication = createAuthenticationTwoLayersEnabled();
+        Authentication authentication = createAuthenticationTwoLayersGetMap();
+        filterManager.filterResponse( response, wmsRequest, authentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0-Filtered.xml" ) ) );
+    }
+
+    @Test
+    public void testFilterResponseWithGetMapAndGetFeatureinfoPermissionShouldFilterResponse()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "wms_1_3_0.xml" );
+        WmsRequest wmsRequest = createWms130CapabilitiesRequest();
+        Authentication authentication = createAuthenticationOneLayerGetMapOneLayerGetFeatureInfo();
         filterManager.filterResponse( response, wmsRequest, authentication );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0-Filtered.xml" ) ) );
@@ -79,7 +93,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
         WmsRequest wmsRequest = createWms130CapabilitiesRequest();
-        Authentication authentication = createAuthenticationOneSubLayerDisabled();
+        Authentication authentication = createAuthenticationOneSubLayerNotGrantedGetMap();
         filterManager.filterResponse( response, wmsRequest, authentication );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0-FilteredSubLayers.xml" ) ) );
@@ -92,7 +106,20 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
         WmsRequest wmsRequest = createWms130CapabilitiesRequest();
-        Authentication authentication = createAuthenticationUnknownLayerEnabled();
+        Authentication authentication = createAuthenticationUnknownLayerGetMap();
+        filterManager.filterResponse( response, wmsRequest, authentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0-FilteredComplete.xml" ) ) );
+    }
+
+    @Test
+    public void testFilterResponseWithGetCapabilitiesPermissionsShouldFilterAllLayers()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "wms_1_3_0.xml" );
+        WmsRequest wmsRequest = createWms130CapabilitiesRequest();
+        Authentication authentication = createAuthenticationGetCapabilities();
         filterManager.filterResponse( response, wmsRequest, authentication );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0-FilteredComplete.xml" ) ) );
@@ -150,7 +177,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         return request;
     }
 
-    private Authentication createAuthenticationAllLayers() {
+    private Authentication createAuthenticationAllLayersGetMap() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( GETMAP, "testdata_view" ) );
         authorities.add( createRasterPermission( GETMAP, "sub_testdata_view1" ) );
@@ -163,14 +190,14 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         return mockAuthentication( authorities );
     }
 
-    private Authentication createAuthenticationTwoLayersEnabled() {
+    private Authentication createAuthenticationTwoLayersGetMap() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( GETMAP, "abcde_view" ) );
         authorities.add( createRasterPermission( GETMAP, "abcde_footprints" ) );
         return mockAuthentication( authorities );
     }
 
-    private Authentication createAuthenticationOneSubLayerDisabled() {
+    private Authentication createAuthenticationOneSubLayerNotGrantedGetMap() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( GETMAP, "testdata_view" ) );
         authorities.add( createRasterPermission( GETMAP, "sub_testdata_view1" ) );
@@ -182,9 +209,22 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         return mockAuthentication( authorities );
     }
 
-    private Authentication createAuthenticationUnknownLayerEnabled() {
+    private Authentication createAuthenticationUnknownLayerGetMap() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( GETMAP, "not_a_known_wms_layer" ) );
+        return mockAuthentication( authorities );
+    }
+
+    private Authentication createAuthenticationGetCapabilities() {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add( createRasterPermission( GETCAPABILITIES, null ) );
+        return mockAuthentication( authorities );
+    }
+
+    private Authentication createAuthenticationOneLayerGetMapOneLayerGetFeatureInfo() {
+        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        authorities.add( createRasterPermission( GETMAP, "abcde_view" ) );
+        authorities.add( createRasterPermission( GETFEATUREINFO, "abcde_footprints" ) );
         return mockAuthentication( authorities );
     }
 

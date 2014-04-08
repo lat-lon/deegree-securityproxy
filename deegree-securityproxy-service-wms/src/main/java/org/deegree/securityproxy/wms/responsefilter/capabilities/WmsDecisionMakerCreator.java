@@ -35,9 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.VERSION_130;
+import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,10 +79,8 @@ public class WmsDecisionMakerCreator implements DecisionMakerCreator {
         for ( GrantedAuthority grantedAuthority : authorities ) {
             addBlackListValuesFromAuthorities( blackListLayerNames, grantedAuthority );
         }
-        if ( !blackListLayerNames.isEmpty() )
-            return new BlackListDecisionMaker( ELEMENT_TO_FILTER, WMS_1_3_0_NS_URI, SUB_ELEMENT_NAME, WMS_1_3_0_NS_URI,
-                                               blackListLayerNames );
-        return null;
+        return new BlackListDecisionMaker( ELEMENT_TO_FILTER, WMS_1_3_0_NS_URI, SUB_ELEMENT_NAME, WMS_1_3_0_NS_URI,
+                                           blackListLayerNames );
     }
 
     private void checkVersion( OwsRequest owsRequest ) {
@@ -93,7 +92,7 @@ public class WmsDecisionMakerCreator implements DecisionMakerCreator {
     private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority authority ) {
         if ( authority instanceof RasterPermission ) {
             RasterPermission permission = (RasterPermission) authority;
-            if ( isWms130GetMapPermission( permission ) ) {
+            if ( isWms130GetMapPermission( permission ) && !blackListTextValues.contains( permission.getLayerName() ) ) {
                 blackListTextValues.add( permission.getLayerName() );
             }
         }
@@ -101,8 +100,12 @@ public class WmsDecisionMakerCreator implements DecisionMakerCreator {
 
     private boolean isWms130GetMapPermission( RasterPermission permission ) {
         return WMS_SERVICE.equalsIgnoreCase( permission.getServiceType() )
-               && permission.getServiceVersion().contains( VERSION_130 )
-               && GETMAP.equalsIgnoreCase( permission.getOperationType() );
+               && permission.getServiceVersion().contains( VERSION_130 ) && isGetMapOrFeaturinfo( permission );
+    }
+
+    private boolean isGetMapOrFeaturinfo( RasterPermission permission ) {
+        return GETMAP.equalsIgnoreCase( permission.getOperationType() )
+               || GETFEATUREINFO.equalsIgnoreCase( permission.getOperationType() );
     }
 
 }
