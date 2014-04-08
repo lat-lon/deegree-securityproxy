@@ -23,8 +23,19 @@
     <constructor-arg value="${wms_authorization_denied_status_code}" />
   </bean>
 
+  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter"/>
+
+  <bean id="wmsDecisionMakerCreator" class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsDecisionMakerCreator"/>
+
+  <bean name="wmsCapabilitiesResponseFilterManager"
+    class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsCapabilitiesResponseFilterManager">
+    <constructor-arg ref="capabilitiesFilter" />
+    <constructor-arg ref="wmsDecisionMakerCreator" />
+  </bean>
+
   <util:list id="wmsResponseFilterManagers" list-class="java.util.LinkedList"
     value-type="org.deegree.securityproxy.responsefilter.ResponseFilterManager">
+    <ref bean="wmsCapabilitiesResponseFilterManager" />
   </util:list>
 
 </beans>

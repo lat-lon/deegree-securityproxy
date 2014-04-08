@@ -28,6 +28,8 @@ public class WmsRequestParser implements OwsRequestParser {
 
     public static final OwsServiceVersion VERSION_130 = new OwsServiceVersion( 1, 3, 0 );
 
+    public static final String WMS_SERVICE = "WMS";
+
     public static final String GETCAPABILITIES = "GetCapabilities";
 
     public static final String GETFEATUREINFO = "GetFeatureInfo";

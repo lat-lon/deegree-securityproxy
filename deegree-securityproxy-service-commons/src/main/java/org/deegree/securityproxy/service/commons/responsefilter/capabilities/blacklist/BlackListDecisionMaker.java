@@ -113,6 +113,13 @@ public class BlackListDecisionMaker implements DecisionMaker {
         return false;
     }
 
+    /**
+     * @return the blackListTextValues
+     */
+    public List<String> getBlackListTextValues() {
+        return blackListTextValues;
+    }
+
     private boolean elementTextIsNotBlacklisted( BufferingXMLEventReader reader, StartElement matchedSubElement )
                             throws XMLStreamException {
         String elementText = retrieveElementText( reader, matchedSubElement );
