@@ -20,7 +20,7 @@
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.wcs.request.WcsRequestParser"/>
 
-  <bean name="geometryRetriever" class="org.deegree.securityproxy.wcs.responsefilter.clipping.GeometryRetrieverImpl"/>
+  <bean name="geometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.GeometryRetrieverImpl"/>
 
   <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.clipping.GeotiffClipper"/>
 

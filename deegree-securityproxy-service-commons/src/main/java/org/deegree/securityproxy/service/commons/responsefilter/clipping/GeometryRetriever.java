@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.clipping;
+package org.deegree.securityproxy.service.commons.responsefilter.clipping;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ import com.vividsolutions.jts.io.ParseException;
  * 
  * @version $Revision: $, $Date: $
  */
-interface GeometryRetriever {
+public interface GeometryRetriever {
 
     /**
      * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by

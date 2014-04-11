@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.clipping;
+package org.deegree.securityproxy.service.commons.responsefilter.clipping;
 
 /**
  * Indicates that an error occurred during clipping.
