@@ -61,9 +61,9 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -107,8 +107,8 @@ public class WcsClippingResponseFilterManager implements ResponseFilterManager {
     private final int exceptionStatusCode;
 
     /**
-     * Instantiates a new {@link GeotiffClipper} with default exception body (DEFAULT_BODY) and status code
-     * (DEFAULT_STATUS_CODE).
+     * Instantiates a new {@link WcsClippingResponseFilterManager} with default exception body (DEFAULT_BODY) and status
+     * code (DEFAULT_STATUS_CODE).
      */
     public WcsClippingResponseFilterManager() {
         this.exceptionBody = DEFAULT_BODY;
@@ -116,7 +116,7 @@ public class WcsClippingResponseFilterManager implements ResponseFilterManager {
     }
 
     /**
-     * Instantiates a new {@link GeotiffClipper} with the passed exception body and status code.
+     * Instantiates a new {@link WcsClippingResponseFilterManager} with the passed exception body and status code.
      * 
      * @param pathToExceptionFile
      *            if null or not available, the default exception body (DEFAULT_BODY) is used
