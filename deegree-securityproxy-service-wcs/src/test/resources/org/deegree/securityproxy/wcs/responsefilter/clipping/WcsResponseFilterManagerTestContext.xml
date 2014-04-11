@@ -10,6 +10,6 @@
     <constructor-arg value="org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper" />
   </bean>
 
-  <bean id="wcsResponseFilter" class="org.deegree.securityproxy.wcs.responsefilter.clipping.WcsResponseFilterManager" />
+  <bean id="wcsResponseFilter" class="org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager" />
 
 </beans>

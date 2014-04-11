@@ -82,9 +82,9 @@ import com.vividsolutions.jts.io.WKTWriter;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsResponseFilterManager implements ResponseFilterManager {
+public class WcsClippingResponseFilterManager implements ResponseFilterManager {
 
-    private static final Logger LOG = Logger.getLogger( WcsResponseFilterManager.class );
+    private static final Logger LOG = Logger.getLogger( WcsClippingResponseFilterManager.class );
 
     static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
@@ -110,7 +110,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
      * Instantiates a new {@link GeotiffClipper} with default exception body (DEFAULT_BODY) and status code
      * (DEFAULT_STATUS_CODE).
      */
-    public WcsResponseFilterManager() {
+    public WcsClippingResponseFilterManager() {
         this.exceptionBody = DEFAULT_BODY;
         this.exceptionStatusCode = DEFAULT_STATUS_CODE;
     }
@@ -123,7 +123,7 @@ public class WcsResponseFilterManager implements ResponseFilterManager {
      * @param exceptionStatusCode
      *            the exception status code
      */
-    public WcsResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode ) {
+    public WcsClippingResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode ) {
         this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
         this.exceptionStatusCode = exceptionStatusCode;
     }
