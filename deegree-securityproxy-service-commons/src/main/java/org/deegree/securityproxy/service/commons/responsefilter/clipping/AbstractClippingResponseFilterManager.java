@@ -169,7 +169,7 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
     /**
      * @param owsRequest
      *            never <code>null</code>
-     * @return true if request is a capabilities request
+     * @return true if request is a supported request
      */
     protected abstract boolean isCorrectRequest( OwsRequest owsRequest );
 
