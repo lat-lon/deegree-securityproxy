@@ -90,7 +90,7 @@ public abstract class AbstractCapabilitiesResponseFilterManager implements Respo
                             throws IllegalArgumentException, ResponseFilterException {
         checkParameters( servletResponse, owsRequest );
         if ( canBeFiltered( owsRequest ) ) {
-            LOG.info( "Apply wcs capabilities filter for response of request " + owsRequest );
+            LOG.info( "Apply capabilities filter for response of request " + owsRequest );
             try {
                 if ( isException( servletResponse ) ) {
                     LOG.debug( "Response contains an exception!" );

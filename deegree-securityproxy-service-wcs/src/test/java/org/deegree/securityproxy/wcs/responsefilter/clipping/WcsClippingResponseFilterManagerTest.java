@@ -38,11 +38,11 @@ package org.deegree.securityproxy.wcs.responsefilter.clipping;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
-import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager.DEFAULT_BODY;
-import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager.DEFAULT_STATUS_CODE;
-import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager.NOT_A_COVERAGE_REQUEST_MSG;
-import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager.REQUEST_AREA_HEADER_KEY;
-import static org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager.SERVICE_EXCEPTION_MSG;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.DEFAULT_BODY;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.DEFAULT_STATUS_CODE;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.NOT_A_CORRECT_REQUEST_MSG;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.REQUEST_AREA_HEADER_KEY;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -73,6 +73,7 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
@@ -131,7 +132,7 @@ public class WcsClippingResponseFilterManagerTest {
     private static ResponseClippingReport mockEmptyReport;
 
     @Autowired
-    private WcsClippingResponseFilterManager wcsClippingResponseFilterManager;
+    private AbstractClippingResponseFilterManager wcsClippingResponseFilterManager;
 
     @Autowired
     private GeometryRetriever geometryRetriever;
@@ -185,7 +186,7 @@ public class WcsClippingResponseFilterManagerTest {
                                                                                          createWcsGetCapabilitiesRequest(),
                                                                                          mockAuthentication );
         assertThat( filterResponse.isFiltered(), is( false ) );
-        assertThat( filterResponse.getFailure(), is( NOT_A_COVERAGE_REQUEST_MSG ) );
+        assertThat( filterResponse.getFailure(), is( NOT_A_CORRECT_REQUEST_MSG ) );
         assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
     }
 
