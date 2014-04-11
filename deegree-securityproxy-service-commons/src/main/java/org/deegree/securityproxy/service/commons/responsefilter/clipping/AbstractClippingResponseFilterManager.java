@@ -159,21 +159,6 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
         return isCorrectRequestType( request ) && isCorrectRequest( request );
     }
 
-    private void checkIfRequestEqualsNull( OwsRequest request ) {
-        if ( request == null )
-            throw new IllegalArgumentException( "Request must not be null!" );
-    }
-
-    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
-        if ( servletResponse == null )
-            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
-        if ( request == null )
-            throw new IllegalArgumentException( "Parameter request may not be null!" );
-        if ( !isCorrectRequestType( request ) )
-            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
-                                                + " is not supported!" );
-    }
-
     /**
      * @param request
      *            never <code>null</code>
@@ -195,6 +180,21 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
      * @return layer name
      */
     protected abstract String retrieveLayerName( OwsRequest request );
+
+    private void checkIfRequestEqualsNull( OwsRequest request ) {
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
+    }
+
+    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
+        if ( servletResponse == null )
+            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
+        if ( request == null )
+            throw new IllegalArgumentException( "Parameter request may not be null!" );
+        if ( !isCorrectRequestType( request ) )
+            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
+                                                + " is not supported!" );
+    }
 
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                     Geometry clippingGeometry )
@@ -282,4 +282,5 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
         }
         return DEFAULT_BODY;
     }
+
 }
