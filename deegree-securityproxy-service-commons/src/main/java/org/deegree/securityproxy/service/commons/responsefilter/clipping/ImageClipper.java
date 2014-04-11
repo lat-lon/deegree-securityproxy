@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 
 /**
  * Contains method to clip images.
@@ -63,7 +64,7 @@ public interface ImageClipper {
      *            {@link OutputStream} to write the image, never <code>null</code>
      * @throws IllegalArgumentException
      *             if one one the parameter is <code>null</code>
-     * @throws ClippingException
+     * @throws org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException
      *             if an error occurred during clipping
      * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
      *         geometry

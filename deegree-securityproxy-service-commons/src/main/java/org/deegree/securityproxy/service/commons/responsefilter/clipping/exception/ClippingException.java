@@ -33,22 +33,22 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.service.commons.responsefilter.clipping;
+package org.deegree.securityproxy.service.commons.responsefilter.clipping.exception;
 
 /**
- * Indicates that an exception occurred during parsing a geometry.
+ * Indicates that an error occurred during clipping.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class ParsingException extends Exception {
+public class ClippingException extends Exception {
 
-    private static final long serialVersionUID = -4059362131801392948L;
+    private static final long serialVersionUID = -2684310743504404279L;
 
-    public ParsingException( Throwable t ) {
-        super( t );
+    public ClippingException( Exception e ) {
+        super( e );
     }
 
 }

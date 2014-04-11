@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-  <bean id="geometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.GeometryRetrieverImpl" />
+  <bean id="geometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetrieverImpl" />
 
   <bean id="imageClipper" class="org.mockito.Mockito" factory-method="mock">
     <constructor-arg value="org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper" />

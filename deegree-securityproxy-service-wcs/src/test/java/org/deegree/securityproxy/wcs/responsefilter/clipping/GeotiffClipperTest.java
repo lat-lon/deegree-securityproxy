@@ -61,7 +61,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadataNode;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.ClippingException;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
