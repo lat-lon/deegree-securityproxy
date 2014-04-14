@@ -114,11 +114,4 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
         return new DefaultResponseFilterReport( NOT_A_CAPABILITIES_REQUEST_MSG );
     }
 
-    @Override
-    public boolean canBeFiltered( OwsRequest owsRequest )
-                            throws IllegalArgumentException {
-        checkIfRequestIsNull( owsRequest );
-        return isCorrectServiceType( owsRequest ) && isCorrectRequestParameter( owsRequest );
-    }
-
 }

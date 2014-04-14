@@ -44,7 +44,6 @@ import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILI
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -73,6 +72,7 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
@@ -182,12 +182,12 @@ public class WcsClippingResponseFilterManagerTest {
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapper();
         Authentication mockAuthentication = mockAuthentication();
-        ResponseClippingReport filterResponse = (ResponseClippingReport) wcsClippingResponseFilterManager.filterResponse( mockedServletResponse,
-                                                                                                                          createWcsGetCapabilitiesRequest(),
-                                                                                                                          mockAuthentication );
+        ResponseFilterReport filterResponse = wcsClippingResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                               createWcsGetCapabilitiesRequest(),
+                                                                                               mockAuthentication );
         assertThat( filterResponse.isFiltered(), is( false ) );
+        assertThat( filterResponse.isFailed(), is( true ) );
         assertThat( filterResponse.getMessage(), is( NOT_A_CORRECT_REQUEST_MSG ) );
-        assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
     }
 
     @Test
@@ -263,12 +263,12 @@ public class WcsClippingResponseFilterManagerTest {
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithExceptionAndStatusCode200();
         Authentication mockAuthentication = mockAuthentication();
-        ResponseClippingReport filterResponse = (ResponseClippingReport) wcsClippingResponseFilterManager.filterResponse( mockedServletResponse,
-                                                                                                                          createWcsGetCoverageRequest(),
-                                                                                                                          mockAuthentication );
+        ResponseFilterReport filterResponse = wcsClippingResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                               createWcsGetCoverageRequest(),
+                                                                                               mockAuthentication );
         assertThat( filterResponse.isFiltered(), is( false ) );
+        assertThat( filterResponse.isFailed(), is( true ) );
         assertThat( filterResponse.getMessage(), is( SERVICE_EXCEPTION_MSG ) );
-        assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
     }
 
     @Test
@@ -296,12 +296,12 @@ public class WcsClippingResponseFilterManagerTest {
                             throws Exception {
         StatusCodeResponseBodyWrapper mockedServletResponse = mockResponseWrapperWithoutExceptionAndStatusCode400();
         Authentication mockAuthentication = mockAuthentication();
-        ResponseClippingReport filterResponse = (ResponseClippingReport) wcsClippingResponseFilterManager.filterResponse( mockedServletResponse,
-                                                                                                                          createWcsGetCoverageRequest(),
-                                                                                                                          mockAuthentication );
+        ResponseFilterReport filterResponse = wcsClippingResponseFilterManager.filterResponse( mockedServletResponse,
+                                                                                               createWcsGetCoverageRequest(),
+                                                                                               mockAuthentication );
         assertThat( filterResponse.isFiltered(), is( false ) );
+        assertThat( filterResponse.isFailed(), is( true ) );
         assertThat( filterResponse.getMessage(), is( SERVICE_EXCEPTION_MSG ) );
-        assertThat( filterResponse.getReturnedVisibleArea(), is( nullValue() ) );
     }
 
     @Test

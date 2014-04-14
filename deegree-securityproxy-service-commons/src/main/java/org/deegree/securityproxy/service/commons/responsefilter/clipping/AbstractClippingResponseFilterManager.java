@@ -56,6 +56,7 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
+import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
@@ -122,7 +123,7 @@ public abstract class AbstractClippingResponseFilterManager extends
     }
 
     @Override
-    public ResponseClippingReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+    public DefaultResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                   Authentication auth )
                             throws ResponseFilterException {
         checkParameters( servletResponse, request );
@@ -132,23 +133,23 @@ public abstract class AbstractClippingResponseFilterManager extends
                 if ( isException( servletResponse ) ) {
                     LOG.debug( "Response contains an exception!" );
                     copyBufferedStream( servletResponse );
-                    return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
+                    return new DefaultResponseFilterReport( SERVICE_EXCEPTION_MSG );
                 }
                 Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
                 return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
                 writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                return new ResponseClippingReport( "" + e.getMessage() );
+                return new DefaultResponseFilterReport( "" + e.getMessage() );
             } catch ( IOException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
                 writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                return new ResponseClippingReport( "" + e.getMessage() );
+                return new DefaultResponseFilterReport( "" + e.getMessage() );
             }
         }
         LOG.debug( "Request was not a GetCoverage or GetMap request. Will be ignored by this filter manager!" );
         copyBufferedStream( servletResponse );
-        return new ResponseClippingReport( NOT_A_CORRECT_REQUEST_MSG );
+        return new DefaultResponseFilterReport( NOT_A_CORRECT_REQUEST_MSG );
     }
 
     /**
@@ -159,7 +160,7 @@ public abstract class AbstractClippingResponseFilterManager extends
      */
     protected abstract String retrieveLayerNames( OwsRequest request );
 
-    private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
+    private DefaultResponseFilterReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                     Geometry clippingGeometry )
                             throws IOException {
         try {
@@ -175,7 +176,7 @@ public abstract class AbstractClippingResponseFilterManager extends
             return clippedImageReport;
         } catch ( ClippingException e ) {
             writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-            return new ResponseClippingReport( "" + e.getMessage() );
+            return new DefaultResponseFilterReport( "" + e.getMessage() );
         }
 
     }
