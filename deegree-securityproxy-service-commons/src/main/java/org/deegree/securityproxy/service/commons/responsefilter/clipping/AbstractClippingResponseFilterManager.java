@@ -80,10 +80,6 @@ public abstract class AbstractClippingResponseFilterManager extends
 
     public static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
-    public static final String NOT_A_CORRECT_REQUEST_MSG = "Request was not a GetCoverage or GetMap request - clipping not required.";
-
-    public static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
-
     public static final int DEFAULT_STATUS_CODE = 500;
 
     public static final String DEFAULT_BODY = "Clipping failed!";
@@ -123,37 +119,27 @@ public abstract class AbstractClippingResponseFilterManager extends
     }
 
     @Override
-    public DefaultResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
-                                                  Authentication auth )
-                            throws ResponseFilterException {
-        checkParameters( servletResponse, request );
-        if ( canBeFiltered( request ) ) {
-            LOG.info( "Apply filter for response of request " + request );
-            try {
-                if ( isException( servletResponse ) ) {
-                    LOG.debug( "Response contains an exception!" );
-                    copyBufferedStream( servletResponse );
-                    return new DefaultResponseFilterReport( SERVICE_EXCEPTION_MSG );
-                }
-                Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
-                return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
-            } catch ( ParseException e ) {
-                LOG.error( "Calculating clipped result image failed!", e );
-                writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                return new DefaultResponseFilterReport( "" + e.getMessage() );
-            } catch ( IOException e ) {
-                LOG.error( "Calculating clipped result image failed!", e );
-                writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-                return new DefaultResponseFilterReport( "" + e.getMessage() );
-            }
+    protected DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+                                                     Authentication auth )
+                            throws IOException {
+        try {
+            Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
+            return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
+        } catch ( ParseException e ) {
+            return handleException( servletResponse, e );
+        } catch ( ClippingException e ) {
+            return handleException( servletResponse, e );
         }
-        LOG.debug( "Request was not a GetCoverage or GetMap request. Will be ignored by this filter manager!" );
-        copyBufferedStream( servletResponse );
-        return new DefaultResponseFilterReport( NOT_A_CORRECT_REQUEST_MSG );
+    }
+
+    @Override
+    protected DefaultResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper servletResponse,
+                                                             IOException e ) {
+        return handleException( servletResponse, e );
     }
 
     /**
-     * 
+     *
      * @param request
      *            never <code>null</code>
      * @return layer name
@@ -161,24 +147,17 @@ public abstract class AbstractClippingResponseFilterManager extends
     protected abstract String retrieveLayerNames( OwsRequest request );
 
     private DefaultResponseFilterReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
-                                                                    Geometry clippingGeometry )
-                            throws IOException {
-        try {
-            InputStream imageAsStream = servletResponse.getBufferedStream();
-            ByteArrayOutputStream destination = new ByteArrayOutputStream();
-            ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
-                                                                                            clippingGeometry,
-                                                                                            destination );
+                                                                         Geometry clippingGeometry )
+                            throws IOException, ClippingException {
+        InputStream imageAsStream = servletResponse.getBufferedStream();
+        ByteArrayOutputStream destination = new ByteArrayOutputStream();
+        ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
+                                                                                        clippingGeometry, destination );
 
-            addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
-            // required to set the header (must be set BEFORE any data is written to the response)
-            destination.writeTo( servletResponse.getRealOutputStream() );
-            return clippedImageReport;
-        } catch ( ClippingException e ) {
-            writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
-            return new DefaultResponseFilterReport( "" + e.getMessage() );
-        }
-
+        addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
+        // required to set the header (must be set BEFORE any data is written to the response)
+        destination.writeTo( servletResponse.getRealOutputStream() );
+        return clippedImageReport;
     }
 
     private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse ) {
@@ -227,7 +206,7 @@ public abstract class AbstractClippingResponseFilterManager extends
         return clippedImageReport.getReturnedVisibleArea() != null;
     }
 
-    protected String readExceptionBodyFromFile( String pathToExceptionFile ) {
+    private String readExceptionBodyFromFile( String pathToExceptionFile ) {
         LOG.info( "Reading exception body from " + pathToExceptionFile );
         if ( pathToExceptionFile != null && pathToExceptionFile.length() > 0 ) {
             InputStream exceptionAsStream = null;
@@ -245,6 +224,12 @@ public abstract class AbstractClippingResponseFilterManager extends
             }
         }
         return DEFAULT_BODY;
+    }
+
+    private DefaultResponseFilterReport handleException( StatusCodeResponseBodyWrapper servletResponse, Exception e ) {
+        LOG.error( "Calculating clipped result image failed!", e );
+        writeExceptionBodyAndSetExceptionStatusCode( servletResponse );
+        return new DefaultResponseFilterReport( "" + e.getMessage() );
     }
 
 }

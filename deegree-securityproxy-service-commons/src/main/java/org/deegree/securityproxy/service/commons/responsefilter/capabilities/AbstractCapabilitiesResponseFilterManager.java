@@ -36,19 +36,16 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.copyBufferedStream;
-import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.IOException;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.springframework.security.core.Authentication;
 
@@ -63,15 +60,9 @@ import org.springframework.security.core.Authentication;
  */
 public abstract class AbstractCapabilitiesResponseFilterManager extends AbstractResponseFilterManager {
 
-    private static final Logger LOG = Logger.getLogger( AbstractCapabilitiesResponseFilterManager.class );
-
     public static final String SUCCESSFUL_FILTERING_MESSAGE = "Capabilities of request were filtered successfully.";
 
     public static final String FILTERING_NOT_REQUIRED_MESSAGE = "Capabilities of request must not be filtered.";
-
-    public static final String NOT_A_CAPABILITIES_REQUEST_MSG = "Request was not a GetCapabilities-Request - filtering not required.";
-
-    public static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
 
     private final CapabilitiesFilter capabilitiesFilter;
 
@@ -84,34 +75,27 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
     }
 
     @Override
-    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest owsRequest,
-                                                Authentication auth )
-                            throws IllegalArgumentException, ResponseFilterException {
-        checkParameters( servletResponse, owsRequest );
-        if ( canBeFiltered( owsRequest ) ) {
-            LOG.info( "Apply capabilities filter for response of request " + owsRequest );
+    protected DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse,
+                                                       OwsRequest owsRequest, Authentication auth )
+                            throws ResponseFilterException, IOException {
+        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
+        if ( decisionMaker == null ) {
+            copyBufferedStream( servletResponse );
+            return new DefaultResponseFilterReport( FILTERING_NOT_REQUIRED_MESSAGE );
+        } else {
             try {
-                if ( isException( servletResponse ) ) {
-                    LOG.debug( "Response contains an exception!" );
-                    copyBufferedStream( servletResponse );
-                    return new DefaultResponseFilterReport( SERVICE_EXCEPTION_MSG );
-                }
-                DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
-                if ( decisionMaker == null ) {
-                    copyBufferedStream( servletResponse );
-                    return new DefaultResponseFilterReport( FILTERING_NOT_REQUIRED_MESSAGE );
-                } else {
-                    capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
-                    return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
-                }
-            } catch ( IOException e ) {
-                throw new ResponseFilterException( e );
+                capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
+                return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
             } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
         }
-        copyBufferedStream( servletResponse );
-        return new DefaultResponseFilterReport( NOT_A_CAPABILITIES_REQUEST_MSG );
+    }
+
+    @Override
+    protected DefaultResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response, IOException e )
+                            throws ResponseFilterException {
+        throw new ResponseFilterException( e );
     }
 
 }
