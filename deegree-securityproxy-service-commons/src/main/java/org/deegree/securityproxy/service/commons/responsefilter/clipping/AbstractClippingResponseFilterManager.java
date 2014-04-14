@@ -136,7 +136,7 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
                     copyBufferedStream( servletResponse );
                     return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
                 }
-                Geometry clippingGeometry = retrieveGeometryUseForClipping( auth, request );
+                Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
                 return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
             } catch ( ParseException e ) {
                 LOG.error( "Calculating clipped result image failed!", e );
@@ -233,15 +233,15 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
         write( exceptionBody, destination );
     }
 
-    private Geometry retrieveGeometryUseForClipping( Authentication auth, OwsRequest wcsRequest )
+    private Geometry retrieveGeometryUsedForClipping( Authentication auth, OwsRequest wcsRequest )
                             throws IllegalArgumentException, ParseException {
-        RasterUser wcsUser = retrieveWcsUser( auth );
-        List<GeometryFilterInfo> geometryFilterInfos = wcsUser.getWcsGeometryFilterInfos();
+        RasterUser rasterUser = retrieveRasterUser( auth );
+        List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getWcsGeometryFilterInfos();
         String coverageName = retrieveLayerName( wcsRequest );
         return geometryRetriever.retrieveGeometry( coverageName, geometryFilterInfos );
     }
 
-    private RasterUser retrieveWcsUser( Authentication auth ) {
+    private RasterUser retrieveRasterUser( Authentication auth ) {
         Object principal = auth.getPrincipal();
         if ( !( principal instanceof RasterUser ) ) {
             throw new IllegalArgumentException( "Principal is not a WcsUser!" );
