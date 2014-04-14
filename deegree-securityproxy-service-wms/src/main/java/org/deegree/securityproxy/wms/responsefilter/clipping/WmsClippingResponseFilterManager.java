@@ -74,12 +74,12 @@ public class WmsClippingResponseFilterManager extends AbstractClippingResponseFi
     }
 
     @Override
-    protected boolean isCorrectRequestType( OwsRequest request ) {
+    protected boolean isCorrectServiceType( OwsRequest request ) {
         return WmsRequest.class.equals( request.getClass() );
     }
 
     @Override
-    protected boolean isCorrectRequest( OwsRequest request ) {
+    protected boolean isCorrectRequestParameter( OwsRequest request ) {
         return GETMAP.equals( request.getOperationType() );
     }
 

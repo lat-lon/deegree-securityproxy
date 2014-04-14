@@ -40,7 +40,6 @@ import static org.deegree.securityproxy.service.commons.responsefilter.ResponseF
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.log4j.Logger;
@@ -48,9 +47,9 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesReport;
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -62,7 +61,7 @@ import org.springframework.security.core.Authentication;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractCapabilitiesResponseFilterManager implements ResponseFilterManager {
+public abstract class AbstractCapabilitiesResponseFilterManager extends AbstractResponseFilterManager {
 
     private static final Logger LOG = Logger.getLogger( AbstractCapabilitiesResponseFilterManager.class );
 
@@ -95,15 +94,15 @@ public abstract class AbstractCapabilitiesResponseFilterManager implements Respo
                 if ( isException( servletResponse ) ) {
                     LOG.debug( "Response contains an exception!" );
                     copyBufferedStream( servletResponse );
-                    return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
+                    return new DefaultResponseFilterReport( SERVICE_EXCEPTION_MSG );
                 }
                 DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
                 if ( decisionMaker == null ) {
                     copyBufferedStream( servletResponse );
-                    return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE );
+                    return new DefaultResponseFilterReport( FILTERING_NOT_REQUIRED_MESSAGE );
                 } else {
                     capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
-                    return new ResponseCapabilitiesReport( SUCCESSFUL_FILTERING_MESSAGE, true );
+                    return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
                 }
             } catch ( IOException e ) {
                 throw new ResponseFilterException( e );
@@ -112,44 +111,14 @@ public abstract class AbstractCapabilitiesResponseFilterManager implements Respo
             }
         }
         copyBufferedStream( servletResponse );
-        return new ResponseCapabilitiesReport( NOT_A_CAPABILITIES_REQUEST_MSG );
+        return new DefaultResponseFilterReport( NOT_A_CAPABILITIES_REQUEST_MSG );
     }
 
     @Override
     public boolean canBeFiltered( OwsRequest owsRequest )
                             throws IllegalArgumentException {
         checkIfRequestIsNull( owsRequest );
-        return isCorrectRequestType( owsRequest ) && isGetCapabilitiesRequest( owsRequest );
-    }
-
-    /**
-     * @param owsRequest
-     *            never <code>null</code>
-     * @return true if request is from the supported type
-     */
-    protected abstract boolean isCorrectRequestType( OwsRequest owsRequest );
-
-    /**
-     * @param owsRequest
-     *            never <code>null</code>
-     * @return true if request is a capabilities request
-     */
-    protected abstract boolean isGetCapabilitiesRequest( OwsRequest owsRequest );
-
-    private void checkIfRequestIsNull( OwsRequest request ) {
-        if ( request == null )
-            throw new IllegalArgumentException( "Request must not be null!" );
-    }
-
-    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
-        if ( servletResponse == null )
-            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
-        if ( request == null )
-            throw new IllegalArgumentException( "Parameter request may not be null!" );
-        if ( !isCorrectRequestType( request ) )
-            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
-                                                + " is not supported!" );
-
+        return isCorrectServiceType( owsRequest ) && isCorrectRequestParameter( owsRequest );
     }
 
 }

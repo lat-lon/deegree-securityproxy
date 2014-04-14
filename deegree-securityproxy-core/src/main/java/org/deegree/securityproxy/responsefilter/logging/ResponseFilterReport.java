@@ -55,4 +55,9 @@ public interface ResponseFilterReport {
      */
     String getMessage();
 
+    /**
+     * @return <code>true</code> if filtering failed, <code>false</code> otherwise
+     */
+    boolean isFailed();
+
 }

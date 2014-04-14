@@ -76,12 +76,12 @@ public class WcsClippingResponseFilterManager extends AbstractClippingResponseFi
     }
 
     @Override
-    protected boolean isCorrectRequestType( OwsRequest request ) {
+    protected boolean isCorrectServiceType( OwsRequest request ) {
         return WcsRequest.class.equals( request.getClass() );
     }
 
     @Override
-    protected boolean isCorrectRequest( OwsRequest owsRequest ) {
+    protected boolean isCorrectRequestParameter( OwsRequest owsRequest ) {
         return GETCOVERAGE.equals( owsRequest.getOperationType() );
     }
 

@@ -128,7 +128,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
     @Test
     public void testIsCorrectRequestType()
                             throws Exception {
-        boolean isCorrectRequestType = filterManager.isCorrectRequestType( createWms130CapabilitiesRequest() );
+        boolean isCorrectRequestType = filterManager.isCorrectServiceType( createWms130CapabilitiesRequest() );
 
         assertThat( isCorrectRequestType, is( true ) );
     }
@@ -136,7 +136,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
     @Test
     public void testIsCorrectRequestTypeWithUnknownRequestShouldReturnFalse()
                             throws Exception {
-        boolean isCorrectRequestType = filterManager.isCorrectRequestType( mockUnknownRequest() );
+        boolean isCorrectRequestType = filterManager.isCorrectServiceType( mockUnknownRequest() );
 
         assertThat( isCorrectRequestType, is( false ) );
     }
@@ -144,7 +144,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
     @Test
     public void testIsGetCapabilitiesRequestRequestType()
                             throws Exception {
-        boolean isCorrectRequestType = filterManager.isGetCapabilitiesRequest( createWms130CapabilitiesRequest() );
+        boolean isCorrectRequestType = filterManager.isCorrectRequestParameter( createWms130CapabilitiesRequest() );
 
         assertThat( isCorrectRequestType, is( true ) );
     }
@@ -152,7 +152,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
     @Test
     public void testIsGetCapabilitiesRequestRequestTypeWithGetMapRequestShouldReturnFalse()
                             throws Exception {
-        boolean isCorrectRequestType = filterManager.isGetCapabilitiesRequest( createWms130GetMapRequest() );
+        boolean isCorrectRequestType = filterManager.isCorrectRequestParameter( createWms130GetMapRequest() );
 
         assertThat( isCorrectRequestType, is( false ) );
     }

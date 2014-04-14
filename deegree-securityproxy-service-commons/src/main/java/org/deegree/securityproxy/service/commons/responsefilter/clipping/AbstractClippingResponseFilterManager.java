@@ -49,8 +49,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
@@ -58,7 +56,6 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
@@ -77,7 +74,8 @@ import com.vividsolutions.jts.io.WKTWriter;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractClippingResponseFilterManager implements ResponseFilterManager {
+public abstract class AbstractClippingResponseFilterManager extends
+                                                           org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager {
 
     public static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
@@ -153,26 +151,6 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
         return new ResponseClippingReport( NOT_A_CORRECT_REQUEST_MSG );
     }
 
-    @Override
-    public boolean canBeFiltered( OwsRequest request ) {
-        checkIfRequestEqualsNull( request );
-        return isCorrectRequestType( request ) && isCorrectRequest( request );
-    }
-
-    /**
-     * @param request
-     *            never <code>null</code>
-     * @return true if request is from the supported type
-     */
-    protected abstract boolean isCorrectRequestType( OwsRequest request );
-
-    /**
-     * @param owsRequest
-     *            never <code>null</code>
-     * @return true if request is a supported request
-     */
-    protected abstract boolean isCorrectRequest( OwsRequest owsRequest );
-
     /**
      * 
      * @param request
@@ -180,21 +158,6 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
      * @return layer name
      */
     protected abstract String retrieveLayerNames( OwsRequest request );
-
-    private void checkIfRequestEqualsNull( OwsRequest request ) {
-        if ( request == null )
-            throw new IllegalArgumentException( "Request must not be null!" );
-    }
-
-    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
-        if ( servletResponse == null )
-            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
-        if ( request == null )
-            throw new IllegalArgumentException( "Parameter request may not be null!" );
-        if ( !isCorrectRequestType( request ) )
-            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
-                                                + " is not supported!" );
-    }
 
     private ResponseClippingReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                     Geometry clippingGeometry )
@@ -260,7 +223,7 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
     }
 
     private boolean noFailureOccured( ResponseClippingReport clippedImageReport ) {
-        return clippedImageReport.getFailure() == null && clippedImageReport.getReturnedVisibleArea() != null;
+        return clippedImageReport.getReturnedVisibleArea() != null;
     }
 
     protected String readExceptionBodyFromFile( String pathToExceptionFile ) {

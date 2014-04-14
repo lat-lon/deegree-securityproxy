@@ -8,14 +8,16 @@ package org.deegree.securityproxy.responsefilter.logging;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ResponseCapabilitiesReport implements ResponseFilterReport {
+public class DefaultResponseFilterReport implements ResponseFilterReport {
 
     private String message;
 
     private boolean isFiltered;
 
+    private boolean isFailed;
+
     /**
-     * Instantiates a new {@link ResponseCapabilitiesReport} with an error message, isFiltered is set to
+     * Instantiates a new {@link DefaultResponseFilterReport} with an error message, isFiltered is set to
      * <code>false</code>.
      * 
      * @param failureMessage
@@ -23,15 +25,16 @@ public class ResponseCapabilitiesReport implements ResponseFilterReport {
      * @throws IllegalArgumentException
      *             if required parameter is null
      */
-    public ResponseCapabilitiesReport( String failureMessage ) {
+    public DefaultResponseFilterReport( String failureMessage ) {
         if ( failureMessage == null )
             throw new IllegalArgumentException( "failureMessage must not be null!" );
         this.message = failureMessage;
         this.isFiltered = false;
+        this.isFailed = true;
     }
 
     /**
-     * Instantiates a new {@link ResponseCapabilitiesReport} with detailed information about the capabilities filtering.
+     * Instantiates a new {@link DefaultResponseFilterReport} with detailed information about the capabilities filtering.
      * 
      * @param message
      *            message gives information about the capabilities filtering, never <code>null</code>
@@ -40,16 +43,22 @@ public class ResponseCapabilitiesReport implements ResponseFilterReport {
      * @throws IllegalArgumentException
      *             if required parameter is null
      */
-    public ResponseCapabilitiesReport( String message, boolean isFiltered ) {
+    public DefaultResponseFilterReport( String message, boolean isFiltered ) {
         if ( message == null )
             throw new IllegalArgumentException( "message must not be null!" );
         this.message = message;
         this.isFiltered = isFiltered;
+        this.isFailed = false;
     }
 
     @Override
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public boolean isFailed() {
+        return isFailed;
     }
 
     @Override

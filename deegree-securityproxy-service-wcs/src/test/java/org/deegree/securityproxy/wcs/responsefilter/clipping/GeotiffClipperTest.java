@@ -42,7 +42,6 @@ import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_Y_RESOLU
 import static javax.imageio.ImageIO.read;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -245,7 +244,7 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFailed(), is( false ) );
         assertThat( report.isFiltered(), is( false ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
@@ -267,7 +266,7 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFailed(), is( false ) );
         assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
@@ -289,7 +288,7 @@ public class GeotiffClipperTest {
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFailed(), is( false ) );
         assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
