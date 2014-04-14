@@ -28,6 +28,7 @@
         class="org.deegree.securityproxy.wcs.responsefilter.clipping.WcsClippingResponseFilterManager">
     <constructor-arg value="${clipping_exception_file_path}"/>
     <constructor-arg value="${clipping_failed_status_code}"/>
+    <constructor-arg ref="imageClipper"/>
   </bean>
 
   <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter"/>

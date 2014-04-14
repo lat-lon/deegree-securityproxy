@@ -37,8 +37,6 @@ package org.deegree.securityproxy.service.commons.responsefilter.clipping;
 
 import static org.apache.commons.io.IOUtils.closeQuietly;
 import static org.apache.commons.io.IOUtils.write;
-import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.copyBufferedStream;
-import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -55,7 +53,6 @@ import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
@@ -90,19 +87,19 @@ public abstract class AbstractClippingResponseFilterManager extends
 
     protected final int exceptionStatusCode;
 
-    @Autowired
-    private GeometryRetriever geometryRetriever;
+    private final ImageClipper imageClipper;
 
     @Autowired
-    private ImageClipper imageClipper;
+    private GeometryRetriever geometryRetriever;
 
     /**
      * Instantiates a new {@link AbstractClippingResponseFilterManager} with default exception body (DEFAULT_BODY) and
      * status code (DEFAULT_STATUS_CODE).
      */
-    public AbstractClippingResponseFilterManager() {
+    public AbstractClippingResponseFilterManager( ImageClipper imageClipper ) {
         this.exceptionBody = DEFAULT_BODY;
         this.exceptionStatusCode = DEFAULT_STATUS_CODE;
+        this.imageClipper = imageClipper;
     }
 
     /**
@@ -113,14 +110,16 @@ public abstract class AbstractClippingResponseFilterManager extends
      * @param exceptionStatusCode
      *            the exception status code
      */
-    public AbstractClippingResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode ) {
+    public AbstractClippingResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode,
+                                                  ImageClipper imageClipper ) {
         this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
         this.exceptionStatusCode = exceptionStatusCode;
+        this.imageClipper = imageClipper;
     }
 
     @Override
-    protected DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
-                                                     Authentication auth )
+    protected DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse,
+                                                       OwsRequest request, Authentication auth )
                             throws IOException {
         try {
             Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
@@ -139,7 +138,7 @@ public abstract class AbstractClippingResponseFilterManager extends
     }
 
     /**
-     *
+     * 
      * @param request
      *            never <code>null</code>
      * @return layer name

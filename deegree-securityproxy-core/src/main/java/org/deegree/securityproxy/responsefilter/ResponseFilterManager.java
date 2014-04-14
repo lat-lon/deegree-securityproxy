@@ -41,7 +41,7 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
 /**
- * Implementations provides filtering of {@link OwsRequest}s defined in the {@link #supports(Class)} method.
+ * Implementations provides filtering of {@link OwsRequest}s defined in the {@link #canBeFiltered(OwsRequest)} method.
  * 
  * @author <a href="mailto:erben@lat-lon.de">Alexander Erben</a>
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
