@@ -84,7 +84,7 @@ public class WmsClippingResponseFilterManager extends AbstractClippingResponseFi
     }
 
     @Override
-    protected String retrieveLayerName( OwsRequest request ) {
+    protected String retrieveLayerNames( OwsRequest request ) {
         List<String> layerNames = ( (WmsRequest) request ).getLayerNames();
         if ( layerNames == null || layerNames.isEmpty() )
             throw new IllegalArgumentException( "GetMap request does not contain a layer name!" );

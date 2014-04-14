@@ -86,7 +86,7 @@ public class WcsClippingResponseFilterManager extends AbstractClippingResponseFi
     }
 
     @Override
-    protected String retrieveLayerName( OwsRequest request ) {
+    protected String retrieveLayerNames( OwsRequest request ) {
         List<String> coverageNames = ( (WcsRequest) request ).getCoverageNames();
         if ( coverageNames == null || coverageNames.isEmpty() )
             throw new IllegalArgumentException( "GetCoverage request does not contain a coverage name!" );

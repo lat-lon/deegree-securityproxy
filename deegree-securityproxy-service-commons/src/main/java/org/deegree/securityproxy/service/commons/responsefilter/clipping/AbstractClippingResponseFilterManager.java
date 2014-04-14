@@ -81,7 +81,7 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
 
     public static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
-    public static final String NOT_A_CORRECT_REQUEST_MSG = "Request was not a GetCoverage- or GetMap-Request - clipping not required.";
+    public static final String NOT_A_CORRECT_REQUEST_MSG = "Request was not a GetCoverage or GetMap request - clipping not required.";
 
     public static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
 
@@ -148,7 +148,7 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
                 return new ResponseClippingReport( "" + e.getMessage() );
             }
         }
-        LOG.debug( "Request was not a GetCoverage request. Will be ignored by this filter manager!" );
+        LOG.debug( "Request was not a GetCoverage or GetMap request. Will be ignored by this filter manager!" );
         copyBufferedStream( servletResponse );
         return new ResponseClippingReport( NOT_A_CORRECT_REQUEST_MSG );
     }
@@ -179,7 +179,7 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
      *            never <code>null</code>
      * @return layer name
      */
-    protected abstract String retrieveLayerName( OwsRequest request );
+    protected abstract String retrieveLayerNames( OwsRequest request );
 
     private void checkIfRequestEqualsNull( OwsRequest request ) {
         if ( request == null )
@@ -233,18 +233,18 @@ public abstract class AbstractClippingResponseFilterManager implements ResponseF
         write( exceptionBody, destination );
     }
 
-    private Geometry retrieveGeometryUsedForClipping( Authentication auth, OwsRequest wcsRequest )
+    private Geometry retrieveGeometryUsedForClipping( Authentication auth, OwsRequest request )
                             throws IllegalArgumentException, ParseException {
         RasterUser rasterUser = retrieveRasterUser( auth );
         List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getWcsGeometryFilterInfos();
-        String coverageName = retrieveLayerName( wcsRequest );
-        return geometryRetriever.retrieveGeometry( coverageName, geometryFilterInfos );
+        String layerNames = retrieveLayerNames( request );
+        return geometryRetriever.retrieveGeometry( layerNames, geometryFilterInfos );
     }
 
     private RasterUser retrieveRasterUser( Authentication auth ) {
         Object principal = auth.getPrincipal();
         if ( !( principal instanceof RasterUser ) ) {
-            throw new IllegalArgumentException( "Principal is not a WcsUser!" );
+            throw new IllegalArgumentException( "Principal is not a RasterUser!" );
         }
         return (RasterUser) principal;
     }
