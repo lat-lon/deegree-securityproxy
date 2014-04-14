@@ -141,9 +141,9 @@ public abstract class AbstractClippingResponseFilterManager extends
      * 
      * @param request
      *            never <code>null</code>
-     * @return layer name
+     * @return layer names
      */
-    protected abstract String retrieveLayerNames( OwsRequest request );
+    protected abstract List<String> retrieveLayerNames( OwsRequest request );
 
     private DefaultResponseFilterReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                          Geometry clippingGeometry )
@@ -179,8 +179,8 @@ public abstract class AbstractClippingResponseFilterManager extends
                             throws IllegalArgumentException, ParseException {
         RasterUser rasterUser = retrieveRasterUser( auth );
         List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getWcsGeometryFilterInfos();
-        String layerNames = retrieveLayerNames( request );
-        return geometryRetriever.retrieveGeometry( layerNames, geometryFilterInfos );
+        List<String> layerNames = retrieveLayerNames( request );
+        return geometryRetriever.retrieveGeometry( layerNames.get( 0 ), geometryFilterInfos );
     }
 
     private RasterUser retrieveRasterUser( Authentication auth ) {
