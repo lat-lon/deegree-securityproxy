@@ -39,9 +39,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 
 /**
  * Contains method to clip images.
@@ -56,8 +56,8 @@ public interface ImageClipper {
     /**
      * Clips the passed image as defined in the clipping area.
      * 
-     * @param coverageToClip
-     *            contains the coverage to clip - must contain an image! never <code>null</code>
+     * @param imageToClip
+     *            contains the image to clip, never <code>null</code>
      * @param visibleArea
      *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
      * @param destination
@@ -69,7 +69,7 @@ public interface ImageClipper {
      * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
      *         geometry
      */
-    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
+    ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                   OutputStream destination )
                             throws IllegalArgumentException, ClippingException;
 

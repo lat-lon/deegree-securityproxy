@@ -55,10 +55,19 @@ import com.vividsolutions.jts.geom.Geometry;
 public class WmsClipper implements ImageClipper {
 
     @Override
-    public ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
+    public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination )
                             throws IllegalArgumentException, ClippingException {
+        checkRequiredParameters( imageToClip, destination );
         return null;
+    }
+
+    private void checkRequiredParameters( InputStream imageToClip, OutputStream toWriteImage )
+                            throws IllegalArgumentException {
+        if ( imageToClip == null )
+            throw new IllegalArgumentException( "Image to clip must not be null!" );
+        if ( toWriteImage == null )
+            throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
     }
 
 }
