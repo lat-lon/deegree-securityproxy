@@ -75,7 +75,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * header values. Invisible areas are cropped and in the image stored as no data values.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author <a href="mailto:goltz@lat-lon.de">Dirk Stenger</a>
+ * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
