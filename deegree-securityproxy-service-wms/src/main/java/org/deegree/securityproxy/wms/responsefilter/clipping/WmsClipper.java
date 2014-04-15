@@ -35,12 +35,25 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.responsefilter.clipping;
 
+import static java.io.File.createTempFile;
+import static org.geotools.referencing.CRS.decode;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.imageio.ImageIO;
+
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
+import org.geotools.geometry.jts.LiteShape;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.MapViewport;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -54,11 +67,34 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public class WmsClipper implements ImageClipper {
 
+    private static final Logger LOG = Logger.getLogger( WmsClipper.class );
+
     @Override
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination )
                             throws IllegalArgumentException, ClippingException {
         checkRequiredParameters( imageToClip, destination );
+
+        try {
+            BufferedImage image = ImageIO.read( imageToClip );
+
+            BufferedImage outputImage = new BufferedImage( image.getWidth(), image.getHeight(), image.getType() );
+            Graphics2D graphics = (Graphics2D) outputImage.getGraphics();
+            CoordinateReferenceSystem crs = decode( "EPSG:4326", true );
+            MapViewport viewPort = new MapViewport( new ReferencedEnvelope( 7.3345265546875, 11.454399601562,
+                                                                            50.526648257812, 54.646521304687, crs ) );
+            viewPort.setScreenArea( new Rectangle( image.getMinX(), image.getMinY(), image.getWidth(),
+                                                   image.getHeight() ) );
+            AffineTransform trans = viewPort.getWorldToScreen();
+            LiteShape clippingArea = new LiteShape( visibleArea, trans, false );
+            graphics.clip( clippingArea );
+            graphics.drawImage( image, null, 0, 0 );
+
+            ImageIO.write( outputImage, "PNG", createTempFile( "imageToClip", ".png" ) );
+        } catch ( Exception e ) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
