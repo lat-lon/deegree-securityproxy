@@ -46,6 +46,7 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.springframework.security.core.Authentication;
 
@@ -75,8 +76,8 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
     }
 
     @Override
-    protected DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse,
-                                                       OwsRequest owsRequest, Authentication auth )
+    protected ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest owsRequest,
+                                                Authentication auth )
                             throws ResponseFilterException, IOException {
         DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
         if ( decisionMaker == null ) {
@@ -93,7 +94,7 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
     }
 
     @Override
-    protected DefaultResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response, IOException e )
+    protected ResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response, IOException e )
                             throws ResponseFilterException {
         throw new ResponseFilterException( e );
     }

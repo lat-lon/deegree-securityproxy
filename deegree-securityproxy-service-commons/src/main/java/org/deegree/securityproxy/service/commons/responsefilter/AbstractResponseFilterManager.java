@@ -48,6 +48,7 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -70,8 +71,8 @@ public abstract class AbstractResponseFilterManager implements ResponseFilterMan
     private static final Logger LOG = Logger.getLogger( AbstractResponseFilterManager.class );
 
     @Override
-    public DefaultResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse,
-                                                       OwsRequest request, Authentication auth )
+    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+                                                Authentication auth )
                             throws ResponseFilterException {
         checkParameters( servletResponse, request );
         if ( canBeFiltered( request ) ) {
@@ -99,47 +100,57 @@ public abstract class AbstractResponseFilterManager implements ResponseFilterMan
     }
 
     /**
+     * Invoked if service response was not an exception.
      * 
-     * @param servletResponse
-     * @param owsRequest
+     * @param response
+     *            the wrapper around the response, never <code>null</code>
+     * @param request
+     *            containing the request parameter, never <code>null</code>
      * @param auth
-     * @return a DefaultResponseFilterReport containing information about the filtering.
+     *            the authentication of the user, never <code>null</code>
+     * @return a {@link ResponseFilterReport} containing information about the filtering, never <code>null</code>
      * @throws ResponseFilterException
      * @throws IOException
      */
-    protected abstract DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse,
-                                                                OwsRequest owsRequest, Authentication auth )
+    protected abstract ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper response, OwsRequest request,
+                                                         Authentication auth )
                             throws ResponseFilterException, IOException;
 
     /**
+     * Invoked when an {@link IOException} is thrown during filtering.
      * 
      * @param response
-     * @param e
+     *            the wrapper around the response, never <code>null</code>
+     * @param exception
+     *            the {@link IOException} to handle, never <code>null</code>
      * @return a DefaultResponseFilterReport containing information about the exception.
-     * @throws ResponseFilterException
+     * @throws FilterException
+     *             - handling the {@link IOException} forces throwing an exception
      */
-    protected abstract DefaultResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response,
-                                                                      IOException e )
+    protected abstract ResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response,
+                                                               IOException exception )
                             throws ResponseFilterException;
 
     /**
      * @param request
-     *            never <code>null</code>
-     * @return true if request is from the supported type
+     *            containing the request parameter, never <code>null</code>
+     * @return <code>true</code> if service is from the supported type, <code>false</code> otherwise
      */
     protected abstract boolean isCorrectServiceType( OwsRequest request );
 
     /**
-     * @param owsRequest
-     *            never <code>null</code>
-     * @return true if request is a supported request
+     * @param request
+     *            containing the request parameter, never <code>null</code>
+     * @return <code>true</code> if request parameter is a supported request, <code>false</code> otherwise
      */
-    protected abstract boolean isCorrectRequestParameter( OwsRequest owsRequest );
+    protected abstract boolean isCorrectRequestParameter( OwsRequest request );
 
     /**
-     * Checks if request is <code>null</code>.
+     * Checks if request is <code>null</code>, if <code>null</code> an {@link IllegalArgumentException} is thrown.
      * 
      * @param request
+     * @throws IllegalArgumentException
+     *             if request is <code>null</code>
      */
     protected void checkIfRequestIsNull( OwsRequest request ) {
         if ( request == null )
@@ -147,10 +158,13 @@ public abstract class AbstractResponseFilterManager implements ResponseFilterMan
     }
 
     /**
-     * Checks if {@link HttpServletResponse} and {@link OwsRequest} are valid.
+     * Checks if {@link HttpServletResponse} and {@link OwsRequest} are valid, an {@link IllegalArgumentException} is
+     * thrown, if one of the parameter is <code>null</code> or the request is not of the supported service type.
      * 
      * @param servletResponse
      * @param request
+     * @throws IllegalArgumentException
+     *             - one of the parameter is <code>null</code> of service type is not supported
      */
     protected void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
         if ( servletResponse == null )

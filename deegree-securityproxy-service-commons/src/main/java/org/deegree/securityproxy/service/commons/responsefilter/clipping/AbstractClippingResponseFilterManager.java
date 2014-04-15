@@ -55,6 +55,8 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,8 +74,7 @@ import com.vividsolutions.jts.io.WKTWriter;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractClippingResponseFilterManager extends
-                                                           org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager {
+public abstract class AbstractClippingResponseFilterManager extends AbstractResponseFilterManager {
 
     public static final String REQUEST_AREA_HEADER_KEY = "request_area";
 
@@ -118,8 +119,8 @@ public abstract class AbstractClippingResponseFilterManager extends
     }
 
     @Override
-    protected DefaultResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse,
-                                                       OwsRequest request, Authentication auth )
+    protected ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
+                                                Authentication auth )
                             throws IOException {
         try {
             Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
@@ -132,16 +133,18 @@ public abstract class AbstractClippingResponseFilterManager extends
     }
 
     @Override
-    protected DefaultResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper servletResponse,
-                                                             IOException e ) {
+    protected ResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper servletResponse, IOException e ) {
         return handleException( servletResponse, e );
     }
 
     /**
+     * Retrieves all requested layer names.
      * 
      * @param request
-     *            never <code>null</code>
-     * @return layer names
+     *            containing the request parameter, never <code>null</code>
+     * @return layer names requested layer names, never <code>null</code> or empty
+     * @throws IllegalArgumentException
+     *             - request does not contain any layer names
      */
     protected abstract List<String> retrieveLayerNames( OwsRequest request );
 
