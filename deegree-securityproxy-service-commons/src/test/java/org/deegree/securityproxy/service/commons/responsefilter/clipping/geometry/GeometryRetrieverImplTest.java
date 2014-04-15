@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -42,10 +43,10 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetrieverImpl;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -63,11 +64,15 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class GeometryRetrieverImplTest {
 
-    private static final String COVERAGE_NAME_SIMPLE = "simpleCoverageName";
+    private static final String COVERAGE_NAME_SIMPLE_1 = "simpleCoverageName1";
+
+    private static final String COVERAGE_NAME_SIMPLE_2 = "simpleCoverageName2";
 
     private static final String COVERAGE_NAME = "coverageName";
 
-    private static final String GEOMETRY_SIMPLE = "SRID=4326;POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))";
+    private static final String GEOMETRY_SIMPLE_1 = "SRID=4326;POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))";
+
+    private static final String GEOMETRY_SIMPLE_2 = "SRID=4326;POLYGON ((30 10, 10 20, 20 60, 60 60, 30 10))";
 
     private static final String GEOMETRY = "SRID=4326;MULTIPOLYGON(((-89.739 20.864,-89.758 20.876,-89.765 20.894,-89.748 20.897,-89.73 20.91,-89.708 20.928,-89.704 20.948,-89.716 20.964,-89.729 20.99,-89.73 21.017,-89.712 21.021,-89.685 21.031,-89.667 21.025,-89.641 21.017,-89.62 21.019,-89.599 21.018,-89.575 20.995,-89.568 20.97,-89.562 20.934,-89.562 20.91,-89.577 20.89,-89.609 20.878,-89.636 20.877,-89.664 20.881,-89.683 20.904,-89.683 20.917,-89.664 20.941,-89.662 20.954,-89.674 20.965,-89.687 20.983,-89.705 20.989,-89.703 20.974,-89.696 20.961,-89.686 20.949,-89.683 20.935,-89.694 20.919,-89.705 20.901,-89.722 20.875,-89.727 20.869,-89.739 20.864),(-89.627 20.985,-89.603 20.962,-89.62 20.936,-89.634 20.943,-89.639 20.961,-89.649 20.975,-89.627 20.985)))";
 
@@ -76,7 +81,7 @@ public class GeometryRetrieverImplTest {
     @Test
     public void testRetrieveGeometryFromEmptyListShouldReturnNull()
                             throws Exception {
-        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( COVERAGE_NAME,
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME ),
                                                                          createEmptyWcsGeometryFilterInfoList() );
         assertThat( retrievedGeometry, is( nullValue() ) );
     }
@@ -84,7 +89,7 @@ public class GeometryRetrieverImplTest {
     @Test
     public void testRetrieveGeometryWithCoverageWithoutFilterShouldReturnNull()
                             throws Exception {
-        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( "coverageWithoutFilter",
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( "coverageWithoutFilter" ),
                                                                          createWcsGeometryFilterInfoList() );
         assertThat( retrievedGeometry, is( nullValue() ) );
     }
@@ -92,7 +97,7 @@ public class GeometryRetrieverImplTest {
     @Test
     public void testRetrieveGeometryWithCoverageWithoutGeometryShouldReturnNull()
                             throws Exception {
-        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( COVERAGE_NAME,
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME ),
                                                                          createWcsGeometryFilterInfoListWithoutGeometry() );
         assertThat( retrievedGeometry, is( nullValue() ) );
     }
@@ -100,7 +105,7 @@ public class GeometryRetrieverImplTest {
     @Test
     public void testRetrieveGeometryWithCoverageWithOneGeometryShouldReturnNotNull()
                             throws Exception {
-        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( COVERAGE_NAME,
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME ),
                                                                          createWcsGeometryFilterInfoList() );
         assertThat( retrievedGeometry, is( notNullValue() ) );
     }
@@ -108,7 +113,7 @@ public class GeometryRetrieverImplTest {
     @Test
     public void testRetrieveGeometryWithCoverageWithOneGeometryShouldReturnCorrectParsedGeometry()
                             throws Exception {
-        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( COVERAGE_NAME_SIMPLE,
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME_SIMPLE_1 ),
                                                                          createWcsGeometryFilterInfoListWithSimpleGeometry() );
         Geometry expectedPolygon = createExpectedGeometry();
         assertThat( retrievedGeometry, is( expectedPolygon ) );
@@ -117,9 +122,19 @@ public class GeometryRetrieverImplTest {
     @Test
     public void testRetrieveGeometryWithCoverageFromMultipleGeometriesShouldReturnCorrectParsedGeometry()
                             throws Exception {
-        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( COVERAGE_NAME_SIMPLE,
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME_SIMPLE_1 ),
                                                                          createWcsGeometryFilterInfoListWithMultipleGeometries() );
         Geometry expectedPolygon = createExpectedGeometry();
+        assertThat( retrievedGeometry, is( expectedPolygon ) );
+    }
+
+    @Test
+    public void testRetrieveGeometryWithCoverageFromMultipleLayerNamesShouldReturnUnion()
+                            throws Exception {
+        Geometry retrievedGeometry = geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME_SIMPLE_1,
+                                                                                 COVERAGE_NAME_SIMPLE_2 ),
+                                                                         createWcsGeometryFilterInfoListWithSimpleGeometry() );
+        Geometry expectedPolygon = createExpectedGeometryUnion();
         assertThat( retrievedGeometry, is( expectedPolygon ) );
     }
 
@@ -130,9 +145,15 @@ public class GeometryRetrieverImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
+    public void testRetrieveGeometryWithEmptyLayerNamesListShouldFail()
+                            throws Exception {
+        geometryRetriever.retrieveGeometry( Collections.<String> emptyList(), createWcsGeometryFilterInfoList() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
     public void testRetrieveGeometryWithNullGeoemtryFilterListShouldFail()
                             throws Exception {
-        geometryRetriever.retrieveGeometry( COVERAGE_NAME, null );
+        geometryRetriever.retrieveGeometry( asList( COVERAGE_NAME ), null );
     }
 
     /*
@@ -172,15 +193,16 @@ public class GeometryRetrieverImplTest {
 
     private List<GeometryFilterInfo> createWcsGeometryFilterInfoListWithSimpleGeometry() {
         List<GeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<GeometryFilterInfo>();
-        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE_1, GEOMETRY_SIMPLE_1 ) );
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE_2, GEOMETRY_SIMPLE_2 ) );
         return wcsGeometryFilterInfos;
     }
 
     private List<GeometryFilterInfo> createWcsGeometryFilterInfoListWithMultipleGeometries() {
         List<GeometryFilterInfo> wcsGeometryFilterInfos = new ArrayList<GeometryFilterInfo>();
-        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE_1, GEOMETRY_SIMPLE_1 ) );
         wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME, GEOMETRY ) );
-        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE, GEOMETRY_SIMPLE ) );
+        wcsGeometryFilterInfos.add( new GeometryFilterInfo( COVERAGE_NAME_SIMPLE_1, GEOMETRY_SIMPLE_1 ) );
         return wcsGeometryFilterInfos;
     }
 
@@ -189,6 +211,16 @@ public class GeometryRetrieverImplTest {
         GeometryFactory geometryFactory = new GeometryFactory();
         Coordinate[] coordinates = new Coordinate[] { new Coordinate( 30, 10 ), new Coordinate( 10, 20 ),
                                                      new Coordinate( 20, 40 ), new Coordinate( 40, 40 ),
+                                                     new Coordinate( 30, 10 ) };
+        return geometryFactory.createPolygon( coordinates );
+    }
+
+    private Geometry createExpectedGeometryUnion() {
+        // POLYGON ((30 10, 10 20, 20 40, 40 40, 30 10))
+        // POLYGON ((30 10, 10 20, 20 60, 60 60, 30 10))
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Coordinate[] coordinates = new Coordinate[] { new Coordinate( 30, 10 ), new Coordinate( 10, 20 ),
+                                                     new Coordinate( 20, 60 ), new Coordinate( 60, 60 ),
                                                      new Coordinate( 30, 10 ) };
         return geometryFactory.createPolygon( coordinates );
     }

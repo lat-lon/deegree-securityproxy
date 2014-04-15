@@ -35,14 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wcs.responsefilter.clipping;
 
+import static java.util.Arrays.asList;
+import static org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager.NOT_A_CORRECT_REQUEST_MSG;
+import static org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.DEFAULT_BODY;
 import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.DEFAULT_STATUS_CODE;
-import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.NOT_A_CORRECT_REQUEST_MSG;
 import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.REQUEST_AREA_HEADER_KEY;
-import static org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyObject;
@@ -73,7 +75,6 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
@@ -132,7 +133,7 @@ public class WcsClippingResponseFilterManagerTest {
     private static ResponseClippingReport mockEmptyReport;
 
     @Autowired
-    private AbstractResponseFilterManager wcsClippingResponseFilterManager;
+    private WcsClippingResponseFilterManager wcsClippingResponseFilterManager;
 
     @Autowired
     private GeometryRetriever geometryRetriever;
@@ -406,6 +407,36 @@ public class WcsClippingResponseFilterManagerTest {
         assertThat( canBeFiltered, is( false ) );
     }
 
+    @Test
+    public void testRetrieveLayerNamesFromOneCoverage()
+                            throws Exception {
+        List<String> layerNames = wcsClippingResponseFilterManager.retrieveLayerNames( createWcsGetCoverageRequest() );
+
+        assertThat( layerNames.size(), is( 1 ) );
+        assertThat( layerNames, hasItem( COVERAGE_NAME ) );
+    }
+
+    @Test
+    public void testRetrieveLayerNamesFromMultipleCoverages()
+                            throws Exception {
+        List<String> layerNames = wcsClippingResponseFilterManager.retrieveLayerNames( createWcsGetCoverageRequestWithMultipleCoverages() );
+
+        assertThat( layerNames.size(), is( 1 ) );
+        assertThat( layerNames, hasItem( COVERAGE_NAME ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRetrieveLayerNamesFromNullCoverage()
+                            throws Exception {
+        wcsClippingResponseFilterManager.retrieveLayerNames( createWcsGetCoverageRequestWithNullCoverageName() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRetrieveLayerNamesFromEmptyCoverages()
+                            throws Exception {
+        wcsClippingResponseFilterManager.retrieveLayerNames( createWcsGetCoverageRequestWithoutCoverageName() );
+    }
+
     private OwsRequest mockOwsRequest() {
         return mock( OwsRequest.class );
     }
@@ -434,6 +465,10 @@ public class WcsClippingResponseFilterManagerTest {
 
     private WcsRequest createWcsGetCoverageRequestWithNullCoverageName() {
         return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.<String> singletonList( null ), SERVICE_NAME );
+    }
+
+    private WcsRequest createWcsGetCoverageRequestWithMultipleCoverages() {
+        return new WcsRequest( GETCOVERAGE, VERSION_110, asList( COVERAGE_NAME, COVERAGE_NAME_NO_GEOM ), SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCapabilitiesRequest() {

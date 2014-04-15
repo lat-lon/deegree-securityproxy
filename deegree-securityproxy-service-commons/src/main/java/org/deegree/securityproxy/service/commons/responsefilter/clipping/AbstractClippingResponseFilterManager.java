@@ -183,7 +183,7 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
         RasterUser rasterUser = retrieveRasterUser( auth );
         List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getWcsGeometryFilterInfos();
         List<String> layerNames = retrieveLayerNames( request );
-        return geometryRetriever.retrieveGeometry( layerNames.get( 0 ), geometryFilterInfos );
+        return geometryRetriever.retrieveGeometry( layerNames, geometryFilterInfos );
     }
 
     private RasterUser retrieveRasterUser( Authentication auth ) {

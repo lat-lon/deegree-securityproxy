@@ -53,11 +53,11 @@ import com.vividsolutions.jts.io.ParseException;
 public interface GeometryRetriever {
 
     /**
-     * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by
-     * the given coverage name. The algorithm to detect or calculate the geometry is left to the implementations.
+     * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by the
+     * given layer names. The algorithm to detect or calculate the geometry is left to the implementations.
      * 
-     * @param coverageName
-     *            the name of the coverage the geometries should be retrieved for, never <code>null</code>
+     * @param layerNames
+     *            the names of the layers the geometries should be retrieved for, never <code>null</code>
      * @param geometryFilterInfos
      *            the list of {@link GeometryFilterInfo}s containing the geometries, never <code>null</code> may be
      *            empty
@@ -67,7 +67,7 @@ public interface GeometryRetriever {
      * @throws ParseException
      *             if the geometry could not be parsed or calculated
      */
-    Geometry retrieveGeometry( String coverageName, List<GeometryFilterInfo> geometryFilterInfos )
+    Geometry retrieveGeometry( List<String> layerNames, List<GeometryFilterInfo> geometryFilterInfos )
                             throws IllegalArgumentException, ParseException;
 
 }

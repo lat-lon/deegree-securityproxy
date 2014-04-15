@@ -44,9 +44,8 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 /**
- * Retrieve the clipping geometry from a list of {@link GeometryFilterInfo}s. If multiple
- * {@link GeometryFilterInfo} for one coverage exist the first one is parsed as geometry. There is no mechanism to
- * detect inconsistent data.
+ * The union of all layers with clipping area is calculated. If multiple {@link GeometryFilterInfo} for one layer exist
+ * the first one is parsed as geometry. There is no mechanism to detect inconsistent data.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -56,30 +55,46 @@ import com.vividsolutions.jts.io.WKTReader;
 public class GeometryRetrieverImpl implements GeometryRetriever {
 
     @Override
-    public Geometry retrieveGeometry( String coverageName, List<GeometryFilterInfo> geometryFilterInfos )
+    public Geometry retrieveGeometry( List<String> layerNames, List<GeometryFilterInfo> geometryFilterInfos )
                             throws IllegalArgumentException, ParseException {
-        checkParameters( coverageName, geometryFilterInfos );
-
-        String geometryAsString = retrieveGeometryFromList( coverageName, geometryFilterInfos );
-        if ( geometryAsString != null )
-            return parseGeometry( geometryAsString );
-        return null;
+        checkParameters( layerNames, geometryFilterInfos );
+        return calculateGeometry( layerNames, geometryFilterInfos );
     }
 
-    private void checkParameters( String coverageName, List<GeometryFilterInfo> geometryFilterInfos ) {
-        if ( coverageName == null )
-            throw new IllegalArgumentException( "Coverage name must not be null!" );
-        if ( geometryFilterInfos == null )
-            throw new IllegalArgumentException( "GeometryFilterInfos name must not be null!" );
+    String normaliseWkt( String geometryAsString ) {
+        if ( geometryAsString.startsWith( "SRID" ) )
+            return geometryAsString.substring( geometryAsString.indexOf( ";" ) + 1 );
+        return geometryAsString;
     }
 
-    private String retrieveGeometryFromList( String coverageName, List<GeometryFilterInfo> geometryFilterInfos ) {
+    private Geometry calculateGeometry( List<String> layerNames, List<GeometryFilterInfo> geometryFilterInfos )
+                            throws ParseException {
+        Geometry union = null;
+        for ( String layerName : layerNames ) {
+            Geometry geometryOfLayer = retrieveGeometryForLayer( geometryFilterInfos, layerName );
+            union = addToUnion( union, geometryOfLayer );
+        }
+        return union;
+    }
+
+    private Geometry retrieveGeometryForLayer( List<GeometryFilterInfo> geometryFilterInfos, String layerName )
+                            throws ParseException {
         for ( GeometryFilterInfo wcsGeometryFilterInfo : geometryFilterInfos ) {
-            if ( coverageName.equals( wcsGeometryFilterInfo.getLayerName() ) ) {
-                return wcsGeometryFilterInfo.getGeometryString();
+            if ( layerName.equals( wcsGeometryFilterInfo.getLayerName() ) ) {
+                String geometryString = wcsGeometryFilterInfo.getGeometryString();
+                if ( geometryString != null )
+                    return parseGeometry( geometryString );
             }
         }
         return null;
+    }
+
+    private Geometry addToUnion( Geometry union, Geometry layerGeometry ) {
+        if ( union == null )
+            return layerGeometry;
+        if ( layerGeometry == null )
+            return union;
+        return union.union( layerGeometry );
     }
 
     private Geometry parseGeometry( String geometryFromDb )
@@ -89,10 +104,11 @@ public class GeometryRetrieverImpl implements GeometryRetriever {
         return wktReader.read( wkt );
     }
 
-    String normaliseWkt( String geometryAsString ) {
-        if ( geometryAsString.startsWith( "SRID" ) )
-            return geometryAsString.substring( geometryAsString.indexOf( ";" ) + 1 );
-        return geometryAsString;
+    private void checkParameters( List<String> layerNames, List<GeometryFilterInfo> geometryFilterInfos ) {
+        if ( layerNames == null || layerNames.isEmpty() )
+            throw new IllegalArgumentException( "List of layer names must not be null or empty!" );
+        if ( geometryFilterInfos == null )
+            throw new IllegalArgumentException( "GeometryFilterInfos name must not be null!" );
     }
 
 }
