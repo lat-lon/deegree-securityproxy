@@ -110,6 +110,12 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
     </dependency>
+    <!-- geotools -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-render</artifactId>
+      <version>9.5</version>
+    </dependency>
   </dependencies>
 
 </project>
