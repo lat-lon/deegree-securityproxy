@@ -16,6 +16,8 @@ import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
+import com.vividsolutions.jts.geom.Envelope;
+
 /**
  * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a
  * {@link org.deegree.securityproxy.wms.request.WmsRequest}.
@@ -95,7 +97,10 @@ public class WmsRequestParser implements OwsRequestParser {
 
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         List<String> separatedLayers = extractLayers( normalizedParameterMap.get( LAYERS ) );
-        return new WmsRequest( GETMAP, version, separatedLayers, serviceName );
+        Envelope bbox = extractBbox( normalizedParameterMap.get( BBOX ) );
+        String crs = extractCrs( normalizedParameterMap.get( CRS ) );
+        String format = extractFormat( normalizedParameterMap.get( FORMAT ) );
+        return new WmsRequest( GETMAP, version, separatedLayers, serviceName, bbox, crs, format );
     }
 
     private WmsRequest parseGetFeatureInfoRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
@@ -146,6 +151,23 @@ public class WmsRequestParser implements OwsRequestParser {
             }
         }
         return separatedLayers;
+    }
+
+    private Envelope extractBbox( String[] bboxParameters ) {
+        //TODO: Implement creation of Envelope.
+        return null;
+    }
+
+    private String extractCrs( String[] crsParameters ) {
+        if ( crsParameters == null || crsParameters.length == 0 )
+            return null;
+        return crsParameters[0];
+    }
+
+    private String extractFormat( String[] formatParameters ) {
+        if ( formatParameters == null || formatParameters.length == 0 )
+            return null;
+        return formatParameters[0];
     }
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap ) {
