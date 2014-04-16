@@ -24,16 +24,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
- * Tests for {@link WmsClipper}.
+ * Tests for {@link SimpleRasterClipper}.
  * 
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WmsClipperTest {
+public class SimpleRasterClipperTest {
 
-    private final ImageClipper wmsClipper = new WmsClipper();
+    private final ImageClipper wmsClipper = new SimpleRasterClipper();
 
     @Test
     public void testCalculateClippedImageWithPngImage()
@@ -116,17 +116,17 @@ public class WmsClipperTest {
     }
 
     private File createNewFile( String resourceName ) {
-        return new File( WmsClipperTest.class.getResource( resourceName ).getPath() );
+        return new File( SimpleRasterClipperTest.class.getResource( resourceName ).getPath() );
     }
 
     private File createNewTempFileInPngFormat()
                             throws IOException {
-        return File.createTempFile( WmsClipperTest.class.getSimpleName(), ".png" );
+        return File.createTempFile( SimpleRasterClipperTest.class.getSimpleName(), ".png" );
     }
 
     private File createNewTempFileInJpgFormat()
                             throws IOException {
-        return File.createTempFile( WmsClipperTest.class.getSimpleName(), ".jpg" );
+        return File.createTempFile( SimpleRasterClipperTest.class.getSimpleName(), ".jpg" );
     }
 
     private InputStream createInputStreamFrom( File file )

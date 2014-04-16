@@ -70,9 +70,9 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WmsClipper implements ImageClipper {
+public class SimpleRasterClipper implements ImageClipper {
 
-    private static final Logger LOG = Logger.getLogger( WmsClipper.class );
+    private static final Logger LOG = Logger.getLogger( SimpleRasterClipper.class );
 
     private static final String PNG_FORMAT = "PNG";
 
