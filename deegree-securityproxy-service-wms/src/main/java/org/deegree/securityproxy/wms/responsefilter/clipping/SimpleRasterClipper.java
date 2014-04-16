@@ -43,9 +43,13 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -78,8 +82,6 @@ public class SimpleRasterClipper implements ImageClipper {
 
     private static final String JPG_FORMAT = "JPG";
 
-    private static final String JPEG_FORMAT = "JPG";
-
     private Map<String, String> mimetypeToFileExtensions;
 
     @Override
@@ -94,12 +96,26 @@ public class SimpleRasterClipper implements ImageClipper {
                 BufferedImage inputImage = ImageIO.read( imageToClip );
                 BufferedImage outputImage = createOutputImage( inputImage, format );
                 executeClipping( visibleArea, wmsRequest, inputImage, outputImage );
-                ImageIO.write( outputImage, format, destination );
+                Iterator<ImageWriter> iterator = ImageIO.getImageWritersByFormatName( format );
+                ImageWriter imageWriter;
+                if ( iterator.hasNext() )
+                    imageWriter = iterator.next();
+                else {
+                    Exception e = new Exception( "No image writer was found!" );
+                    throw new ClippingException( e );
+                }
+                ImageWriteParam writerParam = imageWriter.getDefaultWriteParam();
+                if ( JPG_FORMAT.equals( format ) ) {
+                    writerParam.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
+                    writerParam.setCompressionQuality( 1f );
+                }
+                imageWriter.setOutput( ImageIO.createImageOutputStream( destination ) );
+                imageWriter.write( null, new IIOImage( outputImage, null, null ), writerParam );
+                imageWriter.dispose();
             } catch ( Exception e ) {
                 e.printStackTrace();
             }
         }
-
         return null;
     }
 
@@ -115,7 +131,7 @@ public class SimpleRasterClipper implements ImageClipper {
             mimetypeToFileExtensions = new HashMap<String, String>();
             mimetypeToFileExtensions.put( "image/png", PNG_FORMAT );
             mimetypeToFileExtensions.put( "image/jpg", JPG_FORMAT );
-            mimetypeToFileExtensions.put( "image/jpeg", JPEG_FORMAT );
+            mimetypeToFileExtensions.put( "image/jpeg", JPG_FORMAT );
         }
         return mimetypeToFileExtensions;
     }
@@ -139,12 +155,10 @@ public class SimpleRasterClipper implements ImageClipper {
     private BufferedImage createOutputImage( BufferedImage inputImage, String format ) {
         int inputImageWidth = inputImage.getWidth();
         int inputImageHeight = inputImage.getHeight();
+        int inputImageType = inputImage.getType();
         if ( PNG_FORMAT.equals( format ) )
-            return new BufferedImage( inputImageWidth, inputImageHeight, BufferedImage.TYPE_INT_ARGB );
-        else {
-            int inputImageType = inputImage.getType();
-            return new BufferedImage( inputImageWidth, inputImageHeight, inputImageType );
-        }
+            inputImageType = BufferedImage.TYPE_INT_ARGB;
+        return new BufferedImage( inputImageWidth, inputImageHeight, inputImageType );
     }
 
     private AffineTransform createWorldToScreenTransformation( BufferedImage inputImage, WmsRequest wmsRequest )

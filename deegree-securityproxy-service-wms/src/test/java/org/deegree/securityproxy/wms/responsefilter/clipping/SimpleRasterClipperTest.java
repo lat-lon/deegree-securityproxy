@@ -85,7 +85,7 @@ public class SimpleRasterClipperTest {
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
         wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
-                                          createWmsRequestWithPngFormatAndLargeBbox() );
+                                          createWmsRequestWithPngFormatAndSmallBbox() );
 
         inputStream.close();
         outputStream.close();
@@ -105,7 +105,7 @@ public class SimpleRasterClipperTest {
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
         wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
-                                          createWmsRequestWithJpgFormatAndLargeBbox() );
+                                          createWmsRequestWithJpgFormatAndSmallBbox() );
 
         inputStream.close();
         outputStream.close();
@@ -154,13 +154,13 @@ public class SimpleRasterClipperTest {
         return createWmsRequest( format );
     }
 
-    private OwsRequest createWmsRequestWithPngFormatAndLargeBbox() {
+    private OwsRequest createWmsRequestWithPngFormatAndSmallBbox() {
         String format = "image/png";
         Envelope bbox = new Envelope( 8, 10, 51, 53 );
         return createWmsRequest( format, bbox );
     }
 
-    private OwsRequest createWmsRequestWithJpgFormatAndLargeBbox() {
+    private OwsRequest createWmsRequestWithJpgFormatAndSmallBbox() {
         String format = "image/jpg";
         Envelope bbox = new Envelope( 8, 10, 51, 53 );
         return createWmsRequest( format, bbox );
