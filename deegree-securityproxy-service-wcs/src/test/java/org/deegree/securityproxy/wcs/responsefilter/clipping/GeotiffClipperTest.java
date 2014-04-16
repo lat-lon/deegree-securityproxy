@@ -39,24 +39,22 @@ import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_COMPRESS
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_RESOLUTION_UNIT;
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_X_RESOLUTION;
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_Y_RESOLUTION;
-import static javax.imageio.ImageIO.read;
+import static org.deegree.matcher.image.ImageMatcher.hasNotSamePixels;
+import static org.deegree.matcher.image.ImageMatcher.hasSameDimension;
+import static org.deegree.matcher.image.ImageMatcher.hasSamePixels;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 
-import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadataNode;
 
 import org.deegree.securityproxy.request.OwsRequest;
@@ -67,9 +65,6 @@ import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.geometry.GeneralEnvelope;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -624,130 +619,6 @@ public class GeotiffClipperTest {
         LinearRing holes[] = { hole };
 
         return geometryFactory.createPolygon( shell, holes );
-    }
-
-    private Matcher<File> hasSameDimension( File sourceFile )
-                            throws IOException {
-
-        BufferedImage sourceImage = read( sourceFile );
-        final int heightSource = sourceImage.getHeight();
-        final int widthSource = sourceImage.getWidth();
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    int heightDestination = destinationImage.getHeight();
-                    int widthDestination = destinationImage.getWidth();
-
-                    return heightDestination == heightSource && widthDestination == widthSource;
-                } catch ( IOException e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should have the same width and heigth as the source ( " + widthSource + " * "
-                                        + heightSource + ")!" );
-            }
-        };
-    }
-
-    private Matcher<File> hasSamePixels( File sourceFile )
-                            throws Exception {
-
-        BufferedImage sourceImage = ImageIO.read( sourceFile );
-        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
-
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
-                    return Arrays.equals( destinationPixels, sourcePixelsToCompare );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should contain the same pixels as the source!" );
-            }
-        };
-    }
-
-    private Matcher<File> hasNotSamePixels( File sourceFile )
-                            throws Exception {
-
-        BufferedImage sourceImage = ImageIO.read( sourceFile );
-        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
-
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
-                    return !Arrays.equals( destinationPixels, sourcePixelsToCompare );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should not contain the same pixels as the source!" );
-            }
-        };
     }
 
     private Geometry convertImageEnvelopeToGeometry( GeoTiffReader reader ) {

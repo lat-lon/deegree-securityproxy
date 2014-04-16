@@ -1,32 +1,24 @@
 package org.deegree.securityproxy.wms.responsefilter.clipping;
 
-import static javax.imageio.ImageIO.read;
+import static org.deegree.matcher.image.ImageMatcher.hasNotSamePixels;
+import static org.deegree.matcher.image.ImageMatcher.hasSameDimension;
 import static org.junit.Assert.assertThat;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
 
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.mockito.Mockito;
 
 /**
  * Tests for {@link WmsClipper}.
@@ -49,13 +41,14 @@ public class WmsClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream, Mockito.mock( OwsRequest.class) );
+        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
+                                          Mockito.mock( OwsRequest.class ) );
 
         inputStream.close();
         outputStream.close();
 
-        // TODO: Add assertions.
         assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
     }
 
     @Test
@@ -67,12 +60,14 @@ public class WmsClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream, Mockito.mock( OwsRequest.class) );
+        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
+                                          Mockito.mock( OwsRequest.class ) );
 
         inputStream.close();
         outputStream.close();
 
         assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
     }
 
     private File createNewFile( String resourceName ) {
@@ -102,52 +97,6 @@ public class WmsClipperTest {
     private Geometry createVisibleArea() {
         Envelope envelope = new Envelope( 8, 10, 51, 53 );
         return new GeometryFactory().toGeometry( envelope );
-    }
-
-    private Matcher<File> hasNotSamePixels( File sourceFile )
-                            throws Exception {
-
-        BufferedImage sourceImage = ImageIO.read( sourceFile );
-        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
-
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
-                    return !Arrays.equals( destinationPixels, sourcePixelsToCompare );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should not contain the same pixels as the source!" );
-            }
-        };
     }
 
 }

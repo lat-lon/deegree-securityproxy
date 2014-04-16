@@ -42,6 +42,10 @@
       <groupId>org.xmlmatchers</groupId>
       <artifactId>xml-matchers</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-matcher</artifactId>
+    </dependency>
     <!-- JDBC -->
     <dependency>
       <groupId>postgresql</groupId>
