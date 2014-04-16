@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -25,6 +26,7 @@ import org.junit.Test;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.mockito.Mockito;
 
 /**
  * Tests for {@link WmsClipper}.
@@ -47,16 +49,15 @@ public class WmsClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream );
+        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream, Mockito.mock( OwsRequest.class) );
 
         inputStream.close();
         outputStream.close();
 
         // TODO: Add assertions.
-        // assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
+        assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
     }
 
-    @Ignore
     @Test
     public void testCalculateClippedImageWithJpgImage()
                             throws Exception {
@@ -66,7 +67,7 @@ public class WmsClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream );
+        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream, Mockito.mock( OwsRequest.class) );
 
         inputStream.close();
         outputStream.close();
