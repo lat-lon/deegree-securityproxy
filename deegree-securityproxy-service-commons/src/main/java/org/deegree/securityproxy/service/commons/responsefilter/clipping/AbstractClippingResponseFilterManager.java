@@ -124,7 +124,7 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
                             throws IOException {
         try {
             Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
-            return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry );
+            return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry, request );
         } catch ( ParseException e ) {
             return handleException( servletResponse, e );
         } catch ( ClippingException e ) {
@@ -149,12 +149,13 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
     protected abstract List<String> retrieveLayerNames( OwsRequest request );
 
     private DefaultResponseFilterReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
-                                                                         Geometry clippingGeometry )
+                                                                         Geometry clippingGeometry, OwsRequest request )
                             throws IOException, ClippingException {
         InputStream imageAsStream = servletResponse.getBufferedStream();
         ByteArrayOutputStream destination = new ByteArrayOutputStream();
         ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
-                                                                                        clippingGeometry, destination );
+                                                                                        clippingGeometry, destination,
+                                                                                        request );
 
         addHeaderInfoIfNoFailureOccurred( servletResponse, clippedImageReport );
         // required to set the header (must be set BEFORE any data is written to the response)

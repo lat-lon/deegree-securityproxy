@@ -35,7 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.responsefilter.clipping;
 
-import static java.io.File.createTempFile;
 import static org.geotools.referencing.CRS.decode;
 
 import java.awt.*;
@@ -47,6 +46,7 @@ import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
@@ -71,7 +71,7 @@ public class WmsClipper implements ImageClipper {
 
     @Override
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
-                                                         OutputStream destination )
+                                                         OutputStream destination, OwsRequest request )
                             throws IllegalArgumentException, ClippingException {
         checkRequiredParameters( imageToClip, destination );
 
@@ -90,7 +90,8 @@ public class WmsClipper implements ImageClipper {
             graphics.clip( clippingArea );
             graphics.drawImage( image, null, 0, 0 );
 
-            ImageIO.write( outputImage, "PNG", createTempFile( "imageToClip", ".png" ) );
+            // ImageIO.write( outputImage, "PNG", createTempFile( "imageToClip", ".png" ) );
+            ImageIO.write( outputImage, "PNG", destination );
         } catch ( Exception e ) {
             e.printStackTrace();
         }

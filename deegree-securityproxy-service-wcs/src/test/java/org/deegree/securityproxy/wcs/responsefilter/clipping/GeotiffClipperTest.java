@@ -59,6 +59,7 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadataNode;
 
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
@@ -99,13 +100,13 @@ public class GeotiffClipperTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullImageStreamShouldFail()
                             throws Exception {
-        geotiffClipper.calculateClippedImage( null, mockClippingGeometry(), mockOutputStream() );
+        geotiffClipper.calculateClippedImage( null, mockClippingGeometry(), mockOutputStream(), mockOwsRequest() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullOutputStreamShouldFail()
                             throws Exception {
-        geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null );
+        geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null, mockOwsRequest() );
     }
 
     /*
@@ -121,7 +122,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -139,7 +140,8 @@ public class GeotiffClipperTest {
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, createEnvelopeWithImageInsideInWgs84(), outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, createEnvelopeWithImageInsideInWgs84(), outputStream,
+                                              mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -158,7 +160,7 @@ public class GeotiffClipperTest {
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
         geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -176,7 +178,8 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutsideInWgs84(), outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutsideInWgs84(), outputStream,
+                                              mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -195,7 +198,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
 
         geotiffClipper.calculateClippedImage( inputStream, createPolygonGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -215,7 +218,7 @@ public class GeotiffClipperTest {
 
         geotiffClipper.calculateClippedImage( inputStream,
                                               createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -239,7 +242,7 @@ public class GeotiffClipperTest {
 
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
                                                                               createEnvelopeWithImageInsideInWgs84(),
-                                                                              outputStream );
+                                                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -261,7 +264,7 @@ public class GeotiffClipperTest {
 
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
                                                                               createGeometryWithImageOutsideInWgs84(),
-                                                                              outputStream );
+                                                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -283,7 +286,7 @@ public class GeotiffClipperTest {
 
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
                                                                               createGeometryWithImageInsideAndOutsideInWgs84(),
-                                                                              outputStream );
+                                                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -307,7 +310,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
 
         geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
     }
 
@@ -323,7 +326,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -347,7 +350,7 @@ public class GeotiffClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
-        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -544,6 +547,10 @@ public class GeotiffClipperTest {
 
     private Geometry mockClippingGeometry() {
         return mock( Geometry.class );
+    }
+
+    private OwsRequest mockOwsRequest() {
+        return mock( OwsRequest.class );
     }
 
     private Geometry createWholeImageVisibleEnvelopeInImageCrs() {

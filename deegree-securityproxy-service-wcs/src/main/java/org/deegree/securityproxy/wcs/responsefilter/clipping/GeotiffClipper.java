@@ -50,9 +50,10 @@ import java.io.OutputStream;
 import javax.imageio.metadata.IIOMetadataNode;
 
 import org.apache.log4j.Logger;
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.processing.operation.Crop;
 import org.geotools.coverage.processing.operation.Resample;
@@ -88,7 +89,7 @@ public class GeotiffClipper implements ImageClipper {
 
     @Override
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
-                                                         OutputStream destination )
+                                                         OutputStream destination, OwsRequest request )
                             throws IllegalArgumentException, ClippingException {
         checkRequiredParameters( imageToClip, destination );
 

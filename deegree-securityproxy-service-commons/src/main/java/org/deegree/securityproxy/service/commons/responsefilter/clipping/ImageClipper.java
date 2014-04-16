@@ -38,6 +38,7 @@ package org.deegree.securityproxy.service.commons.responsefilter.clipping;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 
@@ -62,6 +63,8 @@ public interface ImageClipper {
      *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
      * @param destination
      *            {@link OutputStream} to write the image, never <code>null</code>
+     * @param request
+     *            incoming {@link OwsRequest}, never <code>null</code>
      * @throws IllegalArgumentException
      *             if one one the parameter is <code>null</code>
      * @throws org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException
@@ -70,7 +73,7 @@ public interface ImageClipper {
      *         geometry
      */
     ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
-                                                  OutputStream destination )
+                                                  OutputStream destination, OwsRequest request )
                             throws IllegalArgumentException, ClippingException;
 
 }

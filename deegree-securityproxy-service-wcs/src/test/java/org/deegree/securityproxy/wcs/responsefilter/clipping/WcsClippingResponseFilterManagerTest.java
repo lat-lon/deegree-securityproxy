@@ -160,18 +160,18 @@ public class WcsClippingResponseFilterManagerTest {
         reset( imageClipper );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometrySimple ),
-                                                  (OutputStream) anyObject() ) ).thenReturn( mockReport );
+                                                  (OutputStream) anyObject(), (OwsRequest) anyObject() ) ).thenReturn( mockReport );
         ClippingException exception = mock( ClippingException.class );
         when( exception.getMessage() ).thenReturn( REPORT_FAILURE );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometryFailure ),
-                                                  (OutputStream) anyObject() ) ).thenThrow( exception );
+                                                  (OutputStream) anyObject(), (OwsRequest) anyObject() ) ).thenThrow( exception );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), eq( geometryEmpty ),
-                                                  (OutputStream) anyObject() ) ).thenReturn( mockEmptyReport );
+                                                  (OutputStream) anyObject(), (OwsRequest) anyObject() ) ).thenReturn( mockEmptyReport );
         when(
               imageClipper.calculateClippedImage( (InputStream) anyObject(), (Geometry) isNull(),
-                                                  (OutputStream) anyObject() ) ).thenReturn( mockReport );
+                                                  (OutputStream) anyObject(), (OwsRequest) anyObject() ) ).thenReturn( mockReport );
     }
 
     /*
