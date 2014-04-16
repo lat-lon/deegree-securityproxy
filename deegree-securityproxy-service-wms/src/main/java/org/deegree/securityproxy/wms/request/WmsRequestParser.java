@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.wms.request;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
@@ -80,6 +81,21 @@ public class WmsRequestParser implements OwsRequestParser {
         return parseRequest( serviceName, normalizedParameterMap );
     }
 
+    Envelope parseBbox( String bboxParameter ) {
+        String[] coordinates = bboxParameter.split( "," );
+        if ( coordinates.length != 4 ) {
+            String msg = format( "Format of Parameter 'BBox' is invalid, must be minX,minY,maxX,maxY, was %s",
+                                 bboxParameter );
+            throw new IllegalArgumentException( msg );
+        }
+        double minX = parseDouble( "minX", coordinates[0] );
+        double minY = parseDouble( "minY", coordinates[1] );
+        double maxX = parseDouble( "maxY", coordinates[2] );
+        double maxY = parseDouble( "maxY", coordinates[3] );
+
+        return new Envelope( minX, maxX, minY, maxY );
+    }
+
     private WmsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
         String type = normalizedParameterMap.get( REQUEST )[0];
@@ -154,20 +170,25 @@ public class WmsRequestParser implements OwsRequestParser {
     }
 
     private Envelope extractBbox( String[] bboxParameters ) {
-        //TODO: Implement creation of Envelope.
-        return null;
+        String bboxParameter = bboxParameters[0];
+        return parseBbox( bboxParameter );
     }
 
     private String extractCrs( String[] crsParameters ) {
-        if ( crsParameters == null || crsParameters.length == 0 )
-            return null;
         return crsParameters[0];
     }
 
     private String extractFormat( String[] formatParameters ) {
-        if ( formatParameters == null || formatParameters.length == 0 )
-            return null;
         return formatParameters[0];
+    }
+
+    private double parseDouble( String coordName, String coordinate ) {
+        try {
+            return Double.parseDouble( coordinate.trim() );
+        } catch ( NumberFormatException e ) {
+            String msg = format( "Coordinate %s is not a valid double value: %s", coordName, coordinate );
+            throw new IllegalArgumentException( msg );
+        }
     }
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap ) {

@@ -51,10 +51,11 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tests for {@link WmsRequestParser}.
@@ -105,7 +106,9 @@ public class WmsRequestParserTest {
 
     private static final String CRS_NAME = "EPSG:4326";
 
-    private static final String BBOX_NAME = "-89.67,20.25,-89.32,20.44";
+    private static final String BBOX_NAME = "-89.67,20.25,-89.67,20.44";
+
+    private static final Envelope BBOX = new Envelope( -89.67, -89.67, 20.25, 20.44 );
 
     private static final String WIDTH_NAME = "50";
 
@@ -121,7 +124,7 @@ public class WmsRequestParserTest {
 
     private static final String J_NAME = "50";
 
-    private final OwsRequestParser parser = new WmsRequestParser();
+    private final WmsRequestParser parser = new WmsRequestParser();
 
     /* Tests for valid requests for WMS GetCapabilities */
     @Test
@@ -205,6 +208,45 @@ public class WmsRequestParserTest {
         assertThat( layerNames.size(), is( 2 ) );
         assertThat( layerNames, hasItem( LAYER_NAME ) );
         assertThat( layerNames, hasItem( LAYER_NAME_2 ) );
+    }
+
+    @Test
+    public void testParseFromGetMapRequestShouldParseFormat()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetMapRequest();
+        WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
+        String format = wmsRequest.getFormat();
+        assertThat( format, is( FORMAT_NAME ) );
+    }
+
+    @Test
+    public void testParseFromGetMapRequestShouldParseCrs()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetMapRequest();
+        WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
+        String crs = wmsRequest.getCrs();
+        assertThat( crs, is( CRS_NAME ) );
+    }
+
+    @Test
+    public void testParseFromGetMapRequestShouldParseBbox()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest request = mockWmsGetMapRequest();
+        WmsRequest wmsRequest = (WmsRequest) parser.parse( request );
+        Envelope bbox = wmsRequest.getBbox();
+        assertThat( bbox, is( BBOX ) );
+    }
+
+    @Test
+    public void testParseBboxFromValidString() {
+        Envelope parsedBbox = parser.parseBbox( BBOX_NAME );
+        assertThat( parsedBbox, is( BBOX ) );
+    }
+
+    @Test
+    public void testParseBboxFromValidStringWithWhiteSpace() {
+        Envelope parsedBbox = parser.parseBbox( "1,3, 6, 8" );
+        assertThat( parsedBbox, is( new Envelope( 1, 6, 3, 8 ) ) );
     }
 
     /* Test for invalid requests */
@@ -312,6 +354,16 @@ public class WmsRequestParserTest {
     public void testParseWithMissingVersionParameter()
                             throws UnsupportedRequestTypeException {
         parser.parse( mockValidWmsRequestMissingVersionParameter() );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseBboxWithMissingCoordinateShouldFail() {
+        parser.parseBbox( "1.98,3,4" );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseBboxWithInvalidCoordinateShouldFail() {
+        parser.parseBbox( "1,3,4,8a" );
     }
 
     private HttpServletRequest mockWmsGetCapabilitiesRequestMissingServiceName() {
