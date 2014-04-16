@@ -113,8 +113,11 @@ public class WmsRequest extends OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      * @param bbox
+     *            the bbox of the service, can be <code>null</code>
      * @param crs
+     *            the crs of the service, can be <code>null</code>
      * @param format
+     *            the format of the service, can be <code>null</code>
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
                        String serviceName, Envelope bbox, String crs, String format ) {
@@ -136,8 +139,11 @@ public class WmsRequest extends OwsRequest {
      * @param serviceName
      *            the name of the service, never <code>null</code>
      * @param bbox
+     *            the bbox of the service, can be <code>null</code>
      * @param crs
+     *            the crs of the service, can be <code>null</code>
      * @param format
+     *            the format of the service, can be <code>null</code>
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
                        List<String> queryLayerNames, String serviceName, Envelope bbox, String crs, String format ) {
@@ -169,6 +175,27 @@ public class WmsRequest extends OwsRequest {
      */
     public List<String> getQueryLayerNames() {
         return Collections.unmodifiableList( queryLayerNames );
+    }
+
+    /**
+     * @return the bbox, can be <code>null</code>
+     */
+    public Envelope getBbox() {
+        return bbox;
+    }
+
+    /**
+     * @return the crs, can be <code>null</code>
+     */
+    public String getCrs() {
+        return crs;
+    }
+
+    /**
+     * @return the format, can be <code>null</code>
+     */
+    public String getFormat() {
+        return format;
     }
 
     @Override
