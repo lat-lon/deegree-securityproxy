@@ -142,7 +142,7 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
      * 
      * @param request
      *            containing the request parameter, never <code>null</code>
-     * @return layer names requested layer names, never <code>null</code> or empty
+     * @return List of requested layer names, never <code>null</code> or empty
      * @throws IllegalArgumentException
      *             - request does not contain any layer names
      */
