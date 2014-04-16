@@ -99,7 +99,7 @@ public class WmsClipperTest {
     public void testCalculateClippedImageWithJpgImageInsideClippingArea()
                             throws Exception {
         File sourceFile = createNewFile( "saltlakecity_0_0.jpg" );
-        File destinationFile = createNewTempFileInPngFormat();
+        File destinationFile = createNewTempFileInJpgFormat();
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );

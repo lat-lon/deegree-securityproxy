@@ -74,19 +74,25 @@ public class WmsClipper implements ImageClipper {
 
     private static final Logger LOG = Logger.getLogger( WmsClipper.class );
 
+    private static final String PNG_FORMAT = "PNG";
+
+    private static final String JPG_FORMAT = "JPG";
+
+    private static final String JPEG_FORMAT = "JPG";
+
     private Map<String, String> mimetypeToFileExtensions;
 
     @Override
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination, OwsRequest request )
                             throws IllegalArgumentException, ClippingException {
-        checkRequiredParameters( imageToClip, destination );
+        checkRequiredParameters( imageToClip, destination, request );
         WmsRequest wmsRequest = (WmsRequest) request;
         String format = parseImageFormat( wmsRequest );
         if ( format != null ) {
             try {
                 BufferedImage inputImage = ImageIO.read( imageToClip );
-                BufferedImage outputImage = createOutputImage( inputImage );
+                BufferedImage outputImage = createOutputImage( inputImage, format );
                 executeClipping( visibleArea, wmsRequest, inputImage, outputImage );
                 ImageIO.write( outputImage, format, destination );
             } catch ( Exception e ) {
@@ -107,9 +113,9 @@ public class WmsClipper implements ImageClipper {
     private synchronized Map<String, String> getAndFillMimetypeToFileExtensions() {
         if ( mimetypeToFileExtensions == null ) {
             mimetypeToFileExtensions = new HashMap<String, String>();
-            mimetypeToFileExtensions.put( "image/png", "PNG" );
-            mimetypeToFileExtensions.put( "image/jpg", "JPG" );
-            mimetypeToFileExtensions.put( "image/jpeg", "JPEG" );
+            mimetypeToFileExtensions.put( "image/png", PNG_FORMAT );
+            mimetypeToFileExtensions.put( "image/jpg", JPG_FORMAT );
+            mimetypeToFileExtensions.put( "image/jpeg", JPEG_FORMAT );
         }
         return mimetypeToFileExtensions;
     }
@@ -130,10 +136,15 @@ public class WmsClipper implements ImageClipper {
         return new LiteShape( visibleArea, transformation, false );
     }
 
-    private BufferedImage createOutputImage( BufferedImage inputImage ) {
+    private BufferedImage createOutputImage( BufferedImage inputImage, String format ) {
         int inputImageWidth = inputImage.getWidth();
         int inputImageHeight = inputImage.getHeight();
-        return new BufferedImage( inputImageWidth, inputImageHeight, BufferedImage.TYPE_INT_ARGB );
+        if ( PNG_FORMAT.equals( format ) )
+            return new BufferedImage( inputImageWidth, inputImageHeight, BufferedImage.TYPE_INT_ARGB );
+        else {
+            int inputImageType = inputImage.getType();
+            return new BufferedImage( inputImageWidth, inputImageHeight, inputImageType );
+        }
     }
 
     private AffineTransform createWorldToScreenTransformation( BufferedImage inputImage, WmsRequest wmsRequest )
@@ -160,12 +171,14 @@ public class WmsClipper implements ImageClipper {
         return new ReferencedEnvelope( bbox, crs );
     }
 
-    private void checkRequiredParameters( InputStream imageToClip, OutputStream toWriteImage )
+    private void checkRequiredParameters( InputStream imageToClip, OutputStream toWriteImage, OwsRequest request )
                             throws IllegalArgumentException {
         if ( imageToClip == null )
             throw new IllegalArgumentException( "Image to clip must not be null!" );
         if ( toWriteImage == null )
             throw new IllegalArgumentException( "Output stream to write image to must not be null!" );
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
     }
 
 }
