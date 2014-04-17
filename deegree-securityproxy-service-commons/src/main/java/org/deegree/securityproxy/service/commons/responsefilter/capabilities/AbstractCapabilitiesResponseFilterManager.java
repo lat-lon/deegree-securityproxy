@@ -36,21 +36,18 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.copyBufferedStream;
-import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.isException;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.ResponseCapabilitiesReport;
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -62,17 +59,11 @@ import org.springframework.security.core.Authentication;
  * 
  * @version $Revision: $, $Date: $
  */
-public abstract class AbstractCapabilitiesResponseFilterManager implements ResponseFilterManager {
-
-    private static final Logger LOG = Logger.getLogger( AbstractCapabilitiesResponseFilterManager.class );
+public abstract class AbstractCapabilitiesResponseFilterManager extends AbstractResponseFilterManager {
 
     public static final String SUCCESSFUL_FILTERING_MESSAGE = "Capabilities of request were filtered successfully.";
 
     public static final String FILTERING_NOT_REQUIRED_MESSAGE = "Capabilities of request must not be filtered.";
-
-    public static final String NOT_A_CAPABILITIES_REQUEST_MSG = "Request was not a GetCapabilities-Request - filtering not required.";
-
-    public static final String SERVICE_EXCEPTION_MSG = "Response is a ServiceException.";
 
     private final CapabilitiesFilter capabilitiesFilter;
 
@@ -85,71 +76,27 @@ public abstract class AbstractCapabilitiesResponseFilterManager implements Respo
     }
 
     @Override
-    public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper servletResponse, OwsRequest owsRequest,
+    protected ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest owsRequest,
                                                 Authentication auth )
-                            throws IllegalArgumentException, ResponseFilterException {
-        checkParameters( servletResponse, owsRequest );
-        if ( canBeFiltered( owsRequest ) ) {
-            LOG.info( "Apply wcs capabilities filter for response of request " + owsRequest );
+                            throws ResponseFilterException, IOException {
+        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
+        if ( decisionMaker == null ) {
+            copyBufferedStream( servletResponse );
+            return new DefaultResponseFilterReport( FILTERING_NOT_REQUIRED_MESSAGE );
+        } else {
             try {
-                if ( isException( servletResponse ) ) {
-                    LOG.debug( "Response contains an exception!" );
-                    copyBufferedStream( servletResponse );
-                    return new ResponseClippingReport( SERVICE_EXCEPTION_MSG );
-                }
-                DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
-                if ( decisionMaker == null ) {
-                    copyBufferedStream( servletResponse );
-                    return new ResponseCapabilitiesReport( FILTERING_NOT_REQUIRED_MESSAGE );
-                } else {
-                    capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
-                    return new ResponseCapabilitiesReport( SUCCESSFUL_FILTERING_MESSAGE, true );
-                }
-            } catch ( IOException e ) {
-                throw new ResponseFilterException( e );
+                capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
+                return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
             } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
         }
-        copyBufferedStream( servletResponse );
-        return new ResponseCapabilitiesReport( NOT_A_CAPABILITIES_REQUEST_MSG );
     }
 
     @Override
-    public boolean canBeFiltered( OwsRequest owsRequest )
-                            throws IllegalArgumentException {
-        checkIfRequestIsNull( owsRequest );
-        return isCorrectRequestType( owsRequest ) && isGetCapabilitiesRequest( owsRequest );
-    }
-
-    /**
-     * @param owsRequest
-     *            never <code>null</code>
-     * @return true if request is from the supported type
-     */
-    protected abstract boolean isCorrectRequestType( OwsRequest owsRequest );
-
-    /**
-     * @param owsRequest
-     *            never <code>null</code>
-     * @return true if request is a capabilities request
-     */
-    protected abstract boolean isGetCapabilitiesRequest( OwsRequest owsRequest );
-
-    private void checkIfRequestIsNull( OwsRequest request ) {
-        if ( request == null )
-            throw new IllegalArgumentException( "Request must not be null!" );
-    }
-
-    private void checkParameters( HttpServletResponse servletResponse, OwsRequest request ) {
-        if ( servletResponse == null )
-            throw new IllegalArgumentException( "Parameter servletResponse may not be null!" );
-        if ( request == null )
-            throw new IllegalArgumentException( "Parameter request may not be null!" );
-        if ( !isCorrectRequestType( request ) )
-            throw new IllegalArgumentException( "OwsRequest of class " + request.getClass().getCanonicalName()
-                                                + " is not supported!" );
-
+    protected ResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response, IOException e )
+                            throws ResponseFilterException {
+        throw new ResponseFilterException( e );
     }
 
 }

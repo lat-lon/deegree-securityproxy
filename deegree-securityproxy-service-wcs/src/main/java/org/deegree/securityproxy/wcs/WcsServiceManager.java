@@ -17,6 +17,7 @@ import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
@@ -97,17 +98,7 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
     }
 
     private ResponseFilterReport createEmptyFilterReport() {
-        return new ResponseFilterReport() {
-            @Override
-            public boolean isFiltered() {
-                return false;
-            }
-
-            @Override
-            public String getMessage() {
-                return "Response was not filtered! No response filter manager was found!";
-            }
-        };
+        return new DefaultResponseFilterReport( "Response was not filtered! No response filter manager was found!" );
     }
 
 }

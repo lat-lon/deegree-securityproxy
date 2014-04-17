@@ -49,7 +49,7 @@ import org.deegree.securityproxy.wcs.request.WcsRequest;
  * {@link ResponseFilterManager} filtering capabilities documents by user permissions.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author <a href="mailto:goltz@lat-lon.de">Dirk Stenger</a>
+ * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * 
  * @version $Revision: $, $Date: $
@@ -68,12 +68,12 @@ public class WcsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
     }
 
     @Override
-    protected boolean isCorrectRequestType( OwsRequest owsRequest ) {
+    protected boolean isCorrectServiceType( OwsRequest owsRequest ) {
         return WcsRequest.class.equals( owsRequest.getClass() );
     }
 
     @Override
-    protected boolean isGetCapabilitiesRequest( OwsRequest owsRequest ) {
+    protected boolean isCorrectRequestParameter( OwsRequest owsRequest ) {
         return GETCAPABILITIES.equals( owsRequest.getOperationType() );
     }
 

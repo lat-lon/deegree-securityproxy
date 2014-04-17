@@ -23,9 +23,11 @@
     <constructor-arg value="${wms_authorization_denied_status_code}" />
   </bean>
 
-  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter"/>
+  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter" />
 
-  <bean id="wmsDecisionMakerCreator" class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsDecisionMakerCreator"/>
+  <bean id="wmsDecisionMakerCreator" class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsDecisionMakerCreator" />
+
+  <bean id="simpleRasterClipper" class="org.deegree.securityproxy.wms.responsefilter.clipping.SimpleRasterClipper" />
 
   <bean name="wmsCapabilitiesResponseFilterManager"
     class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsCapabilitiesResponseFilterManager">
@@ -33,9 +35,17 @@
     <constructor-arg ref="wmsDecisionMakerCreator" />
   </bean>
 
+  <bean name="wmsGetMapResponseFilterManager"
+    class="org.deegree.securityproxy.wms.responsefilter.clipping.WmsClippingResponseFilterManager">
+    <constructor-arg value="${wms_clipping_exception_file_path}" />
+    <constructor-arg value="${wms_clipping_failed_status_code}" />
+    <constructor-arg ref="simpleRasterClipper" />
+  </bean>
+
   <util:list id="wmsResponseFilterManagers" list-class="java.util.LinkedList"
     value-type="org.deegree.securityproxy.responsefilter.ResponseFilterManager">
     <ref bean="wmsCapabilitiesResponseFilterManager" />
+    <ref bean="wmsGetMapResponseFilterManager" />
   </util:list>
 
 </beans>

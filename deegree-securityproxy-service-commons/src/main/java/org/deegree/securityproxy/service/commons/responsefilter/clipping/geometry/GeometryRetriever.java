@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,43 +33,41 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.clipping;
+package org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.List;
 
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 /**
- * Contains method to clip images.
+ * Contains method to retrieve the clipping geometry from a list of {@link GeometryFilterInfo}s
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface ImageClipper {
+public interface GeometryRetriever {
 
     /**
-     * Clips the passed image as defined in the clipping area.
+     * Retrieves or calculates the parsed geometry to use from the list of {@link GeometryFilterInfo}s identified by the
+     * given layer names. The algorithm to detect or calculate the geometry is left to the implementations.
      * 
-     * @param coverageToClip
-     *            contains the coverage to clip - must contain an image! never <code>null</code>
-     * @param visibleArea
-     *            the geometry covering the area visible for the user, if <code>null</code> no clipping required
-     * @param destination
-     *            {@link OutputStream} to write the image, never <code>null</code>
+     * @param layerNames
+     *            the names of the layers the geometries should be retrieved for, never <code>null</code>
+     * @param geometryFilterInfos
+     *            the list of {@link GeometryFilterInfo}s containing the geometries, never <code>null</code> may be
+     *            empty
+     * @return the parsed geometry, <code>null</code> if no geometry can be found for the requested coverage name
      * @throws IllegalArgumentException
-     *             if one one the parameter is <code>null</code>
-     * @throws ClippingException
-     *             if an error occurred during clipping
-     * @return a {@link ResponseClippingReport} containing the information if clipping was required and the visible
-     *         geometry
+     *             if one of the parameters <code>null</code>
+     * @throws ParseException
+     *             if the geometry could not be parsed or calculated
      */
-    ResponseClippingReport calculateClippedImage( InputStream coverageToClip, Geometry visibleArea,
-                                                  OutputStream destination )
-                            throws IllegalArgumentException, ClippingException;
+    Geometry retrieveGeometry( List<String> layerNames, List<GeometryFilterInfo> geometryFilterInfos )
+                            throws IllegalArgumentException, ParseException;
 
 }

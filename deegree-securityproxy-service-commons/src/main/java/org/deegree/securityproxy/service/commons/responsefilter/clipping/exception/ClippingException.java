@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wcs.responsefilter.clipping;
+package org.deegree.securityproxy.service.commons.responsefilter.clipping.exception;
 
 /**
  * Indicates that an error occurred during clipping.
@@ -46,6 +46,10 @@ package org.deegree.securityproxy.wcs.responsefilter.clipping;
 public class ClippingException extends Exception {
 
     private static final long serialVersionUID = -2684310743504404279L;
+
+    public ClippingException( String msg ) {
+        super( msg );
+    }
 
     public ClippingException( Exception e ) {
         super( e );

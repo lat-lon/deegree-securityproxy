@@ -67,12 +67,12 @@ public class WmsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
     }
 
     @Override
-    protected boolean isCorrectRequestType( OwsRequest owsRequest ) {
+    protected boolean isCorrectServiceType( OwsRequest owsRequest ) {
         return WmsRequest.class.equals( owsRequest.getClass() );
     }
 
     @Override
-    protected boolean isGetCapabilitiesRequest( OwsRequest owsRequest ) {
+    protected boolean isCorrectRequestParameter( OwsRequest owsRequest ) {
         return GETCAPABILITIES.equalsIgnoreCase( owsRequest.getOperationType() );
     }
 

@@ -10,13 +10,9 @@ import com.vividsolutions.jts.geom.Geometry;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ResponseClippingReport implements ResponseFilterReport {
+public class ResponseClippingReport extends DefaultResponseFilterReport {
 
     private final Geometry returnedVisibleArea;
-
-    private final String failure;
-
-    private final boolean isFiltered;
 
     /**
      * Instantiates a new {@link ResponseClippingReport} with an error message, the geometry is set to <code>null</code>
@@ -28,10 +24,7 @@ public class ResponseClippingReport implements ResponseFilterReport {
      *             if required parameter is null
      */
     public ResponseClippingReport( String failure ) {
-        if ( failure == null )
-            throw new IllegalArgumentException( "failure must not be null!" );
-        this.failure = failure;
-        this.isFiltered = false;
+        super( failure );
         this.returnedVisibleArea = null;
     }
 
@@ -47,39 +40,14 @@ public class ResponseClippingReport implements ResponseFilterReport {
      *             if required parameter is null
      */
     public ResponseClippingReport( Geometry returnedVisibleArea, boolean isFiltered ) {
+        super( createMessage( returnedVisibleArea, isFiltered ), isFiltered );
         if ( returnedVisibleArea == null )
-            throw new IllegalArgumentException( "returnedVisbleArea must not be null!" );
-        this.failure = null;
-        this.isFiltered = isFiltered;
+            throw new IllegalArgumentException( "returnedVisibleArea must not be null!" );
         this.returnedVisibleArea = returnedVisibleArea;
     }
 
-    /**
-     * @return <code>true</code> if the returned image was clipped, <code>false</code> otherwise. If failure is not
-     *         <code>null</code> <code>false</code> is returned
-     */
-    @Override
-    public boolean isFiltered() {
-        return isFiltered;
-    }
-
-    @Override
-    public String getMessage() {
-        return failure != null ? failure : "Image was " + ( isFiltered ? "" : "not " )
-                                           + "clipped. Returned visible area: " + returnedVisibleArea;
-    }
-
-    @Override
-    public String toString() {
-        return getMessage();
-    }
-
-    /**
-     * 
-     * @return the failure message if an error occurred during clipping.
-     */
-    public String getFailure() {
-        return failure;
+    private static String createMessage( Geometry returnedVisibleArea, boolean isFiltered ) {
+        return "Image was " + ( isFiltered ? "" : "not " ) + "clipped. Returned visible area: " + returnedVisibleArea;
     }
 
     /**

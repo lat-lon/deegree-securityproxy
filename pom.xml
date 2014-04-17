@@ -49,6 +49,12 @@
         <artifactId>deegree-securityproxy-service-commons</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-matcher</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
@@ -174,6 +180,11 @@
         <artifactId>gt-epsg-hsql</artifactId>
         <version>${geotools.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-render</artifactId>
+        <version>${geotools.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -236,6 +247,7 @@
     <module>deegree-securityproxy-service-commons</module>
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
+    <module>deegree-matcher</module>
   </modules>
 
 </project>

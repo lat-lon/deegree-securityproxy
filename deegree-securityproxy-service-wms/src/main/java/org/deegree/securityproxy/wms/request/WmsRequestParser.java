@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.wms.request;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
@@ -15,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a
@@ -78,6 +81,21 @@ public class WmsRequestParser implements OwsRequestParser {
         return parseRequest( serviceName, normalizedParameterMap );
     }
 
+    Envelope parseBbox( String bboxParameter ) {
+        String[] coordinates = bboxParameter.split( "," );
+        if ( coordinates.length != 4 ) {
+            String msg = format( "Format of Parameter 'BBox' is invalid, must be minX,minY,maxX,maxY, was %s",
+                                 bboxParameter );
+            throw new IllegalArgumentException( msg );
+        }
+        double minX = parseDouble( "minX", coordinates[0] );
+        double minY = parseDouble( "minY", coordinates[1] );
+        double maxX = parseDouble( "maxY", coordinates[2] );
+        double maxY = parseDouble( "maxY", coordinates[3] );
+
+        return new Envelope( minX, maxX, minY, maxY );
+    }
+
     private WmsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
         String type = normalizedParameterMap.get( REQUEST )[0];
@@ -95,7 +113,10 @@ public class WmsRequestParser implements OwsRequestParser {
 
         OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
         List<String> separatedLayers = extractLayers( normalizedParameterMap.get( LAYERS ) );
-        return new WmsRequest( GETMAP, version, separatedLayers, serviceName );
+        Envelope bbox = extractBbox( normalizedParameterMap.get( BBOX ) );
+        String crs = extractCrs( normalizedParameterMap.get( CRS ) );
+        String format = extractFormat( normalizedParameterMap.get( FORMAT ) );
+        return new WmsRequest( GETMAP, version, separatedLayers, serviceName, bbox, crs, format );
     }
 
     private WmsRequest parseGetFeatureInfoRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
@@ -146,6 +167,28 @@ public class WmsRequestParser implements OwsRequestParser {
             }
         }
         return separatedLayers;
+    }
+
+    private Envelope extractBbox( String[] bboxParameters ) {
+        String bboxParameter = bboxParameters[0];
+        return parseBbox( bboxParameter );
+    }
+
+    private String extractCrs( String[] crsParameters ) {
+        return crsParameters[0];
+    }
+
+    private String extractFormat( String[] formatParameters ) {
+        return formatParameters[0];
+    }
+
+    private double parseDouble( String coordName, String coordinate ) {
+        try {
+            return Double.parseDouble( coordinate.trim() );
+        } catch ( NumberFormatException e ) {
+            String msg = format( "Coordinate %s is not a valid double value: %s", coordName, coordinate );
+            throw new IllegalArgumentException( msg );
+        }
     }
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap ) {
