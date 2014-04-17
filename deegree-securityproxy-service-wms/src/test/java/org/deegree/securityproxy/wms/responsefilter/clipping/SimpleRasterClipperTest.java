@@ -5,6 +5,7 @@ import static org.deegree.matcher.image.ImageMatcher.hasNotSamePixels;
 import static org.deegree.matcher.image.ImageMatcher.hasSameDimension;
 import static org.deegree.matcher.image.ImageMatcher.hasSamePixels;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -14,8 +15,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.deegree.securityproxy.wms.request.WmsRequest;
 import org.junit.Test;
 
@@ -33,8 +35,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  */
 public class SimpleRasterClipperTest {
 
-    private final ImageClipper wmsClipper = new SimpleRasterClipper();
-
     @Test
     public void testCalculateClippedImageWithPngImage()
                             throws Exception {
@@ -44,12 +44,14 @@ public class SimpleRasterClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
+        ImageClipper wmsClipper = new SimpleRasterClipper();
         wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
                                           createWmsRequestWithPngFormat() );
 
         inputStream.close();
         outputStream.close();
 
+        assertThat( destinationFile, hasSamePixels( createNewFile( "overview_clipped.png" ) ) );
         assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
         assertThat( retrieveFileExtension( destinationFile ), is( retrieveFileExtension( sourceFile ) ) );
@@ -64,6 +66,7 @@ public class SimpleRasterClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
+        ImageClipper wmsClipper = new SimpleRasterClipper();
         wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
                                           createWmsRequestWithJpgFormat() );
 
@@ -76,6 +79,28 @@ public class SimpleRasterClipperTest {
     }
 
     @Test
+    public void testCalculateClippedImageWithJpgImageShouldReturnCorrectReport()
+                            throws Exception {
+        File sourceFile = createNewFile( "saltlakecity_0_0.jpg" );
+        File destinationFile = createNewTempFileInJpgFormat();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        ImageClipper wmsClipper = new SimpleRasterClipper();
+        ResponseClippingReport report = wmsClipper.calculateClippedImage( inputStream, createVisibleArea(),
+                                                                          outputStream, createWmsRequestWithJpgFormat() );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( report.isFailed(), is( false ) );
+        assertThat( report.isFiltered(), is( true ) );
+        // TODO
+        // assertThat( report.getReturnedVisibleArea(), is( ) );
+    }
+
+    @Test
     public void testCalculateClippedImageWithPngImageInsideClippingArea()
                             throws Exception {
         File sourceFile = createNewFile( "overview.png" );
@@ -84,6 +109,7 @@ public class SimpleRasterClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
+        ImageClipper wmsClipper = new SimpleRasterClipper();
         wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
                                           createWmsRequestWithPngFormatAndSmallBbox() );
 
@@ -96,6 +122,28 @@ public class SimpleRasterClipperTest {
     }
 
     @Test
+    public void testCalculateClippedImageWithPngImageInsideClippingAreaShouldReturnReportWithoutFiltering()
+                            throws Exception {
+        File sourceFile = createNewFile( "overview.png" );
+        File destinationFile = createNewTempFileInPngFormat();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        ImageClipper wmsClipper = new SimpleRasterClipper();
+        WmsRequest wmsRequest = createWmsRequestWithPngFormatAndSmallBbox();
+        ResponseClippingReport report = wmsClipper.calculateClippedImage( inputStream, createVisibleArea(),
+                                                                          outputStream, wmsRequest );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( report.isFiltered(), is( false ) );
+        assertThat( report.isFailed(), is( false ) );
+        assertThat( report.getReturnedVisibleArea(), is( asGeometry( wmsRequest ) ) );
+    }
+
+    @Test
     public void testCalculateClippedImageWithJpgImageInsideClippingArea()
                             throws Exception {
         File sourceFile = createNewFile( "saltlakecity_0_0.jpg" );
@@ -104,6 +152,7 @@ public class SimpleRasterClipperTest {
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
 
+        ImageClipper wmsClipper = new SimpleRasterClipper();
         wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
                                           createWmsRequestWithJpgFormatAndSmallBbox() );
 
@@ -113,6 +162,88 @@ public class SimpleRasterClipperTest {
         assertThat( destinationFile, hasSamePixels( sourceFile ) );
         assertThat( destinationFile, hasSameDimension( sourceFile ) );
         assertThat( retrieveFileExtension( destinationFile ), is( retrieveFileExtension( sourceFile ) ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageWithPngImageRequestInOtherCrsThanVisibleArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "overview.png" );
+        File destinationFile = createNewTempFileInPngFormat();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        ImageClipper wmsClipper = new SimpleRasterClipper();
+        wmsClipper.calculateClippedImage( inputStream, createVisibleArea(), outputStream,
+                                          createWmsRequestWithPngFormatAndEpsg31467() );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasNotSamePixels( sourceFile ) );
+        assertThat( destinationFile, hasSamePixels( createNewFile( "overview_clipped_epsg31467.png" ) ) );
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
+        assertThat( retrieveFileExtension( destinationFile ), is( retrieveFileExtension( sourceFile ) ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageWithPngImageNullClippingArea()
+                            throws Exception {
+        File sourceFile = createNewFile( "overview.png" );
+        File destinationFile = createNewTempFileInPngFormat();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        ImageClipper wmsClipper = new SimpleRasterClipper();
+        wmsClipper.calculateClippedImage( inputStream, null, outputStream, createWmsRequestWithPngFormatAndEpsg31467() );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( destinationFile, hasSamePixels( sourceFile ) );
+        assertThat( destinationFile, hasSameDimension( sourceFile ) );
+        assertThat( retrieveFileExtension( destinationFile ), is( retrieveFileExtension( sourceFile ) ) );
+    }
+
+    @Test
+    public void testCalculateClippedImageWithPngImageNullClippingAreaShouldReturnReportWithoutFiltering()
+                            throws Exception {
+        File sourceFile = createNewFile( "overview.png" );
+        File destinationFile = createNewTempFileInPngFormat();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        ImageClipper wmsClipper = new SimpleRasterClipper();
+        WmsRequest wmsRequest = createWmsRequestWithPngFormatAndEpsg31467();
+        ResponseClippingReport report = wmsClipper.calculateClippedImage( inputStream, null, outputStream, wmsRequest );
+
+        inputStream.close();
+        outputStream.close();
+
+        assertThat( report.isFiltered(), is( false ) );
+        assertThat( report.isFailed(), is( false ) );
+        // TODO: same in other CRS!
+        assertThat( report.getReturnedVisibleArea(), is( not( asGeometry( wmsRequest ) ) ) );
+    }
+
+    @Test(expected = ClippingException.class)
+    public void testCalculateClippedImageWithTiffImageShouldThrowClippingReport()
+                            throws Exception {
+        File sourceFile = createNewFile( "overview.png" );
+        File destinationFile = createNewTempFileInPngFormat();
+
+        InputStream inputStream = createInputStreamFrom( sourceFile );
+        OutputStream outputStream = createOutputStreamFrom( destinationFile );
+
+        ImageClipper wmsClipper = new SimpleRasterClipper();
+        try {
+            wmsClipper.calculateClippedImage( inputStream, null, outputStream, createWmsRequestWithTifFormat() );
+        } finally {
+            inputStream.close();
+            outputStream.close();
+        }
     }
 
     private File createNewFile( String resourceName ) {
@@ -144,41 +275,59 @@ public class SimpleRasterClipperTest {
         return new GeometryFactory().toGeometry( envelope );
     }
 
-    private OwsRequest createWmsRequestWithPngFormat() {
+    private WmsRequest createWmsRequestWithPngFormat() {
         String format = "image/png";
         return createWmsRequest( format );
     }
 
-    private OwsRequest createWmsRequestWithJpgFormat() {
+    private WmsRequest createWmsRequestWithJpgFormat() {
         String format = "image/jpg";
         return createWmsRequest( format );
     }
 
-    private OwsRequest createWmsRequestWithPngFormatAndSmallBbox() {
+    private WmsRequest createWmsRequestWithTifFormat() {
+        String format = "image/tif";
+        return createWmsRequest( format );
+    }
+
+    private WmsRequest createWmsRequestWithPngFormatAndSmallBbox() {
         String format = "image/png";
         Envelope bbox = new Envelope( 8, 10, 51, 53 );
         return createWmsRequest( format, bbox );
     }
 
-    private OwsRequest createWmsRequestWithJpgFormatAndSmallBbox() {
+    private WmsRequest createWmsRequestWithPngFormatAndEpsg31467() {
+        String format = "image/png";
+        Envelope bbox = new Envelope( 3381979.18929695, 3658498.77343167, 5600312.52345328, 6060210.89246363 );
+        return createWmsRequest( format, bbox, "EPSG:31467" );
+    }
+
+    private WmsRequest createWmsRequestWithJpgFormatAndSmallBbox() {
         String format = "image/jpg";
         Envelope bbox = new Envelope( 8, 10, 51, 53 );
         return createWmsRequest( format, bbox );
     }
 
-    private OwsRequest createWmsRequest( String format ) {
+    private WmsRequest createWmsRequest( String format ) {
         Envelope bbox = new Envelope( 7.3345265546875, 11.454399601562, 50.526648257812, 54.646521304687 );
-        String crs = "EPSG:4326";
-        return new WmsRequest( null, null, null, null, bbox, crs, format );
+        return createWmsRequest( format, bbox );
     }
 
-    private OwsRequest createWmsRequest( String format, Envelope bbox ) {
+    private WmsRequest createWmsRequest( String format, Envelope bbox ) {
         String crs = "EPSG:4326";
+        return createWmsRequest( format, bbox, crs );
+    }
+
+    private WmsRequest createWmsRequest( String format, Envelope bbox, String crs ) {
         return new WmsRequest( null, null, null, null, bbox, crs, format );
     }
 
     private String retrieveFileExtension( File file ) {
         return getExtension( file.getPath() );
+    }
+
+    private Geometry asGeometry( WmsRequest wmsRequest ) {
+        return new GeometryFactory().toGeometry( wmsRequest.getBbox() );
     }
 
 }

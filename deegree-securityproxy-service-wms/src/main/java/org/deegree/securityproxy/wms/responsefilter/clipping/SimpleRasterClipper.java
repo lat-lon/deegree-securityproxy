@@ -35,11 +35,18 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.responsefilter.clipping;
 
+import static java.lang.String.format;
+import static org.apache.commons.io.IOUtils.copy;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.ClippingUtils.calculateGeometryVisibleAfterClipping;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.ClippingUtils.isClippingRequired;
+import static org.deegree.securityproxy.service.commons.responsefilter.clipping.ClippingUtils.transformGeometry;
 import static org.geotools.referencing.CRS.decode;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -61,10 +68,13 @@ import org.geotools.geometry.jts.LiteShape;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapViewport;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * Concrete implementation to clip images in png and jpeg format.
@@ -84,6 +94,12 @@ public class SimpleRasterClipper implements ImageClipper {
 
     private Map<String, String> mimetypeToFileExtensions;
 
+    private final CoordinateReferenceSystem visibleAreaCrs;
+
+    public SimpleRasterClipper() throws NoSuchAuthorityCodeException, FactoryException {
+        visibleAreaCrs = decode( "EPSG:4326", true );
+    }
+
     @Override
     public ResponseClippingReport calculateClippedImage( InputStream imageToClip, Geometry visibleArea,
                                                          OutputStream destination, OwsRequest request )
@@ -93,30 +109,65 @@ public class SimpleRasterClipper implements ImageClipper {
         String format = parseImageFormat( wmsRequest );
         if ( format != null ) {
             try {
-                BufferedImage inputImage = ImageIO.read( imageToClip );
-                BufferedImage outputImage = createOutputImage( inputImage, format );
-                executeClipping( visibleArea, wmsRequest, inputImage, outputImage );
-                Iterator<ImageWriter> iterator = ImageIO.getImageWritersByFormatName( format );
-                ImageWriter imageWriter;
-                if ( iterator.hasNext() )
-                    imageWriter = iterator.next();
-                else {
-                    Exception e = new Exception( "No image writer was found!" );
-                    throw new ClippingException( e );
+
+                CoordinateReferenceSystem imgCrs = decode( wmsRequest.getCrs(), true );
+                Geometry imgBbox = new GeometryFactory().toGeometry( wmsRequest.getBbox() );
+                Geometry imgBboxInVisibleAreaCrs = transformGeometry( imgCrs, imgBbox, visibleAreaCrs );
+                if ( isClippingRequired( imgBboxInVisibleAreaCrs, visibleArea ) ) {
+
+                    BufferedImage inputImage = ImageIO.read( imageToClip );
+                    BufferedImage outputImage = createOutputImage( inputImage, format );
+
+                    executeClipping( visibleArea, imgBboxInVisibleAreaCrs, inputImage, outputImage );
+
+                    writeImage( destination, format, outputImage );
+                    Geometry visibleAreaAfterClipping = calculateGeometryVisibleAfterClipping( imgBboxInVisibleAreaCrs,
+                                                                                           visibleArea );
+                    LOG.debug( "Visible area after clipping: " + visibleAreaAfterClipping );
+                    return new ResponseClippingReport( visibleAreaAfterClipping, true );
+                } else {
+                    LOG.info( "Clipping is not required." );
+                    copy( imageToClip, destination );
+                    return new ResponseClippingReport( imgBboxInVisibleAreaCrs, false );
                 }
-                ImageWriteParam writerParam = imageWriter.getDefaultWriteParam();
-                if ( JPG_FORMAT.equals( format ) ) {
-                    writerParam.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
-                    writerParam.setCompressionQuality( 1f );
-                }
-                imageWriter.setOutput( ImageIO.createImageOutputStream( destination ) );
-                imageWriter.write( null, new IIOImage( outputImage, null, null ), writerParam );
-                imageWriter.dispose();
             } catch ( Exception e ) {
-                e.printStackTrace();
+                LOG.trace( "An error occured during clipping!", e );
+                throw new ClippingException( e );
             }
         }
-        return null;
+        String msg = format( "Clipping of images with format %s is not supported!", wmsRequest.getFormat() );
+        throw new ClippingException( msg );
+    }
+
+    private void writeImage( OutputStream destination, String format, BufferedImage outputImage )
+                            throws ClippingException, IOException {
+        ImageWriter imageWriter = createImageWriter( format );
+        ImageWriteParam writerParam = configureWriterParameters( format, imageWriter );
+        imageWriter.setOutput( ImageIO.createImageOutputStream( destination ) );
+        imageWriter.write( null, new IIOImage( outputImage, null, null ), writerParam );
+        imageWriter.dispose();
+    }
+
+    private ImageWriteParam configureWriterParameters( String format, ImageWriter imageWriter ) {
+        ImageWriteParam writerParam = imageWriter.getDefaultWriteParam();
+        if ( JPG_FORMAT.equals( format ) ) {
+            writerParam.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
+            writerParam.setCompressionQuality( 1f );
+        }
+        return writerParam;
+    }
+
+    private ImageWriter createImageWriter( String format )
+                            throws ClippingException {
+        Iterator<ImageWriter> iterator = ImageIO.getImageWritersByFormatName( format );
+        ImageWriter imageWriter;
+        if ( iterator.hasNext() )
+            imageWriter = iterator.next();
+        else {
+            Exception e = new Exception( "No image writer was found!" );
+            throw new ClippingException( e );
+        }
+        return imageWriter;
     }
 
     private String parseImageFormat( WmsRequest wmsRequest ) {
@@ -136,19 +187,19 @@ public class SimpleRasterClipper implements ImageClipper {
         return mimetypeToFileExtensions;
     }
 
-    private void executeClipping( Geometry visibleArea, WmsRequest wmsRequest, BufferedImage inputImage,
+    private void executeClipping( Geometry visibleArea, Geometry imgBboxInVisibleAreaCrs, BufferedImage inputImage,
                                   BufferedImage outputImage )
-                            throws FactoryException {
+                            throws FactoryException, TransformException {
         Graphics2D graphics = (Graphics2D) outputImage.getGraphics();
-        LiteShape clippingArea = retrieveWorldToScreenClippingArea( visibleArea, wmsRequest, inputImage );
+        LiteShape clippingArea = retrieveWorldToScreenClippingArea( visibleArea, imgBboxInVisibleAreaCrs, inputImage );
         graphics.clip( clippingArea );
         graphics.drawImage( inputImage, null, 0, 0 );
     }
 
-    private LiteShape retrieveWorldToScreenClippingArea( Geometry visibleArea, WmsRequest wmsRequest,
+    private LiteShape retrieveWorldToScreenClippingArea( Geometry visibleArea, Geometry imgBboxInVisibleAreaCrs,
                                                          BufferedImage inputImage )
-                            throws FactoryException {
-        AffineTransform transformation = createWorldToScreenTransformation( inputImage, wmsRequest );
+                            throws FactoryException, TransformException {
+        AffineTransform transformation = createWorldToScreenTransformation( inputImage, imgBboxInVisibleAreaCrs );
         return new LiteShape( visibleArea, transformation, false );
     }
 
@@ -161,9 +212,11 @@ public class SimpleRasterClipper implements ImageClipper {
         return new BufferedImage( inputImageWidth, inputImageHeight, inputImageType );
     }
 
-    private AffineTransform createWorldToScreenTransformation( BufferedImage inputImage, WmsRequest wmsRequest )
+    private AffineTransform createWorldToScreenTransformation( BufferedImage inputImage,
+                                                               Geometry imgBboxInVisibleAreaCrs )
                             throws FactoryException {
-        ReferencedEnvelope referencedBbox = createReferencedBbox( wmsRequest );
+        Envelope envelopeInternal = imgBboxInVisibleAreaCrs.getEnvelopeInternal();
+        ReferencedEnvelope referencedBbox = new ReferencedEnvelope( envelopeInternal, visibleAreaCrs );
         MapViewport viewPort = createViewPort( inputImage, referencedBbox );
         return viewPort.getWorldToScreen();
     }
@@ -176,13 +229,6 @@ public class SimpleRasterClipper implements ImageClipper {
         int screenHeight = inputImage.getHeight();
         viewPort.setScreenArea( new Rectangle( screenX, screenY, screenWidth, screenHeight ) );
         return viewPort;
-    }
-
-    private ReferencedEnvelope createReferencedBbox( WmsRequest wmsRequest )
-                            throws FactoryException {
-        CoordinateReferenceSystem crs = decode( wmsRequest.getCrs(), true );
-        Envelope bbox = wmsRequest.getBbox();
-        return new ReferencedEnvelope( bbox, crs );
     }
 
     private void checkRequiredParameters( InputStream imageToClip, OutputStream toWriteImage, OwsRequest request )

@@ -72,18 +72,10 @@ public class ImageMatcher {
      */
     public static Matcher<File> hasSamePixels( File sourceFile )
                             throws Exception {
-
         BufferedImage sourceImage = ImageIO.read( sourceFile );
         PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
 
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
+        final int[] sourcePixelsToCompare = calculatePixels( sourceGrabber );
 
         return new BaseMatcher<File>() {
 
@@ -93,15 +85,7 @@ public class ImageMatcher {
                 try {
                     destinationImage = read( (File) item );
                     PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
+                    int[] destinationPixels = calculatePixels( destinationGrabber );
                     return Arrays.equals( destinationPixels, sourcePixelsToCompare );
                 } catch ( Exception e ) {
                     e.printStackTrace();
@@ -129,14 +113,7 @@ public class ImageMatcher {
         BufferedImage sourceImage = ImageIO.read( sourceFile );
         PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
 
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
+        final int[] sourcePixelsToCompare = calculatePixels( sourceGrabber );
 
         return new BaseMatcher<File>() {
 
@@ -146,15 +123,7 @@ public class ImageMatcher {
                 try {
                     destinationImage = read( (File) item );
                     PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
+                    int[] destinationPixels = calculatePixels( destinationGrabber );
                     return !Arrays.equals( destinationPixels, sourcePixelsToCompare );
                 } catch ( Exception e ) {
                     e.printStackTrace();
@@ -167,6 +136,18 @@ public class ImageMatcher {
                 description.appendText( "Should not contain the same pixels as the source!" );
             }
         };
+    }
+
+    private static int[] calculatePixels( PixelGrabber destinationGrabber )
+                            throws InterruptedException {
+        int[] pixels = null;
+        if ( destinationGrabber.grabPixels() ) {
+            int width = destinationGrabber.getWidth();
+            int height = destinationGrabber.getHeight();
+            pixels = new int[width * height];
+            pixels = (int[]) destinationGrabber.getPixels();
+        }
+        return pixels;
     }
 
 }

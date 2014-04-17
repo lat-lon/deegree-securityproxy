@@ -47,6 +47,10 @@ public class ClippingException extends Exception {
 
     private static final long serialVersionUID = -2684310743504404279L;
 
+    public ClippingException( String msg ) {
+        super( msg );
+    }
+
     public ClippingException( Exception e ) {
         super( e );
     }
