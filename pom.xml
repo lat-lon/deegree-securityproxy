@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.4</version>
+  <version>1.2.5</version>
   <name>deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
@@ -43,6 +43,17 @@
         <groupId>org.deegree</groupId>
         <artifactId>deegree-securityproxy-service-wms</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-service-commons</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-matcher</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
       </dependency>
       <!-- Test -->
       <dependency>
@@ -169,6 +180,11 @@
         <artifactId>gt-epsg-hsql</artifactId>
         <version>${geotools.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.geotools</groupId>
+        <artifactId>gt-render</artifactId>
+        <version>${geotools.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -228,8 +244,10 @@
     <module>deegree-securityproxy-authentication-ows</module>
     <module>deegree-securityproxy-core</module>
     <module>deegree-securityproxy-webservice</module>
+    <module>deegree-securityproxy-service-commons</module>
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
+    <module>deegree-matcher</module>
   </modules>
 
 </project>

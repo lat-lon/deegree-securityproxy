@@ -8,11 +8,15 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-securityproxy</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
   </parent>
 
   <dependencies>
     <!-- deegree-securityproxy -->
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-commons</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication</artifactId>
@@ -20,10 +24,6 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication-ows</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.deegree</groupId>
-      <artifactId>deegree-securityproxy-core</artifactId>
     </dependency>
     <!-- Test -->
     <dependency>
@@ -34,10 +34,14 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
     </dependency>
-      <dependency>
-        <groupId>org.xmlmatchers</groupId>
-        <artifactId>xml-matchers</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.xmlmatchers</groupId>
+      <artifactId>xml-matchers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-matcher</artifactId>
+    </dependency>
     <!-- JDBC -->
     <dependency>
       <groupId>postgresql</groupId>

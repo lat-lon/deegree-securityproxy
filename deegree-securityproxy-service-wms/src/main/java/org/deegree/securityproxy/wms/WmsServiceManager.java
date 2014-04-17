@@ -1,5 +1,6 @@
 package org.deegree.securityproxy.wms;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,8 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
@@ -33,12 +36,16 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     private final RequestAuthorizationManager requestAuthorizationManager;
 
+    private final List<ResponseFilterManager> filterManagers;
+
     private final ServiceExceptionWrapper serviceExceptionWrapper;
 
     public WmsServiceManager( OwsRequestParser parser, RequestAuthorizationManager requestAuthorizationManager,
+                              List<ResponseFilterManager> filterManagers,
                               ServiceExceptionWrapper serviceExceptionWrapper ) {
         this.parser = parser;
         this.requestAuthorizationManager = requestAuthorizationManager;
+        this.filterManagers = filterManagers;
         if ( serviceExceptionWrapper != null )
             this.serviceExceptionWrapper = serviceExceptionWrapper;
         else
@@ -58,6 +65,10 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     @Override
     public boolean isResponseFilterEnabled( OwsRequest owsRequest ) {
+        for ( ResponseFilterManager filterManager : filterManagers ) {
+            if ( filterManager.canBeFiltered( owsRequest ) )
+                return true;
+        }
         return false;
     }
 
@@ -65,6 +76,10 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
                                                 Authentication authentication, OwsRequest owsRequest )
                             throws ResponseFilterException {
+        for ( ResponseFilterManager filterManager : filterManagers ) {
+            if ( filterManager.canBeFiltered( owsRequest ) )
+                return filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
+        }
         return createEmptyFilterReport();
     }
 
@@ -81,17 +96,7 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
     }
 
     private ResponseFilterReport createEmptyFilterReport() {
-        return new ResponseFilterReport() {
-            @Override
-            public boolean isFiltered() {
-                return false;
-            }
-
-            @Override
-            public String getMessage() {
-                return "Response was not filtered! No response filter manager was found!";
-            }
-        };
+        return new DefaultResponseFilterReport("Response was not filtered! No response filter manager was found!") ;
     }
 
 }

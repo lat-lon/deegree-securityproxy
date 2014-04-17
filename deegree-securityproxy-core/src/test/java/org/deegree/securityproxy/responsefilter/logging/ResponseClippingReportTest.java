@@ -66,10 +66,10 @@ public class ResponseClippingReportTest {
         String failure = "An error occurred";
         ResponseClippingReport clippingReport = new ResponseClippingReport( failure );
 
-        assertThat( clippingReport.getFailure(), is( failure ) );
+        assertThat( clippingReport.getMessage(), is( failure ) );
         assertThat( clippingReport.getReturnedVisibleArea(), is( nullValue() ) );
         assertThat( clippingReport.isFiltered(), is( IS_NOT_FILTERED ) );
-        assertThat( clippingReport.getFailure(), contains( failure ) );
+        assertThat( clippingReport.getMessage(), contains( failure ) );
     }
 
     @Test

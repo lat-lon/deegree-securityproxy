@@ -1,11 +1,11 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SERVICE_EXCEPTION_MSG;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
-import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_110;
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.SERVICE_EXCEPTION_MSG;
-import static org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
+import static org.deegree.securityproxy.wcs.request.WcsRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -37,8 +37,10 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
-import org.deegree.securityproxy.wcs.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -58,20 +60,25 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private final CapabilitiesFilter mockedCapabilitiesFilter = mock( CapabilitiesFilter.class );
 
+    private final DecisionMakerCreator decisionMakerCreator = new WcsDecisionMakerCreator();
+
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManagerWithMock = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                                                mockedCapabilitiesFilter );
+                                                                                                                                                mockedCapabilitiesFilter,
+                                                                                                                                                decisionMakerCreator );
 
     private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
 
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                                        capabilitiesFilter );
+                                                                                                                                        capabilitiesFilter,
+                                                                                                                                        decisionMakerCreator );
 
     @Test
     public void testFilterResponseShouldCallFilterCapabilities()
                             throws Exception {
         CapabilitiesFilter capabilitiesFilter = mockCapabilitiesFilter();
         WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                              capabilitiesFilter );
+                                                                                                                              capabilitiesFilter,
+                                                                                                                              decisionMakerCreator );
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
         WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithKnownCoverage();
@@ -223,11 +230,11 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     private WcsRequest createWcsGetCapabilitiesRequest() {
-        return new WcsRequest( GETCAPABILITIES, VERSION_110, SERVICE_NAME );
+        return new WcsRequest( GETCAPABILITIES, VERSION_100, SERVICE_NAME );
     }
 
     private WcsRequest createWcsGetCoverageRequest() {
-        return new WcsRequest( GETCOVERAGE, VERSION_110, Collections.singletonList( COVERAGE_NAME ), SERVICE_NAME );
+        return new WcsRequest( GETCOVERAGE, VERSION_100, Collections.singletonList( COVERAGE_NAME ), SERVICE_NAME );
     }
 
     private Authentication createAuthenticationWithKnownCoverage() {
@@ -291,7 +298,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     private InputStream retrieveResourceAsStream( String originalXmlFileName ) {
-        return CapabilitiesFilterTest.class.getResourceAsStream( originalXmlFileName );
+        return WcsCapabilitiesResponseFilterManagerTest.class.getResourceAsStream( originalXmlFileName );
     }
 
     private Source expectedXml( String expectedFile ) {

@@ -1,0 +1,303 @@
+<?xml version="1.0"?><WMS_Capabilities xmlns="http://www.opengis.net/wms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wms http://schemas.opengeospatial.net/wms/1.3.0/capabilities_1_3_0.xsd" version="1.3.0">
+  <Service>
+    <Name>WMS</Name>
+    <Title>WMS Test Service</Title>
+    <Abstract>This testservice serves some...</Abstract>
+    <KeywordList>
+      <Keyword>wcs</Keyword>
+      <Keyword>wms</Keyword>
+      <Keyword> wfs</Keyword>
+      <Keyword>test</Keyword>
+    </KeywordList>
+    <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?"></OnlineResource>
+    <ContactInformation>
+      <ContactPersonPrimary>
+        <ContactPerson>Test name</ContactPerson>
+        <ContactOrganization>orga</ContactOrganization>
+      </ContactPersonPrimary>
+      <ContactPosition>test pers</ContactPosition>
+      <ContactAddress>
+        <AddressType>postal</AddressType>
+        <Address>Test address.</Address>
+        <City>test city</City>
+        <StateOrProvince>D</StateOrProvince>
+        <PostCode>Tostal</PostCode>
+        <Country>testcity</Country>
+      </ContactAddress>
+      <ContactVoiceTelephone>111</ContactVoiceTelephone>
+      <ContactFacsimileTelephone>444</ContactFacsimileTelephone>
+      <ContactElectronicMailAddress>test@test.com</ContactElectronicMailAddress>
+    </ContactInformation>
+    <Fees>none</Fees>
+    <AccessConstraints>none</AccessConstraints>
+    <MaxWidth>50000</MaxWidth>
+    <MaxHeight>50000</MaxHeight>
+  </Service>
+
+  <Capability>
+    <Request>
+      <GetCapabilities>
+        <Format>text/xml</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?"></OnlineResource>
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?"></OnlineResource>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetCapabilities>
+      <GetMap>
+        <Format>image/tiff</Format>
+        <Format>image/x-aaigrid</Format>
+        <Format>image/png</Format>
+        <Format>image/jpeg</Format>
+        <Format>image/png; mode=8bit</Format>
+        <Format>application/x-pdf</Format>
+        <Format>image/svg+xml</Format>
+        <Format>application/vnd.google-earth.kml+xml</Format>
+        <Format>application/vnd.google-earth.kmz</Format>
+        <DCPType>
+          <HTTP>
+            <Get>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?"></OnlineResource>
+            </Get>
+            <Post>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?"></OnlineResource>
+            </Post>
+          </HTTP>
+        </DCPType>
+      </GetMap>
+    </Request>
+    <Exception>
+      <Format>XML</Format>
+      <Format>INIMAGE</Format>
+      <Format>BLANK</Format>
+    </Exception>
+    <Layer>
+      <Title>WMS Demo Service</Title>
+      <Abstract>This testservice serves some ...</Abstract>
+      <KeywordList>
+        <Keyword>wcs</Keyword>
+        <Keyword>wms</Keyword>
+        <Keyword> wfs</Keyword>
+        <Keyword>test</Keyword>
+      </KeywordList>
+      <CRS>EPSG:4326</CRS>
+      <CRS>EPSG:900913</CRS>
+      <CRS>EPSG:3857</CRS>
+      <CRS>EPSG:32615</CRS>
+      <CRS>EPSG:32616</CRS>
+      <CRS>EPSG:32617</CRS>
+      <CRS>EPSG:32612</CRS>
+      <EX_GeographicBoundingBox>
+        <westBoundLongitude>-111</westBoundLongitude>
+        <eastBoundLongitude>-86</eastBoundLongitude>
+        <southBoundLatitude>15</southBoundLatitude>
+        <northBoundLatitude>31</northBoundLatitude>
+      </EX_GeographicBoundingBox>
+      <BoundingBox CRS="EPSG:4326" maxx="31" maxy="-86" minx="15" miny="-111"></BoundingBox>
+      <BoundingBox CRS="EPSG:900913" maxx="-86" maxy="31" minx="-111" miny="15"></BoundingBox>
+      <BoundingBox CRS="EPSG:3857" maxx="-9.57348e+06" maxy="3.63275e+06" minx="-1.23565e+07" miny="1.6892e+06"></BoundingBox>
+      <BoundingBox CRS="EPSG:32615" maxx="1.25419e+06" maxy="3.57264e+06" minx="-1.46341e+06" miny="1.65833e+06"></BoundingBox>
+      <BoundingBox CRS="EPSG:32616" maxx="607512" maxy="3.68966e+06" minx="-2.1482e+06" miny="1.65833e+06"></BoundingBox>
+      <BoundingBox CRS="EPSG:32617" maxx="22383.2" maxy="3.84797e+06" minx="-2.86065e+06" miny="1.66441e+06"></BoundingBox>
+      <BoundingBox CRS="EPSG:32612" maxx="3.26479e+06" maxy="3.71303e+06" minx="500000" miny="1.65833e+06"></BoundingBox>
+      <Layer cascaded="0" opaque="0" queryable="0">
+        <Name>testdata_view</Name>
+        <Title>RGB representation of the RE Testdata with time support</Title>
+        <CRS>EPSG:32616</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-89.768</westBoundLongitude>
+          <eastBoundLongitude>-89.2819</eastBoundLongitude>
+          <southBoundLatitude>20.1592</southBoundLatitude>
+          <northBoundLatitude>20.6176</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" maxx="20.6176" maxy="-89.2819" minx="20.1592" miny="-89.768"></BoundingBox>
+        <BoundingBox CRS="EPSG:900913" maxx="261500" maxy="2.2815e+06" minx="211500" miny="2.2315e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:3857" maxx="-9.93882e+06" maxy="2.34633e+06" minx="-9.99293e+06" miny="2.29191e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32615" maxx="888728" maxy="2.28424e+06" minx="836896" miny="2.23241e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32616" maxx="261500" maxy="2.2815e+06" minx="211500" miny="2.2315e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32617" maxx="-365886" maxy="2.30386e+06" minx="-418158" miny="2.25159e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32612" maxx="2.81194e+06" maxy="2.43889e+06" minx="2.7513e+06" miny="2.37825e+06"></BoundingBox>
+        <Dimension nearestValue="0" default="2012-04-05" name="time" units="ISO8601">2011-01-04/2012-04-05</Dimension>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL height="35" width="198">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=testdata_view&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+          </LegendURL>
+        </Style>
+        <Layer cascaded="0" opaque="0" queryable="0">
+          <Title>RGB representation of the RE Testdata with time support</Title>
+          <CRS>EPSG:32616</CRS>
+          <EX_GeographicBoundingBox>
+            <westBoundLongitude>-89.768</westBoundLongitude>
+            <eastBoundLongitude>-89.2819</eastBoundLongitude>
+            <southBoundLatitude>20.1592</southBoundLatitude>
+            <northBoundLatitude>20.6176</northBoundLatitude>
+          </EX_GeographicBoundingBox>
+          <BoundingBox CRS="EPSG:4326" maxx="20.6176" maxy="-89.2819" minx="20.1592" miny="-89.768"></BoundingBox>
+          <BoundingBox CRS="EPSG:900913" maxx="261500" maxy="2.2815e+06" minx="211500" miny="2.2315e+06"></BoundingBox>
+          <BoundingBox CRS="EPSG:3857" maxx="-9.93882e+06" maxy="2.34633e+06" minx="-9.99293e+06" miny="2.29191e+06"></BoundingBox>
+          <BoundingBox CRS="EPSG:32615" maxx="888728" maxy="2.28424e+06" minx="836896" miny="2.23241e+06"></BoundingBox>
+          <BoundingBox CRS="EPSG:32616" maxx="261500" maxy="2.2815e+06" minx="211500" miny="2.2315e+06"></BoundingBox>
+          <BoundingBox CRS="EPSG:32617" maxx="-365886" maxy="2.30386e+06" minx="-418158" miny="2.25159e+06"></BoundingBox>
+          <BoundingBox CRS="EPSG:32612" maxx="2.81194e+06" maxy="2.43889e+06" minx="2.7513e+06" miny="2.37825e+06"></BoundingBox>
+          <Dimension nearestValue="0" default="2012-04-05" name="time" units="ISO8601">2011-01-04/2012-04-05</Dimension>
+          <Style>
+            <Name>default</Name>
+            <Title>default</Title>
+            <LegendURL height="35" width="198">
+              <Format>image/png</Format>
+              <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=testdata_view&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+            </LegendURL>
+          </Style>
+          
+          
+        </Layer>
+      </Layer>
+      <Layer cascaded="0" opaque="0" queryable="0">
+        <Name>footprints</Name>
+        <Title>Image Footprints</Title>
+        <CRS>EPSG:32616</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-89.768</westBoundLongitude>
+          <eastBoundLongitude>-89.2819</eastBoundLongitude>
+          <southBoundLatitude>20.1592</southBoundLatitude>
+          <northBoundLatitude>20.6176</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" maxx="20.6176" maxy="-89.2819" minx="20.1592" miny="-89.768"></BoundingBox>
+        <BoundingBox CRS="EPSG:900913" maxx="261500" maxy="2.2815e+06" minx="211500" miny="2.2315e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:3857" maxx="-9.93882e+06" maxy="2.34633e+06" minx="-9.99293e+06" miny="2.29191e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32615" maxx="888728" maxy="2.28424e+06" minx="836896" miny="2.23241e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32616" maxx="261500" maxy="2.2815e+06" minx="211500" miny="2.2315e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32617" maxx="-365886" maxy="2.30386e+06" minx="-418158" miny="2.25159e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32612" maxx="2.81194e+06" maxy="2.43889e+06" minx="2.7513e+06" miny="2.37825e+06"></BoundingBox>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL height="35" width="194">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=footprints&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+          </LegendURL>
+        </Style>
+        <MinScaleDenominator>1000</MinScaleDenominator>
+        <MaxScaleDenominator>1e+08</MaxScaleDenominator>
+      </Layer>
+      <Layer cascaded="0" opaque="0" queryable="0">
+        <Name>view</Name>
+        <Title>RGB representation of the RE Testdata with time support</Title>
+        <CRS>EPSG:32612</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-110.523</westBoundLongitude>
+          <eastBoundLongitude>-109.29</eastBoundLongitude>
+          <southBoundLatitude>26.6745</southBoundLatitude>
+          <northBoundLatitude>27.7762</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" maxx="27.7762" maxy="-109.29" minx="26.6745" miny="-110.523"></BoundingBox>
+        <BoundingBox CRS="EPSG:900913" maxx="668500" maxy="3.0725e+06" minx="547500" miny="2.9515e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:3857" maxx="-1.21661e+07" maxy="3.22078e+06" minx="-1.23033e+07" miny="3.08286e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32615" maxx="-1.11745e+06" maxy="3.19903e+06" minx="-1.25971e+06" miny="3.05677e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32616" maxx="-1.72788e+06" maxy="3.30614e+06" minx="-1.87992e+06" miny="3.15411e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32617" maxx="-2.35193e+06" maxy="3.45237e+06" minx="-2.51564e+06" miny="3.28868e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32612" maxx="668500" maxy="3.0725e+06" minx="547500" miny="2.9515e+06"></BoundingBox>
+        <Dimension nearestValue="0" default="2011-04-19" name="time" units="ISO8601">2011-02-14/2011-04-19</Dimension>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL height="35" width="198">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=sonora_view&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer cascaded="0" opaque="0" queryable="0">
+        <Name>testdata_footprints</Name>
+        <Title>Image Footprints</Title>
+        <CRS>EPSG:32612</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-110.523</westBoundLongitude>
+          <eastBoundLongitude>-109.29</eastBoundLongitude>
+          <southBoundLatitude>26.6745</southBoundLatitude>
+          <northBoundLatitude>27.7762</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" maxx="27.7762" maxy="-109.29" minx="26.6745" miny="-110.523"></BoundingBox>
+        <BoundingBox CRS="EPSG:900913" maxx="668500" maxy="3.0725e+06" minx="547500" miny="2.9515e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:3857" maxx="-1.21661e+07" maxy="3.22078e+06" minx="-1.23033e+07" miny="3.08286e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32615" maxx="-1.11745e+06" maxy="3.19903e+06" minx="-1.25971e+06" miny="3.05677e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32616" maxx="-1.72788e+06" maxy="3.30614e+06" minx="-1.87992e+06" miny="3.15411e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32617" maxx="-2.35193e+06" maxy="3.45237e+06" minx="-2.51564e+06" miny="3.28868e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32612" maxx="668500" maxy="3.0725e+06" minx="547500" miny="2.9515e+06"></BoundingBox>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL height="35" width="194">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=sonora_footprints&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+          </LegendURL>
+        </Style>
+        <MinScaleDenominator>1000</MinScaleDenominator>
+        <MaxScaleDenominator>1e+08</MaxScaleDenominator>
+      </Layer>
+      <Layer cascaded="0" opaque="0" queryable="0">
+        <Name>abcde_view</Name>
+        <Title>RGB representation of the RE Testdata with time support</Title>
+        <CRS>EPSG:32616</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-89.7798</westBoundLongitude>
+          <eastBoundLongitude>-89.3012</eastBoundLongitude>
+          <southBoundLatitude>20.8091</southBoundLatitude>
+          <northBoundLatitude>21.2584</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" maxx="21.2584" maxy="-89.3012" minx="20.8091" miny="-89.7798"></BoundingBox>
+        <BoundingBox CRS="EPSG:900913" maxx="260500" maxy="2.3525e+06" minx="211500" miny="2.3035e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:3857" maxx="-9.94096e+06" maxy="2.42272e+06" minx="-9.99424e+06" miny="2.36913e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32615" maxx="885083" maxy="2.35523e+06" minx="834238" miny="2.30439e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32616" maxx="260500" maxy="2.3525e+06" minx="211500" miny="2.3035e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32617" maxx="-364192" maxy="2.37547e+06" minx="-415469" miny="2.32419e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32612" maxx="2.79922e+06" maxy="2.51344e+06" minx="2.73964e+06" miny="2.45386e+06"></BoundingBox>
+        <Dimension nearestValue="0" default="2013-03-30" name="time" units="ISO8601">2011-01-29/2013-03-30</Dimension>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL height="35" width="198">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=merida_view&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+          </LegendURL>
+        </Style>
+      </Layer>
+      <Layer cascaded="0" opaque="0" queryable="0">
+        <Name>abcde_footprints</Name>
+        <Title>Image Footprints</Title>
+        <CRS>EPSG:32616</CRS>
+        <EX_GeographicBoundingBox>
+          <westBoundLongitude>-89.7798</westBoundLongitude>
+          <eastBoundLongitude>-89.3012</eastBoundLongitude>
+          <southBoundLatitude>20.8091</southBoundLatitude>
+          <northBoundLatitude>21.2584</northBoundLatitude>
+        </EX_GeographicBoundingBox>
+        <BoundingBox CRS="EPSG:4326" maxx="21.2584" maxy="-89.3012" minx="20.8091" miny="-89.7798"></BoundingBox>
+        <BoundingBox CRS="EPSG:900913" maxx="260500" maxy="2.3525e+06" minx="211500" miny="2.3035e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:3857" maxx="-9.94096e+06" maxy="2.42272e+06" minx="-9.99424e+06" miny="2.36913e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32615" maxx="885083" maxy="2.35523e+06" minx="834238" miny="2.30439e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32616" maxx="260500" maxy="2.3525e+06" minx="211500" miny="2.3035e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32617" maxx="-364192" maxy="2.37547e+06" minx="-415469" miny="2.32419e+06"></BoundingBox>
+        <BoundingBox CRS="EPSG:32612" maxx="2.79922e+06" maxy="2.51344e+06" minx="2.73964e+06" miny="2.45386e+06"></BoundingBox>
+        <Style>
+          <Name>default</Name>
+          <Title>default</Title>
+          <LegendURL height="35" width="194">
+            <Format>image/png</Format>
+            <OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://testwms.de/ows/TestDemo?version=1.3.0&amp;service=WMS&amp;request=GetLegendGraphic&amp;sld_version=1.1.0&amp;layer=merida_footprints&amp;format=image/png&amp;STYLE=default" xlink:type="simple"></OnlineResource>
+          </LegendURL>
+        </Style>
+        <MinScaleDenominator>1000</MinScaleDenominator>
+        <MaxScaleDenominator>1e+08</MaxScaleDenominator>
+      </Layer>
+    </Layer>
+  </Capability>
+</WMS_Capabilities>

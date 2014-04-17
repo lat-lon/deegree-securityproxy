@@ -35,13 +35,13 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.request;
 
-import static java.util.Collections.singletonList;
-
 import java.util.Collections;
 import java.util.List;
 
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Encapsulates a WMS request.
@@ -60,6 +60,12 @@ public class WmsRequest extends OwsRequest {
 
     private final List<String> queryLayerNames;
 
+    private final Envelope bbox;
+
+    private final String crs;
+
+    private final String format;
+
     /**
      * Instantiates a new {@link WmsRequest} with an empty {@link List} of layer names.
      * 
@@ -71,46 +77,13 @@ public class WmsRequest extends OwsRequest {
      *            the name of the service, never <code>null</code>
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
-        this( operationType, serviceVersion, Collections.<String>emptyList(), Collections.<String>emptyList(),
-              serviceName );
-    }
-
-    /**
-     * Instantiates a new {@link WmsRequest} with an single layer name.
-     * 
-     * @param operationType
-     *            the type of the operation, never <code>null</code>
-     * @param serviceVersion
-     *            the version of the service, never <code>null</code>
-     * @param layerName
-     *            the name of the layer, never <code>null</code>
-     * @param serviceName
-     *            the name of the service, never <code>null</code>
-     */
-    public WmsRequest( String operationType, OwsServiceVersion serviceVersion, String layerName, String serviceName ) {
-        this( operationType, serviceVersion, singletonList( layerName ), Collections.<String>emptyList(), serviceName );
+        this( operationType, serviceVersion, Collections.<String> emptyList(), Collections.<String> emptyList(),
+              serviceName, null, null, null );
     }
 
     /**
      * Instantiates a new {@link WmsRequest}.
      * 
-     * @param operationType
-     *            the type of the operation, never <code>null</code>
-     * @param serviceVersion
-     *            the version of the service, never <code>null</code>
-     * @param layerNames
-     *            a {@link List} of layer names, may be empty but never <code>null</code>
-     * @param serviceName
-     *            the name of the service, never <code>null</code>
-     */
-    public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
-                       String serviceName ) {
-        this( operationType, serviceVersion, layerNames, Collections.<String>emptyList(), serviceName );
-    }
-
-    /**
-     * Instantiates a new {@link WmsRequest}.
-     *
      * @param operationType
      *            the type of the operation, never <code>null</code>
      * @param serviceVersion
@@ -121,13 +94,66 @@ public class WmsRequest extends OwsRequest {
      *            a {@link List} of query layer names, may be empty but never <code>null</code>
      * @param serviceName
      *            the name of the service, never <code>null</code>
+     * 
      */
     public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
                        List<String> queryLayerNames, String serviceName ) {
+        this( operationType, serviceVersion, layerNames, queryLayerNames, serviceName, null, null, null );
+    }
+
+    /**
+     * Instantiates a new {@link WmsRequest}.
+     * 
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param layerNames
+     *            a {@link List} of layer names, may be empty but never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     * @param bbox
+     *            the bbox of the service, can be <code>null</code>
+     * @param crs
+     *            the crs of the service, can be <code>null</code>
+     * @param format
+     *            the format of the service, can be <code>null</code>
+     */
+    public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
+                       String serviceName, Envelope bbox, String crs, String format ) {
+        this( operationType, serviceVersion, layerNames, Collections.<String> emptyList(), serviceName, bbox, crs,
+              format );
+    }
+
+    /**
+     * Instantiates a new {@link WmsRequest}.
+     * 
+     * @param operationType
+     *            the type of the operation, never <code>null</code>
+     * @param serviceVersion
+     *            the version of the service, never <code>null</code>
+     * @param layerNames
+     *            a {@link List} of layer names, may be empty but never <code>null</code>
+     * @param queryLayerNames
+     *            a {@link List} of query layer names, may be empty but never <code>null</code>
+     * @param serviceName
+     *            the name of the service, never <code>null</code>
+     * @param bbox
+     *            the bbox of the service, can be <code>null</code>
+     * @param crs
+     *            the crs of the service, can be <code>null</code>
+     * @param format
+     *            the format of the service, can be <code>null</code>
+     */
+    public WmsRequest( String operationType, OwsServiceVersion serviceVersion, List<String> layerNames,
+                       List<String> queryLayerNames, String serviceName, Envelope bbox, String crs, String format ) {
         super( WMS_TYPE, operationType, serviceVersion );
         this.layerNames = layerNames;
         this.queryLayerNames = queryLayerNames;
         this.serviceName = serviceName;
+        this.bbox = bbox;
+        this.crs = crs;
+        this.format = format;
     }
 
     /**
@@ -151,10 +177,32 @@ public class WmsRequest extends OwsRequest {
         return Collections.unmodifiableList( queryLayerNames );
     }
 
+    /**
+     * @return the bbox, can be <code>null</code>
+     */
+    public Envelope getBbox() {
+        return bbox;
+    }
+
+    /**
+     * @return the crs, can be <code>null</code>
+     */
+    public String getCrs() {
+        return crs;
+    }
+
+    /**
+     * @return the format, can be <code>null</code>
+     */
+    public String getFormat() {
+        return format;
+    }
+
     @Override
     public String toString() {
         return "WmsRequest [operationType=" + getOperationType() + ", serviceVersion=" + getServiceVersion()
-               + ", layerNames=" + layerNames + ", queryLayerNames=" + queryLayerNames + ", serviceName=" + serviceName + "]";
+               + ", layerNames=" + layerNames + ", queryLayerNames=" + queryLayerNames + ", serviceName=" + serviceName
+               + ", bbox=" + bbox + ", crs=" + crs + ", format=" + format + "]";
     }
 
 }

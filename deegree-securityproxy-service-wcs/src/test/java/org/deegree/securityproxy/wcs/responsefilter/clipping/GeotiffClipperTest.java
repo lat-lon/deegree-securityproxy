@@ -39,36 +39,29 @@ import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_COMPRESS
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_RESOLUTION_UNIT;
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_X_RESOLUTION;
 import static com.sun.media.imageio.plugins.tiff.BaselineTIFFTagSet.TAG_Y_RESOLUTION;
-import static javax.imageio.ImageIO.read;
+import static org.deegree.matcher.image.ImageMatcher.hasNotSamePixels;
+import static org.deegree.matcher.image.ImageMatcher.hasSameDimension;
+import static org.deegree.matcher.image.ImageMatcher.hasSamePixels;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 
-import javax.imageio.ImageIO;
 import javax.imageio.metadata.IIOMetadataNode;
 
+import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
 import org.geotools.coverage.grid.io.imageio.geotiff.GeoTiffIIOMetadataDecoder;
 import org.geotools.data.DataSourceException;
 import org.geotools.gce.geotiff.GeoTiffReader;
-import org.geotools.geometry.GeneralEnvelope;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -79,8 +72,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -90,8 +81,6 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class GeotiffClipperTest {
 
-    private final GeotiffClipper geotiffClipper = new GeotiffClipper();
-
     /*
      * #calculateClippedImage() - Exceptions
      */
@@ -99,13 +88,15 @@ public class GeotiffClipperTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullImageStreamShouldFail()
                             throws Exception {
-        geotiffClipper.calculateClippedImage( null, mockClippingGeometry(), mockOutputStream() );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
+        geotiffClipper.calculateClippedImage( null, mockClippingGeometry(), mockOutputStream(), mockOwsRequest() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testCalculateClippedImageWithNullOutputStreamShouldFail()
                             throws Exception {
-        geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
+        geotiffClipper.calculateClippedImage( mockInputStream(), mockClippingGeometry(), null, mockOwsRequest() );
     }
 
     /*
@@ -120,8 +111,9 @@ public class GeotiffClipperTest {
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
 
-        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -138,8 +130,9 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
-        geotiffClipper.calculateClippedImage( inputStream, createEnvelopeWithImageInsideInWgs84(), outputStream );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
+        geotiffClipper.calculateClippedImage( inputStream, createEnvelopeWithImageInsideInWgs84(), outputStream,
+                                              mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -156,9 +149,9 @@ public class GeotiffClipperTest {
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -175,8 +168,9 @@ public class GeotiffClipperTest {
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
-
-        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutsideInWgs84(), outputStream );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
+        geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageOutsideInWgs84(), outputStream,
+                                              mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -193,9 +187,9 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         geotiffClipper.calculateClippedImage( inputStream, createPolygonGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -212,10 +206,10 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         geotiffClipper.calculateClippedImage( inputStream,
                                               createPolygonWithHoleGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -236,15 +230,15 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
                                                                               createEnvelopeWithImageInsideInWgs84(),
-                                                                              outputStream );
+                                                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFailed(), is( false ) );
         assertThat( report.isFiltered(), is( false ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
@@ -258,15 +252,15 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
                                                                               createGeometryWithImageOutsideInWgs84(),
-                                                                              outputStream );
+                                                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFailed(), is( false ) );
         assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
@@ -280,15 +274,15 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         ResponseClippingReport report = geotiffClipper.calculateClippedImage( inputStream,
                                                                               createGeometryWithImageInsideAndOutsideInWgs84(),
-                                                                              outputStream );
+                                                                              outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
 
-        assertThat( report.getFailure(), is( nullValue() ) );
+        assertThat( report.isFailed(), is( false ) );
         assertThat( report.isFiltered(), is( true ) );
         assertThat( report.getReturnedVisibleArea(), is( notNullValue() ) );
     }
@@ -305,9 +299,9 @@ public class GeotiffClipperTest {
 
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
         InputStream inputStream = createInputStreamFrom( sourceFile );
-
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
         geotiffClipper.calculateClippedImage( inputStream, createGeometryWithImageInsideAndOutsideInWgs84(),
-                                              outputStream );
+                                              outputStream, mockOwsRequest() );
 
     }
 
@@ -322,8 +316,8 @@ public class GeotiffClipperTest {
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
-
-        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -346,8 +340,8 @@ public class GeotiffClipperTest {
 
         InputStream inputStream = createInputStreamFrom( sourceFile );
         OutputStream outputStream = createOutputStreamFrom( destinationFile );
-
-        geotiffClipper.calculateClippedImage( inputStream, null, outputStream );
+        GeotiffClipper geotiffClipper = new GeotiffClipper();
+        geotiffClipper.calculateClippedImage( inputStream, null, outputStream, mockOwsRequest() );
 
         inputStream.close();
         outputStream.close();
@@ -366,149 +360,6 @@ public class GeotiffClipperTest {
         assertThat( xResolutionDestination, is( xResolutionSource ) );
         assertThat( yResolutionDestination, is( yResolutionSource ) );
         assertThat( resolutionUnitDestination, is( resolutionUnitSource ) );
-    }
-
-    /*
-     * #isClippingRequired()
-     */
-
-    @Test
-    public void testIsClippingRequiredWhenImageIsInsideVisibleArea()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createWholeImageVisibleEnvelopeInImageCrs() );
-
-        assertThat( isClippingRequired, is( false ) );
-    }
-
-    @Test
-    public void testIsClippingRequiredWhenImageIsOutsideVisibleArea()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createWholeImageInvisibleEnvelopeInImageCrs() );
-
-        assertThat( isClippingRequired, is( true ) );
-    }
-
-    @Test
-    public void testIsClippingRequiredWhenImageIntersectsVisibleArea()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createImageInsersectsEnvelopeInImageCrs() );
-
-        assertThat( isClippingRequired, is( true ) );
-    }
-
-    @Test
-    public void testIsClippingRequiredWhenImageIntersectsVisibleAreaOfMultipolygon()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createImageInHoleMultipolygonInImageCrs() );
-
-        assertThat( isClippingRequired, is( true ) );
-    }
-
-    @Test
-    public void testIsClippingRequiredWhenImageInVisibleAreaOfMultipolygon()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        boolean isClippingRequired = geotiffClipper.isClippingRequired( geoTiffReader,
-                                                                        createImageIntersectsMultipolygonInImageCrs() );
-
-        assertThat( isClippingRequired, is( false ) );
-    }
-
-    /*
-     * #calculateGeometryVisibleAfterClipping()
-     */
-    @Test
-    public void testCalculateGeometryVisibleAfterClippingCompleteOutsideVisibleArea()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateAreaVisibleAfterClipping( geoTiffReader,
-                                                                                                  createWholeImageInvisibleEnvelopeInImageCrs() );
-        double area = geometryVisibleAfterClipping.getArea();
-        assertThat( area, is( 0d ) );
-    }
-
-    @Test
-    public void testCalculateGeometryVisibleAfterClippingCompleteInsideVisibleArea()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateAreaVisibleAfterClipping( geoTiffReader,
-                                                                                                  createWholeImageVisibleEnvelopeInImageCrs() );
-        double area = geometryVisibleAfterClipping.getArea();
-        assertThat( area, is( 1.501452E8 ) );
-    }
-
-    @Test
-    public void testCalculateGeometryVisibleAfterClippingIntersectingVisbleArea()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-        Geometry geometryVisibleAfterClipping = geotiffClipper.calculateAreaVisibleAfterClipping( geoTiffReader,
-                                                                                                  createImageInsersectsEnvelopeInImageCrs() );
-        double area = geometryVisibleAfterClipping.getArea();
-
-        // Expected 4.30674E7
-        double expectedArea = new Envelope( 446591.945, 457331.945, 4437805.000, 4441815.000 ).getArea();
-        assertThat( area, is( expectedArea ) );
-    }
-
-    /*
-     * #transformVisibleAreaToImageCrs()
-     */
-
-    @Ignore("why does this not work???")
-    @Test
-    public void testTransformVisibleAreaToImageCrs()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-
-        Geometry geometryToTransform = createEnvelopeWithImageInsideInWgs84();
-        Geometry transformedGeometry = geotiffClipper.transformVisibleAreaToImageCrs( geometryToTransform,
-                                                                                      geoTiffReader );
-        Geometry expectedGeometry = new GeometryFactory().toGeometry( new Envelope( 214532.475581639, 3470063.34743009,
-                                                                                    534994.655061707, 9329005.18235732 ) );
-
-        assertThat( transformedGeometry, is( expectedGeometry ) );
-    }
-
-    /*
-     * #transformToVisibleAreaCrs()
-     */
-    @Test
-    public void testTransformToVisibleAreaCrs()
-                            throws Exception {
-        File sourceFile = createNewFile( "dem30_geotiff_tiled.tiff" );
-        GeoTiffReader geoTiffReader = createGeoTiffReader( sourceFile );
-
-        Geometry geoTiffEnvelopeAsGeometry = convertImageEnvelopeToGeometry( geoTiffReader );
-        Geometry transformedGeometry = geotiffClipper.transformToVisibleAreaCrs( geoTiffEnvelopeAsGeometry,
-                                                                                 geoTiffReader );
-        Geometry expectedGeometry = new GeometryFactory().toGeometry( new Envelope( -111.625671116814,
-                                                                                    -111.500779260647,
-                                                                                    39.9990119740282, 40.1255737525128 ) );
-        Geometry expectedGeometryBuffered = expectedGeometry.buffer( 0.01 );
-
-        assertTrue( expectedGeometryBuffered.contains( transformedGeometry ) );
-    }
-
-    private GeoTiffReader createGeoTiffReader( File tiff )
-                            throws DataSourceException {
-        return new GeoTiffReader( tiff );
     }
 
     private File createNewFile( String resourceName ) {
@@ -546,36 +397,8 @@ public class GeotiffClipperTest {
         return mock( Geometry.class );
     }
 
-    private Geometry createWholeImageVisibleEnvelopeInImageCrs() {
-        Envelope wholeWorld = new Envelope( 446580.945, 457531.945, 4427805.000, 4441915.000 );
-        return new GeometryFactory().toGeometry( wholeWorld );
-    }
-
-    private Geometry createWholeImageInvisibleEnvelopeInImageCrs() {
-        Envelope wholeWorld = new Envelope( 446580.945, 446581.945, 4427805.000, 4427806.000 );
-        return new GeometryFactory().toGeometry( wholeWorld );
-    }
-
-    private Geometry createImageInsersectsEnvelopeInImageCrs() {
-        Envelope wholeWorld = new Envelope( 446580.945, 457351.945, 4437805.000, 4441915.000 );
-        return new GeometryFactory().toGeometry( wholeWorld );
-    }
-
-    private Geometry createImageInHoleMultipolygonInImageCrs()
-                            throws ParseException {
-        String wktPolygon = "MULTIPOLYGON (((446580.945 4427805, 446580.945 4427806, 446581.945 4427806, 446581.945 4427805, 446580.945 4427805)),"
-                            + "((436491.94453 4327825, 436491.94453 4541825, 467431.94453 4541825, 467431.94453 4327825, 436491.94453 4327825),"
-                            + "(446491.94453 4427825, 446491.94453 4441825, 457431.94453 4441825, 457431.94453 4427825, 446491.94453 4427825)))";
-        WKTReader reader = new WKTReader();
-        return reader.read( wktPolygon );
-    }
-
-    private Geometry createImageIntersectsMultipolygonInImageCrs()
-                            throws ParseException {
-        String wktPolygon = "MULTIPOLYGON (((446580.945 4427805, 446580.945 4427806, 446581.945 4427806, 446581.945 4427805, 446580.945 4427805)),"
-                            + "((446491.94453 4427825, 446491.94453 4441825, 457431.94453 4441825, 457431.94453 4427825, 446491.94453 4427825)))";
-        WKTReader reader = new WKTReader();
-        return reader.read( wktPolygon );
+    private OwsRequest mockOwsRequest() {
+        return mock( OwsRequest.class );
     }
 
     private Geometry createEnvelopeWithImageInsideInWgs84() {
@@ -617,137 +440,6 @@ public class GeotiffClipperTest {
         LinearRing holes[] = { hole };
 
         return geometryFactory.createPolygon( shell, holes );
-    }
-
-    private Matcher<File> hasSameDimension( File sourceFile )
-                            throws IOException {
-
-        BufferedImage sourceImage = read( sourceFile );
-        final int heightSource = sourceImage.getHeight();
-        final int widthSource = sourceImage.getWidth();
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    int heightDestination = destinationImage.getHeight();
-                    int widthDestination = destinationImage.getWidth();
-
-                    return heightDestination == heightSource && widthDestination == widthSource;
-                } catch ( IOException e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should have the same width and heigth as the source ( " + widthSource + " * "
-                                        + heightSource + ")!" );
-            }
-        };
-    }
-
-    private Matcher<File> hasSamePixels( File sourceFile )
-                            throws Exception {
-
-        BufferedImage sourceImage = ImageIO.read( sourceFile );
-        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
-
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
-                    return Arrays.equals( destinationPixels, sourcePixelsToCompare );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should contain the same pixels as the source!" );
-            }
-        };
-    }
-
-    private Matcher<File> hasNotSamePixels( File sourceFile )
-                            throws Exception {
-
-        BufferedImage sourceImage = ImageIO.read( sourceFile );
-        PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
-
-        int[] sourcePixels = null;
-        if ( sourceGrabber.grabPixels() ) {
-            int width = sourceGrabber.getWidth();
-            int height = sourceGrabber.getHeight();
-            sourcePixels = new int[width * height];
-            sourcePixels = (int[]) sourceGrabber.getPixels();
-        }
-        final int[] sourcePixelsToCompare = sourcePixels;
-
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-
-                    int[] destinationPixels = null;
-                    if ( destinationGrabber.grabPixels() ) {
-                        int width = destinationGrabber.getWidth();
-                        int height = destinationGrabber.getHeight();
-                        destinationPixels = new int[width * height];
-                        destinationPixels = (int[]) destinationGrabber.getPixels();
-                    }
-
-                    return !Arrays.equals( destinationPixels, sourcePixelsToCompare );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should not contain the same pixels as the source!" );
-            }
-        };
-    }
-
-    private Geometry convertImageEnvelopeToGeometry( GeoTiffReader reader ) {
-        GeometryFactory geometryFactory = new GeometryFactory();
-        GeneralEnvelope imageEnvelope = reader.getOriginalEnvelope();
-        ReferencedEnvelope envelope = new ReferencedEnvelope( imageEnvelope );
-        return geometryFactory.toGeometry( envelope );
     }
 
     private NodeList retrieveNodeWithTags( File file )

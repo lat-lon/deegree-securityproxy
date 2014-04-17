@@ -8,11 +8,15 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-securityproxy</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
   </parent>
 
   <dependencies>
     <!-- deegree-securityproxy -->
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-commons</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-authentication</artifactId>
@@ -33,6 +37,14 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlmatchers</groupId>
+      <artifactId>xml-matchers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-matcher</artifactId>
     </dependency>
     <!-- JDBC -->
     <dependency>
@@ -101,6 +113,12 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
+    </dependency>
+    <!-- geotools -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-render</artifactId>
+      <version>9.5</version>
     </dependency>
   </dependencies>
 
