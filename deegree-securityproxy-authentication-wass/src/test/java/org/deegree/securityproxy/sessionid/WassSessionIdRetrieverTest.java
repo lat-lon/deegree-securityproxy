@@ -12,11 +12,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpVersion;
+import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -26,14 +30,14 @@ import org.mockito.Mockito;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WasSessionIdRetrieverTest {
+public class WassSessionIdRetrieverTest {
 
     private static final String BASE_URL = "http://www.WasSessionIdRetrieverTest.de/services";
 
     @Test
     public void testRetrieveSessionId()
                             throws Exception {
-        SessionIdRetriever sessionIdRetriever = spyWasSessionIdRetriever();
+        SessionIdRetriever sessionIdRetriever = spyWassSessionIdRetriever();
         String sessionId = sessionIdRetriever.retrieveSessionId( "validName", "validPassword" );
         assertThat( sessionId, is( notNullValue() ) );
     }
@@ -41,15 +45,15 @@ public class WasSessionIdRetrieverTest {
     // @Test
     public void testRetrieveSessionIdWithInvalidCredentials()
                             throws Exception {
-        SessionIdRetriever sessionIdRetriever = spyWasSessionIdRetriever();
+        SessionIdRetriever sessionIdRetriever = spyWassSessionIdRetriever();
         String sessionId = sessionIdRetriever.retrieveSessionId( "invalidName", "invalidPassword" );
         assertThat( sessionId, is( nullValue() ) );
     }
 
-    private WasSessionIdRetriever spyWasSessionIdRetriever()
+    private WassSessionIdRetriever spyWassSessionIdRetriever()
                             throws ClientProtocolException, IOException {
-        WasSessionIdRetriever wasSessionIdRetriever = new WasSessionIdRetriever( BASE_URL );
-        WasSessionIdRetriever spiedWasSessionIdRetriever = spy( wasSessionIdRetriever );
+        WassSessionIdRetriever wasSessionIdRetriever = new WassSessionIdRetriever( BASE_URL );
+        WassSessionIdRetriever spiedWasSessionIdRetriever = spy( wasSessionIdRetriever );
         when( spiedWasSessionIdRetriever.createHttpClient() ).thenReturn( mockHttpClient() );
         return spiedWasSessionIdRetriever;
     }
@@ -66,14 +70,18 @@ public class WasSessionIdRetrieverTest {
                             throws IllegalStateException, IOException {
         CloseableHttpResponse response = mock( CloseableHttpResponse.class );
 
-        // StatusLine statusLine = new BasicStatusLine( HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK" );
-        // when( response.getStatusLine() ).thenReturn( statusLine );
-        //
-        HttpEntity entity = mockEntity();
-
-        when( response.getEntity() ).thenReturn( entity );
+//        StatusLine statusLine = mockStatusLine();
+//        when( response.getStatusLine() ).thenReturn( statusLine );
+//        
+//        HttpEntity entity = mockEntity();
+//        when( response.getEntity() ).thenReturn( entity );
 
         return response;
+    }
+
+    private StatusLine mockStatusLine() {
+        StatusLine statusLine = new BasicStatusLine( HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK" );
+        return mock(StatusLine.class);
     }
 
     private HttpEntity mockEntity()

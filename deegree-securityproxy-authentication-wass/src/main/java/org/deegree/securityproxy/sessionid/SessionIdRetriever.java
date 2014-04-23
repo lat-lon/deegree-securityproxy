@@ -2,7 +2,7 @@ package org.deegree.securityproxy.sessionid;
 
 /**
  * 
- * TODO add class documentation here
+ * Retrieves a session id by a username/password.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $

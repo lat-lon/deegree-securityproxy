@@ -53,20 +53,20 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 
 /**
- * Requests a sessionId from a webservice.
+ * Requests a sessionId from a WASS.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WasSessionIdRetriever implements SessionIdRetriever {
+public class WassSessionIdRetriever implements SessionIdRetriever {
 
-    private static final Logger LOG = Logger.getLogger( WasSessionIdRetriever.class );
+    private static final Logger LOG = Logger.getLogger( WassSessionIdRetriever.class );
 
     private final String baseUrl;
 
-    public WasSessionIdRetriever( String baseUrl ) {
+    public WassSessionIdRetriever( String baseUrl ) {
         this.baseUrl = baseUrl;
     }
 
