@@ -1,28 +1,28 @@
 package org.deegree.securityproxy.sessionid;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpVersion;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicStatusLine;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -51,15 +51,15 @@ public class WassSessionIdRetrieverTest {
     }
 
     private WassSessionIdRetriever spyWassSessionIdRetriever()
-                            throws ClientProtocolException, IOException {
+                            throws IOException {
         WassSessionIdRetriever wasSessionIdRetriever = new WassSessionIdRetriever( BASE_URL );
         WassSessionIdRetriever spiedWasSessionIdRetriever = spy( wasSessionIdRetriever );
-        Mockito.doReturn( mockHttpClient() ).when( spiedWasSessionIdRetriever ).createHttpClient();
+        doReturn( mockHttpClient() ).when( spiedWasSessionIdRetriever ).createHttpClient();
         return spiedWasSessionIdRetriever;
     }
 
     private CloseableHttpClient mockHttpClient()
-                            throws ClientProtocolException, IOException {
+                            throws IOException {
         CloseableHttpClient httpClient = mock( CloseableHttpClient.class );
         CloseableHttpResponse response = mockResponse();
         when( httpClient.execute( Mockito.any( HttpUriRequest.class ) ) ).thenReturn( response );
