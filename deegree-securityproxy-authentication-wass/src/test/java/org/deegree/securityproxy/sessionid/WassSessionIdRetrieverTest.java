@@ -42,7 +42,7 @@ public class WassSessionIdRetrieverTest {
         assertThat( sessionId, is( notNullValue() ) );
     }
 
-    // @Test
+    @Test
     public void testRetrieveSessionIdWithInvalidCredentials()
                             throws Exception {
         SessionIdRetriever sessionIdRetriever = spyWassSessionIdRetriever();
@@ -54,7 +54,7 @@ public class WassSessionIdRetrieverTest {
                             throws ClientProtocolException, IOException {
         WassSessionIdRetriever wasSessionIdRetriever = new WassSessionIdRetriever( BASE_URL );
         WassSessionIdRetriever spiedWasSessionIdRetriever = spy( wasSessionIdRetriever );
-        when( spiedWasSessionIdRetriever.createHttpClient() ).thenReturn( mockHttpClient() );
+        Mockito.doReturn( mockHttpClient() ).when( spiedWasSessionIdRetriever ).createHttpClient();
         return spiedWasSessionIdRetriever;
     }
 
@@ -69,19 +69,11 @@ public class WassSessionIdRetrieverTest {
     private CloseableHttpResponse mockResponse()
                             throws IllegalStateException, IOException {
         CloseableHttpResponse response = mock( CloseableHttpResponse.class );
-
-//        StatusLine statusLine = mockStatusLine();
-//        when( response.getStatusLine() ).thenReturn( statusLine );
-//        
-//        HttpEntity entity = mockEntity();
-//        when( response.getEntity() ).thenReturn( entity );
-
-        return response;
-    }
-
-    private StatusLine mockStatusLine() {
         StatusLine statusLine = new BasicStatusLine( HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK" );
-        return mock(StatusLine.class);
+        when( response.getStatusLine() ).thenReturn( statusLine );
+        HttpEntity entity = mockEntity();
+        when( response.getEntity() ).thenReturn( entity );
+        return response;
     }
 
     private HttpEntity mockEntity()
