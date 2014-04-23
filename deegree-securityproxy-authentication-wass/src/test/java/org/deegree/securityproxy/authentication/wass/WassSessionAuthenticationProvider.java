@@ -12,7 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 /**
- * Appends a session id requested from a WASS.
+ * Authenticate by the session id requested from a WASS.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
  * @version $Revision: $, $Date: $
  */
 public class WassSessionAuthenticationProvider implements AuthenticationProvider {
+
+    static final String ANONYMOUS_USER = "Anonymous User";
 
     private static final Logger LOG = Logger.getLogger( WassSessionAuthenticationProvider.class );
 
@@ -35,7 +37,6 @@ public class WassSessionAuthenticationProvider implements AuthenticationProvider
         LOG.info( "Authenticating incoming: " + authentication );
         if ( authentication == null )
             return generateAnonymousAuthenticationToken();
-
         return createVerifiedToken( authentication );
     }
 
@@ -46,7 +47,7 @@ public class WassSessionAuthenticationProvider implements AuthenticationProvider
     }
 
     private Authentication createVerifiedToken( Authentication authentication ) {
-        String sessionId = sessionIdManager.retrieveSessionId();
+        String sessionId = retrieveSessionId( authentication );
         boolean isAuthenticated = sessionId != null;
         if ( isAuthenticated ) {
             return new PreAuthenticatedAuthenticationToken( authentication.getPrincipal(), sessionId );
@@ -55,9 +56,14 @@ public class WassSessionAuthenticationProvider implements AuthenticationProvider
         }
     }
 
+    private String retrieveSessionId( Authentication authentication ) {
+        // TODO: retrieve session id by username/password
+        return sessionIdManager.retrieveSessionId();
+    }
+
     private AnonymousAuthenticationToken generateAnonymousAuthenticationToken() {
         SimpleGrantedAuthority grantedAuthorityImpl = new SimpleGrantedAuthority( "ROLE_ANONYMOUS" );
-        return new AnonymousAuthenticationToken( "Anonymous User", "Anonymous User",
+        return new AnonymousAuthenticationToken( ANONYMOUS_USER, ANONYMOUS_USER,
                                                  Collections.singletonList( grantedAuthorityImpl ) );
     }
 
