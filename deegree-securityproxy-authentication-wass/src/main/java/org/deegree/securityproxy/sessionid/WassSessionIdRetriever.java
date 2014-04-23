@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.sessionid;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -51,6 +46,11 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Requests a sessionId from a WASS.
@@ -72,6 +72,7 @@ public class WassSessionIdRetriever implements SessionIdRetriever {
 
     @Override
     public String retrieveSessionId( String userName, String password ) {
+        checkParameters( userName, password );
         try {
             URI requestUri = createRequest( userName, password );
             return requestSessionId( requestUri );
@@ -162,6 +163,13 @@ public class WassSessionIdRetriever implements SessionIdRetriever {
 
     private boolean isServiceException( String response ) {
         return response.contains( "ServiceExceptionReport" );
+    }
+
+    private void checkParameters( String userName, String password ) {
+        if ( userName == null )
+            throw new IllegalArgumentException( "User name must not be null!" );
+        if ( password == null )
+            throw new IllegalArgumentException( "Password must not be null!" );
     }
 
 }
