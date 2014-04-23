@@ -70,7 +70,6 @@ public class WasSessionIdRetriever implements SessionIdRetriever {
         this.baseUrl = baseUrl;
     }
 
-
     @Override
     public String retrieveSessionId( String userName, String password ) {
         try {
@@ -89,7 +88,6 @@ public class WasSessionIdRetriever implements SessionIdRetriever {
     CloseableHttpClient createHttpClient() {
         return HttpClientBuilder.create().build();
     }
-
 
     private String requestSessionId( URI requestUri )
                             throws ClientProtocolException, IOException {
