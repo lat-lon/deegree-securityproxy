@@ -75,7 +75,7 @@ public class AddParameterAnonymousAuthenticationFilter extends AbstractAuthentic
     private void addParameter( HttpServletRequest request, Authentication authResult ) {
         Object credentials = authResult.getCredentials();
         if ( credentials != null && credentials instanceof String ) {
-            LOG.info( "Append parameter " + parameterKey + "=" + credentials );
+            LOG.debug( "Append parameter " + parameterKey + "=" + credentials );
             ( (KvpRequestWrapper) request ).addParameter( parameterKey, (String) credentials );
         }
     }

@@ -42,7 +42,6 @@ public class WassSessionAuthenticationProvider implements AuthenticationProvider
 
     @Override
     public boolean supports( Class<?> authentication ) {
-        // TODO: which authentications are supported?
         return true;
     }
 
