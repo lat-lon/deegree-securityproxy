@@ -35,6 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.sessionid;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -46,11 +51,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * Requests a sessionId from a WASS.
@@ -65,6 +65,10 @@ public class WassSessionIdRetriever implements SessionIdRetriever {
     private static final Logger LOG = Logger.getLogger( WassSessionIdRetriever.class );
 
     private final String baseUrl;
+
+    private int connectTimeout = -1;
+
+    private int socketTimeout = -1;
 
     public WassSessionIdRetriever( String baseUrl ) {
         this.baseUrl = baseUrl;
@@ -115,7 +119,7 @@ public class WassSessionIdRetriever implements SessionIdRetriever {
 
     private HttpGet createConfiguredHttpGet( URI requestUri ) {
         HttpGet httpGet = new HttpGet( requestUri );
-        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout( 1000 ).setConnectTimeout( 1000 ).build();
+        RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout( socketTimeout ).setConnectTimeout( connectTimeout ).build();
         httpGet.setConfig( requestConfig );
         return httpGet;
     }
@@ -170,6 +174,50 @@ public class WassSessionIdRetriever implements SessionIdRetriever {
             throw new IllegalArgumentException( "User name must not be null!" );
         if ( password == null )
             throw new IllegalArgumentException( "Password must not be null!" );
+    }
+
+    /**
+     * @return timeout in milliseconds until a connection is established (s. {@link #setConnectTimeout(int)})
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
+     * @param connectTimeout
+     *            timeout in milliseconds until a connection is established. A timeout value of zero is interpreted as
+     *            an infinite timeout.
+     *            <ul>
+     *            <li>A timeout value of zero is interpreted as an infinite timeout.</li>
+     *            <li>A negative value is interpreted as undefined (system default).</li>
+     *            </ul>
+     *            Default: <code>-1</code>
+     */
+    public void setConnectTimeout( int connectTimeout ) {
+        this.connectTimeout = connectTimeout;
+    }
+
+    /**
+     * 
+     * @return the socket timeout (<code>SO_TIMEOUT</code>) in milliseconds (s. {@link #setSocketTimeout(int)})
+     */
+    public int getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    /**
+     * @param socketTimeout
+     *            the socket timeout (<code>SO_TIMEOUT</code>) in milliseconds, which is the timeout for waiting for
+     *            data or, put differently, a maximum period inactivity between two consecutive data packets).
+     *            <ul>
+     *            <li>
+     *            A timeout value of zero is interpreted as an infinite timeout.</li>
+     *            <li>A negative value is interpreted as undefined (system default).</li>
+     *            </ul>
+     *            Default: <code>-1</code>
+     */
+    public void setSocketTimeout( int socketTimeout ) {
+        this.socketTimeout = socketTimeout;
     }
 
 }
