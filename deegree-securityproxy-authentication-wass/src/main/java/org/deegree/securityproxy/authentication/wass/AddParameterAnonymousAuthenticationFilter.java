@@ -14,13 +14,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.KvpRequestWrapper;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 /**
- * 
- * TODO add class documentation here
+ * {@link AbstractAuthenticationProcessingFilter} implementation using a {@link AuthenticationManager} to authenticate a
+ * anonymous user. All requests are authenticated. After authentication the credentials are added as parameter to the
+ * request.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -36,8 +38,8 @@ public class AddParameterAnonymousAuthenticationFilter extends AbstractAuthentic
     private final String parameterKey;
 
     public AddParameterAnonymousAuthenticationFilter( String parameterKey ) {
-        // TODO: fix path!
-        super( "/test" );
+        // path is not used, cause method #requiresAuthentication() authentication is overwritten!
+        super( "/unusedPath" );
         this.parameterKey = parameterKey;
     }
 
@@ -47,6 +49,11 @@ public class AddParameterAnonymousAuthenticationFilter extends AbstractAuthentic
         LOG.debug( "Wrap request with query string " + ( (HttpServletRequest) req ).getQueryString() );
         KvpRequestWrapper request = new KvpRequestWrapper( (HttpServletRequest) req );
         super.doFilter( request, res, chain );
+    }
+
+    @Override
+    protected boolean requiresAuthentication( HttpServletRequest request, HttpServletResponse response ) {
+        return true;
     }
 
     @Override
@@ -61,15 +68,15 @@ public class AddParameterAnonymousAuthenticationFilter extends AbstractAuthentic
     protected void successfulAuthentication( HttpServletRequest request, HttpServletResponse response,
                                              FilterChain chain, Authentication authResult )
                             throws IOException, ServletException {
-        super.successfulAuthentication( request, response, chain, authResult );
         addParameter( request, authResult );
+        chain.doFilter( request, response );
     }
 
     private void addParameter( HttpServletRequest request, Authentication authResult ) {
-        String sessionId = (String) authResult.getCredentials();
-        if ( sessionId != null ) {
-            LOG.info( "Append parameter " + parameterKey + "=" + sessionId );
-            ( (KvpRequestWrapper) request ).addParameter( parameterKey, sessionId );
+        Object credentials = authResult.getCredentials();
+        if ( credentials != null && credentials instanceof String ) {
+            LOG.info( "Append parameter " + parameterKey + "=" + credentials );
+            ( (KvpRequestWrapper) request ).addParameter( parameterKey, (String) credentials );
         }
     }
 
