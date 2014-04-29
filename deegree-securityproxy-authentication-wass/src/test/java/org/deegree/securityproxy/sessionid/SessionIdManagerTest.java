@@ -2,6 +2,7 @@ package org.deegree.securityproxy.sessionid;
 
 import org.junit.Test;
 
+import static java.lang.Thread.sleep;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -77,7 +78,9 @@ public class SessionIdManagerTest {
         SessionIdManager sessionIdManager = new SessionIdManager( sessionIdRetriever, USER, PASSWORD, 0 );
 
         sessionIdManager.retrieveSessionId();
+        sleep( 1 );
         sessionIdManager.retrieveSessionId();
+        sleep( 1 );
         sessionIdManager.retrieveSessionId();
 
         verify( sessionIdRetriever, times( 3 ) ).retrieveSessionId( USER, PASSWORD );
