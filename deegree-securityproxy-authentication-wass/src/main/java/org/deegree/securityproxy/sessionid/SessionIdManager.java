@@ -1,6 +1,6 @@
 package org.deegree.securityproxy.sessionid;
 
-import java.util.Date;
+import static java.lang.System.currentTimeMillis;
 
 /**
  * Manages sessionIds
@@ -18,9 +18,9 @@ public class SessionIdManager {
 
     private final String technicalPassword;
 
-    private final Integer saveTimeOfSessionIdInMin;
+    private final int saveTimeOfSessionIdInMin;
 
-    private Long lastUpdateTime;
+    private long lastUpdateTime = -1;
 
     private String currentSessionId;
 
@@ -36,18 +36,15 @@ public class SessionIdManager {
      *            technical user is not supported
      * @param saveTimeOfSessionIdInMin
      *            time in minutes how long a retrieved session id is saved. When time is exceeded a new session id is
-     *            retrieved, may be -1 or <code>null</code> if a new session id should be retrieved every time
+     *            retrieved, can be -1 if a new session id should be retrieved every time
      */
     public SessionIdManager( SessionIdRetriever sessionIdRetriever, String technicalUserName, String technicalPassword,
-                             Integer saveTimeOfSessionIdInMin ) {
+                             int saveTimeOfSessionIdInMin ) {
         checkParameters( sessionIdRetriever );
         this.sessionIdRetriever = sessionIdRetriever;
         this.technicalUserName = technicalUserName;
         this.technicalPassword = technicalPassword;
-        if ( saveTimeOfSessionIdInMin != null )
-            this.saveTimeOfSessionIdInMin = saveTimeOfSessionIdInMin;
-        else
-            this.saveTimeOfSessionIdInMin = -1;
+        this.saveTimeOfSessionIdInMin = saveTimeOfSessionIdInMin;
     }
 
     /**
@@ -80,7 +77,7 @@ public class SessionIdManager {
     }
 
     private void considerSaveTimeAndUpdateSessionId( String userName, String password ) {
-        if ( lastUpdateTime == null ) {
+        if ( lastUpdateTime == -1 ) {
             updateSessionId( userName, password );
         } else {
             considerLastUpdateTimeAndUpdateSessionId( userName, password );
@@ -88,7 +85,7 @@ public class SessionIdManager {
     }
 
     private void considerLastUpdateTimeAndUpdateSessionId( String userName, String password ) {
-        Long currentTime = new Date().getTime();
+        long currentTime = currentTimeMillis();
         if ( currentTime - lastUpdateTime > saveTimeOfSessionIdInMin * 1000 ) {
             updateSessionId( userName, password );
         }
@@ -96,7 +93,7 @@ public class SessionIdManager {
 
     private void updateSessionId( String userName, String password ) {
         currentSessionId = sessionIdRetriever.retrieveSessionId( userName, password );
-        lastUpdateTime = new Date().getTime();
+        lastUpdateTime = currentTimeMillis();
     }
 
     private void checkParameters( SessionIdRetriever sessionIdRetriever ) {

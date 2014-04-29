@@ -35,17 +35,6 @@ public class SessionIdManagerTest {
     }
 
     @Test
-    public void testRetrieveSessionIdWithNullSaveTimeOfSessionIdShouldRetrieveNewSessionId()
-                            throws Exception {
-        SessionIdRetriever sessionIdRetriever = mockSessionIdRetriever();
-        SessionIdManager sessionIdManager = new SessionIdManager( sessionIdRetriever, USER, PASSWORD, null );
-
-        sessionIdManager.retrieveSessionId();
-
-        verify( sessionIdRetriever ).retrieveSessionId( USER, PASSWORD );
-    }
-
-    @Test
     public void testRetrieveSessionIdForFirstTimeShouldRetrieveNewSessionId()
                             throws Exception {
         SessionIdRetriever sessionIdRetriever = mockSessionIdRetriever();
