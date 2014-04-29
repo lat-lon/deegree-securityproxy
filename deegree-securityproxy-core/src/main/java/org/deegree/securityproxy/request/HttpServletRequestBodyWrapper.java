@@ -35,12 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
+import static java.util.Collections.enumeration;
+import static java.util.Collections.singleton;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Enumeration;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -91,10 +95,28 @@ public class HttpServletRequestBodyWrapper extends HttpServletRequestWrapper {
     @Override
     public int getContentLength() {
         try {
-            return toByteArray( getReader() ).length;
+            synchronized ( wrappedInputStream ) {
+                byte[] byteArray = toByteArray( wrappedInputStream );
+                renewInputStream( new ByteArrayInputStream( byteArray ) );
+                return byteArray.length;
+            }
         } catch ( IOException e ) {
             return -1;
         }
+    }
+
+    @Override
+    public String getHeader( String name ) {
+        if ( "Content-Length".equalsIgnoreCase( name ) )
+            return getContentLengthAsString();
+        return super.getHeader( name );
+    }
+
+    @Override
+    public Enumeration<?> getHeaders( String name ) {
+        if ( "Content-Length".equalsIgnoreCase( name ) )
+            return enumeration( singleton( getContentLengthAsString() ) );
+        return super.getHeaders( name );
     }
 
     /**
@@ -105,6 +127,10 @@ public class HttpServletRequestBodyWrapper extends HttpServletRequestWrapper {
      */
     public void renewInputStream( InputStream newInputStream ) {
         this.wrappedInputStream = newInputStream;
+    }
+
+    private String getContentLengthAsString() {
+        return Integer.toString( getContentLength() );
     }
 
 }
