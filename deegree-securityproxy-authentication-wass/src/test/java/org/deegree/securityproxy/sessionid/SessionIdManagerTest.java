@@ -3,6 +3,7 @@ package org.deegree.securityproxy.sessionid;
 import org.junit.Test;
 
 import static java.lang.Thread.sleep;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -73,6 +74,39 @@ public class SessionIdManagerTest {
         sessionIdManager.retrieveSessionId();
 
         verify( sessionIdRetriever, times( 3 ) ).retrieveSessionId( USER, PASSWORD );
+    }
+
+    @Test
+    public void testRetrieveSessionIdThreeTimesForTwoDifferentUsersShouldRetrieveNewSessionIdThreeTimes()
+                            throws Exception {
+        SessionIdRetriever sessionIdRetriever = mockSessionIdRetriever();
+        SessionIdManager sessionIdManager = new SessionIdManager( sessionIdRetriever, USER, PASSWORD,
+                                                                  SAVE_TIME_OF_SESSION_ID );
+
+        sessionIdManager.retrieveSessionId( "user1", "password1" );
+        sessionIdManager.retrieveSessionId( "user2", "password2" );
+        sessionIdManager.retrieveSessionId( "user3", "password3" );
+
+        verify( sessionIdRetriever, times( 3 ) ).retrieveSessionId( anyString(), anyString() );
+        verify( sessionIdRetriever ).retrieveSessionId( "user1", "password1" );
+        verify( sessionIdRetriever ).retrieveSessionId( "user2", "password2" );
+        verify( sessionIdRetriever ).retrieveSessionId( "user3", "password3" );
+    }
+
+    @Test
+    public void testRetrieveSessionIdThreeTimesForTwoDifferentUsersShouldRetrieveNewSessionIdTwoTimes()
+                            throws Exception {
+        SessionIdRetriever sessionIdRetriever = mockSessionIdRetriever();
+        SessionIdManager sessionIdManager = new SessionIdManager( sessionIdRetriever, USER, PASSWORD,
+                                                                  SAVE_TIME_OF_SESSION_ID );
+
+        sessionIdManager.retrieveSessionId( "user1", "password1" );
+        sessionIdManager.retrieveSessionId( "user2", "password2" );
+        sessionIdManager.retrieveSessionId( "user1", "password1" );
+
+        verify( sessionIdRetriever, times( 2 ) ).retrieveSessionId( anyString(), anyString() );
+        verify( sessionIdRetriever ).retrieveSessionId( "user1", "password1" );
+        verify( sessionIdRetriever ).retrieveSessionId( "user2", "password2" );
     }
 
     @Test(expected = IllegalArgumentException.class)
