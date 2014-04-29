@@ -131,12 +131,12 @@ public class AddParameterAnonymousAuthenticationFilter extends AbstractAuthentic
     private HttpServletRequest wrapRequest( HttpServletRequest request )
                             throws ServletException {
         String method = request.getMethod();
-        System.out.println( method );
+        LOG.debug( "Retrieved " + method + " request" );
         if ( isGetRequestedAndSupported( method ) ) {
-            LOG.debug( "Retrieved GET request with query string " + request.getQueryString() );
+            LOG.debug( "Handle GET request with query string " + request.getQueryString() );
             return new KvpRequestWrapper( request );
         } else if ( isPostRequestedAndSupported( method ) ) {
-            LOG.debug( "Retrieved POST request with query string " + request.getQueryString() );
+            LOG.debug( "Handle POST request" );
             try {
                 return new HttpServletRequestBodyWrapper( request );
             } catch ( IOException e ) {
