@@ -1,5 +1,7 @@
 package org.deegree.securityproxy.sessionid;
 
+import java.util.Date;
+
 /**
  * Manages sessionIds
  * 
@@ -16,6 +18,12 @@ public class SessionIdManager {
 
     private final String technicalPassword;
 
+    private final Integer saveTimeOfSessionIdInMin;
+
+    private Long lastUpdateTime;
+
+    private String currentSessionId;
+
     /**
      * 
      * @param sessionIdRetriever
@@ -26,11 +34,20 @@ public class SessionIdManager {
      * @param technicalPassword
      *            password of the technical user, if requested user is <code>null</code>, may be <code>null</code> if a
      *            technical user is not supported
+     * @param saveTimeOfSessionIdInMin
+     *            time in minutes how long a retrieved session id is saved. When time is exceeded a new session id is
+     *            retrieved, may be -1 or <code>null</code> if a new session id should be retrieved every time
      */
-    public SessionIdManager( SessionIdRetriever sessionIdRetriever, String technicalUserName, String technicalPassword ) {
+    public SessionIdManager( SessionIdRetriever sessionIdRetriever, String technicalUserName, String technicalPassword,
+                             Integer saveTimeOfSessionIdInMin ) {
+        checkParameters( sessionIdRetriever );
         this.sessionIdRetriever = sessionIdRetriever;
         this.technicalUserName = technicalUserName;
         this.technicalPassword = technicalPassword;
+        if ( saveTimeOfSessionIdInMin != null )
+            this.saveTimeOfSessionIdInMin = saveTimeOfSessionIdInMin;
+        else
+            this.saveTimeOfSessionIdInMin = -1;
     }
 
     /**
@@ -54,8 +71,37 @@ public class SessionIdManager {
      *         requested or no technical user is known
      */
     public String retrieveSessionId( String userName, String password ) {
-        // TODO: manage validity of a session
-        return sessionIdRetriever.retrieveSessionId( userName, password );
+        if ( saveTimeOfSessionIdInMin >= 0 ) {
+            considerSaveTimeAndUpdateSessionId( userName, password );
+            return currentSessionId;
+        } else {
+            return sessionIdRetriever.retrieveSessionId( userName, password );
+        }
+    }
+
+    private void considerSaveTimeAndUpdateSessionId( String userName, String password ) {
+        if ( lastUpdateTime == null ) {
+            updateSessionId( userName, password );
+        } else {
+            considerLastUpdateTimeAndUpdateSessionId( userName, password );
+        }
+    }
+
+    private void considerLastUpdateTimeAndUpdateSessionId( String userName, String password ) {
+        Long currentTime = new Date().getTime();
+        if ( currentTime - lastUpdateTime > saveTimeOfSessionIdInMin * 1000 ) {
+            updateSessionId( userName, password );
+        }
+    }
+
+    private void updateSessionId( String userName, String password ) {
+        currentSessionId = sessionIdRetriever.retrieveSessionId( userName, password );
+        lastUpdateTime = new Date().getTime();
+    }
+
+    private void checkParameters( SessionIdRetriever sessionIdRetriever ) {
+        if ( sessionIdRetriever == null )
+            throw new IllegalArgumentException( "sessionIdRetriever must not be null!" );
     }
 
 }
