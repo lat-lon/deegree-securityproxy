@@ -31,8 +31,9 @@ public class SessionIdManagerTest {
         SessionIdManager sessionIdManager = new SessionIdManager( sessionIdRetriever, USER, PASSWORD, -1 );
 
         sessionIdManager.retrieveSessionId();
+        sessionIdManager.retrieveSessionId();
 
-        verify( sessionIdRetriever ).retrieveSessionId( USER, PASSWORD );
+        verify( sessionIdRetriever, times( 2 ) ).retrieveSessionId( USER, PASSWORD );
     }
 
     @Test
