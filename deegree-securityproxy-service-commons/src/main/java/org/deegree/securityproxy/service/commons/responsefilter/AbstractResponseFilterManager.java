@@ -35,13 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.service.commons.responsefilter;
 
-import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.copyBufferedStream;
-import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.isException;
-
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -50,6 +43,12 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.copyBufferedStream;
+import static org.deegree.securityproxy.service.commons.responsefilter.ResponseFilterUtils.isException;
 
 /**
  * The {@link AbstractResponseFilterManager} provides filtering of the {@link StatusCodeResponseBodyWrapper} of a
@@ -124,7 +123,7 @@ public abstract class AbstractResponseFilterManager implements ResponseFilterMan
      * @param exception
      *            the {@link IOException} to handle, never <code>null</code>
      * @return a DefaultResponseFilterReport containing information about the exception.
-     * @throws FilterException
+     * @throws ResponseFilterException
      *             - handling the {@link IOException} forces throwing an exception
      */
     protected abstract ResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response,
