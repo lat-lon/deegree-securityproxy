@@ -76,35 +76,35 @@ public class AddAttributeAtFirstElementStrategyTest {
     }
 
     @Test
-        public void testModifyPostRequestShouldContainSessionId()
-                                throws Exception {
-            InputStream originalStream = AddAttributeAtFirstElementStrategy.class.getResourceAsStream( "wfsRequest.xml" );
-            ByteArrayOutputStream modifiedStream = new ByteArrayOutputStream();
-            strategy.modifyPostRequest( originalStream, modifiedStream, PARAMETER_VALUE );
-    
-            assertThat( theXml( modifiedStream ),
-                        hasXPath( "/wfs:GetFeature/@sessionID", nsContext(), returningAString(), is( PARAMETER_VALUE ) ) );
-        }
+    public void testModifyPostRequestShouldContainSessionId()
+                            throws Exception {
+        InputStream originalStream = AddAttributeAtFirstElementStrategy.class.getResourceAsStream( "wfsRequest.xml" );
+        ByteArrayOutputStream modifiedStream = new ByteArrayOutputStream();
+        strategy.modifyPostRequest( originalStream, modifiedStream, PARAMETER_VALUE );
+
+        assertThat( theXml( modifiedStream ),
+                    hasXPath( "/wfs:GetFeature/@sessionID", nsContext(), returningAString(), is( PARAMETER_VALUE ) ) );
+    }
 
     @Test
-        public void testModifyPostRequestShouldBeSameAsInputWithSessionId()
-                                throws Exception {
-            InputStream originalStream = AddAttributeAtFirstElementStrategyTest.class.getResourceAsStream( "wfsRequest.xml" );
-            ByteArrayOutputStream modifiedStream = new ByteArrayOutputStream();
-            strategy.modifyPostRequest( originalStream, modifiedStream, PARAMETER_VALUE );
-    
-            assertThat( theXml( modifiedStream ), equivalentTo( the( xmlWithSessionId() ) ) );
-        }
+    public void testModifyPostRequestShouldBeSameAsInputWithSessionId()
+                            throws Exception {
+        InputStream originalStream = AddAttributeAtFirstElementStrategyTest.class.getResourceAsStream( "wfsRequest.xml" );
+        ByteArrayOutputStream modifiedStream = new ByteArrayOutputStream();
+        strategy.modifyPostRequest( originalStream, modifiedStream, PARAMETER_VALUE );
+
+        assertThat( theXml( modifiedStream ), equivalentTo( the( xmlWithSessionId() ) ) );
+    }
 
     @Test
-        public void testModifyPostRequestWithNullValueShouldBeSameAsInput()
-                                throws Exception {
-            InputStream originalStream = AddAttributeAtFirstElementStrategyTest.class.getResourceAsStream( "wfsRequest.xml" );
-            ByteArrayOutputStream modifiedStream = new ByteArrayOutputStream();
-            strategy.modifyPostRequest( originalStream, modifiedStream, null );
-    
-            assertThat( theXml( modifiedStream ), equivalentTo( the( xmlWithoutSessionId() ) ) );
-        }
+    public void testModifyPostRequestWithNullValueShouldBeSameAsInput()
+                            throws Exception {
+        InputStream originalStream = AddAttributeAtFirstElementStrategyTest.class.getResourceAsStream( "wfsRequest.xml" );
+        ByteArrayOutputStream modifiedStream = new ByteArrayOutputStream();
+        strategy.modifyPostRequest( originalStream, modifiedStream, null );
+
+        assertThat( theXml( modifiedStream ), equivalentTo( the( xmlWithoutSessionId() ) ) );
+    }
 
     private Source xmlWithSessionId() {
         InputStream resource = AddAttributeAtFirstElementStrategyTest.class.getResourceAsStream( "wfsRequestWithSessionId.xml" );
