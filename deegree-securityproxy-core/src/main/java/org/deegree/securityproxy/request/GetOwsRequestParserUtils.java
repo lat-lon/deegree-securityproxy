@@ -38,6 +38,7 @@ package org.deegree.securityproxy.request;
 import static java.lang.String.format;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,6 +87,25 @@ public class GetOwsRequestParserUtils {
             throw new IllegalArgumentException( "parameter value must not be null or empty! Is: "
                                                 + asString( parameterValue ) );
         return parameterValue.length > 1;
+    }
+
+    public static OwsServiceVersion evaluateVersion( String parameterName,
+                                                     Map<String, String[]> normalizedParameterMap,
+                                                     List<OwsServiceVersion> supportedVersion ) {
+        String versionParam = parseVersion( normalizedParameterMap, parameterName );
+        if ( versionParam != null && !versionParam.isEmpty() ) {
+            OwsServiceVersion version = new OwsServiceVersion( versionParam );
+            if ( supportedVersion.contains( version ) )
+                return version;
+        }
+        throw new IllegalArgumentException( "Unrecognized version " + versionParam );
+    }
+
+    private static String parseVersion( Map<String, String[]> normalizedParameterMap, String parameterName ) {
+        String[] versionParameters = normalizedParameterMap.get( parameterName );
+        if ( versionParameters == null || versionParameters.length == 0 )
+            return null;
+        return versionParameters[0];
     }
 
     private static String asString( String[] arrayParameter ) {
