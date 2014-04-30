@@ -1,9 +1,9 @@
 package org.deegree.securityproxy.sessionid;
 
+import static java.lang.System.currentTimeMillis;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.System.currentTimeMillis;
 
 /**
  * Manages sessionIds
@@ -21,9 +21,9 @@ public class SessionIdManager {
 
     private final String technicalPassword;
 
-    private final int saveTimeOfSessionIdInMin;
+    private final long saveTimeOfSessionIdInMin;
 
-    private Map<String, SessionIdManagerUserDetail> userDetails = new HashMap<String, SessionIdManagerUserDetail>();
+    private Map<String, UserSession> userSessions = new HashMap<String, UserSession>();
 
     /**
      * 
@@ -40,7 +40,7 @@ public class SessionIdManager {
      *            retrieved, can be -1 if a new session id should be retrieved every time
      */
     public SessionIdManager( SessionIdRetriever sessionIdRetriever, String technicalUserName, String technicalPassword,
-                             int saveTimeOfSessionIdInMin ) {
+                             long saveTimeOfSessionIdInMin ) {
         checkParameters( sessionIdRetriever );
         this.sessionIdRetriever = sessionIdRetriever;
         this.technicalUserName = technicalUserName;
@@ -77,24 +77,24 @@ public class SessionIdManager {
     }
 
     private String considerSaveTimeAndRetrieveSessionId( String userName, String password ) {
-        SessionIdManagerUserDetail existingUserDetail = retrieveExistingUserDetail( userName, password );
+        UserSession existingUserDetail = retrieveExistingUserDetail( userName, password );
         String currentSessionId = retrieveCurrentSessionId( existingUserDetail );
         long lastUpdateTime = retrieveLastUpdateTime( existingUserDetail );
         return considerExistingUserDetailAndRetrieveSessionId( userName, password, currentSessionId, lastUpdateTime );
     }
 
-    private SessionIdManagerUserDetail retrieveExistingUserDetail( String userName, String password ) {
+    private UserSession retrieveExistingUserDetail( String userName, String password ) {
         String userDetailIdentifier = createUserDetailIdentifier( userName, password );
-        return userDetails.get( userDetailIdentifier );
+        return userSessions.get( userDetailIdentifier );
     }
 
-    private String retrieveCurrentSessionId( SessionIdManagerUserDetail existingUserDetail ) {
+    private String retrieveCurrentSessionId( UserSession existingUserDetail ) {
         if ( existingUserDetail != null )
             return existingUserDetail.getCurrentSessionId();
         return null;
     }
 
-    private long retrieveLastUpdateTime( SessionIdManagerUserDetail existingUserDetail ) {
+    private long retrieveLastUpdateTime( UserSession existingUserDetail ) {
         if ( existingUserDetail != null )
             return existingUserDetail.getLastUpdateTime();
         return -1;
@@ -111,8 +111,7 @@ public class SessionIdManager {
 
     private String considerLastUpdateTimeAndRetrieveSessionId( String userName, String password,
                                                                String currentSessionId, long lastUpdateTime ) {
-        long currentTime = currentTimeMillis();
-        if ( currentTime - lastUpdateTime > saveTimeOfSessionIdInMin * 1000 ) {
+        if ( isSessionOutdated( lastUpdateTime ) ) {
             return retrieveAndUpdateSessionId( userName, password );
         }
         return currentSessionId;
@@ -126,13 +125,17 @@ public class SessionIdManager {
 
     private void putUserDetailToMap( String userName, String password, String currentSessionId ) {
         String userDetailIdentifier = createUserDetailIdentifier( userName, password );
-        SessionIdManagerUserDetail newUserDetail = new SessionIdManagerUserDetail( currentSessionId,
-                                                                                   currentTimeMillis() );
-        userDetails.put( userDetailIdentifier, newUserDetail );
+        UserSession newUserDetail = new UserSession( currentSessionId, currentTimeMillis() );
+        userSessions.put( userDetailIdentifier, newUserDetail );
     }
 
     private String createUserDetailIdentifier( String userName, String password ) {
         return userName + password;
+    }
+
+    private boolean isSessionOutdated( long lastUpdateTime ) {
+        long saveTimeInMillis = saveTimeOfSessionIdInMin * 60 * 1000;
+        return currentTimeMillis() - lastUpdateTime > saveTimeInMillis;
     }
 
     private void checkParameters( SessionIdRetriever sessionIdRetriever ) {

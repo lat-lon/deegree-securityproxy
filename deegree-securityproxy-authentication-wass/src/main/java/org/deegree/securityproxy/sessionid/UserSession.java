@@ -1,20 +1,20 @@
 package org.deegree.securityproxy.sessionid;
 
 /**
- * Encapsulates user details of {@link SessionIdManagerUserDetail}.
+ * Encapsulates the sessionId and last update time of a session.
  * 
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * 
  * @version $Revision: $, $Date: $
  */
-public class SessionIdManagerUserDetail {
+public class UserSession {
 
     private String currentSessionId;
 
     private long lastUpdateTime;
 
-    public SessionIdManagerUserDetail( String currentSessionId, long lastUpdateTime ) {
+    public UserSession( String currentSessionId, long lastUpdateTime ) {
         this.currentSessionId = currentSessionId;
         this.lastUpdateTime = lastUpdateTime;
     }

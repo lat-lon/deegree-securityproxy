@@ -1,12 +1,12 @@
 package org.deegree.securityproxy.sessionid;
 
-import org.junit.Test;
-
 import static java.lang.Thread.sleep;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import org.junit.Test;
 
 /**
  * Tests for SessionIdManager.
@@ -74,6 +74,21 @@ public class SessionIdManagerTest {
         sessionIdManager.retrieveSessionId();
 
         verify( sessionIdRetriever, times( 3 ) ).retrieveSessionId( USER, PASSWORD );
+    }
+
+    @Test
+    public void testRetrieveSessionIdForThreeTimesWithSleepShorterThanSaveTimeShouldRetrieveNewSessionIdOneTime()
+                            throws Exception {
+        SessionIdRetriever sessionIdRetriever = mockSessionIdRetriever();
+        SessionIdManager sessionIdManager = new SessionIdManager( sessionIdRetriever, USER, PASSWORD, 1 );
+
+        sessionIdManager.retrieveSessionId();
+        sleep( 1001 );
+        sessionIdManager.retrieveSessionId();
+        sleep( 1001 );
+        sessionIdManager.retrieveSessionId();
+
+        verify( sessionIdRetriever, times( 1 ) ).retrieveSessionId( USER, PASSWORD );
     }
 
     @Test
