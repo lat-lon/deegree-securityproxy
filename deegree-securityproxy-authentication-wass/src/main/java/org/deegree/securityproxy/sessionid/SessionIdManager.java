@@ -78,9 +78,9 @@ public class SessionIdManager {
 
     private String considerSaveTimeAndRetrieveSessionId( String userName, String password ) {
         UserSession existingUserDetail = retrieveExistingUserDetail( userName, password );
-        String currentSessionId = retrieveCurrentSessionId( existingUserDetail );
-        long lastUpdateTime = retrieveLastUpdateTime( existingUserDetail );
-        return considerExistingUserDetailAndRetrieveSessionId( userName, password, currentSessionId, lastUpdateTime );
+        if ( existingUserDetail == null )
+            return retrieveAndUpdateSessionId( userName, password );
+        return considerExistingUserDetailAndRetrieveSessionId( existingUserDetail, userName, password );
     }
 
     private UserSession retrieveExistingUserDetail( String userName, String password ) {
@@ -88,33 +88,13 @@ public class SessionIdManager {
         return userSessions.get( userDetailIdentifier );
     }
 
-    private String retrieveCurrentSessionId( UserSession existingUserDetail ) {
-        if ( existingUserDetail != null )
-            return existingUserDetail.getCurrentSessionId();
-        return null;
-    }
-
-    private long retrieveLastUpdateTime( UserSession existingUserDetail ) {
-        if ( existingUserDetail != null )
-            return existingUserDetail.getLastUpdateTime();
-        return -1;
-    }
-
-    private String considerExistingUserDetailAndRetrieveSessionId( String userName, String password,
-                                                                   String currentSessionId, long lastUpdateTime ) {
-        if ( lastUpdateTime == -1 ) {
-            return retrieveAndUpdateSessionId( userName, password );
-        } else {
-            return considerLastUpdateTimeAndRetrieveSessionId( userName, password, currentSessionId, lastUpdateTime );
-        }
-    }
-
-    private String considerLastUpdateTimeAndRetrieveSessionId( String userName, String password,
-                                                               String currentSessionId, long lastUpdateTime ) {
+    private String considerExistingUserDetailAndRetrieveSessionId( UserSession existingUserDetail, String userName,
+                                                                   String password ) {
+        long lastUpdateTime = existingUserDetail.getLastUpdateTime();
         if ( isSessionOutdated( lastUpdateTime ) ) {
             return retrieveAndUpdateSessionId( userName, password );
         }
-        return currentSessionId;
+        return existingUserDetail.getCurrentSessionId();
     }
 
     private String retrieveAndUpdateSessionId( String userName, String password ) {
