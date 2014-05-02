@@ -36,6 +36,15 @@
 
 package org.deegree.securityproxy.wfs.request;
 
+import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.junit.Test;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 /**
  * Tests for {@link WfsRequestParser}.
  * 
@@ -46,5 +55,26 @@ package org.deegree.securityproxy.wfs.request;
  * @version $Revision: $, $Date: $
  */
 public class WfsRequestParserTest {
+
+    private final OwsRequestParser parser = new WfsRequestParser();
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParse()
+                            throws UnsupportedRequestTypeException {
+        HttpServletRequest putRequest = mockPutRequest();
+        parser.parse( putRequest );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseWithNullShouldThrowException()
+                            throws UnsupportedRequestTypeException {
+        parser.parse( null );
+    }
+
+    private HttpServletRequest mockPutRequest() {
+        HttpServletRequest request = mock( HttpServletRequest.class );
+        doReturn( "PUT" ).when( request ).getMethod();
+        return request;
+    }
 
 }
