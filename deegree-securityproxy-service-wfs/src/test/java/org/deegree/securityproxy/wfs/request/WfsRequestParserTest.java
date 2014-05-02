@@ -59,7 +59,7 @@ public class WfsRequestParserTest {
     private final OwsRequestParser parser = new WfsRequestParser();
 
     @Test(expected = IllegalArgumentException.class)
-    public void testParse()
+    public void testParsePutRequestShouldThrowException()
                             throws UnsupportedRequestTypeException {
         HttpServletRequest putRequest = mockPutRequest();
         parser.parse( putRequest );
