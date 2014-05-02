@@ -1,22 +1,5 @@
 package org.deegree.securityproxy.filter;
 
-import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
@@ -28,6 +11,22 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 /**
  * Servlet Filter that logs all incoming requests and their response and performs access decision.
@@ -158,7 +157,8 @@ public class SecurityFilter implements Filter {
     private void attachServiceUrlAttributeToRequest( HttpServletRequest httpRequest,
                                                      AuthorizationReport authorizationReport ) {
         String serviceUrl = authorizationReport.getServiceUrl();
-        httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
+        if ( serviceUrl != null )
+            httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
     }
 
     private ServiceManager detectServiceManager( HttpServletRequest request )
