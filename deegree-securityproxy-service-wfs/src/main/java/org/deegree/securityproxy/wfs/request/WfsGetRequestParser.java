@@ -42,8 +42,8 @@ public class WfsGetRequestParser implements OwsRequestParser {
 
     public WfsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException {
-        if ( request == null )
-            throw new IllegalArgumentException( "Request must not be null!" );
+        checkIfRequestIsNotNull( request );
+        checkIfRequestMethodIsGet( request );
         Map<String, String[]> normalizedParameterMap = normalizeKvpMap( request.getParameterMap() );
         checkParameters( normalizedParameterMap );
         String type = normalizedParameterMap.get( REQUEST )[0];
@@ -88,6 +88,16 @@ public class WfsGetRequestParser implements OwsRequestParser {
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap ) {
         checkSingleRequiredParameter( normalizedParameterMap, REQUEST );
+    }
+
+    private void checkIfRequestIsNotNull( HttpServletRequest request ) {
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
+    }
+
+    private void checkIfRequestMethodIsGet( HttpServletRequest request ) {
+        if ( !"GET".equals( request.getMethod() ) )
+            throw new IllegalArgumentException( "Request method must be GET!" );
     }
 
 }

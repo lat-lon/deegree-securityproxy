@@ -42,7 +42,7 @@ import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Parses an incoming {@link HttpServletRequest} into a {@link WfsRequest}.
+ * Parses an incoming {@link HttpServletRequest} of all supported request methods into a {@link WfsRequest}.
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
@@ -55,11 +55,9 @@ public class WfsRequestParser implements OwsRequestParser {
     @SuppressWarnings("unchecked")
     public OwsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException {
-        if ( request == null )
-            throw new IllegalArgumentException( "Request must not be null!" );
+        checkIfRequestIsNotNull( request );
         OwsRequestParser parser = createParser( request );
-        if ( parser == null )
-            throw new IllegalArgumentException( "Only GET requests are supported yet!" );
+        checkIfParserWasFound( parser );
         return parser.parse( request );
     }
 
@@ -71,6 +69,16 @@ public class WfsRequestParser implements OwsRequestParser {
         else if ( "POST".equals( method ) )
             parser = new WfsPostRequestParser();
         return parser;
+    }
+
+    private void checkIfRequestIsNotNull( HttpServletRequest request ) {
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
+    }
+
+    private void checkIfParserWasFound( OwsRequestParser parser ) {
+        if ( parser == null )
+            throw new IllegalArgumentException( "Could not find a parser for request method!" );
     }
 
 }

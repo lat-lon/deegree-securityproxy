@@ -37,7 +37,10 @@
 package org.deegree.securityproxy.wfs.request;
 
 /**
+ * Tests for {@link WfsRequestParser}.
+ * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $

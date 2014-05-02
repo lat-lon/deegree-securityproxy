@@ -18,8 +18,20 @@ public class WfsPostRequestParser implements OwsRequestParser {
     @Override
     public OwsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException {
-        // TODO: Not implemented yet.
+        checkIfRequestIsNotNull( request );
+        checkIfRequestMethodIsPost( request );
+        // TODO:Not implemented yet.
         return null;
+    }
+
+    private void checkIfRequestIsNotNull( HttpServletRequest request ) {
+        if ( request == null )
+            throw new IllegalArgumentException( "Request must not be null!" );
+    }
+
+    private void checkIfRequestMethodIsPost( HttpServletRequest request ) {
+        if ( !"POST".equals( request.getMethod() ) )
+            throw new IllegalArgumentException( "Request method must be POST!" );
     }
 
 }
