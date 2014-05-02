@@ -35,6 +35,17 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.request;
 
+import com.vividsolutions.jts.geom.Envelope;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
@@ -43,19 +54,6 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tests for {@link WmsRequestParser}.
@@ -345,7 +343,7 @@ public class WmsRequestParserTest {
     }
 
     @Test(expected = UnsupportedRequestTypeException.class)
-    public void testParseWmsRequestShouldFail()
+    public void testParseWcsRequestShouldFail()
                             throws UnsupportedRequestTypeException {
         parser.parse( mockWcsGetRequest() );
     }
@@ -488,8 +486,8 @@ public class WmsRequestParserTest {
 
     private Map<String, String[]> createWcsParameterMap() {
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
-        parameterMap.put( VERSION_PARAM, new String[] { VERSION_130.getVersionString() } );
-        parameterMap.put( REQUEST_PARAM, new String[] { GETCAPABILITIES } );
+        parameterMap.put( VERSION_PARAM, new String[] { "1.0.0" } );
+        parameterMap.put( REQUEST_PARAM, new String[] { "GetCapabilities" } );
         parameterMap.put( SERVICE_PARAM, new String[] { "wcs" } );
         return parameterMap;
     }
