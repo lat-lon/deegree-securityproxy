@@ -35,21 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wfs.request;
 
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
-import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
+
+/**
+ * Parses an incoming {@link HttpServletRequest} into a {@link WfsRequest}.
+ * 
+ * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
+ * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
+ * @author last edited by: $Author: stenger $
+ * @version $Revision: $, $Date: $
+ */
 public class WfsRequestParser implements OwsRequestParser {
 
     public static final OwsServiceVersion VERSION_110 = new OwsServiceVersion( 1, 1, 0 );
@@ -105,14 +112,18 @@ public class WfsRequestParser implements OwsRequestParser {
         return new WfsRequest( WFS_SERVICE, GETCAPABILITIES, version );
     }
 
-    private WfsRequest parseGetFeatureRequest( Map<String, String[]> normalizedParameterMap ) {
-        // TODO Auto-generated method stub
-        return null;
+    private WfsRequest parseGetFeatureRequest( Map<String, String[]> normalizedParameterMap )
+                            throws UnsupportedRequestTypeException {
+        checkServiceParameter( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
+        return new WfsRequest( WFS_SERVICE, GETFEATURE, version );
     }
 
-    private WfsRequest parseDescribeFeatureRequest( Map<String, String[]> normalizedParameterMap ) {
-        // TODO Auto-generated method stub
-        return null;
+    private WfsRequest parseDescribeFeatureRequest( Map<String, String[]> normalizedParameterMap )
+                            throws UnsupportedRequestTypeException {
+        checkServiceParameter( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
+        return new WfsRequest( WFS_SERVICE, DESCRIBEFEATURETYPE, version );
     }
 
     private void checkServiceParameter( Map<String, String[]> normalizedParameterMap )
@@ -126,7 +137,6 @@ public class WfsRequestParser implements OwsRequestParser {
 
     private void checkParameters( Map<String, String[]> normalizedParameterMap ) {
         checkSingleRequiredParameter( normalizedParameterMap, REQUEST );
-
     }
 
 }
