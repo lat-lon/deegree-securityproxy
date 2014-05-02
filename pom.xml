@@ -253,6 +253,7 @@
     <module>deegree-securityproxy-service-commons</module>
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
+    <module>deegree-securityproxy-service-wfs</module>
     <module>deegree-matcher</module>
   </modules>
 
