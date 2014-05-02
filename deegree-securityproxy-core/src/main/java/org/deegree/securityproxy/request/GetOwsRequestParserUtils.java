@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
-import static java.lang.String.format;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 /**
  * Contains some useful methods to parse {@link OwsRequest} send with method GET.
@@ -54,9 +54,8 @@ public class GetOwsRequestParserUtils {
     public static String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap,
                                                        String parameterName ) {
         String[] parameterValue = checkRequiredParameter( normalizedParameterMap, parameterName );
-        if ( isNotSingle( parameterValue ) ) {
+        if ( isNotSingle( parameterValue ) )
             throwException( parameterName, parameterValue );
-        }
         return parameterValue[0];
     }
 
@@ -103,6 +102,8 @@ public class GetOwsRequestParserUtils {
 
     private static String parseVersion( Map<String, String[]> normalizedParameterMap, String parameterName ) {
         String[] versionParameters = normalizedParameterMap.get( parameterName );
+        if ( isNotSingle( versionParameters ) )
+            throwException( parameterName, versionParameters );
         if ( versionParameters == null || versionParameters.length == 0 )
             return null;
         return versionParameters[0];
