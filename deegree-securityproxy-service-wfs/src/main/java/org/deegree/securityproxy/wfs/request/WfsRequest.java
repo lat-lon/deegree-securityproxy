@@ -49,8 +49,10 @@ import org.deegree.securityproxy.request.OwsServiceVersion;
  */
 public class WfsRequest extends OwsRequest {
 
-    public WfsRequest( String serviceType, String operationType, OwsServiceVersion serviceVersion ) {
-        super( serviceType, operationType, serviceVersion );
+    private static final String WFS_TYPE = "wfs";
+
+    public WfsRequest( String operationType, OwsServiceVersion serviceVersion ) {
+        super( WFS_TYPE, operationType, serviceVersion );
     }
 
 }

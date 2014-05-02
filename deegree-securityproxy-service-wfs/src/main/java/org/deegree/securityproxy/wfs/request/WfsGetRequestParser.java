@@ -24,7 +24,7 @@ public class WfsGetRequestParser implements OwsRequestParser {
 
     public static final OwsServiceVersion VERSION_110 = new OwsServiceVersion( 1, 1, 0 );
 
-    public static final String WFS_SERVICE = "WFS";
+    public static final String WFS_SERVICE = "wfs";
 
     public static final String GETCAPABILITIES = "GetCapabilities";
 
@@ -60,21 +60,21 @@ public class WfsGetRequestParser implements OwsRequestParser {
                             throws UnsupportedRequestTypeException {
         checkServiceParameter( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
-        return new WfsRequest( WFS_SERVICE, GETCAPABILITIES, version );
+        return new WfsRequest( GETCAPABILITIES, version );
     }
 
     private WfsRequest parseGetFeatureRequest( Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
         checkServiceParameter( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
-        return new WfsRequest( WFS_SERVICE, GETFEATURE, version );
+        return new WfsRequest( GETFEATURE, version );
     }
 
     private WfsRequest parseDescribeFeatureRequest( Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
         checkServiceParameter( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
-        return new WfsRequest( WFS_SERVICE, DESCRIBEFEATURETYPE, version );
+        return new WfsRequest( DESCRIBEFEATURETYPE, version );
     }
 
     private void checkServiceParameter( Map<String, String[]> normalizedParameterMap )
