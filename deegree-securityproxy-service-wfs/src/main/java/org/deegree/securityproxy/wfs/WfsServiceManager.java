@@ -23,7 +23,7 @@ import java.util.Map;
  * This is an implementation of a {@link ServiceManager} for wfs requests. It contains a wfs specific parser, filter
  * manager and a service exception wrapper.
  * 
- * @author <a href="wanhoff@lat-lon.de">Dirk Stenger</a>
+ * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
