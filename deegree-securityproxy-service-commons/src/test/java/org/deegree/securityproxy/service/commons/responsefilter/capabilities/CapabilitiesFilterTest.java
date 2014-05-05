@@ -1,9 +1,13 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.xmlmatchers.XmlMatchers.hasXPath;
 import static org.xmlmatchers.XmlMatchers.isEquivalentTo;
 import static org.xmlmatchers.transform.XmlConverters.the;
 
@@ -12,10 +16,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.StartElement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -23,7 +31,9 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.XmlModifier;
 import org.junit.Test;
+import org.springframework.util.xml.SimpleNamespaceContext;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -170,6 +180,53 @@ public class CapabilitiesFilterTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedResponseByTwoRules.xml" ) ) );
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testFilterCapabilitiesShouldInvokeXmlModifier()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
+
+        DecisionMaker decisionMaker = mockDecisionMaker();
+        XmlModifier xmlModifier = mockXmlModifier( null );
+        capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
+
+        verify( xmlModifier ).determineNewAttributeValue( any( BufferingXMLEventReader.class ),
+                                                          any( StartElement.class ), any( Attribute.class ),
+                                                          any( ( LinkedList.class ) ) );
+    }
+
+    @Test
+    public void testFilterCapabilitiesWithModificationNeededShouldModifyAttribute()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
+
+        DecisionMaker decisionMaker = mockDecisionMaker();
+        String newAttributeValue = "newAttValue";
+        XmlModifier xmlModifier = mockXmlModifier( newAttributeValue );
+        capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
+
+        SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+        nsContext.bindNamespaceUri( "sp1", "http://simple1.de" );
+        assertThat( asXml( filteredCapabilities ), hasXPath( "/A/B/sp1:d/@datt", is( newAttributeValue ), nsContext ) );
+    }
+
+    @Test
+    public void testFilterCapabilitiesWithModificationNotNeededShouldNotModifyAttribute()
+                            throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
+
+        DecisionMaker decisionMaker = mockDecisionMaker();
+        XmlModifier xmlModifier = mockXmlModifier( null );
+        capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
+
+        SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
+        nsContext.bindNamespaceUri( "sp1", "http://simple1.de" );
+        assertThat( asXml( filteredCapabilities ), hasXPath( "/A/B/sp1:d/@datt", is( "d_att_ext" ), nsContext ) );
+    }
+
     private List<ElementPathStep> createPath() {
         List<ElementPathStep> path = new ArrayList<ElementPathStep>();
         path.add( new ElementPathStep( new QName( EXTENDED_NS_URI, "A" ) ) );
@@ -192,6 +249,20 @@ public class CapabilitiesFilterTest {
         return path;
     }
 
+    private DecisionMaker mockDecisionMaker() {
+        return mock( DecisionMaker.class );
+    }
+
+    @SuppressWarnings("unchecked")
+    private XmlModifier mockXmlModifier( String newAttributeValue )
+                            throws XMLStreamException {
+        XmlModifier xmlModifier = mock( XmlModifier.class );
+        when(
+              xmlModifier.determineNewAttributeValue( any( BufferingXMLEventReader.class ), any( StartElement.class ),
+                                                      any( Attribute.class ), any( ( LinkedList.class ) ) ) ).thenReturn( newAttributeValue );
+        return xmlModifier;
+    }
+
     private DecisionMaker createDecisionMaker( String nameToFilter ) {
         return createDecisionMaker( nameToFilter, null );
     }
@@ -211,7 +282,7 @@ public class CapabilitiesFilterTest {
     }
 
     private DecisionMaker createDecisionMaker( String nameToFilter, String namespace, String text,
-                                                      List<ElementPathStep> path ) {
+                                               List<ElementPathStep> path ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text, path );
         return new ElementDecisionMaker( rule );
     }
