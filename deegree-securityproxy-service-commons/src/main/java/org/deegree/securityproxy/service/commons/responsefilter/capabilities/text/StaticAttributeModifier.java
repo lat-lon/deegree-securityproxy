@@ -55,13 +55,13 @@ import org.deegree.securityproxy.service.commons.responsefilter.capabilities.ele
  * 
  * @version $Revision: $, $Date: $
  */
-public class StaticTextModifier implements XmlModifier {
+public class StaticAttributeModifier implements AttributeModifier {
 
     private final String newValue;
 
     private final List<LinkedList<ElementPathStep>> pathToAttributeToModify;
 
-    public StaticTextModifier( String newValue, List<LinkedList<ElementPathStep>> pathToAttributeToModify ) {
+    public StaticAttributeModifier( String newValue, List<LinkedList<ElementPathStep>> pathToAttributeToModify ) {
         this.newValue = newValue;
         this.pathToAttributeToModify = pathToAttributeToModify;
     }

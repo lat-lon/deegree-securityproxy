@@ -44,14 +44,14 @@ import javax.xml.stream.events.StartElement;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.BufferingXMLEventReader;
 
 /**
- * Encapsulates modifications of the XML (e. g. attribute or element text changes).
+ * Encapsulates modifications of the attribute values.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface XmlModifier {
+public interface AttributeModifier {
 
     /**
      * Checks if the current attribute value must be modified or not and returns the new value

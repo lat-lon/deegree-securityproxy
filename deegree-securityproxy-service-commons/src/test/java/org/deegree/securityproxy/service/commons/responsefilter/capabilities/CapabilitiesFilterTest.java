@@ -27,7 +27,7 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.XmlModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
 import org.junit.Test;
 import org.springframework.util.xml.SimpleNamespaceContext;
 
@@ -184,7 +184,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
         DecisionMaker decisionMaker = mockDecisionMaker();
-        XmlModifier xmlModifier = mockXmlModifier( null );
+        AttributeModifier xmlModifier = mockXmlModifier( null );
         capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
 
         verify( xmlModifier ).determineNewAttributeValue( any( BufferingXMLEventReader.class ),
@@ -200,7 +200,7 @@ public class CapabilitiesFilterTest {
 
         DecisionMaker decisionMaker = mockDecisionMaker();
         String newAttributeValue = "newAttValue";
-        XmlModifier xmlModifier = mockXmlModifier( newAttributeValue );
+        AttributeModifier xmlModifier = mockXmlModifier( newAttributeValue );
         capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
 
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
@@ -215,7 +215,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
         DecisionMaker decisionMaker = mockDecisionMaker();
-        XmlModifier xmlModifier = mockXmlModifier( null );
+        AttributeModifier xmlModifier = mockXmlModifier( null );
         capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
 
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
@@ -250,9 +250,9 @@ public class CapabilitiesFilterTest {
     }
 
     @SuppressWarnings("unchecked")
-    private XmlModifier mockXmlModifier( String newAttributeValue )
+    private AttributeModifier mockXmlModifier( String newAttributeValue )
                             throws XMLStreamException {
-        XmlModifier xmlModifier = mock( XmlModifier.class );
+        AttributeModifier xmlModifier = mock( AttributeModifier.class );
         when(
               xmlModifier.determineNewAttributeValue( any( BufferingXMLEventReader.class ), any( StartElement.class ),
                                                       any( Attribute.class ), any( ( LinkedList.class ) ) ) ).thenReturn( newAttributeValue );

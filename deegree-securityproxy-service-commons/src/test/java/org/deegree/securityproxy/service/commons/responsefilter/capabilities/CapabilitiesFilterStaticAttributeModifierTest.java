@@ -51,7 +51,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticTextModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.junit.Test;
 
 /**
@@ -60,11 +60,8 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class CapabilitiesFilterStaticTextModifierTest {
+public class CapabilitiesFilterStaticAttributeModifierTest {
 
-    /**
-     * 
-     */
     private static final String NS_SIMPLE1 = "http://simple1.de";
 
     private static final String NS_EXTENDED = "http://extended.de";
@@ -72,13 +69,13 @@ public class CapabilitiesFilterStaticTextModifierTest {
     @Test
     public void testDetermineNewAttributeValue()
                             throws Exception {
-        StaticTextModifier staticTextModifier = new StaticTextModifier( "newAttValue", createPath() );
+        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( "newAttValue", createPath() );
 
         CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, mockDecisionMaker(), staticTextModifier );
+        capabilitiesFilter.filterCapabilities( response, mockDecisionMaker(), staticAttributeModifier );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleModified.xml" ) ) );
     }
@@ -86,13 +83,14 @@ public class CapabilitiesFilterStaticTextModifierTest {
     @Test
     public void testDetermineNewAttributeValueOnePahtMultipleMatches()
                             throws Exception {
-        StaticTextModifier staticTextModifier = new StaticTextModifier( "newAttValue", createPathMultipleMatches() );
+        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( "newAttValue",
+                                                                                       createPathMultipleMatches() );
 
         CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, mockDecisionMaker(), staticTextModifier );
+        capabilitiesFilter.filterCapabilities( response, mockDecisionMaker(), staticAttributeModifier );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedModified.xml" ) ) );
     }
