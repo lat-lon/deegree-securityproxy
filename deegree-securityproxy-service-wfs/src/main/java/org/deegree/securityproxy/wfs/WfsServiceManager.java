@@ -35,14 +35,31 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     private final ServiceExceptionWrapper serviceExceptionWrapper;
 
+    private final Map<String, String[]> additionalKeyValuePairs;
+
+    /**
+     * Creates a new instance of {@link WfsServiceManager}.
+     * 
+     * @param parser
+     *            never <code>null</code>
+     * @param filterManagers
+     *            never <code>null</code>
+     * @param serviceExceptionWrapper
+     *            may be <code>null</code>
+     * @param additionalKeyValuePairs
+     *            a map containing additional key value pairs which will be attached to the incoming request, may be
+     *            <code>null</code>
+     */
     public WfsServiceManager( OwsRequestParser parser, List<ResponseFilterManager> filterManagers,
-                              ServiceExceptionWrapper serviceExceptionWrapper ) {
+                              ServiceExceptionWrapper serviceExceptionWrapper,
+                              Map<String, String[]> additionalKeyValuePairs ) {
         this.parser = parser;
         this.filterManagers = filterManagers;
         if ( serviceExceptionWrapper != null )
             this.serviceExceptionWrapper = serviceExceptionWrapper;
         else
             this.serviceExceptionWrapper = new ServiceExceptionWrapper();
+        this.additionalKeyValuePairs = additionalKeyValuePairs;
     }
 
     @Override
@@ -53,7 +70,7 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     @Override
     public AuthorizationReport authorize( Authentication authentication, OwsRequest owsRequest ) {
-        return new AuthorizationReport();
+        return new AuthorizationReport( "Authorization is disabled.", true, null, additionalKeyValuePairs );
     }
 
     @Override

@@ -54,7 +54,7 @@ public class AuthorizationReport {
      *            endpoint url of the requested service, may be <code>null</code> if authorization failed or there is no
      *            new endpoint url
      * @param additionalKeyValuePairs
-     *            additional key value pairs, may be empty but never <code>null</code>
+     *            additional key value pairs, may be empty or <code>null</code>
      */
     public AuthorizationReport( String message, boolean isAuthorized, String serviceUrl,
                                 Map<String, String[]> additionalKeyValuePairs ) {
