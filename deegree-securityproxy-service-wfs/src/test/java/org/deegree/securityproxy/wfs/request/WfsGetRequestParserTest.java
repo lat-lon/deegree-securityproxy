@@ -98,7 +98,9 @@ public class WfsGetRequestParserTest {
         parser.parse( mockInvalidWfsRequestDoubleServiceParameter( "wfs" ) );
     }
 
-    @Test
+    // The spec states that the version parameter is not mandatory when requesting a capabilities document. As the dsp
+    // needs this parameter for further processing, the version has to be provided.
+    @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingVersionParameter()
                             throws UnsupportedRequestTypeException {
         parser.parse( mockValidWfsRequestMissingVersionParameter() );
