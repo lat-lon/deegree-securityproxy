@@ -70,6 +70,19 @@ public class ElementPathStep {
      * @param attributeValue
      *            may be <code>null</code>, but not when attributeName is not <code>null</code>
      */
+    public ElementPathStep( QName elementName, QName attributeName ) {
+        this( elementName, attributeName, null );
+    }
+
+    /**
+     * 
+     * @param elementName
+     *            never <code>null</code>
+     * @param attributeName
+     *            may be <code>null</code>
+     * @param attributeValue
+     *            may be <code>null</code>
+     */
     public ElementPathStep( QName elementName, QName attributeName, String attributeValue ) {
         this.elementName = elementName;
         this.attributeName = attributeName;

@@ -1,6 +1,9 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import static java.util.Arrays.asList;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlTestUtils.asXml;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlTestUtils.expectedXml;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlTestUtils.mockResponse;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -9,29 +12,22 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.xmlmatchers.XmlMatchers.hasXPath;
 import static org.xmlmatchers.XmlMatchers.isEquivalentTo;
-import static org.xmlmatchers.transform.XmlConverters.the;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.XmlModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
 import org.junit.Test;
 import org.springframework.util.xml.SimpleNamespaceContext;
 
@@ -188,7 +184,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
         DecisionMaker decisionMaker = mockDecisionMaker();
-        XmlModifier xmlModifier = mockXmlModifier( null );
+        AttributeModifier xmlModifier = mockXmlModifier( null );
         capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
 
         verify( xmlModifier ).determineNewAttributeValue( any( BufferingXMLEventReader.class ),
@@ -204,7 +200,7 @@ public class CapabilitiesFilterTest {
 
         DecisionMaker decisionMaker = mockDecisionMaker();
         String newAttributeValue = "newAttValue";
-        XmlModifier xmlModifier = mockXmlModifier( newAttributeValue );
+        AttributeModifier xmlModifier = mockXmlModifier( newAttributeValue );
         capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
 
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
@@ -219,7 +215,7 @@ public class CapabilitiesFilterTest {
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
         DecisionMaker decisionMaker = mockDecisionMaker();
-        XmlModifier xmlModifier = mockXmlModifier( null );
+        AttributeModifier xmlModifier = mockXmlModifier( null );
         capabilitiesFilter.filterCapabilities( response, decisionMaker, xmlModifier );
 
         SimpleNamespaceContext nsContext = new SimpleNamespaceContext();
@@ -254,9 +250,9 @@ public class CapabilitiesFilterTest {
     }
 
     @SuppressWarnings("unchecked")
-    private XmlModifier mockXmlModifier( String newAttributeValue )
+    private AttributeModifier mockXmlModifier( String newAttributeValue )
                             throws XMLStreamException {
-        XmlModifier xmlModifier = mock( XmlModifier.class );
+        AttributeModifier xmlModifier = mock( AttributeModifier.class );
         when(
               xmlModifier.determineNewAttributeValue( any( BufferingXMLEventReader.class ), any( StartElement.class ),
                                                       any( Attribute.class ), any( ( LinkedList.class ) ) ) ).thenReturn( newAttributeValue );
@@ -290,35 +286,6 @@ public class CapabilitiesFilterTest {
     private DecisionMaker createDecisionMaker( ElementRule... elementRules ) {
         List<ElementRule> rules = asList( elementRules );
         return new ElementDecisionMaker( rules );
-    }
-
-    private StatusCodeResponseBodyWrapper mockResponse( String originalXmlFileName, ByteArrayOutputStream filteredStream )
-                            throws IOException {
-        StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
-        InputStream resourceToFilter = CapabilitiesFilterTest.class.getResourceAsStream( originalXmlFileName );
-        when( mockedServletResponse.getBufferedStream() ).thenReturn( resourceToFilter );
-        when( mockedServletResponse.getRealOutputStream() ).thenReturn( createStream( filteredStream ) );
-        return mockedServletResponse;
-    }
-
-    private Source expectedXml( String expectedFile ) {
-        return new StreamSource( CapabilitiesFilterTest.class.getResourceAsStream( expectedFile ) );
-    }
-
-    private Source asXml( ByteArrayOutputStream bufferingStream ) {
-        System.out.println( bufferingStream.toString() );
-        return the( new StreamSource( new ByteArrayInputStream( bufferingStream.toByteArray() ) ) );
-    }
-
-    private ServletOutputStream createStream( final ByteArrayOutputStream bufferingStream ) {
-        ServletOutputStream stream = new ServletOutputStream() {
-            @Override
-            public void write( int b )
-                                    throws IOException {
-                bufferingStream.write( b );
-            }
-        };
-        return stream;
     }
 
 }
