@@ -85,13 +85,21 @@ public class PathUtils {
     }
 
     private static boolean hasSameAttribute( ElementPathStep ruleElementPathStep, StartElement visitedElement ) {
-        QName ruleAttributeName = ruleElementPathStep.getAttributeName();
-        if ( ruleAttributeName == null )
+        QName stepAttributeName = ruleElementPathStep.getAttributeName();
+        if ( stepAttributeName == null )
             return true;
-        Attribute attributeByName = visitedElement.getAttributeByName( ruleAttributeName );
-        if ( attributeByName != null )
-            return ruleElementPathStep.getAttributeValue().equals( attributeByName.getValue() );
+        Attribute attributeByName = visitedElement.getAttributeByName( stepAttributeName );
+        if ( attributeByName != null ) {
+            return hasSameAttributeValueOrSteppAttributeValueIsNull( ruleElementPathStep, attributeByName );
+        }
         return false;
+    }
+
+    private static boolean hasSameAttributeValueOrSteppAttributeValueIsNull( ElementPathStep ruleElementPathStep,
+                                                                             Attribute attributeByName ) {
+        if ( ruleElementPathStep.getAttributeValue() != null )
+            return ruleElementPathStep.getAttributeValue().equals( attributeByName.getValue() );
+        return true;
     }
 
 }

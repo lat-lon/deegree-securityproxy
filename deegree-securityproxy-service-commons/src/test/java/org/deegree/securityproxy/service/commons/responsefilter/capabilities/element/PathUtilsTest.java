@@ -121,6 +121,15 @@ public class PathUtilsTest {
     }
 
     @Test
+    public void testIsPathMatchingWithMatchingPathAttributeWithouValue()
+                            throws Exception {
+        boolean isMatching = isPathMatching( createSimplePathWithAttributeWithoutValue(),
+                                             createSimpleVisitedElementsWithAttribute( "xValue" ) );
+
+        assertThat( isMatching, is( true ) );
+    }
+
+    @Test
     public void testIsPathMatchingWithMatchingPathNamespaceAndAttribute()
                             throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithNamespaceAndAttribute(),
@@ -158,15 +167,21 @@ public class PathUtilsTest {
         return path;
     }
 
-    private List<ElementPathStep> createSimplePathWithNamespaceAndAttribute() {
-        List<ElementPathStep> path = new ArrayList<ElementPathStep>();
-        path.add( new ElementPathStep( new QName( NS_URL, "A" ), new QName( "zAtt" ), "zValue" ) );
-        return path;
-    }
-
     private List<ElementPathStep> createSimplePathWithAttribute() {
         List<ElementPathStep> path = new ArrayList<ElementPathStep>();
         path.add( new ElementPathStep( new QName( "A" ), new QName( "zAtt" ), "zValue" ) );
+        return path;
+    }
+
+    private List<ElementPathStep> createSimplePathWithAttributeWithoutValue() {
+        List<ElementPathStep> path = new ArrayList<ElementPathStep>();
+        path.add( new ElementPathStep( new QName( "A" ), new QName( "zAtt" ) ) );
+        return path;
+    }
+
+    private List<ElementPathStep> createSimplePathWithNamespaceAndAttribute() {
+        List<ElementPathStep> path = new ArrayList<ElementPathStep>();
+        path.add( new ElementPathStep( new QName( NS_URL, "A" ), new QName( "zAtt" ), "zValue" ) );
         return path;
     }
 
@@ -183,6 +198,10 @@ public class PathUtilsTest {
     }
 
     private List<StartElement> createSimpleVisitedElementsWithAttribute() {
+        return createSimpleVisitedElementsWithAttribute( "zValue" );
+    }
+
+    private List<StartElement> createSimpleVisitedElementsWithAttribute( String value ) {
         List<StartElement> startElements = new ArrayList<StartElement>();
         Iterator<?> attributes = singletonList( EVENT_FACTORY.createAttribute( "zAtt", "zValue" ) ).iterator();
         startElements.add( EVENT_FACTORY.createStartElement( new QName( "A" ), attributes, null ) );
@@ -204,4 +223,5 @@ public class PathUtilsTest {
         startElements.add( EVENT_FACTORY.createStartElement( new QName( "d" ), null, null ) );
         return startElements;
     }
+
 }

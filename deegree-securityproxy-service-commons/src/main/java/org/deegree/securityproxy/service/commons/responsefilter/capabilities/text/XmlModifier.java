@@ -58,19 +58,20 @@ public interface XmlModifier {
      * 
      * @param reader
      *            the event reader currently read, never <code>null</code>
-     * @param event
+     * @param currentStartElement
      *            the current start element containing the attribute, never <code>null</code>
      * @param attribute
      *            to be filtered or not, never <code>null</code>
      * @param visitedElements
-     *            a list of already visited start elements, never <code>null</code>
+     *            a list of already visited start elements (does not include the current start element), never
+     *            <code>null</code>
      * @return the new value if modification is required, <code>null</code> if modification of the attribute value is
      *         not required
      * @throws XMLStreamException
      *             -if there is an error with the underlying XML
      */
-    String determineNewAttributeValue( BufferingXMLEventReader reader, StartElement event, Attribute attribute,
-                                       LinkedList<StartElement> visitedElements )
+    String determineNewAttributeValue( BufferingXMLEventReader reader, StartElement currentStartElement,
+                                       Attribute attribute, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException;
 
 }
