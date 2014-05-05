@@ -37,20 +37,22 @@ import static org.mockito.Mockito.verify;
  */
 public class WfsServiceManagerTest {
 
+    private final OwsRequestParser parser = mockOwsRequestParser();
+
+    private final ServiceExceptionWrapper serviceExceptionWrapper = mockServiceExceptionWrapper();
+
+    private final ResponseFilterReport response = mockResponseFilterReport();
+
+    private final Map<String, String[]> additionalKeyValuePairs = createAdditionalKeyValuePairs();
+
     private WfsServiceManager wfsServiceManager;
-
-    private OwsRequestParser parser;
-
-    private ServiceExceptionWrapper serviceExceptionWrapper = mock( ServiceExceptionWrapper.class );
-
-    private ResponseFilterReport response = mock( ResponseFilterReport.class );
 
     @Before
     public void resetMocks() {
         reset( serviceExceptionWrapper );
-        parser = mockOwsRequestParser();
         List<ResponseFilterManager> filterManagers = emptyList();
-        wfsServiceManager = new WfsServiceManager( parser, filterManagers, serviceExceptionWrapper );
+        wfsServiceManager = new WfsServiceManager( parser, filterManagers, serviceExceptionWrapper,
+                                                   additionalKeyValuePairs );
     }
 
     @Test
@@ -70,6 +72,7 @@ public class WfsServiceManagerTest {
         AuthorizationReport report = wfsServiceManager.authorize( authentication, owsRequest );
 
         assertThat( report.isAuthorized(), is( true ) );
+        assertThat( report.getAdditionalKeyValuePairs(), is( additionalKeyValuePairs ) );
     }
 
     @Test
@@ -187,7 +190,7 @@ public class WfsServiceManagerTest {
                             throws IllegalArgumentException, ResponseFilterException {
         List<ResponseFilterManager> filterManagers = asList( mockEnabledResponseFilterManager(),
                                                              mockDisabledResponseFilterManager() );
-        return new WfsServiceManager( parser, filterManagers, serviceExceptionWrapper );
+        return new WfsServiceManager( parser, filterManagers, serviceExceptionWrapper, additionalKeyValuePairs );
     }
 
     private ResponseFilterManager mockEnabledResponseFilterManager()
@@ -204,6 +207,20 @@ public class WfsServiceManagerTest {
         ResponseFilterManager responseFilterManager = mock( ResponseFilterManager.class );
         doReturn( false ).when( responseFilterManager ).canBeFiltered( any( OwsRequest.class ) );
         return responseFilterManager;
+    }
+
+    private Map<String, String[]> createAdditionalKeyValuePairs() {
+        Map<String, String[]> additionalKeyValuePairs = new HashMap<String, String[]>();
+        additionalKeyValuePairs.put( "key1", new String[] { "value1" } );
+        return additionalKeyValuePairs;
+    }
+
+    private ServiceExceptionWrapper mockServiceExceptionWrapper() {
+        return mock( ServiceExceptionWrapper.class );
+    }
+
+    private ResponseFilterReport mockResponseFilterReport() {
+        return mock( ResponseFilterReport.class );
     }
 
 }
