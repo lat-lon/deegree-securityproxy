@@ -35,11 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wfs.request;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Parses an incoming {@link HttpServletRequest} of all supported request methods into a {@link WfsRequest}.
@@ -52,33 +52,25 @@ import javax.servlet.http.HttpServletRequest;
 public class WfsRequestParser implements OwsRequestParser {
 
     @Override
-    @SuppressWarnings("unchecked")
     public OwsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException {
         checkIfRequestIsNotNull( request );
         OwsRequestParser parser = createParser( request );
-        checkIfParserWasFound( parser );
         return parser.parse( request );
     }
 
     private OwsRequestParser createParser( HttpServletRequest request ) {
-        OwsRequestParser parser = null;
         String method = request.getMethod();
         if ( "GET".equals( method ) )
-            parser = new WfsGetRequestParser();
+            return new WfsGetRequestParser();
         else if ( "POST".equals( method ) )
-            parser = new WfsPostRequestParser();
-        return parser;
+            return new WfsPostRequestParser();
+        throw new IllegalArgumentException( "Could not find a parser for request method!" );
     }
 
     private void checkIfRequestIsNotNull( HttpServletRequest request ) {
         if ( request == null )
             throw new IllegalArgumentException( "Request must not be null!" );
-    }
-
-    private void checkIfParserWasFound( OwsRequestParser parser ) {
-        if ( parser == null )
-            throw new IllegalArgumentException( "Could not find a parser for request method!" );
     }
 
 }
