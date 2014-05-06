@@ -1,5 +1,10 @@
 package org.deegree.securityproxy.wfs;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.exception.ServiceExceptionManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
@@ -14,10 +19,6 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This is an implementation of a {@link ServiceManager} for wfs requests. It contains a wfs specific parser, filter
@@ -70,7 +71,7 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     @Override
     public AuthorizationReport authorize( Authentication authentication, OwsRequest owsRequest ) {
-        return new AuthorizationReport( "Authorization is disabled.", true, null, additionalKeyValuePairs );
+        return new AuthorizationReport( "Authorization is disabled.", true, additionalKeyValuePairs );
     }
 
     @Override

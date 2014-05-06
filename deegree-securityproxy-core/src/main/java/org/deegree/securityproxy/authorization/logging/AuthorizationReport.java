@@ -1,9 +1,9 @@
 package org.deegree.securityproxy.authorization.logging;
 
+import static java.util.Collections.unmodifiableMap;
+
 import java.util.Collections;
 import java.util.Map;
-
-import static java.util.Collections.unmodifiableMap;
 
 /**
  * 
@@ -41,6 +41,20 @@ public class AuthorizationReport {
      */
     public AuthorizationReport( String message ) {
         this( message, false, null, unmodifiableMap( Collections.<String, String[]> emptyMap() ) );
+    }
+
+    /**
+     * Instantiates a new {@link AuthorizationReport} without serviceUrl.
+     * 
+     * @param message
+     *            containing the reason why the authorization failed, never <code>null</code>
+     * @param isAuthorized
+     *            <code>true</code> if authorized, <code>false</code> otherwise
+     * @param additionalKeyValuePairs
+     *            additional key value pairs, may be empty or <code>null</code>
+     */
+    public AuthorizationReport( String message, boolean isAuthorized, Map<String, String[]> additionalKeyValuePairs ) {
+        this( message, isAuthorized, null, additionalKeyValuePairs );
     }
 
     /**
