@@ -57,13 +57,10 @@ import org.deegree.securityproxy.service.commons.responsefilter.capabilities.ele
  */
 public class StaticAttributeModifier implements AttributeModifier {
 
-    private final String newValue;
+    private final List<AttributeModificationRule> attributeModificationRules;
 
-    private final List<LinkedList<ElementPathStep>> pathToAttributeToModify;
-
-    public StaticAttributeModifier( String newValue, List<LinkedList<ElementPathStep>> pathToAttributeToModify ) {
-        this.newValue = newValue;
-        this.pathToAttributeToModify = pathToAttributeToModify;
+    public StaticAttributeModifier( List<AttributeModificationRule> attributeModificationRules ) {
+        this.attributeModificationRules = attributeModificationRules;
     }
 
     @Override
@@ -71,10 +68,10 @@ public class StaticAttributeModifier implements AttributeModifier {
                                               Attribute attribute, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
         LinkedList<StartElement> extendedPath = extendPathByCurrentStartElement( currentStartElement, visitedElements );
-        for ( LinkedList<ElementPathStep> path : pathToAttributeToModify ) {
-            boolean isPathMatching = isPathMatching( path, extendedPath );
+        for ( AttributeModificationRule rule : attributeModificationRules ) {
+            boolean isPathMatching = isPathMatching( rule.getPath(), extendedPath );
             if ( isPathMatching )
-                return newValue;
+                return rule.getValue();
         }
         return null;
     }

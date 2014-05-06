@@ -22,11 +22,11 @@ public class WfsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
     /**
      * @param capabilitiesFilter
      *            used to filter the capabilities, never <code>null</code>
-     * @param decisionMakerCreator
+     * @param xmlModificationManagerCreator
      *            used to create the {@link DecisionMaker}, never <code>null</code>
      */
-    public WfsCapabilitiesResponseFilterManager( XmlFilter capabilitiesFilter, XmlModificationManagerCreator decisionMakerCreator ) {
-        super( capabilitiesFilter, decisionMakerCreator );
+    public WfsCapabilitiesResponseFilterManager( XmlFilter capabilitiesFilter, XmlModificationManagerCreator xmlModificationManagerCreator ) {
+        super( capabilitiesFilter, xmlModificationManagerCreator );
     }
 
     @Override

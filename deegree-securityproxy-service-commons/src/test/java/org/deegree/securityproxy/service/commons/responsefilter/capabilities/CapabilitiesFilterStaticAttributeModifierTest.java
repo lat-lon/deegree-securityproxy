@@ -50,6 +50,7 @@ import javax.xml.namespace.QName;
 
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModificationRule;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.junit.Test;
 
@@ -95,27 +96,28 @@ public class CapabilitiesFilterStaticAttributeModifierTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedModified.xml" ) ) );
     }
 
-    private XmlModificationManager createXmlModifier( String staticValue, List<LinkedList<ElementPathStep>> path ) {
-        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( staticValue, path );
+    private XmlModificationManager createXmlModifier( String staticValue, LinkedList<ElementPathStep> path ) {
+        List<AttributeModificationRule> rules = singletonList( new AttributeModificationRule( staticValue, path ) );
+        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( rules );
         return new XmlModificationManager( staticAttributeModifier );
     }
 
-    private List<LinkedList<ElementPathStep>> createPath() {
+    private LinkedList<ElementPathStep> createPath() {
         LinkedList<ElementPathStep> path = new LinkedList<ElementPathStep>();
         path.add( new ElementPathStep( new QName( "A" ) ) );
         path.add( new ElementPathStep( new QName( "B" ) ) );
         path.add( new ElementPathStep( new QName( NS_SIMPLE1, "d" ), new QName( "datt" ) ) );
-        return singletonList( path );
+        return path;
     }
 
-    private List<LinkedList<ElementPathStep>> createPathMultipleMatches() {
+    private LinkedList<ElementPathStep> createPathMultipleMatches() {
         LinkedList<ElementPathStep> path = new LinkedList<ElementPathStep>();
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "A" ) ) );
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "B" ) ) );
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "e" ) ) );
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "f" ) ) );
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "f" ), new QName( "att" ) ) );
-        return singletonList( path );
+        return path;
     }
 
 }
