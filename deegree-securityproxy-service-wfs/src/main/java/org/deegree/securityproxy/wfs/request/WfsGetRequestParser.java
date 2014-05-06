@@ -1,17 +1,18 @@
 package org.deegree.securityproxy.wfs.request;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
-import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
+import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 /**
  * Parses an incoming HTTP GET request into a {@link WfsRequest}.
@@ -40,6 +41,8 @@ public class WfsGetRequestParser implements OwsRequestParser {
 
     private List<OwsServiceVersion> supportedVersion = Collections.singletonList( VERSION_110 );
 
+    @SuppressWarnings("unchecked")
+    @Override
     public WfsRequest parse( HttpServletRequest request )
                             throws UnsupportedRequestTypeException {
         checkIfRequestIsNotNull( request );

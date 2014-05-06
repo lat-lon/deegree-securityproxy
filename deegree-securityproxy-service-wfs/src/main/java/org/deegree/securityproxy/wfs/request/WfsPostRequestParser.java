@@ -1,10 +1,10 @@
 package org.deegree.securityproxy.wfs.request;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * Parses an incoming HTTP POST request into a {@link WfsRequest}.
@@ -21,7 +21,7 @@ public class WfsPostRequestParser implements OwsRequestParser {
         checkIfRequestIsNotNull( request );
         checkIfRequestMethodIsPost( request );
         // TODO:Not implemented yet.
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     private void checkIfRequestIsNotNull( HttpServletRequest request ) {
