@@ -1,10 +1,5 @@
 package org.deegree.securityproxy.wfs;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.exception.ServiceExceptionManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
@@ -19,6 +14,10 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is an implementation of a {@link ServiceManager} for wfs requests. It contains a wfs specific parser, filter
@@ -37,6 +36,22 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
     private final ServiceExceptionWrapper serviceExceptionWrapper;
 
     private final Map<String, String[]> additionalKeyValuePairs;
+
+    /**
+     * Creates a new instance of {@link WfsServiceManager} with default ServiceExceptionWrapper.
+     * 
+     * @param parser
+     *            never <code>null</code>
+     * @param filterManagers
+     *            never <code>null</code>
+     * @param additionalKeyValuePairs
+     *            a map containing additional key value pairs which will be attached to the incoming request, may be
+     *            <code>null</code>
+     */
+    public WfsServiceManager( OwsRequestParser parser, List<ResponseFilterManager> filterManagers,
+                              Map<String, String[]> additionalKeyValuePairs ) {
+        this( parser, filterManagers, null, additionalKeyValuePairs );
+    }
 
     /**
      * Creates a new instance of {@link WfsServiceManager}.
