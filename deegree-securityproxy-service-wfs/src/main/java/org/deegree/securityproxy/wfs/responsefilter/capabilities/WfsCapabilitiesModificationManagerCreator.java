@@ -35,11 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wfs.responsefilter.capabilities;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.namespace.QName;
-
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
@@ -48,6 +43,10 @@ import org.deegree.securityproxy.service.commons.responsefilter.capabilities.tex
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.springframework.security.core.Authentication;
+
+import javax.xml.namespace.QName;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Creates {@link XmlModificationManagerCreator}s for WFS capabilities requests.
@@ -65,8 +64,10 @@ public class WfsCapabilitiesModificationManagerCreator implements XmlModificatio
 
     /**
      * 
-     * @param dcpUrl
-     *            the new DCP URL replacing all DCP urls in the capabilities document, never <code>null</code>
+     * @param getDcpUrl
+     *            the new HTTP GET DCP URL replacing all DCP urls in the capabilities document, never <code>null</code>
+     * @param postDcpUrl
+     *            the new HTTP POST DCP URL replacing all DCP urls in the capabilities document, never <code>null</code>
      */
     public WfsCapabilitiesModificationManagerCreator( String getDcpUrl, String postDcpUrl ) {
         this.getDcpUrl = getDcpUrl;
