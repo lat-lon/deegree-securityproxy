@@ -64,7 +64,7 @@ import org.junit.Test;
 public class WfsCapabilitiesFilterTest {
 
     @Test
-    public void testFilter()
+    public void testFilterWmsCapabilities110()
                             throws Exception {
         XmlFilter xmlFilter = new XmlFilter();
         ByteArrayOutputStream filteredStream = new ByteArrayOutputStream();
