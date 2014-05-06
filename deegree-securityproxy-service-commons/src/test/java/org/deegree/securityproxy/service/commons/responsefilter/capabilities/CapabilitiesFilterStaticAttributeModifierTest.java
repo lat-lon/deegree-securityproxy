@@ -40,7 +40,6 @@ import static org.deegree.securityproxy.service.commons.responsefilter.capabilit
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlTestUtils.expectedXml;
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlTestUtils.mockResponse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.xmlmatchers.XmlMatchers.isEquivalentTo;
 
 import java.io.ByteArrayOutputStream;
@@ -62,6 +61,8 @@ import org.junit.Test;
  */
 public class CapabilitiesFilterStaticAttributeModifierTest {
 
+    private static final String NEW_ATT_VALUE = "newAttValue";
+
     private static final String NS_SIMPLE1 = "http://simple1.de";
 
     private static final String NS_EXTENDED = "http://extended.de";
@@ -69,13 +70,13 @@ public class CapabilitiesFilterStaticAttributeModifierTest {
     @Test
     public void testDetermineNewAttributeValue()
                             throws Exception {
-        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( "newAttValue", createPath() );
+        XmlModificationManager xmlModifier = createXmlModifier( NEW_ATT_VALUE, createPath() );
 
-        CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+        XmlFilter capabilitiesFilter = new XmlFilter();
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "simpleResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, mockDecisionMaker(), staticAttributeModifier );
+        capabilitiesFilter.filterXml( response, xmlModifier );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "simpleModified.xml" ) ) );
     }
@@ -83,16 +84,20 @@ public class CapabilitiesFilterStaticAttributeModifierTest {
     @Test
     public void testDetermineNewAttributeValueOnePahtMultipleMatches()
                             throws Exception {
-        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( "newAttValue",
-                                                                                       createPathMultipleMatches() );
+        XmlModificationManager xmlModifier = createXmlModifier( NEW_ATT_VALUE, createPathMultipleMatches() );
 
-        CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+        XmlFilter capabilitiesFilter = new XmlFilter();
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockResponse( "extendedResponse.xml", filteredCapabilities );
 
-        capabilitiesFilter.filterCapabilities( response, mockDecisionMaker(), staticAttributeModifier );
+        capabilitiesFilter.filterXml( response, xmlModifier );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "extendedModified.xml" ) ) );
+    }
+
+    private XmlModificationManager createXmlModifier( String staticValue, List<LinkedList<ElementPathStep>> path ) {
+        StaticAttributeModifier staticAttributeModifier = new StaticAttributeModifier( staticValue, path );
+        return new XmlModificationManager( staticAttributeModifier );
     }
 
     private List<LinkedList<ElementPathStep>> createPath() {
@@ -111,10 +116,6 @@ public class CapabilitiesFilterStaticAttributeModifierTest {
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "f" ) ) );
         path.add( new ElementPathStep( new QName( NS_EXTENDED, "f" ), new QName( "att" ) ) );
         return singletonList( path );
-    }
-
-    private DecisionMaker mockDecisionMaker() {
-        return mock( DecisionMaker.class );
     }
 
 }

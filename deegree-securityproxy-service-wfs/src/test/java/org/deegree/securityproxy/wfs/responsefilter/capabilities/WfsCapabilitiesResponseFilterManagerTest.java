@@ -2,8 +2,8 @@ package org.deegree.securityproxy.wfs.responsefilter.capabilities;
 
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
 import org.deegree.securityproxy.wfs.request.WfsRequest;
 import org.junit.Test;
 
@@ -24,8 +24,8 @@ import static org.mockito.Mockito.mock;
 public class WfsCapabilitiesResponseFilterManagerTest {
 
     private final WfsCapabilitiesResponseFilterManager filterManager = new WfsCapabilitiesResponseFilterManager(
-                                                                                                                 mock( CapabilitiesFilter.class ),
-                                                                                                                 mock( DecisionMakerCreator.class ) );
+                                                                                                                 mock( XmlFilter.class ),
+                                                                                                                 mock( XmlModificationManagerCreator.class ) );
 
     @Test
     public void testIsCorrectServiceTypeWithWfsRequestShouldReturnTrue()

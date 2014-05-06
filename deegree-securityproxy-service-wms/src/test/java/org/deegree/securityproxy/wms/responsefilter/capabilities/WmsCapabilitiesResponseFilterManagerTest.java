@@ -30,8 +30,8 @@ import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVers
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
 import org.deegree.securityproxy.wms.request.WmsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -158,8 +158,8 @@ public class WmsCapabilitiesResponseFilterManagerTest {
     }
 
     private WmsCapabilitiesResponseFilterManager createFilterManager() {
-        CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
-        DecisionMakerCreator decisionMakerCreator = new WmsDecisionMakerCreator();
+        XmlFilter capabilitiesFilter = new XmlFilter();
+        XmlModificationManagerCreator decisionMakerCreator = new WmsCapabilitiesModificationManagerCreator();
         return new WmsCapabilitiesResponseFilterManager( capabilitiesFilter, decisionMakerCreator );
     }
 

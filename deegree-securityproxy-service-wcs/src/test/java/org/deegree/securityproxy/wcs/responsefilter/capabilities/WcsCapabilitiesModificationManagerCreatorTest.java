@@ -27,16 +27,16 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WcsDecisionMakerCreatorTest {
+public class WcsCapabilitiesModificationManagerCreatorTest {
 
     private static final String COVERAGE_NAME_1 = "123_6788";
 
     private static final String COVERAGE_NAME_2 = "567_8765";
 
-    private final WcsDecisionMakerCreator elementRuleCreator = new WcsDecisionMakerCreator();
+    private final WcsCapabilitiesModificationManagerCreator elementRuleCreator = new WcsCapabilitiesModificationManagerCreator();
 
     @Test
-    public void testCreateDecisionMakerForWcs100OneGetCoverage()
+    public void testCreateXmlModificationManagerForWcs100OneGetCoverage()
                             throws Exception {
         DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
                                                                               createAuthenticationWithOneGetCoverage() );
@@ -45,7 +45,7 @@ public class WcsDecisionMakerCreatorTest {
     }
 
     @Test
-    public void testCreateDecisionMakerForWcs100TwoGetCoverageOneDescribeCoverage()
+    public void testCreateXmlModificationManagerForWcs100TwoGetCoverageOneDescribeCoverage()
                             throws Exception {
         DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
                                                                               createAuthenticationWithTwoGetCoverageOneDescribeCoverage() );
@@ -54,7 +54,7 @@ public class WcsDecisionMakerCreatorTest {
     }
 
     @Test
-    public void testCreateDecisionMakerForWcs100OneDescribeCoverage()
+    public void testCreateXmlModificationManagerForWcs100OneDescribeCoverage()
                             throws Exception {
         DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
                                                                               createAuthenticationWithOneDescribeCoverage() );
@@ -63,9 +63,10 @@ public class WcsDecisionMakerCreatorTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateDecisionMakerForWcs130ShouldFail()
+    public void testCreateXmlModificationManagerForWcs130ShouldFail()
                             throws Exception {
-        elementRuleCreator.createDecisionMaker( mockOwsRequest130(), createAuthenticationWithOneDescribeCoverage() );
+        elementRuleCreator.createXmlModificationManager( mockOwsRequest130(),
+                                                         createAuthenticationWithOneDescribeCoverage() );
     }
 
     private Authentication createAuthenticationWithOneDescribeCoverage() {

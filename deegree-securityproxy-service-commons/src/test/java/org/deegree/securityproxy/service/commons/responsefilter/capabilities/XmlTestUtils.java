@@ -62,14 +62,14 @@ public class XmlTestUtils {
                                                               ByteArrayOutputStream filteredStream )
                             throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
-        InputStream resourceToFilter = CapabilitiesFilterTest.class.getResourceAsStream( originalXmlFileName );
+        InputStream resourceToFilter = XmlFilterTest.class.getResourceAsStream( originalXmlFileName );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( resourceToFilter );
         when( mockedServletResponse.getRealOutputStream() ).thenReturn( createStream( filteredStream ) );
         return mockedServletResponse;
     }
 
     public static Source expectedXml( String expectedFile ) {
-        return new StreamSource( CapabilitiesFilterTest.class.getResourceAsStream( expectedFile ) );
+        return new StreamSource( XmlFilterTest.class.getResourceAsStream( expectedFile ) );
     }
 
     public static Source asXml( ByteArrayOutputStream bufferingStream ) {

@@ -51,8 +51,8 @@ import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponse
 import org.springframework.security.core.Authentication;
 
 /**
- * Abstract {@link ResponseFilterManager} using a {@link DecisionMakerCreator} to create the {@link DecisionMaker}s
- * containing the rules for filtering.
+ * Abstract {@link ResponseFilterManager} using a {@link XmlModificationManagerCreator} to create the
+ * {@link XmlModificationManager}s containing the rules for filtering.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -65,31 +65,32 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
 
     public static final String FILTERING_NOT_REQUIRED_MESSAGE = "Capabilities of request must not be filtered.";
 
-    private final CapabilitiesFilter capabilitiesFilter;
+    private final XmlFilter capabilitiesFilter;
 
-    private final DecisionMakerCreator decisionMakerCreator;
+    private final XmlModificationManagerCreator xmlModificationManagerCreator;
 
-    public AbstractCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter,
-                                                      DecisionMakerCreator decisionMakerCreator ) {
+    public AbstractCapabilitiesResponseFilterManager( XmlFilter capabilitiesFilter,
+                                                      XmlModificationManagerCreator xmlModificationManagerCreator ) {
         this.capabilitiesFilter = capabilitiesFilter;
-        this.decisionMakerCreator = decisionMakerCreator;
+        this.xmlModificationManagerCreator = xmlModificationManagerCreator;
     }
 
     @Override
     protected ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest owsRequest,
                                                 Authentication auth )
                             throws ResponseFilterException, IOException {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( owsRequest, auth );
-        if ( decisionMaker == null ) {
-            copyBufferedStream( servletResponse );
-            return new DefaultResponseFilterReport( FILTERING_NOT_REQUIRED_MESSAGE );
-        } else {
+        XmlModificationManager xmlModificationManager = xmlModificationManagerCreator.createXmlModificationManager( owsRequest,
+                                                                                                                    auth );
+        if ( xmlModificationManager.isModificationRequired() ) {
             try {
-                capabilitiesFilter.filterCapabilities( servletResponse, decisionMaker );
+                capabilitiesFilter.filterXml( servletResponse, xmlModificationManager );
                 return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
             } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
+        } else {
+            copyBufferedStream( servletResponse );
+            return new DefaultResponseFilterReport( FILTERING_NOT_REQUIRED_MESSAGE );
         }
     }
 

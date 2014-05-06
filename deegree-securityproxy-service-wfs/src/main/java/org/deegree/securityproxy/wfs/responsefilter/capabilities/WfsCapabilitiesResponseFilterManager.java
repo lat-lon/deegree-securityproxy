@@ -1,12 +1,13 @@
 package org.deegree.securityproxy.wfs.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.wfs.request.WfsGetRequestParser.GETCAPABILITIES;
+
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
 import org.deegree.securityproxy.wfs.request.WfsRequest;
-
-import static org.deegree.securityproxy.wfs.request.WfsGetRequestParser.GETCAPABILITIES;
 
 /**
  * {@link org.deegree.securityproxy.responsefilter.ResponseFilterManager} filtering wfs capabilities documents.
@@ -22,12 +23,9 @@ public class WfsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
      * @param capabilitiesFilter
      *            used to filter the capabilities, never <code>null</code>
      * @param decisionMakerCreator
-     *            used to create the
-     *            {@link org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker}, never
-     *            <code>null</code>
+     *            used to create the {@link DecisionMaker}, never <code>null</code>
      */
-    public WfsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter,
-                                                 DecisionMakerCreator decisionMakerCreator ) {
+    public WfsCapabilitiesResponseFilterManager( XmlFilter capabilitiesFilter, XmlModificationManagerCreator decisionMakerCreator ) {
         super( capabilitiesFilter, decisionMakerCreator );
     }
 

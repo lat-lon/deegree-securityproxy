@@ -56,42 +56,32 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
 
 /**
  * Filters capabilities documents.
- * 
- * // TODO: check if this is a CapabiltiesFilter or XmlFilter
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class CapabilitiesFilter {
+public class XmlFilter {
 
-    private static final Logger LOG = Logger.getLogger( CapabilitiesFilter.class );
+    private static final Logger LOG = Logger.getLogger( XmlFilter.class );
 
     /**
      * Filters the incoming response.
      * 
      * @param servletResponse
      *            containing the response to filter, never <code>null</code>
-     * @param elementDecisionMaker
+     * @param xmlModifier
      *            decides if elements should be written or not, never <code>null</code>
      * @throws IOException
      *             if an error occurred during stream handling
      * @throws XMLStreamException
      *             if an error occurred during reading or writing the response
      */
-    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, DecisionMaker elementDecisionMaker )
-                            throws IOException, XMLStreamException {
-        filterCapabilities( servletResponse, elementDecisionMaker, null );
-
-    }
-
-    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, DecisionMaker elementDecisionMaker,
-                                    AttributeModifier attributeModifier )
+    public void filterXml( StatusCodeResponseBodyWrapper servletResponse, XmlModificationManager xmlModifier )
                             throws IOException, XMLStreamException {
         BufferingXMLEventReader reader = null;
         XMLEventWriter writer = null;
@@ -99,7 +89,7 @@ public class CapabilitiesFilter {
             reader = createReader( servletResponse );
             writer = createWriter( servletResponse );
 
-            copyResponse( reader, writer, elementDecisionMaker, attributeModifier );
+            copyResponse( reader, writer, xmlModifier );
 
         } finally {
             closeQuietly( reader );
@@ -107,15 +97,13 @@ public class CapabilitiesFilter {
         }
     }
 
-    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer,
-                               DecisionMaker elementDecisionMaker, AttributeModifier attributeModifier )
+    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer, XmlModificationManager xmlModifier )
                             throws XMLStreamException {
         LinkedList<StartElement> visitedElements = new LinkedList<StartElement>();
         while ( reader.hasNext() ) {
             XMLEvent currentEvent = reader.nextEvent();
             if ( currentEvent.isStartElement() ) {
-                processStartElement( reader, writer, currentEvent, elementDecisionMaker, attributeModifier,
-                                     visitedElements );
+                processStartElement( reader, writer, currentEvent, xmlModifier, visitedElements );
                 visitedElements.add( currentEvent.asStartElement() );
             } else {
                 if ( currentEvent.isEndElement() )
@@ -126,28 +114,27 @@ public class CapabilitiesFilter {
     }
 
     private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent currentEvent,
-                                      DecisionMaker elementDecisionMaker, AttributeModifier attributeModifier,
-                                      LinkedList<StartElement> visitedElements )
+                                      XmlModificationManager xmlModifier, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
         LOG.debug( "Found StartElement " + currentEvent );
-        if ( ignoreElement( reader, currentEvent, elementDecisionMaker, visitedElements ) ) {
+        if ( ignoreElement( reader, currentEvent, xmlModifier, visitedElements ) ) {
             LOG.info( "Event " + currentEvent + " is ignored." );
             skipElementContent( reader );
             visitedElements.removeLast();
         } else {
-            processAttributes( reader, writer, currentEvent.asStartElement(), attributeModifier, visitedElements );
+            processAttributes( reader, writer, currentEvent.asStartElement(), xmlModifier, visitedElements );
         }
     }
 
     private void processAttributes( BufferingXMLEventReader reader, XMLEventWriter writer, StartElement startElement,
-                                    AttributeModifier attributeModifier, LinkedList<StartElement> visitedElements )
+                                    XmlModificationManager xmlModifier, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
-        if ( attributeModifier != null ) {
+        if ( xmlModifier != null ) {
             LOG.debug( "Handle Attribute of StartElement" + startElement );
             List<Attribute> allAttributes = new ArrayList<Attribute>();
             Iterator<?> originalAttributes = startElement.getAttributes();
             while ( originalAttributes.hasNext() ) {
-                Attribute processedAttribute = processAttribute( reader, writer, startElement, attributeModifier,
+                Attribute processedAttribute = processAttribute( reader, writer, startElement, xmlModifier,
                                                                  visitedElements, originalAttributes );
                 allAttributes.add( processedAttribute );
             }
@@ -162,7 +149,7 @@ public class CapabilitiesFilter {
     }
 
     private Attribute processAttribute( BufferingXMLEventReader reader, XMLEventWriter writer,
-                                        StartElement startElement, AttributeModifier xmlModifier,
+                                        StartElement startElement, XmlModificationManager xmlModifier,
                                         LinkedList<StartElement> visitedElements, Iterator<?> attributes )
                             throws XMLStreamException, FactoryConfigurationError {
         Attribute attribute = (Attribute) attributes.next();
@@ -178,10 +165,10 @@ public class CapabilitiesFilter {
         return attribute;
     }
 
-    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent currentEvent,
-                                   DecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
+    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent currentEvent, XmlModificationManager xmlModifier,
+                                   LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
-        return elementDecisionMaker != null && elementDecisionMaker.ignore( reader, currentEvent, visitedElements );
+        return xmlModifier != null && xmlModifier.ignore( reader, currentEvent, visitedElements );
     }
 
     private XMLEventWriter createWriter( StatusCodeResponseBodyWrapper servletResponse )

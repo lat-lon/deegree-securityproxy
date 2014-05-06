@@ -31,14 +31,15 @@
     <constructor-arg ref="imageClipper"/>
   </bean>
 
-  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter"/>
+  <bean id="wcsCapabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter"/>
 
-  <bean id="decisionMakerCreator" class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsDecisionMakerCreator"/>
+  <bean id="wcsCapabilitiesModificationManagerCreator" 
+      class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesModificationManagerCreator"/>
   
   <bean name="capabilitiesResponseFilterManager"
         class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager">
-    <constructor-arg ref="capabilitiesFilter"/>
-    <constructor-arg ref="decisionMakerCreator"/>
+    <constructor-arg ref="wcsCapabilitiesFilter"/>
+    <constructor-arg ref="wcsCapabilitiesModificationManagerCreator"/>
   </bean>
 
   <util:list id="responseFilterManagers" list-class="java.util.LinkedList"

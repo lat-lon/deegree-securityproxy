@@ -79,7 +79,7 @@ public class BlackListDecisionMaker implements DecisionMaker {
      * @param blackListTextValues
      *            values of the sub element, which should not be ignored. if the list is empty, #ignore will return true
      *            at all time, never <code>null</code>
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentExceptionXmlModifierCreator
      *             - a required parameter is <code>null</code>
      */
     public BlackListDecisionMaker( String elementToSkipName, String elementToSkipNamespace, String subElementName,
