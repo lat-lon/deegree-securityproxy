@@ -33,12 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wms.responsefilter.capabilities;
-
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.VERSION_130;
-import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE;
+package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,43 +43,51 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Creates {@link DecisionMaker}s for WMS capabilities requests.
+ * Creates {@link ElementRule} instances.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WmsDecisionMakerCreator implements DecisionMakerCreator {
+public class WcsCapabilitiesModificationManagerCreator implements XmlModificationManagerCreator {
 
-    private static final OwsServiceVersion VERSION_1_3_0 = new OwsServiceVersion( 1, 3, 0 );
+    private static final OwsServiceVersion VERSION_1_0_0 = new OwsServiceVersion( 1, 0, 0 );
 
-    static final String WMS_1_3_0_NS_URI = "http://www.opengis.net/wms";
+    static final String WCS_1_0_0_NS_URI = "http://www.opengis.net/wcs";
 
-    private static final String ELEMENT_TO_FILTER = "Layer";
+    private static final String ELEMENT_TO_FILTER = "CoverageOfferingBrief";
 
-    private static final String SUB_ELEMENT_NAME = "Name";
+    private static final String SUB_ELEMENT_NAME = "name";
 
     @Override
+    public XmlModificationManager createXmlModificationManager( OwsRequest owsRequest, Authentication authentication ) {
+        return new XmlModificationManager( createDecisionMaker( owsRequest, authentication ) );
+    }
+
     public DecisionMaker createDecisionMaker( OwsRequest owsRequest, Authentication authentication ) {
         checkVersion( owsRequest );
-        List<String> blackListLayerNames = new ArrayList<String>();
+        List<String> blackListTextValues = new ArrayList<String>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {
-            addBlackListValuesFromAuthorities( blackListLayerNames, grantedAuthority );
+            addBlackListValuesFromAuthorities( blackListTextValues, grantedAuthority );
         }
-        return new BlackListDecisionMaker( ELEMENT_TO_FILTER, WMS_1_3_0_NS_URI, SUB_ELEMENT_NAME, WMS_1_3_0_NS_URI,
-                                           blackListLayerNames );
+        if ( !blackListTextValues.isEmpty() )
+            return new BlackListDecisionMaker( ELEMENT_TO_FILTER, WCS_1_0_0_NS_URI, SUB_ELEMENT_NAME, WCS_1_0_0_NS_URI,
+                                               blackListTextValues );
+        return null;
     }
 
     private void checkVersion( OwsRequest owsRequest ) {
-        if ( !VERSION_1_3_0.equals( owsRequest.getServiceVersion() ) )
+        if ( !VERSION_1_0_0.equals( owsRequest.getServiceVersion() ) )
             throw new IllegalArgumentException( "Capabilities request for version " + owsRequest.getServiceVersion()
                                                 + " is not supported yet!" );
     }
@@ -92,20 +95,16 @@ public class WmsDecisionMakerCreator implements DecisionMakerCreator {
     private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority authority ) {
         if ( authority instanceof RasterPermission ) {
             RasterPermission permission = (RasterPermission) authority;
-            if ( isWms130GetMapPermission( permission ) && !blackListTextValues.contains( permission.getLayerName() ) ) {
+            if ( isWcs100GetCoveragePermission( permission ) ) {
                 blackListTextValues.add( permission.getLayerName() );
             }
         }
     }
 
-    private boolean isWms130GetMapPermission( RasterPermission permission ) {
-        return WMS_SERVICE.equalsIgnoreCase( permission.getServiceType() )
-               && permission.getServiceVersion().contains( VERSION_130 ) && isGetMapOrFeaturinfo( permission );
-    }
-
-    private boolean isGetMapOrFeaturinfo( RasterPermission permission ) {
-        return GETMAP.equalsIgnoreCase( permission.getOperationType() )
-               || GETFEATUREINFO.equalsIgnoreCase( permission.getOperationType() );
+    private boolean isWcs100GetCoveragePermission( RasterPermission permission ) {
+        return "wcs".equalsIgnoreCase( permission.getServiceType() )
+               && permission.getServiceVersion().contains( VERSION_1_0_0 )
+               && "getcoverage".equalsIgnoreCase( permission.getOperationType() );
     }
 
 }

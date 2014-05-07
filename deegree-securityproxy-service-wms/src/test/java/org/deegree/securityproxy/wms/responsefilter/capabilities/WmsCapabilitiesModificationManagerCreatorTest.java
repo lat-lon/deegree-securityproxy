@@ -19,7 +19,6 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
 import org.deegree.securityproxy.wms.request.WmsRequest;
 import org.junit.Test;
@@ -32,55 +31,55 @@ import org.springframework.security.core.GrantedAuthority;
  * 
  * @version $Revision: $, $Date: $
  */
-public class WmsDecisionMakerCreatorTest {
+public class WmsCapabilitiesModificationManagerCreatorTest {
 
     private static final String LAYER_NAME_1 = "layer1";
 
     private static final String LAYER_NAME_2 = "layer2";
 
-    private final DecisionMakerCreator decisionMakerCreator = new WmsDecisionMakerCreator();
+    private final WmsCapabilitiesModificationManagerCreator decisionMakerCreator = new WmsCapabilitiesModificationManagerCreator();
 
     @Test
-    public void testCreateDecisionMakerForWmsOneGetMap()
-                            throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                createAuthenticationWithOneGetMap() );
-
-        assertThat( decisionMaker, is( notNullValue() ) );
-        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
-        assertThat( blackListLayers.size(), is( 1 ) );
-        assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
-    }
-
-    @Test
-    public void testCreateDecisionMakerForWmsTwoGetMap()
-                            throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                createAuthenticationWithTwoGetMapOneGetFeatureInfo() );
-
-        assertThat( decisionMaker, is( notNullValue() ) );
-        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
-        assertThat( blackListLayers.size(), is( 2 ) );
-        assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
-        assertThat( blackListLayers, hasItem( LAYER_NAME_2 ) );
-    }
+        public void testCreateXmlModificationManagerForWmsOneGetMap()
+                                throws Exception {
+            DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
+                                                                                    createAuthenticationWithOneGetMap() );
+    
+            assertThat( decisionMaker, is( notNullValue() ) );
+            List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+            assertThat( blackListLayers.size(), is( 1 ) );
+            assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
+        }
 
     @Test
-    public void testCreateDecisionMakerForWmsNoGetMap()
-                            throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                createAuthenticationWithOneUnknownRequest() );
+        public void testCreateXmlModificationManagerForWmsTwoGetMap()
+                                throws Exception {
+            DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
+                                                                                    createAuthenticationWithTwoGetMapOneGetFeatureInfo() );
+    
+            assertThat( decisionMaker, is( notNullValue() ) );
+            List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+            assertThat( blackListLayers.size(), is( 2 ) );
+            assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
+            assertThat( blackListLayers, hasItem( LAYER_NAME_2 ) );
+        }
 
-        assertThat( decisionMaker, is( notNullValue() ) );
-        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
-        assertThat( blackListLayers.size(), is( 0 ) );
-    }
+    @Test
+        public void testCreateXmlModificationManagerForWmsNoGetMap()
+                                throws Exception {
+            DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
+                                                                                    createAuthenticationWithOneUnknownRequest() );
+    
+            assertThat( decisionMaker, is( notNullValue() ) );
+            List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+            assertThat( blackListLayers.size(), is( 0 ) );
+        }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testCreateDecisionMakerForWms110ShouldFail()
-                            throws Exception {
-        decisionMakerCreator.createDecisionMaker( createWms110Request(), createAuthenticationWithOneGetMap() );
-    }
+        public void testCreateXmlModificationManagerForWms110ShouldFail()
+                                throws Exception {
+            decisionMakerCreator.createXmlModificationManager( createWms110Request(), createAuthenticationWithOneGetMap() );
+        }
 
     private Authentication createAuthenticationWithOneGetMap() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();

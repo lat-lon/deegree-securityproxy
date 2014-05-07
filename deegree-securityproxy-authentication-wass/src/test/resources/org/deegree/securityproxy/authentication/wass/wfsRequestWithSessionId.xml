@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wfs:GetFeature version="1.1.0" xmlns:wfs="http://www.opengis.net/wfs" xmlns:gml="http://www.opengis.net/gml"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:app="http://www.app.de/app"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance
+  xsi:schemaLocation=http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
+  maxFeatures="10" sessionID="paramValue">
+  <!-- sessionID param -->
+  <wfs:Query typeName="app:alk_fl_20130318">
+  </wfs:Query>
+</wfs:GetFeature>

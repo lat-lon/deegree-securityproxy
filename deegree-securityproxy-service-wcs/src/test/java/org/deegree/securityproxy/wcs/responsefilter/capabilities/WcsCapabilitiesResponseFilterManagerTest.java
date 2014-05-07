@@ -1,7 +1,7 @@
 package org.deegree.securityproxy.wcs.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
-import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SERVICE_EXCEPTION_MSG;
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wcs.request.WcsRequestParser.GETCOVERAGE;
@@ -37,9 +37,9 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -58,33 +58,33 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private static final String COVERAGE_NAME = "213_9999";
 
-    private final CapabilitiesFilter mockedCapabilitiesFilter = mock( CapabilitiesFilter.class );
+    private final XmlFilter mockedCapabilitiesFilter = mock( XmlFilter.class );
 
-    private final DecisionMakerCreator decisionMakerCreator = new WcsDecisionMakerCreator();
+    private final XmlModificationManagerCreator modificationManagerCreator = new WcsCapabilitiesModificationManagerCreator();
 
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManagerWithMock = new WcsCapabilitiesResponseFilterManager(
                                                                                                                                                 mockedCapabilitiesFilter,
-                                                                                                                                                decisionMakerCreator );
+                                                                                                                                                modificationManagerCreator );
 
-    private final CapabilitiesFilter capabilitiesFilter = new CapabilitiesFilter();
+    private final XmlFilter capabilitiesFilter = new XmlFilter();
 
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
                                                                                                                                         capabilitiesFilter,
-                                                                                                                                        decisionMakerCreator );
+                                                                                                                                        modificationManagerCreator );
 
     @Test
     public void testFilterResponseShouldCallFilterCapabilities()
                             throws Exception {
-        CapabilitiesFilter capabilitiesFilter = mockCapabilitiesFilter();
+        XmlFilter capabilitiesFilter = mockCapabilitiesFilter();
         WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
                                                                                                                               capabilitiesFilter,
-                                                                                                                              decisionMakerCreator );
+                                                                                                                              modificationManagerCreator );
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
         WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithKnownCoverage();
         wcsCapabilitiesResponseFilterManager.filterResponse( response, wcsRequest, authentication );
 
-        verify( capabilitiesFilter ).filterCapabilities( eq( response ), any( ElementDecisionMaker.class ) );
+        verify( capabilitiesFilter ).filterXml( eq( response ), any( XmlModificationManager.class ) );
     }
 
     @Test
@@ -320,8 +320,8 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         return stream;
     }
 
-    private CapabilitiesFilter mockCapabilitiesFilter() {
-        return mock( CapabilitiesFilter.class );
+    private XmlFilter mockCapabilitiesFilter() {
+        return mock( XmlFilter.class );
     }
 
 }

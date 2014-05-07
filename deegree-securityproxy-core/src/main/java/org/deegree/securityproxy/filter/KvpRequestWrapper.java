@@ -27,6 +27,17 @@ public class KvpRequestWrapper extends HttpServletRequestWrapper {
      * @throws IllegalArgumentException
      *             if the request is null
      */
+    public KvpRequestWrapper( final HttpServletRequest request ) {
+        this( request, new TreeMap<String, String[]>() );
+    }
+
+    /**
+     * Constructs a request object wrapping the given request.
+     * 
+     * @param request
+     * @throws IllegalArgumentException
+     *             if the request is null
+     */
     public KvpRequestWrapper( final HttpServletRequest request, final Map<String, String[]> additionalKeyValuePairs ) {
         super( request );
         additionalParameters = new TreeMap<String, String[]>();
@@ -65,6 +76,20 @@ public class KvpRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public Enumeration<String> getParameterNames() {
         return Collections.enumeration( getParameterMap().keySet() );
+    }
+
+    /**
+     * Appends a new additional key value pair. If an entry with the same key already exists the existing key is
+     * overwritten.
+     * 
+     * @param key
+     *            of the entry, if <code>null</code> the entry is not added
+     * @param value
+     *            of the new entry
+     */
+    public void addParameter( String key, String value ) {
+        if ( key != null )
+            additionalParameters.put( key, new String[] { value } );
     }
 
     private String addAdditionalKeyValuePairsAsString( String originalQueryString ) {

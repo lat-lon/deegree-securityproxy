@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class WmsRequestParser implements OwsRequestParser {
     private WmsRequest parseGetMapRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         checkGetMapParameters( normalizedParameterMap );
 
-        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
         List<String> separatedLayers = extractLayers( normalizedParameterMap.get( LAYERS ) );
         Envelope bbox = extractBbox( normalizedParameterMap.get( BBOX ) );
         String crs = extractCrs( normalizedParameterMap.get( CRS ) );
@@ -122,7 +123,7 @@ public class WmsRequestParser implements OwsRequestParser {
     private WmsRequest parseGetFeatureInfoRequest( String serviceName, Map<String, String[]> normalizedParameterMap ) {
         checkGetFeatureInfoParameters( normalizedParameterMap );
 
-        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
         List<String> separatedLayers = extractLayers( normalizedParameterMap.get( LAYERS ) );
         List<String> separatedQueryLayers = extractLayers( normalizedParameterMap.get( QUERY_LAYERS ) );
         return new WmsRequest( GETFEATUREINFO, version, separatedLayers, separatedQueryLayers, serviceName );
@@ -131,21 +132,8 @@ public class WmsRequestParser implements OwsRequestParser {
     private WmsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
         checkGetCapabilitiesParameters( normalizedParameterMap );
-        OwsServiceVersion version = evaluateVersion( normalizedParameterMap );
+        OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
         return new WmsRequest( GETCAPABILITIES, version, serviceName );
-    }
-
-    private OwsServiceVersion evaluateVersion( Map<String, String[]> normalizedParameterMap ) {
-        String[] versionParameters = normalizedParameterMap.get( VERSION );
-        if ( versionParameters == null || versionParameters.length == 0 )
-            return null;
-        String versionParam = versionParameters[0];
-        if ( versionParam != null && !versionParam.isEmpty() ) {
-            OwsServiceVersion version = new OwsServiceVersion( versionParam );
-            if ( supportedVersion.contains( version ) )
-                return version;
-        }
-        throw new IllegalArgumentException( "Unrecognized version " + versionParam );
     }
 
     private String evaluateServiceName( HttpServletRequest request ) {

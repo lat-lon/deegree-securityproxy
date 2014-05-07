@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.5</version>
+  <version>1.3</version>
   <name>deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
@@ -12,7 +12,7 @@
     <maven.compiler.target>1.6</maven.compiler.target>
     <spring.version>3.2.3.RELEASE</spring.version>
     <spring.security.version>3.1.4.RELEASE</spring.security.version>
-    <j2ep.version>1.1-securityproxy-master</j2ep.version>
+    <j2ep.version>1.2-securityproxy-master</j2ep.version>
     <geotools.version>9.5</geotools.version>
   </properties>
 
@@ -157,6 +157,11 @@
         <artifactId>commons-lang</artifactId>
         <version>2.6</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.3.3</version>
+      </dependency>
       <!-- Joda Time -->
       <dependency>
         <groupId>joda-time</groupId>
@@ -242,11 +247,13 @@
   <modules>
     <module>deegree-securityproxy-authentication</module>
     <module>deegree-securityproxy-authentication-ows</module>
+    <module>deegree-securityproxy-authentication-wass</module>
     <module>deegree-securityproxy-core</module>
     <module>deegree-securityproxy-webservice</module>
     <module>deegree-securityproxy-service-commons</module>
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
+    <module>deegree-securityproxy-service-wfs</module>
     <module>deegree-matcher</module>
   </modules>
 

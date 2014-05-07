@@ -39,24 +39,25 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.springframework.security.core.Authentication;
 
 /**
- * Creates the {@link DecisionMaker} depends on the request and users permissions.
+ * Creates the {@link XmlModificationManager} depending on the request and users permissions.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface DecisionMakerCreator {
+public interface XmlModificationManagerCreator {
 
     /**
-     * Creates a {@link DecisionMaker} for the requested capabilities, filtering the capabilities by user permissions.
+     * Creates a {@link XmlModificationManager} for the requested capabilities, filtering the capabilities by user
+     * permissions.
      * 
      * @param owsRequest
      *            capabilities request, never <code>null</code>
      * @param authentication
      *            containing the user rules to use as filters, never <code>null</code>
-     * @return the {@link DecisionMaker} or <code>null</code>, if filtering is not required
+     * @return the {@link XmlModificationManager} or <code>null</code>, if filtering is not required
      */
-    DecisionMaker createDecisionMaker( OwsRequest owsRequest, Authentication authentication );
+    XmlModificationManager createXmlModificationManager( OwsRequest owsRequest, Authentication authentication );
 
 }

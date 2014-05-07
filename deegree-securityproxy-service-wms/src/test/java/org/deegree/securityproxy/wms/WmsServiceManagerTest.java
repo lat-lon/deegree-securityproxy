@@ -1,21 +1,5 @@
 package org.deegree.securityproxy.wms;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
@@ -29,6 +13,21 @@ import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author <a href="wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
@@ -101,7 +100,7 @@ public class WmsServiceManagerTest {
     public void testIsResponseFilterEnabledWithFilterManager()
                             throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
-        boolean isEnabled = cerateWmsServiceMangerWithFilterManagers().isResponseFilterEnabled( owsRequest );
+        boolean isEnabled = createWmsServiceMangerWithFilterManagers().isResponseFilterEnabled( owsRequest );
 
         assertThat( isEnabled, is( true ) );
     }
@@ -112,7 +111,7 @@ public class WmsServiceManagerTest {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
-        ResponseFilterReport responseFilterReport = cerateWmsServiceMangerWithFilterManagers().filterResponse( wrappedResponse,
+        ResponseFilterReport responseFilterReport = createWmsServiceMangerWithFilterManagers().filterResponse( wrappedResponse,
                                                                                                                authentication,
                                                                                                                owsRequest );
 
@@ -120,7 +119,7 @@ public class WmsServiceManagerTest {
     }
 
     @Test
-    public void testretrieveServiceExceptionWrapper()
+    public void testRetrieveServiceExceptionWrapper()
                             throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wmsServiceManager.retrieveServiceExceptionWrapper();
 
@@ -137,7 +136,7 @@ public class WmsServiceManagerTest {
     }
 
     @Test
-    public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
+    public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
                             throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
@@ -191,7 +190,7 @@ public class WmsServiceManagerTest {
         return kvpMap;
     }
 
-    private WmsServiceManager cerateWmsServiceMangerWithFilterManagers()
+    private WmsServiceManager createWmsServiceMangerWithFilterManagers()
                             throws IllegalArgumentException, ResponseFilterException {
         List<ResponseFilterManager> filterManagers = asList( mockEnabledResponseFilterManager(),
                                                              mockDisabledResponseFilterManager() );
@@ -213,4 +212,5 @@ public class WmsServiceManagerTest {
         doReturn( false ).when( responseFilterManager ).canBeFiltered( Matchers.any( OwsRequest.class ) );
         return responseFilterManager;
     }
+
 }

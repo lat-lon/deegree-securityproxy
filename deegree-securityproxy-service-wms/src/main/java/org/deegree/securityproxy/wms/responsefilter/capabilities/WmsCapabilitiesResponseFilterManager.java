@@ -40,9 +40,9 @@ import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILI
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMakerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
 import org.deegree.securityproxy.wms.request.WmsRequest;
 
 /**
@@ -61,8 +61,7 @@ public class WmsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
      * @param decisionMakerCreator
      *            used to create the {@link DecisionMaker}, never <code>null</code>
      */
-    public WmsCapabilitiesResponseFilterManager( CapabilitiesFilter capabilitiesFilter,
-                                                 DecisionMakerCreator decisionMakerCreator ) {
+    public WmsCapabilitiesResponseFilterManager( XmlFilter capabilitiesFilter, XmlModificationManagerCreator decisionMakerCreator ) {
         super( capabilitiesFilter, decisionMakerCreator );
     }
 

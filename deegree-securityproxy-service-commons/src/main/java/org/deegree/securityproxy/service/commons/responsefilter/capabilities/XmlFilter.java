@@ -37,15 +37,20 @@ package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import javax.servlet.ServletOutputStream;
 import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -55,30 +60,28 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 /**
  * Filters capabilities documents.
  * 
- * // TODO: check if this is a CapabiltiesFilter or XmlFilter
- * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class CapabilitiesFilter {
+public class XmlFilter {
 
-    private static final Logger LOG = Logger.getLogger( CapabilitiesFilter.class );
+    private static final Logger LOG = Logger.getLogger( XmlFilter.class );
 
     /**
      * Filters the incoming response.
      * 
      * @param servletResponse
      *            containing the response to filter, never <code>null</code>
-     * @param elementDecisionMaker
+     * @param xmlModifier
      *            decides if elements should be written or not, never <code>null</code>
      * @throws IOException
      *             if an error occurred during stream handling
      * @throws XMLStreamException
      *             if an error occurred during reading or writing the response
      */
-    public void filterCapabilities( StatusCodeResponseBodyWrapper servletResponse, DecisionMaker elementDecisionMaker )
+    public void filterXml( StatusCodeResponseBodyWrapper servletResponse, XmlModificationManager xmlModifier )
                             throws IOException, XMLStreamException {
         BufferingXMLEventReader reader = null;
         XMLEventWriter writer = null;
@@ -86,7 +89,7 @@ public class CapabilitiesFilter {
             reader = createReader( servletResponse );
             writer = createWriter( servletResponse );
 
-            copyResponse( reader, writer, elementDecisionMaker );
+            copyResponse( reader, writer, xmlModifier );
 
         } finally {
             closeQuietly( reader );
@@ -94,13 +97,13 @@ public class CapabilitiesFilter {
         }
     }
 
-    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer, DecisionMaker elementDecisionMaker )
+    private void copyResponse( BufferingXMLEventReader reader, XMLEventWriter writer, XmlModificationManager xmlModifier )
                             throws XMLStreamException {
         LinkedList<StartElement> visitedElements = new LinkedList<StartElement>();
         while ( reader.hasNext() ) {
             XMLEvent currentEvent = reader.nextEvent();
             if ( currentEvent.isStartElement() ) {
-                processStartElement( reader, writer, currentEvent, elementDecisionMaker, visitedElements );
+                processStartElement( reader, writer, currentEvent, xmlModifier, visitedElements );
                 visitedElements.add( currentEvent.asStartElement() );
             } else {
                 if ( currentEvent.isEndElement() )
@@ -111,21 +114,61 @@ public class CapabilitiesFilter {
     }
 
     private void processStartElement( BufferingXMLEventReader reader, XMLEventWriter writer, XMLEvent currentEvent,
-                                      DecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
+                                      XmlModificationManager xmlModifier, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
         LOG.debug( "Found StartElement " + currentEvent );
-        if ( ignoreElement( reader, currentEvent, elementDecisionMaker, visitedElements ) ) {
+        if ( ignoreElement( reader, currentEvent, xmlModifier, visitedElements ) ) {
             LOG.info( "Event " + currentEvent + " is ignored." );
             skipElementContent( reader );
             visitedElements.removeLast();
-        } else
-            writer.add( currentEvent );
+        } else {
+            processAttributes( reader, writer, currentEvent.asStartElement(), xmlModifier, visitedElements );
+        }
     }
 
-    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent currentEvent,
-                                   DecisionMaker elementDecisionMaker, LinkedList<StartElement> visitedElements )
+    private void processAttributes( BufferingXMLEventReader reader, XMLEventWriter writer, StartElement startElement,
+                                    XmlModificationManager xmlModifier, LinkedList<StartElement> visitedElements )
                             throws XMLStreamException {
-        return elementDecisionMaker != null && elementDecisionMaker.ignore( reader, currentEvent, visitedElements );
+        if ( xmlModifier != null ) {
+            LOG.debug( "Handle Attribute of StartElement" + startElement );
+            List<Attribute> allAttributes = new ArrayList<Attribute>();
+            Iterator<?> originalAttributes = startElement.getAttributes();
+            while ( originalAttributes.hasNext() ) {
+                Attribute processedAttribute = processAttribute( reader, writer, startElement, xmlModifier,
+                                                                 visitedElements, originalAttributes );
+                allAttributes.add( processedAttribute );
+            }
+            XMLEventFactory eventFactory = XMLEventFactory.newFactory();
+            StartElement copiedStartElement = eventFactory.createStartElement( startElement.getName(),
+                                                                               allAttributes.iterator(),
+                                                                               startElement.getNamespaces() );
+            writer.add( copiedStartElement );
+        } else {
+            writer.add( startElement );
+        }
+    }
+
+    private Attribute processAttribute( BufferingXMLEventReader reader, XMLEventWriter writer,
+                                        StartElement startElement, XmlModificationManager xmlModifier,
+                                        LinkedList<StartElement> visitedElements, Iterator<?> attributes )
+                            throws XMLStreamException, FactoryConfigurationError {
+        Attribute attribute = (Attribute) attributes.next();
+        LOG.debug( "Found Attribute " + attribute );
+        String newValue = xmlModifier.determineNewAttributeValue( reader, startElement, attribute, visitedElements );
+        if ( newValue != null ) {
+            LOG.debug( "New Attribute value " + newValue );
+            XMLEventFactory eventFactory = XMLEventFactory.newFactory();
+            Attribute newAttribute = eventFactory.createAttribute( attribute.getName(), newValue );
+            return newAttribute;
+        }
+        LOG.debug( "Attribute does not require modification." );
+        return attribute;
+    }
+
+    private boolean ignoreElement( BufferingXMLEventReader reader, XMLEvent currentEvent, XmlModificationManager xmlModifier,
+                                   LinkedList<StartElement> visitedElements )
+                            throws XMLStreamException {
+        return xmlModifier != null && xmlModifier.ignore( reader, currentEvent, visitedElements );
     }
 
     private XMLEventWriter createWriter( StatusCodeResponseBodyWrapper servletResponse )

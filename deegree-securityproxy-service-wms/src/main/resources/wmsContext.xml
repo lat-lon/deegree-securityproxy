@@ -23,16 +23,17 @@
     <constructor-arg value="${wms_authorization_denied_status_code}" />
   </bean>
 
-  <bean id="capabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.CapabilitiesFilter" />
+  <bean id="wmsCapabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter" />
 
-  <bean id="wmsDecisionMakerCreator" class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsDecisionMakerCreator" />
+  <bean id="wmsCapabilitiesModificationManagerCreator" 
+      class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsCapabilitiesModificationManagerCreator" />
 
   <bean id="simpleRasterClipper" class="org.deegree.securityproxy.wms.responsefilter.clipping.SimpleRasterClipper" />
 
   <bean name="wmsCapabilitiesResponseFilterManager"
     class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsCapabilitiesResponseFilterManager">
-    <constructor-arg ref="capabilitiesFilter" />
-    <constructor-arg ref="wmsDecisionMakerCreator" />
+    <constructor-arg ref="wmsCapabilitiesFilter" />
+    <constructor-arg ref="wmsCapabilitiesModificationManagerCreator" />
   </bean>
 
   <bean name="wmsGetMapResponseFilterManager"

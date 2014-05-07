@@ -35,10 +35,11 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request;
 
-import static java.lang.String.format;
-
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
+import static java.lang.String.format;
 
 /**
  * Contains some useful methods to parse {@link OwsRequest} send with method GET.
@@ -53,9 +54,8 @@ public class GetOwsRequestParserUtils {
     public static String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap,
                                                        String parameterName ) {
         String[] parameterValue = checkRequiredParameter( normalizedParameterMap, parameterName );
-        if ( isNotSingle( parameterValue ) ) {
+        if ( isNotSingle( parameterValue ) )
             throwException( parameterName, parameterValue );
-        }
         return parameterValue[0];
     }
 
@@ -86,6 +86,64 @@ public class GetOwsRequestParserUtils {
             throw new IllegalArgumentException( "parameter value must not be null or empty! Is: "
                                                 + asString( parameterValue ) );
         return parameterValue.length > 1;
+    }
+
+    /**
+     * Evaluates optional version parameter, returns the default version if the version parameter is missing or empty.
+     * 
+     * @param parameterName
+     *            name of the version parameter, never <code>null</code>
+     * @param normalizedParameterMap
+     *            list of KVP parameters, never <code>null</code>
+     * @param defaultVersion
+     *            version to return if the version parameter is missing or empty, may be <code>null</code>
+     * @return the requested version (if supported) or the default version if the version parameter is missing (
+     *         <code>null</code> if the default version is null)
+     * @throws IllegalArgumentException
+     *             - version could not be parsed
+     */
+    public static OwsServiceVersion evaluateVersion( String parameterName,
+                                                     Map<String, String[]> normalizedParameterMap,
+                                                     OwsServiceVersion defaultVersion ) {
+        String versionParam = parseVersion( normalizedParameterMap, parameterName );
+        if ( versionParam != null && !versionParam.isEmpty() ) {
+            return new OwsServiceVersion( versionParam );
+        }
+        return defaultVersion;
+    }
+
+    /**
+     * Evaluates optional version parameter, throws an {@link IllegalArgumentException} if the parameter VERSION is
+     * missing or empty.
+     * 
+     * @param parameterName
+     *            name of the VERSION parameter, never <code>null</code>
+     * @param normalizedParameterMap
+     * @return the requested version (if supported) or <code>null</code> if the version parameter is missing
+     * @param supportedVersion
+     * @return the
+     * @throws IllegalArgumentException
+     *             - version parameter is missing or version could not be parsed
+     */
+    public static OwsServiceVersion evaluateVersion( String parameterName,
+                                                     Map<String, String[]> normalizedParameterMap,
+                                                     List<OwsServiceVersion> supportedVersion ) {
+        String versionParam = parseVersion( normalizedParameterMap, parameterName );
+        if ( versionParam != null && !versionParam.isEmpty() ) {
+            OwsServiceVersion version = new OwsServiceVersion( versionParam );
+            if ( supportedVersion.contains( version ) )
+                return version;
+        }
+        throw new IllegalArgumentException( "Unrecognized version " + versionParam );
+    }
+
+    private static String parseVersion( Map<String, String[]> normalizedParameterMap, String parameterName ) {
+        String[] versionParameters = normalizedParameterMap.get( parameterName );
+        if ( isNotSingle( versionParameters ) )
+            throwException( parameterName, versionParameters );
+        if ( versionParameters == null || versionParameters.length == 0 )
+            return null;
+        return versionParameters[0];
     }
 
     private static String asString( String[] arrayParameter ) {

@@ -36,13 +36,13 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities.element;
 
 import static java.util.Collections.singletonList;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.PathUtils.isPathMatching;
 
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -123,7 +123,7 @@ public class ElementDecisionMaker implements DecisionMaker {
 
         boolean isPathMatching = true;
         if ( elementRule.getPath() != null )
-            isPathMatching = isPathMatching( elementRule, visitedElements );
+            isPathMatching = isPathMatching( elementRule.getPath(), visitedElements );
 
         if ( !isPathMatching )
             return false;
@@ -145,37 +145,6 @@ public class ElementDecisionMaker implements DecisionMaker {
             }
             peeked = peekIterator.next();
         }
-        return false;
-    }
-
-    private boolean isPathMatching( ElementRule rule, List<StartElement> visitedElements ) {
-        List<ElementPathStep> path = rule.getPath();
-        if ( path != null ) {
-            if ( path.size() != visitedElements.size() )
-                return false;
-            for ( int pathIndex = 0; pathIndex < path.size(); pathIndex++ ) {
-                ElementPathStep ruleElementPathStep = path.get( pathIndex );
-                StartElement visitedElement = visitedElements.get( pathIndex );
-                if ( !( hasSameName( ruleElementPathStep, visitedElement ) && hasSameAttribute( ruleElementPathStep,
-                                                                                                visitedElement ) ) )
-                    return false;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private boolean hasSameName( ElementPathStep ruleElementPathStep, StartElement visitedElement ) {
-        return ruleElementPathStep.getElementName().equals( visitedElement.getName() );
-    }
-
-    private boolean hasSameAttribute( ElementPathStep ruleElementPathStep, StartElement visitedElement ) {
-        QName ruleAttributeName = ruleElementPathStep.getAttributeName();
-        if ( ruleAttributeName == null )
-            return true;
-        Attribute attributeByName = visitedElement.getAttributeByName( ruleAttributeName );
-        if ( attributeByName != null )
-            return ruleElementPathStep.getAttributeValue().equals( attributeByName.getValue() );
         return false;
     }
 

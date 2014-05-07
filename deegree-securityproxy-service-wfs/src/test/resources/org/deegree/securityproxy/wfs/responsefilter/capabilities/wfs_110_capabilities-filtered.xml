@@ -1,0 +1,2372 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<WFS_Capabilities version="1.1.0" xmlns="http://www.opengis.net/wfs" xmlns:ows="http://www.opengis.net/ows"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>INSPIRE Addresses</ows:Title>
+    <ows:Abstract>Direct Access Download Service for INSPIRE Addresses</ows:Abstract>
+    <ows:ServiceType>WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>2.0.0</ows:ServiceTypeVersion>
+    <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>The deegree project</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.deegree.org" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Markus Schneider</ows:IndividualName>
+      <ows:PositionName>deegree TMC</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>0228/18496-0</ows:Voice>
+          <ows:Facsimile>0228/18496-29</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>info@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.deegree.org" />
+        <ows:HoursOfService>24x7</ows:HoursOfService>
+        <ows:ContactInstructions>Do not hesitate to call</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:Value>2.0.0</ows:Value>
+        <ows:Value>1.1.0</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:Value>text/xml</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:Value>results</ows:Value>
+        <ows:Value>hits</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeatureWithLock">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:Value>results</ows:Value>
+        <ows:Value>hits</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetGmlObject">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="LockFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="lockAction">
+        <ows:Value>ALL</ows:Value>
+        <ows:Value>SOME</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="Transaction">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="newGetDcpUrl?" />
+          <ows:Post xlink:href="newPostDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="inputFormat">
+        <ows:Value>application/gml+xml; version=3.2</ows:Value>
+        <ows:Value>text/xml; subtype=gml/3.2.1</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="idgen">
+        <ows:Value>GenerateNew</ows:Value>
+        <ows:Value>UseExisting</ows:Value>
+        <ows:Value>ReplaceDuplicate</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="releaseAction">
+        <ows:Value>ALL</ows:Value>
+        <ows:Value>SOME</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <FeatureTypeList>
+    <FeatureType>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:Address</Name>
+      <Title>ad:Address</Title>
+      <Abstract>Harmonized INSPIRE Addresses (Annex I)</Abstract>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>5.234515 52.689618</ows:LowerCorner>
+        <ows:UpperCorner>5.254076 52.711751</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+      <MetadataURL type="19139" format="text/xml">http://www.nationaalgeoregister.nl/geonetwork/srv/nl/csw?service=CSW&amp;request=GetRecordById&amp;version=2.0.2&amp;id=beefcafe-beef-cafe-beef-cafebeefcaf</MetadataURL>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:AddressAreaName</Name>
+      <Title>ad:AddressAreaName</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:AdminUnitName</Name>
+      <Title>ad:AdminUnitName</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:PostalDescriptor</Name>
+      <Title>ad:PostalDescriptor</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ad="urn:x-inspire:specification:gmlas:Addresses:3.0">ad:ThoroughfareName</Name>
+      <Title>ad:ThoroughfareName</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0">au:AdministrativeBoundary</Name>
+      <Title>au:AdministrativeBoundary</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0">au:AdministrativeUnit</Name>
+      <Title>au:AdministrativeUnit</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>3.069961 50.750368</ows:LowerCorner>
+        <ows:UpperCorner>7.227498 53.751893</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:au="urn:x-inspire:specification:gmlas:AdministrativeUnits:3.0">au:Condominium</Name>
+      <Title>au:Condominium</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AerodromeArea</Name>
+      <Title>tn-a:AerodromeArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AerodromeCategory</Name>
+      <Title>tn-a:AerodromeCategory</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AerodromeNode</Name>
+      <Title>tn-a:AerodromeNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AerodromeType</Name>
+      <Title>tn-a:AerodromeType</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AirLinkSequence</Name>
+      <Title>tn-a:AirLinkSequence</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AirRoute</Name>
+      <Title>tn-a:AirRoute</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AirRouteLink</Name>
+      <Title>tn-a:AirRouteLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:AirspaceArea</Name>
+      <Title>tn-a:AirspaceArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:ApronArea</Name>
+      <Title>tn-a:ApronArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:ConditionOfAirFacility</Name>
+      <Title>tn-a:ConditionOfAirFacility</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:DesignatedPoint</Name>
+      <Title>tn-a:DesignatedPoint</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:ElementLength</Name>
+      <Title>tn-a:ElementLength</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:ElementWidth</Name>
+      <Title>tn-a:ElementWidth</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:FieldElevation</Name>
+      <Title>tn-a:FieldElevation</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:InstrumentApproachProcedure</Name>
+      <Title>tn-a:InstrumentApproachProcedure</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:LowerAltitudeLimit</Name>
+      <Title>tn-a:LowerAltitudeLimit</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:Navaid</Name>
+      <Title>tn-a:Navaid</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:ProcedureLink</Name>
+      <Title>tn-a:ProcedureLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:RunwayArea</Name>
+      <Title>tn-a:RunwayArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:RunwayCentrelinePoint</Name>
+      <Title>tn-a:RunwayCentrelinePoint</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:StandardInstrumentArrival</Name>
+      <Title>tn-a:StandardInstrumentArrival</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:StandardInstrumentDeparture</Name>
+      <Title>tn-a:StandardInstrumentDeparture</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:SurfaceComposition</Name>
+      <Title>tn-a:SurfaceComposition</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:TaxiwayArea</Name>
+      <Title>tn-a:TaxiwayArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:TouchDownLiftOff</Name>
+      <Title>tn-a:TouchDownLiftOff</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:UpperAltitudeLimit</Name>
+      <Title>tn-a:UpperAltitudeLimit</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-a="urn:x-inspire:specification:gmlas:AirTransportNetwork:3.0">tn-a:UseRestriction</Name>
+      <Title>tn-a:UseRestriction</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:bgr="urn:x-inspire:specification:gmlas:BiogeographicalRegions:0.0">bgr:Bio-GeographicalRegion</Name>
+      <Title>bgr:Bio-GeographicalRegion</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:bui="urn:x-inspire:specification:gmlas:Buildings:0.0">bui:Building</Name>
+      <Title>bui:Building</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:bui="urn:x-inspire:specification:gmlas:Buildings:0.0">bui:ControlTower</Name>
+      <Title>bui:ControlTower</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-c="urn:x-inspire:specification:gmlas:CableTransportNetwork:3.0">tn-c:CablewayLink</Name>
+      <Title>tn-c:CablewayLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-c="urn:x-inspire:specification:gmlas:CableTransportNetwork:3.0">tn-c:CablewayLinkSequence</Name>
+      <Title>tn-c:CablewayLinkSequence</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-c="urn:x-inspire:specification:gmlas:CableTransportNetwork:3.0">tn-c:CablewayLinkSet</Name>
+      <Title>tn-c:CablewayLinkSet</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-c="urn:x-inspire:specification:gmlas:CableTransportNetwork:3.0">tn-c:CablewayNode</Name>
+      <Title>tn-c:CablewayNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0">cp:BasicPropertyUnit</Name>
+      <Title>cp:BasicPropertyUnit</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0">cp:CadastralBoundary</Name>
+      <Title>cp:CadastralBoundary</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0">cp:CadastralParcel</Name>
+      <Title>cp:CadastralParcel</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>6.915480 52.204052</ows:LowerCorner>
+        <ows:UpperCorner>7.065789 52.302804</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:cp="urn:x-inspire:specification:gmlas:CadastralParcels:3.0">cp:CadastralZoning</Name>
+      <Title>cp:CadastralZoning</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:AccessRestriction</Name>
+      <Title>tn:AccessRestriction</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:ConditionOfFacility</Name>
+      <Title>tn:ConditionOfFacility</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:MaintenanceAuthority</Name>
+      <Title>tn:MaintenanceAuthority</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:MarkerPost</Name>
+      <Title>tn:MarkerPost</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:OwnerAuthority</Name>
+      <Title>tn:OwnerAuthority</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:RestrictionForVehicles</Name>
+      <Title>tn:RestrictionForVehicles</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:TrafficFlowDirection</Name>
+      <Title>tn:TrafficFlowDirection</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:TransportNetwork</Name>
+      <Title>tn:TransportNetwork</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn="urn:x-inspire:specification:gmlas:CommonTransportElements:3.0">tn:VerticalPosition</Name>
+      <Title>tn:VerticalPosition</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:er="urn:x-inspire:specification:gmlas:EnergyResources:0.0">er:HydroPowerPlant</Name>
+      <Title>er:HydroPowerPlant</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:gaz="urn:x-inspire:specification:gmlas:Gazetteer:3.2">gaz:Gazetteer</Name>
+      <Title>gaz:Gazetteer</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:gaz="urn:x-inspire:specification:gmlas:Gazetteer:3.2">gaz:LocationType</Name>
+      <Title>gaz:LocationType</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:gn="urn:x-inspire:specification:gmlas:GeographicalNames:3.0">gn:NamedPlace</Name>
+      <Title>gn:NamedPlace</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:geo="urn:x-inspire:specification:gmlas:Geology:0.0">geo:SpringOrSeep</Name>
+      <Title>geo:SpringOrSeep</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:geo="urn:x-inspire:specification:gmlas:Geology:0.0">geo:VanishingPoint</Name>
+      <Title>geo:VanishingPoint</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hb="urn:x-inspire:specification:gmlas:HabitatsAndBiotopes:0.0">hb:Habitat</Name>
+      <Title>hb:Habitat</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-n="urn:x-inspire:specification:gmlas:HydroNetwork:3.0">hy-n:HydroNode</Name>
+      <Title>hy-n:HydroNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-n="urn:x-inspire:specification:gmlas:HydroNetwork:3.0">hy-n:WatercourseLink</Name>
+      <Title>hy-n:WatercourseLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-n="urn:x-inspire:specification:gmlas:HydroNetwork:3.0">hy-n:WatercourseLinkSequence</Name>
+      <Title>hy-n:WatercourseLinkSequence</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-n="urn:x-inspire:specification:gmlas:HydroNetwork:3.0">hy-n:WatercourseSeparatedCrossing</Name>
+      <Title>hy-n:WatercourseSeparatedCrossing</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Crossing</Name>
+      <Title>hy-p:Crossing</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:DamOrWeir</Name>
+      <Title>hy-p:DamOrWeir</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:DrainageBasin</Name>
+      <Title>hy-p:DrainageBasin</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Falls</Name>
+      <Title>hy-p:Falls</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Ford</Name>
+      <Title>hy-p:Ford</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:LandWaterBoundary</Name>
+      <Title>hy-p:LandWaterBoundary</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Lock</Name>
+      <Title>hy-p:Lock</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Rapids</Name>
+      <Title>hy-p:Rapids</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:RiverBasin</Name>
+      <Title>hy-p:RiverBasin</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:ShorelineConstruction</Name>
+      <Title>hy-p:ShorelineConstruction</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Sluice</Name>
+      <Title>hy-p:Sluice</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:StandingWater</Name>
+      <Title>hy-p:StandingWater</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:hy-p="urn:x-inspire:specification:gmlas:HydroPhysicalWaters:3.0">hy-p:Watercourse</Name>
+      <Title>hy-p:Watercourse</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:lc="urn:x-inspire:specification:gmlas:LandCover:0.0">lc:GlacierSnowfield</Name>
+      <Title>lc:GlacierSnowfield</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:lc="urn:x-inspire:specification:gmlas:LandCover:0.0">lc:Shore</Name>
+      <Title>lc:Shore</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:lc="urn:x-inspire:specification:gmlas:LandCover:0.0">lc:Wetland</Name>
+      <Title>lc:Wetland</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:nrz="urn:x-inspire:specification:gmlas:NaturalRiskZones:0.0">nrz:Embankment</Name>
+      <Title>nrz:Embankment</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:nrz="urn:x-inspire:specification:gmlas:NaturalRiskZones:0.0">nrz:InundatedLand</Name>
+      <Title>nrz:InundatedLand</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:net="urn:x-inspire:specification:gmlas:Network:3.2">net:CrossReference</Name>
+      <Title>net:CrossReference</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:net="urn:x-inspire:specification:gmlas:Network:3.2">net:GradeSeparatedCrossing</Name>
+      <Title>net:GradeSeparatedCrossing</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:net="urn:x-inspire:specification:gmlas:Network:3.2">net:Network</Name>
+      <Title>net:Network</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:net="urn:x-inspire:specification:gmlas:Network:3.2">net:NetworkConnection</Name>
+      <Title>net:NetworkConnection</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ps="urn:x-inspire:specification:gmlas:ProtectedSites:3.0">ps:ProtectedSite</Name>
+      <Title>ps:ProtectedSite</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ps-f="urn:x-inspire:specification:gmlas:ProtectedSitesFull:3.0">ps-f:ProtectedSite</Name>
+      <Title>ps-f:ProtectedSite</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ps-f="urn:x-inspire:specification:gmlas:ProtectedSitesFull:3.0">ps-f:ResponsibleAgency</Name>
+      <Title>ps-f:ResponsibleAgency</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ps-n2000="urn:x-inspire:specification:gmlas:ProtectedSitesNatura2000:3.0">ps-n2000:ProtectedSite</Name>
+      <Title>ps-n2000:ProtectedSite</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:DesignSpeed</Name>
+      <Title>tn-ra:DesignSpeed</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:NominalTrackGauge</Name>
+      <Title>tn-ra:NominalTrackGauge</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:NumberOfTracks</Name>
+      <Title>tn-ra:NumberOfTracks</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayArea</Name>
+      <Title>tn-ra:RailwayArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayElectrification</Name>
+      <Title>tn-ra:RailwayElectrification</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayLine</Name>
+      <Title>tn-ra:RailwayLine</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayLink</Name>
+      <Title>tn-ra:RailwayLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayLinkSequence</Name>
+      <Title>tn-ra:RailwayLinkSequence</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayNode</Name>
+      <Title>tn-ra:RailwayNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayStationArea</Name>
+      <Title>tn-ra:RailwayStationArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayStationCode</Name>
+      <Title>tn-ra:RailwayStationCode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayStationNode</Name>
+      <Title>tn-ra:RailwayStationNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayType</Name>
+      <Title>tn-ra:RailwayType</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayUse</Name>
+      <Title>tn-ra:RailwayUse</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayYardArea</Name>
+      <Title>tn-ra:RailwayYardArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ra="urn:x-inspire:specification:gmlas:RailwayTransportNetwork:3.0">tn-ra:RailwayYardNode</Name>
+      <Title>tn-ra:RailwayYardNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:ERoad</Name>
+      <Title>tn-ro:ERoad</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:FormOfWay</Name>
+      <Title>tn-ro:FormOfWay</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:FunctionalRoadClass</Name>
+      <Title>tn-ro:FunctionalRoadClass</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:NumberOfLanes</Name>
+      <Title>tn-ro:NumberOfLanes</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:Road</Name>
+      <Title>tn-ro:Road</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadArea</Name>
+      <Title>tn-ro:RoadArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadLink</Name>
+      <Title>tn-ro:RoadLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadLinkSequence</Name>
+      <Title>tn-ro:RoadLinkSequence</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadName</Name>
+      <Title>tn-ro:RoadName</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadNode</Name>
+      <Title>tn-ro:RoadNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadServiceArea</Name>
+      <Title>tn-ro:RoadServiceArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadServiceType</Name>
+      <Title>tn-ro:RoadServiceType</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadSurfaceCategory</Name>
+      <Title>tn-ro:RoadSurfaceCategory</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:RoadWidth</Name>
+      <Title>tn-ro:RoadWidth</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:SpeedLimit</Name>
+      <Title>tn-ro:SpeedLimit</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-ro="urn:x-inspire:specification:gmlas:RoadTransportNetwork:3.0">tn-ro:VehicleTrafficArea</Name>
+      <Title>tn-ro:VehicleTrafficArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:sr="urn:x-inspire:specification:gmlas:SeaRegions:0.0">sr:OceanRegion</Name>
+      <Title>sr:OceanRegion</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:sd="urn:x-inspire:specification:gmlas:SpeciesDistribution:0.0">sd:SpeciesDistribution</Name>
+      <Title>sd:SpeciesDistribution</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:stat="urn:x-inspire:specification:gmlas:StatisticalUnits:0.0">stat:NUTSRegion</Name>
+      <Title>stat:NUTSRegion</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ugs="urn:x-inspire:specification:gmlas:UtilityAndGovernmentalServices:0.0">ugs:Pipe</Name>
+      <Title>ugs:Pipe</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:ugs="urn:x-inspire:specification:gmlas:UtilityAndGovernmentalServices:0.0">ugs:PumpingStation</Name>
+      <Title>ugs:PumpingStation</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:wfd="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0">wfd:WFDCoastalWater</Name>
+      <Title>wfd:WFDCoastalWater</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:wfd="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0">wfd:WFDGroundWaterBody</Name>
+      <Title>wfd:WFDGroundWaterBody</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:wfd="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0">wfd:WFDLake</Name>
+      <Title>wfd:WFDLake</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:wfd="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0">wfd:WFDRiver</Name>
+      <Title>wfd:WFDRiver</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:wfd="urn:x-inspire:specification:gmlas:WaterFrameworkDirective:0.0">wfd:WFDTransitionalWater</Name>
+      <Title>wfd:WFDTransitionalWater</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:Beacon</Name>
+      <Title>tn-w:Beacon</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:Buoy</Name>
+      <Title>tn-w:Buoy</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:CEMTClass</Name>
+      <Title>tn-w:CEMTClass</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:ConditionOfWaterFacility</Name>
+      <Title>tn-w:ConditionOfWaterFacility</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:FairwayArea</Name>
+      <Title>tn-w:FairwayArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:FerryCrossing</Name>
+      <Title>tn-w:FerryCrossing</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:FerryUse</Name>
+      <Title>tn-w:FerryUse</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:InlandWaterway</Name>
+      <Title>tn-w:InlandWaterway</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:MarineWaterway</Name>
+      <Title>tn-w:MarineWaterway</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:PortArea</Name>
+      <Title>tn-w:PortArea</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:PortNode</Name>
+      <Title>tn-w:PortNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:RestrictionForWaterVehicles</Name>
+      <Title>tn-w:RestrictionForWaterVehicles</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:TrafficSeparationSchemeCrossing</Name>
+      <Title>tn-w:TrafficSeparationSchemeCrossing</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:TrafficSeparationSchemeLane</Name>
+      <Title>tn-w:TrafficSeparationSchemeLane</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:TrafficSeparationSchemeRoundabout</Name>
+      <Title>tn-w:TrafficSeparationSchemeRoundabout</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:TrafficSeparationSchemeSeparator</Name>
+      <Title>tn-w:TrafficSeparationSchemeSeparator</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:WaterLinkSequence</Name>
+      <Title>tn-w:WaterLinkSequence</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:WaterTrafficFlowDirection</Name>
+      <Title>tn-w:WaterTrafficFlowDirection</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:WaterwayLink</Name>
+      <Title>tn-w:WaterwayLink</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+    <FeatureType>
+      <Name xmlns:tn-w="urn:x-inspire:specification:gmlas:WaterTransportNetwork:3.0">tn-w:WaterwayNode</Name>
+      <Title>tn-w:WaterwayNode</Title>
+      <DefaultSRS>urn:ogc:def:crs:EPSG::4258</DefaultSRS>
+      <OtherSRS>urn:ogc:def:crs:EPSG::4326</OtherSRS>
+      <OutputFormats>
+        <Format>application/gml+xml; version=3.2</Format>
+        <Format>text/xml; subtype=gml/3.2.1</Format>
+      </OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-180.000000 -90.000000</ows:LowerCorner>
+        <ows:UpperCorner>180.000000 90.000000</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </FeatureType>
+  </FeatureTypeList>
+  <ogc:Filter_Capabilities>
+    <ogc:Spatial_Capabilities>
+      <ogc:GeometryOperands xmlns:gml="http://www.opengis.net/gml">
+        <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:ArcByCenterPoint</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:CircleByCenterPoint</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Arc</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Circle</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:ArcByBulge</ogc:GeometryOperand>
+      </ogc:GeometryOperands>
+      <ogc:SpatialOperators>
+        <ogc:SpatialOperator name="BBOX" />
+        <ogc:SpatialOperator name="Equals" />
+        <ogc:SpatialOperator name="Disjoint" />
+        <ogc:SpatialOperator name="Intersects" />
+        <ogc:SpatialOperator name="Touches" />
+        <ogc:SpatialOperator name="Crosses" />
+        <ogc:SpatialOperator name="Within" />
+        <ogc:SpatialOperator name="Contains" />
+        <ogc:SpatialOperator name="Overlaps" />
+        <ogc:SpatialOperator name="Beyond" />
+        <ogc:SpatialOperator name="DWithin" />
+      </ogc:SpatialOperators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:LogicalOperators />
+      <ogc:ComparisonOperators>
+        <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+      </ogc:ComparisonOperators>
+      <ogc:ArithmeticOperators>
+        <ogc:SimpleArithmetic />
+        <ogc:Functions>
+          <ogc:FunctionNames>
+            <ogc:FunctionName nArgs="1">Area</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Centroid</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">ExtraProp</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">GeometryFromWKT</ogc:FunctionName>
+            <ogc:FunctionName nArgs="0">GetCurrentScale</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">IDiv</ogc:FunctionName>
+            <ogc:FunctionName nArgs="2">IMod</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">InteriorPoint</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">IsCurve</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">IsPoint</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">IsSurface</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Length</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Lower</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">MoveGeometry</ogc:FunctionName>
+            <ogc:FunctionName nArgs="1">Upper</ogc:FunctionName>
+          </ogc:FunctionNames>
+        </ogc:Functions>
+      </ogc:ArithmeticOperators>
+    </ogc:Scalar_Capabilities>
+    <ogc:Id_Capabilities>
+      <ogc:EID />
+      <ogc:FID />
+    </ogc:Id_Capabilities>
+  </ogc:Filter_Capabilities>
+</WFS_Capabilities>

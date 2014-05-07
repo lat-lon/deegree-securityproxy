@@ -1,9 +1,9 @@
 package org.deegree.securityproxy.authorization.logging;
 
+import static java.util.Collections.unmodifiableMap;
+
 import java.util.Collections;
 import java.util.Map;
-
-import static java.util.Collections.unmodifiableMap;
 
 /**
  * 
@@ -26,22 +26,49 @@ public class AuthorizationReport {
     private final Map<String, String[]> additionalKeyValuePairs;
 
     /**
+     * Instantiates an {@link AuthorizationReport} for disabled authorization.
+     * 
+     */
+    public AuthorizationReport() {
+        this( "Authorization is disabled.", true, null, unmodifiableMap( Collections.<String, String[]> emptyMap() ) );
+    }
+
+    /**
      * Instantiates a new {@link AuthorizationReport} for a failed authorization (isAuthhozied is <code>false</code>).
-     *
-     * @param message containing the reason why the authorization failed, never <code>null</code>
+     * 
+     * @param message
+     *            containing the reason why the authorization failed, never <code>null</code>
      */
     public AuthorizationReport( String message ) {
-        this( message, false, null, unmodifiableMap( Collections.<String, String[]>emptyMap() ) );
+        this( message, false, null, unmodifiableMap( Collections.<String, String[]> emptyMap() ) );
+    }
+
+    /**
+     * Instantiates a new {@link AuthorizationReport} without serviceUrl.
+     * 
+     * @param message
+     *            containing the reason why the authorization failed, never <code>null</code>
+     * @param isAuthorized
+     *            <code>true</code> if authorized, <code>false</code> otherwise
+     * @param additionalKeyValuePairs
+     *            additional key value pairs, may be empty or <code>null</code>
+     */
+    public AuthorizationReport( String message, boolean isAuthorized, Map<String, String[]> additionalKeyValuePairs ) {
+        this( message, isAuthorized, null, additionalKeyValuePairs );
     }
 
     /**
      * Instantiates a new {@link AuthorizationReport}.
-     *
-     * @param message                 containing the reason why the authorization failed, never <code>null</code>
-     * @param isAuthorized            <code>true</code> if authorized, <code>false</code> otherwise
-     * @param serviceUrl              endpoint url of the requested service, may be <code>null</code> if authorization
-     *                                failed
-     * @param additionalKeyValuePairs additional key value pairs, may be empty but never <code>null</code>
+     * 
+     * @param message
+     *            containing the reason why the authorization failed, never <code>null</code>
+     * @param isAuthorized
+     *            <code>true</code> if authorized, <code>false</code> otherwise
+     * @param serviceUrl
+     *            endpoint url of the requested service, may be <code>null</code> if authorization failed or there is no
+     *            new endpoint url
+     * @param additionalKeyValuePairs
+     *            additional key value pairs, may be empty or <code>null</code>
      */
     public AuthorizationReport( String message, boolean isAuthorized, String serviceUrl,
                                 Map<String, String[]> additionalKeyValuePairs ) {
@@ -52,7 +79,7 @@ public class AuthorizationReport {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]> emptyMap() );
     }
 
     /**
