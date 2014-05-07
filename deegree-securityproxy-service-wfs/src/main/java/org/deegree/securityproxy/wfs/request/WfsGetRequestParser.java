@@ -1,21 +1,20 @@
 package org.deegree.securityproxy.wfs.request;
 
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
-import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
+
 /**
- * Parses an incoming HTTP GET request into a {@link WfsRequest}.
+ * Parses an incoming HTTP GET request into a {@link WfsRequest}. Currently WFS version 1.1.0 is supported.
  * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $

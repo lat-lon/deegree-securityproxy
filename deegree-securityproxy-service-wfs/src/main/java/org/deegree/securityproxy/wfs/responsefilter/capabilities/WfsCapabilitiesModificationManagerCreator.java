@@ -49,7 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Creates {@link XmlModificationManagerCreator}s for WFS capabilities requests.
+ * Creates {@link XmlModificationManagerCreator}s for WFS 1.1.0 capabilities requests.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
