@@ -258,7 +258,7 @@ public class XmlFilterTest {
     }
 
     private XmlModificationManager createDecisionMaker( String nameToFilter, String namespace, String text,
-                                             List<ElementPathStep> path ) {
+                                                        List<ElementPathStep> path ) {
         ElementRule rule = new ElementRule( nameToFilter, namespace, text, path );
         ElementDecisionMaker decisionMaker = new ElementDecisionMaker( rule );
         return new XmlModificationManager( decisionMaker );
