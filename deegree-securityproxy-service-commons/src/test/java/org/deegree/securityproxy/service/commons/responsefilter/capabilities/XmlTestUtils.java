@@ -62,9 +62,10 @@ public class XmlTestUtils {
                                                               ByteArrayOutputStream filteredStream )
                             throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
-        InputStream resourceToFilter = XmlFilterTest.class.getResourceAsStream( originalXmlFileName );
+        InputStream resourceToFilter = XmlTestUtils.class.getResourceAsStream( originalXmlFileName );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( resourceToFilter );
-        when( mockedServletResponse.getRealOutputStream() ).thenReturn( createStream( filteredStream ) );
+        ServletOutputStream stream = createStream( filteredStream );
+        when( mockedServletResponse.getRealOutputStream() ).thenReturn( stream );
         return mockedServletResponse;
     }
 

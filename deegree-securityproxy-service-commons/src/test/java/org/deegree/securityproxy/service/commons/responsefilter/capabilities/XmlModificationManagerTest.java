@@ -38,7 +38,7 @@ package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -100,52 +100,63 @@ public class XmlModificationManagerTest {
         assertThat( modificationRequired, is( false ) );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testDetermineNewAttributeValueWithAllNullShouldReturnNull()
                             throws Exception {
         XmlModificationManager xmlModificationManager = new XmlModificationManager( null, null );
-        String newAttributeValue = xmlModificationManager.determineNewAttributeValue( any( BufferingXMLEventReader.class ),
-                                                                                      any( StartElement.class ),
-                                                                                      any( Attribute.class ),
-                                                                                      any( LinkedList.class ) );
+        String newAttributeValue = xmlModificationManager.determineNewAttributeValue( nockReader(), mockStartElement(),
+                                                                                      mockAttribute(), mockList() );
 
         assertThat( newAttributeValue, is( nullValue() ) );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testDetermineNewAttributeValueWithAllNullShouldReturnFalse()
                             throws Exception {
         XmlModificationManager xmlModificationManager = new XmlModificationManager( null, null );
-        boolean ignore = xmlModificationManager.ignore( any( BufferingXMLEventReader.class ), any( XMLEvent.class ),
-                                                        any( LinkedList.class ) );
+        boolean ignore = xmlModificationManager.ignore( nockReader(), mockEvent(), mockList() );
 
         assertThat( ignore, is( false ) );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testDetermineNewAttributeValueWithAttributeModifier()
                             throws Exception {
         XmlModificationManager xmlModificationManager = new XmlModificationManager( createAttributeModifier() );
-        String newAttributeValue = xmlModificationManager.determineNewAttributeValue( any( BufferingXMLEventReader.class ),
-                                                                                      any( StartElement.class ),
-                                                                                      any( Attribute.class ),
-                                                                                      any( LinkedList.class ) );
+        String newAttributeValue = xmlModificationManager.determineNewAttributeValue( nockReader(), mockStartElement(),
+                                                                                      mockAttribute(), mockList() );
 
         assertThat( newAttributeValue, is( NEW_VALUE ) );
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testDetermineNewAttributeValueWithDecisionMaker()
                             throws Exception {
         XmlModificationManager xmlModificationManager = new XmlModificationManager( createDecisionMaker() );
-        boolean ignore = xmlModificationManager.ignore( any( BufferingXMLEventReader.class ), any( XMLEvent.class ),
-                                                        any( LinkedList.class ) );
+        boolean ignore = xmlModificationManager.ignore( nockReader(), mockEvent(), mockList() );
 
         assertThat( ignore, is( IS_IGNORED ) );
+    }
+
+    @SuppressWarnings("unchecked")
+    private LinkedList<StartElement> mockList() {
+        return mock( LinkedList.class );
+    }
+
+    private StartElement mockStartElement() {
+        return mock( StartElement.class );
+    }
+
+    private XMLEvent mockEvent() {
+        return mock( XMLEvent.class );
+    }
+
+    private Attribute mockAttribute() {
+        return mock( Attribute.class );
+    }
+
+    private BufferingXMLEventReader nockReader() {
+        return mock( BufferingXMLEventReader.class );
     }
 
     private AttributeModifier createAttributeModifier()
