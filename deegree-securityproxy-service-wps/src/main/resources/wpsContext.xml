@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <bean id="wpsServiceManager" class="org.deegree.securityproxy.wps.WpsServiceManager">
+    <constructor-arg ref="wpsRequestParser" />
+    <constructor-arg ref="wpsRequestAuthorizationManager" />
+    <constructor-arg ref="wpsResponseFilterManagers" />
+    <constructor-arg ref="wpsServiceExceptionWrapper" />
+  </bean>
+
+  <bean id="wpsRequestAuthorizationManager" class="org.deegree.securityproxy.wps.authorization.WpsRequestAuthorizationManager" />
+
+  <bean id="wpsRequestParser" class="org.deegree.securityproxy.wps.request.WpsRequestParser" />
+
+  <bean id="wpsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
+    <constructor-arg value="${wps_exception_file_path}" />
+    <constructor-arg value="${wps_authentication_denied_status_code}" />
+    <constructor-arg value="${wps_authorization_denied_status_code}" />
+  </bean>
+
+  <bean id="wpsCapabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter" />
+
+  <bean id="wpsCapabilitiesModificationManagerCreator"
+      class="org.deegree.securityproxy.wps.responsefilter.capabilities.WpsCapabilitiesModificationManagerCreator" />
+
+  <bean name="wpsCapabilitiesResponseFilterManager"
+    class="org.deegree.securityproxy.wps.responsefilter.capabilities.WpsCapabilitiesResponseFilterManager">
+    <constructor-arg ref="wpsCapabilitiesFilter" />
+    <constructor-arg ref="wpsCapabilitiesModificationManagerCreator" />
+  </bean>
+
+  <util:list id="wpsResponseFilterManagers" list-class="java.util.LinkedList"
+    value-type="org.deegree.securityproxy.responsefilter.ResponseFilterManager">
+    <ref bean="wpsCapabilitiesResponseFilterManager" />
+  </util:list>
+
+</beans>
