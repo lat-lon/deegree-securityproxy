@@ -53,12 +53,14 @@
     value-type="org.deegree.securityproxy.filter.ServiceManager">
     <ref bean="wcsServiceManager" />
     <ref bean="wmsServiceManager" />
+    <ref bean="wpsServiceManager" />
   </util:list>
 
   <util:list id="exceptionManagers" list-class="java.util.LinkedList"
     value-type="org.deegree.securityproxy.ServiceExceptionManager">
     <ref bean="wcsServiceManager" />
     <ref bean="wmsServiceManager" />
+    <ref bean="wpsServiceManager" />
   </util:list>
 
   <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter">
