@@ -46,6 +46,12 @@
       </dependency>
       <dependency>
         <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-service-wps</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.deegree</groupId>
         <artifactId>deegree-securityproxy-service-commons</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -254,6 +260,7 @@
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
     <module>deegree-securityproxy-service-wfs</module>
+    <module>deegree-securityproxy-service-wps</module>
     <module>deegree-matcher</module>
   </modules>
 
