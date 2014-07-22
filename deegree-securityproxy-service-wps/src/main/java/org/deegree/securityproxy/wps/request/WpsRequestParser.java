@@ -45,7 +45,7 @@ public class WpsRequestParser implements OwsRequestParser {
 
     private static final String VERSION = "version";
 
-    private static final String IDENTIFIER = "Identifier";
+    private static final String IDENTIFIER = "identifier";
 
     private final List<OwsServiceVersion> supportedVersion = asList( VERSION_100 );
 

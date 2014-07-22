@@ -49,7 +49,7 @@ public class WpsServiceManagerTest {
 
     @Before
     public void resetMocks() {
-        reset( serviceExceptionWrapper, parser, requestAuthorizationManager);
+        reset( serviceExceptionWrapper, parser, requestAuthorizationManager );
         List<ResponseFilterManager> filterManagers = emptyList();
         wpsServiceManager = new WpsServiceManager( parser, requestAuthorizationManager, filterManagers,
             serviceExceptionWrapper );
