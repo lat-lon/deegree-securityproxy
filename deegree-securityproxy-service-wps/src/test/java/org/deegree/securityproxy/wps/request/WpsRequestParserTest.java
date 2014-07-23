@@ -35,29 +35,28 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.request;
 
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.VERSION_100;
-
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import javax.servlet.http.HttpServletRequest;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.when;
+import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * Tests for {@link WpsRequestParser}.
- *
+ * 
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $

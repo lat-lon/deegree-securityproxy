@@ -1,6 +1,5 @@
 package org.deegree.securityproxy.wps.request;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
@@ -17,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a {@link WpsRequest}.

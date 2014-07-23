@@ -41,8 +41,6 @@ import java.util.List;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 
-import com.vividsolutions.jts.geom.Envelope;
-
 /**
  * Encapsulates a WPS request.
  * 
@@ -58,7 +56,6 @@ public class WpsRequest extends OwsRequest {
 
     private final List<String> identifiers;
 
-
     /**
      * Instantiates a new {@link WpsRequest} with an empty {@link List} of identifiers.
      * 
@@ -70,7 +67,7 @@ public class WpsRequest extends OwsRequest {
      *            the name of the service, never <code>null</code>
      */
     public WpsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
-        this( operationType, serviceVersion, serviceName, Collections.<String>emptyList() );
+        this( operationType, serviceVersion, serviceName, Collections.<String> emptyList() );
     }
 
     /**
@@ -85,8 +82,9 @@ public class WpsRequest extends OwsRequest {
      * @param identifiers
      *            the identifiers of the process, never <code>null</code>
      */
-    public WpsRequest(String operationType, OwsServiceVersion serviceVersion, String serviceName, List<String> identifiers) {
-        super(WPS_TYPE, operationType, serviceVersion);
+    public WpsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName,
+                       List<String> identifiers ) {
+        super( WPS_TYPE, operationType, serviceVersion );
         this.serviceName = serviceName;
         this.identifiers = identifiers;
     }
