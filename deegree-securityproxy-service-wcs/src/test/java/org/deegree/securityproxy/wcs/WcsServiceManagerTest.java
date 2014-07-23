@@ -1,16 +1,5 @@
 package org.deegree.securityproxy.wcs;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.ServiceManager;
@@ -23,6 +12,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for WcsServiceManager.
@@ -122,6 +125,15 @@ public class WcsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
                             throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
+
+        assertThat( isSupported, is( false ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
+                            throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );

@@ -118,6 +118,9 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
     public boolean isServiceTypeSupported( HttpServletRequest request ) {
         @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
+        String[] serviceTypes = kvpMap.get( "service" );
+        if ( serviceTypes == null || serviceTypes.length < 1 )
+            return false;
         return "wfs".equalsIgnoreCase( kvpMap.get( "service" )[0] );
     }
 

@@ -1,5 +1,25 @@
 package org.deegree.securityproxy.wps;
 
+import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
+import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
+import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.hamcrest.MatcherAssert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
@@ -9,26 +29,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
-import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
-import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.responsefilter.ResponseFilterException;
-import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
-import org.springframework.security.core.Authentication;
 
 /**
  * @author <a href="wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
@@ -141,6 +141,15 @@ public class WpsServiceManagerTest {
         boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
+                            throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
+
+        MatcherAssert.assertThat( isSupported, is( false ) );
     }
 
     private HttpServletRequest mockHttpServletRequest() {
