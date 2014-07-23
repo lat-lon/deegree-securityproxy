@@ -84,6 +84,14 @@ public class LimitedOwsServiceVersionTest {
         assertThat( parsed.getLimitType(), is( ">=" ) );
     }
 
+    @Test
+    public void testConstructorWithSimpleVersion()
+                            throws Exception {
+        LimitedOwsServiceVersion parsed = new LimitedOwsServiceVersion( "1.1.0" );
+        assertThat( parsed.getVersion(), is( VERSION_110 ) );
+        assertThat( parsed.getLimitType(), is( "==" ) );
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testConstructorNull() {
         new LimitedOwsServiceVersion( null );
