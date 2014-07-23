@@ -1,13 +1,12 @@
 package org.deegree.securityproxy.authentication.ows.raster;
 
-import org.deegree.securityproxy.authentication.OwsUserDetails;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import static java.util.Collections.unmodifiableList;
 
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Collections.unmodifiableList;
+import org.deegree.securityproxy.authentication.OwsUserDetails;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * {@link UserDetails} implementation encapsulating username, password, authorities ({@link RasterPermission}s) and
@@ -51,16 +50,16 @@ public class RasterUser extends OwsUserDetails {
         if ( authorities != null )
             this.authorities = unmodifiableList( authorities );
         else
-            this.authorities = unmodifiableList( Collections.<RasterPermission>emptyList() );
+            this.authorities = unmodifiableList( Collections.<RasterPermission> emptyList() );
 
         if ( filters != null )
             this.filters = unmodifiableList( filters );
         else
-            this.filters = unmodifiableList( Collections.<GeometryFilterInfo>emptyList() );
+            this.filters = unmodifiableList( Collections.<GeometryFilterInfo> emptyList() );
     }
 
     @Override
-    public List<? extends GrantedAuthority> getAuthorities() {
+    public List<RasterPermission> getAuthorities() {
         return authorities;
     }
 
@@ -92,13 +91,6 @@ public class RasterUser extends OwsUserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    /**
-     * @return authorities as list of {@link RasterPermission}s in a unmodifiable list, never <code>null</code>
-     */
-    public List<RasterPermission> getRasterPermissions() {
-        return authorities;
     }
 
     /**

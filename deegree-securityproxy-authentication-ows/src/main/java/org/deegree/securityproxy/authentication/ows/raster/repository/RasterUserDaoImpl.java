@@ -32,7 +32,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class RasterUserDaoImpl implements UserDao {
 
-    private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS" } );
+    private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS", "WPS" } );
 
     @Autowired
     private DataSource source;
