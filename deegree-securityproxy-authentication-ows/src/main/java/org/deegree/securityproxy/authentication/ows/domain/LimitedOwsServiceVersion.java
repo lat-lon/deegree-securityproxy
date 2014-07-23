@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.authentication.ows.domain;
 
+import static java.lang.Character.isDigit;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,6 +99,9 @@ public class LimitedOwsServiceVersion {
             limitType = GREATER;
             version = parseAsVersion( versionToParse );
         } else if ( versionToParse.startsWith( "==" ) || versionToParse.startsWith( "=" ) ) {
+            limitType = EQUAL;
+            version = parseAsVersion( versionToParse );
+        } else if ( startsWithADigit( versionToParse ) ) {
             limitType = EQUAL;
             version = parseAsVersion( versionToParse );
         } else {
@@ -173,14 +178,18 @@ public class LimitedOwsServiceVersion {
 
     private OwsServiceVersion parseAsVersion( String versionToParse ) {
         int beginIndex = parseIndexOfFirstDigit( versionToParse );
-        String version = versionToParse.substring( beginIndex ).trim();
-        return new OwsServiceVersion( version );
+        String trimmedVersion = versionToParse.substring( beginIndex ).trim();
+        return new OwsServiceVersion( trimmedVersion );
     }
 
     private int parseIndexOfFirstDigit( String versionToParse ) {
         Pattern pattern = Pattern.compile( "[0-9]" );
         Matcher matcher = pattern.matcher( versionToParse );
         return matcher.find() ? matcher.start() : -1;
+    }
+
+    private boolean startsWithADigit( String versionToParse ) {
+        return !versionToParse.isEmpty() && isDigit( versionToParse.charAt( 0 ) );
     }
 
 }
