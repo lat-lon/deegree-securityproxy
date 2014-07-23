@@ -1,17 +1,17 @@
 package org.deegree.securityproxy;
 
-import static java.io.File.createTempFile;
-import static org.apache.commons.io.IOUtils.copy;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import static java.io.File.createTempFile;
+import static org.apache.commons.io.IOUtils.copy;
 
 /**
  * Checks if the applicationContext.xml could be loaded successful.
@@ -35,7 +35,7 @@ public class LoadApplicationContextTest {
 
     @BeforeClass
     public static void copyPropertiesFileAndSetProxyConfigSystemVaraiable()
-                            throws IOException {
+                    throws IOException {
         File configDir = copyPropertiesFileToNewConfigDir();
         oldProperty = System.getProperty( PROXY_CONFIG_PROPERTY_KEY );
         System.setProperty( PROXY_CONFIG_PROPERTY_KEY, configDir.toString() );
@@ -50,13 +50,12 @@ public class LoadApplicationContextTest {
     @Test
     public void testLoadApplicationContext() {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml",
-                                                                                 "authenticationContext.xml",
-                                                                                 "wmsContext.xml", "wcsContext.xml" );
+                        "authenticationContext.xml", "wmsContext.xml", "wcsContext.xml", "wpsContext.xml" );
         ctx.close();
     }
 
     private static File copyPropertiesFileToNewConfigDir()
-                            throws IOException {
+                    throws IOException {
         File configDirectory = createConfigDirectory();
         File configPropertiesFile = new File( configDirectory, CONFIG_PROPERTIES_FILE_NAME );
         FileOutputStream fileOutputStream = new FileOutputStream( configPropertiesFile );
@@ -71,7 +70,7 @@ public class LoadApplicationContextTest {
     }
 
     private static File createConfigDirectory()
-                            throws IOException {
+                    throws IOException {
         File configDirectory = createTempFile( "blackbridge-config", "" );
         configDirectory.delete();
         configDirectory.mkdir();
