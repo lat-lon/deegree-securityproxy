@@ -1,13 +1,13 @@
 package org.deegree.securityproxy.authentication.ows.raster;
 
-import static java.util.Collections.unmodifiableList;
+import org.deegree.securityproxy.authentication.OwsUserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collections;
 import java.util.List;
 
-import org.deegree.securityproxy.authentication.OwsUserDetails;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import static java.util.Collections.unmodifiableList;
 
 /**
  * {@link UserDetails} implementation encapsulating username, password, authorities ({@link RasterPermission}s) and
@@ -43,7 +43,7 @@ public class RasterUser extends OwsUserDetails {
      *            may be <code>null</code> or empty
      */
     public RasterUser( String username, String password, String accessToken, List<RasterPermission> authorities,
-                    List<GeometryFilterInfo> filters ) {
+                       List<GeometryFilterInfo> filters ) {
         super( accessToken );
         this.username = username;
         this.password = password;
@@ -51,12 +51,12 @@ public class RasterUser extends OwsUserDetails {
         if ( authorities != null )
             this.authorities = unmodifiableList( authorities );
         else
-            this.authorities = unmodifiableList( Collections.<RasterPermission> emptyList() );
+            this.authorities = unmodifiableList( Collections.<RasterPermission>emptyList() );
 
         if ( filters != null )
             this.filters = unmodifiableList( filters );
         else
-            this.filters = unmodifiableList( Collections.<GeometryFilterInfo> emptyList() );
+            this.filters = unmodifiableList( Collections.<GeometryFilterInfo>emptyList() );
     }
 
     @Override
@@ -97,14 +97,14 @@ public class RasterUser extends OwsUserDetails {
     /**
      * @return authorities as list of {@link RasterPermission}s in a unmodifiable list, never <code>null</code>
      */
-    public List<RasterPermission> getWcsPermissions() {
+    public List<RasterPermission> getRasterPermissions() {
         return authorities;
     }
 
     /**
      * @return all {@link GeometryFilterInfo}s in a unmodifiable list, never <code>null</code>
      */
-    public List<GeometryFilterInfo> getWcsGeometryFilterInfos() {
+    public List<GeometryFilterInfo> getRasterGeometryFilterInfos() {
         return filters;
     }
 

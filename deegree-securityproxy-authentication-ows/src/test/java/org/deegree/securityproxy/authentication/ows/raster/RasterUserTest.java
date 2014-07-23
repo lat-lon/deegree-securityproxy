@@ -1,18 +1,15 @@
 package org.deegree.securityproxy.authentication.ows.raster;
 
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.List;
+
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-
-import java.util.Collections;
-import java.util.List;
-
-import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
-import org.junit.Test;
 
 /***
  * @author last edited by: $Author: lyn $
@@ -34,7 +31,7 @@ public class RasterUserTest {
                             throws Exception {
         RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, null, createEmptyFilterList() );
         assertThat( wcsUser.getAuthorities().size(), is( EMPTY ) );
-        assertThat( wcsUser.getWcsPermissions().size(), is( EMPTY ) );
+        assertThat( wcsUser.getRasterPermissions().size(), is( EMPTY ) );
     }
 
     @Test
@@ -43,7 +40,7 @@ public class RasterUserTest {
         List<RasterPermission> insertedPermissionsList = createPermissionsList();
         RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, insertedPermissionsList,
                                        createEmptyFilterList() );
-        List<RasterPermission> authorities = wcsUser.getWcsPermissions();
+        List<RasterPermission> authorities = wcsUser.getRasterPermissions();
         assertThat( authorities, is( insertedPermissionsList ) );
     }
 
@@ -53,7 +50,7 @@ public class RasterUserTest {
         List<GeometryFilterInfo> insertedFilterList = createFilterList();
         RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
                                        insertedFilterList );
-        List<GeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
+        List<GeometryFilterInfo> filters = wcsUser.getRasterGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
     }
 
@@ -62,7 +59,7 @@ public class RasterUserTest {
                             throws Exception {
         RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, createPermissionsList(),
                                        createEmptyFilterList() );
-        List<RasterPermission> authorities = wcsUser.getWcsPermissions();
+        List<RasterPermission> authorities = wcsUser.getRasterPermissions();
         authorities.add( mockWcsPermission() );
     }
 
@@ -71,7 +68,7 @@ public class RasterUserTest {
                             throws Exception {
         RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
                                        createFilterList() );
-        List<GeometryFilterInfo> filters = wcsUser.getWcsGeometryFilterInfos();
+        List<GeometryFilterInfo> filters = wcsUser.getRasterGeometryFilterInfos();
         filters.add( mockFilter() );
     }
 

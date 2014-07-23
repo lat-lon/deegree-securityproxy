@@ -35,18 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.service.commons.responsefilter.clipping;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.write;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
-
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
@@ -62,9 +53,17 @@ import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometr
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.write;
 
 /**
  * Provides filtering of {@link OwsRequest}s.
@@ -182,7 +181,7 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
     private Geometry retrieveGeometryUsedForClipping( Authentication auth, OwsRequest request )
                             throws IllegalArgumentException, ParseException {
         RasterUser rasterUser = retrieveRasterUser( auth );
-        List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getWcsGeometryFilterInfos();
+        List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getRasterGeometryFilterInfos();
         List<String> layerNames = retrieveLayerNames( request );
         return geometryRetriever.retrieveGeometry( layerNames, geometryFilterInfos );
     }
