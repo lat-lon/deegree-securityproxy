@@ -72,7 +72,6 @@ public class WpsRequestParser implements OwsRequestParser {
 
     private WpsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
                             throws UnsupportedRequestTypeException {
-        checkGetCapabilitiesParameters( normalizedParameterMap );
         OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
         return new WpsRequest( GETCAPABILITIES, version, serviceName );
     }
@@ -102,7 +101,9 @@ public class WpsRequestParser implements OwsRequestParser {
         return servletPath;
     }
 
-    private void checkParameters( Map<String, String[]> normalizedParameterMap ) {
+    private void checkParameters( Map<String, String[]> normalizedParameterMap )
+                            throws UnsupportedRequestTypeException {
+        checkServiceParameter( normalizedParameterMap );
         checkRequestParameter( normalizedParameterMap );
     }
 
@@ -125,11 +126,6 @@ public class WpsRequestParser implements OwsRequestParser {
 
     private void checkExecuteParameters( Map<String, String[]> normalizedParameterMap ) {
         checkIdentifierParameter( normalizedParameterMap );
-    }
-
-    private void checkGetCapabilitiesParameters( Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
-        checkServiceParameter( normalizedParameterMap );
     }
 
     private void checkIdentifiersParameter( Map<String, String[]> normalizedParameterMap ) {
