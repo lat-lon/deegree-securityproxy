@@ -73,7 +73,7 @@ public class LimitedOwsServiceVersion {
      *  <= X.Y.Z, same as =< X.Y.Z
      *  < X.Y.Z
      *  => X.Y.Z, same as >= X.Y.Z
-     *  == X.Y.Z, same as, = X.Y.Z
+     *  == X.Y.Z, same as = X.Y.Z and X.Y.Z
      * </pre>
      * 
      * @param limitedVersionToParse
