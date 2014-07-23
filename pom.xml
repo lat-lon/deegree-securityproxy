@@ -49,7 +49,6 @@
         <artifactId>deegree-securityproxy-service-wps</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-securityproxy-service-commons</artifactId>
