@@ -47,6 +47,7 @@
     <constructor-arg ref="serviceManagers" />
     <constructor-arg ref="log4JReportLogger" />
     <constructor-arg ref="log4JReportLogger" />
+    <constructor-arg ref="owsServiceExceptionHandler" />
   </bean>
 
   <util:list id="serviceManagers" list-class="java.util.LinkedList"
@@ -67,6 +68,11 @@
     <constructor-arg value="${access_token_header_field_name}" />
     <property name="authenticationManager" ref="basicAuthenticationManager" />
     <property name="authenticationEntryPoint" ref="serviceExceptionHandler" />
+  </bean>
+  
+  <bean id="owsServiceExceptionHandler" class="org.deegree.securityproxy.exception.OwsServiceExceptionHandler">
+    <constructor-arg value="${common-exception-file-path}" />
+    <constructor-arg value="${common-exception-status-code}" />
   </bean>
 
 </beans>

@@ -1,16 +1,14 @@
 package org.deegree.securityproxy.filter;
 
-import org.apache.log4j.Logger;
-import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
-import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
-import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
-import org.deegree.securityproxy.report.SecurityReport;
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-import org.deegree.securityproxy.responsefilter.ResponseFilterException;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static org.deegree.securityproxy.exception.OwsCommonException.INVALID_PARAMETER;
+import static org.deegree.securityproxy.exception.OwsCommonException.MISSING_PARAMETER;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -20,13 +18,21 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-import static javax.servlet.http.HttpServletResponse.SC_OK;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import org.apache.log4j.Logger;
+import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
+import org.deegree.securityproxy.exception.OwsServiceExceptionHandler;
+import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
+import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
+import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.KvpNormalizer;
+import org.deegree.securityproxy.request.MissingParameterException;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 
 /**
  * Servlet Filter that logs all incoming requests and their response and performs access decision.
@@ -42,21 +48,25 @@ public class SecurityFilter implements Filter {
 
     private static final Logger LOG = Logger.getLogger( SecurityFilter.class );
 
-    private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Could not parse request.";
+    private static final String UNSUPPORTED_REQUEST_ERROR_MSG = "Service type is not supported!";
 
     static final String REQUEST_ATTRIBUTE_SERVICE_URL = "net.sf.j2ep.serviceurl";
 
-    private List<ServiceManager> serviceManagers;
+    private final List<ServiceManager> serviceManagers;
 
-    private SecurityRequestResponseLogger proxyReportLogger;
+    private final SecurityRequestResponseLogger proxyReportLogger;
 
-    private ResponseFilterReportLogger filterReportLogger;
+    private final ResponseFilterReportLogger filterReportLogger;
+
+    private final OwsServiceExceptionHandler owsServiceExceptionHandler;
 
     public SecurityFilter( List<ServiceManager> serviceManagers, SecurityRequestResponseLogger proxyReportLogger,
-                           ResponseFilterReportLogger filterReportLogger ) {
+                           ResponseFilterReportLogger filterReportLogger,
+                           OwsServiceExceptionHandler owsServiceExceptionHandler ) {
         this.serviceManagers = serviceManagers;
         this.proxyReportLogger = proxyReportLogger;
         this.filterReportLogger = filterReportLogger;
+        this.owsServiceExceptionHandler = owsServiceExceptionHandler;
     }
 
     @Override
@@ -71,12 +81,32 @@ public class SecurityFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
         String uuid = createUuidHeader( wrappedResponse );
+
+        try {
+            checkServiceType( servletRequest );
+            ServiceManager serviceManager = detectServiceManager( httpRequest );
+            handleAuthorization( chain, httpRequest, wrappedResponse, uuid, serviceManager );
+        } catch ( UnsupportedRequestTypeException e ) {
+            owsServiceExceptionHandler.writeException( wrappedResponse, INVALID_PARAMETER, "service" );
+            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, wrappedResponse );
+        } catch ( MissingParameterException e ) {
+            owsServiceExceptionHandler.writeException( wrappedResponse, MISSING_PARAMETER, e.getParameterName() );
+            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, wrappedResponse );
+        }
+    }
+
+    @Override
+    public void destroy() {
+    }
+
+    private void handleAuthorization( FilterChain chain, HttpServletRequest httpRequest,
+                                      StatusCodeResponseBodyWrapper wrappedResponse, String uuid,
+                                      ServiceManager serviceManager )
+                            throws IOException, ServletException {
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
         OwsRequest owsRequest = null;
-        ServiceManager serviceManager = null;
         try {
-            serviceManager = detectServiceManager( httpRequest );
             owsRequest = serviceManager.parse( httpRequest );
             authorizationReport = serviceManager.authorize( authentication, owsRequest );
         } catch ( UnsupportedRequestTypeException e ) {
@@ -112,10 +142,6 @@ public class SecurityFilter implements Filter {
             LOG.trace( "Response filtering failed!", e );
             throw new ServletException( "Response filtering failed", e );
         }
-    }
-
-    @Override
-    public void destroy() {
     }
 
     private void handleAuthorizationReport( String uuid, HttpServletRequest httpRequest,
@@ -159,6 +185,15 @@ public class SecurityFilter implements Filter {
         String serviceUrl = authorizationReport.getServiceUrl();
         if ( serviceUrl != null )
             httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
+    }
+
+    private void checkServiceType( ServletRequest request )
+                            throws MissingParameterException {
+        @SuppressWarnings("unchecked")
+        Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
+        String[] serviceTypes = kvpMap.get( "service" );
+        if ( serviceTypes == null || serviceTypes.length < 1 )
+            throw new MissingParameterException( "service" );
     }
 
     private ServiceManager detectServiceManager( HttpServletRequest request )
