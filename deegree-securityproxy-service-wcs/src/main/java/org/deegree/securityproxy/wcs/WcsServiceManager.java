@@ -91,7 +91,7 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
         String[] serviceTypes = kvpMap.get( "service" );
         if ( serviceTypes == null || serviceTypes.length < 1 )
             return false;
-        return "wcs".equalsIgnoreCase( kvpMap.get( "service" )[0] );
+        return "wcs".equalsIgnoreCase( serviceTypes[0] );
     }
 
     @Override

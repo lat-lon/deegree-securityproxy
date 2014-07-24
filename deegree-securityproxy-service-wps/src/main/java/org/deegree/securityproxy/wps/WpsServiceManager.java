@@ -106,7 +106,7 @@ class WpsServiceManager implements ServiceManager, ServiceExceptionManager {
         String[] serviceTypes = kvpMap.get( "service" );
         if ( serviceTypes == null || serviceTypes.length < 1 )
             return false;
-        return "wps".equalsIgnoreCase( kvpMap.get( "service" )[0] );
+        return "wps".equalsIgnoreCase( serviceTypes[0] );
     }
 
     private ResponseFilterReport createEmptyFilterReport() {
