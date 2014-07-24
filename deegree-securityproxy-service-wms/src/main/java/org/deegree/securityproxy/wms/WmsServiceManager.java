@@ -94,7 +94,7 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
         String[] serviceTypes = kvpMap.get( "service" );
         if ( serviceTypes == null || serviceTypes.length < 1 )
             return false;
-        return "wms".equalsIgnoreCase( kvpMap.get( "service" )[0] );
+        return "wms".equalsIgnoreCase( serviceTypes[0] );
     }
 
     private ResponseFilterReport createEmptyFilterReport() {
