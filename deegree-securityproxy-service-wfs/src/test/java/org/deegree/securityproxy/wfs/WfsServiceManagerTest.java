@@ -144,6 +144,15 @@ public class WfsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
+                            throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+
+        assertThat( isSupported, is( false ) );
+    }
+
     private OwsRequestParser mockOwsRequestParser() {
         return mock( OwsRequestParser.class );
     }

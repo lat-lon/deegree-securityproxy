@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-securityproxy</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
   </parent>
 
   <dependencies>
@@ -24,6 +24,10 @@
     <dependency>
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-service-wms</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-wps</artifactId>
     </dependency>
     <!-- Test -->
     <dependency>

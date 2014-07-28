@@ -3,7 +3,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.3</version>
+  <version>1.4</version>
   <name>deegree security component</name>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
 
@@ -42,6 +42,11 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-securityproxy-service-wms</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-service-wps</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -254,6 +259,7 @@
     <module>deegree-securityproxy-service-wcs</module>
     <module>deegree-securityproxy-service-wms</module>
     <module>deegree-securityproxy-service-wfs</module>
+    <module>deegree-securityproxy-service-wps</module>
     <module>deegree-matcher</module>
   </modules>
 

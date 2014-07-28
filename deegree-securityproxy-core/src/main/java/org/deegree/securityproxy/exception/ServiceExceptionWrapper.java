@@ -37,16 +37,7 @@ package org.deegree.securityproxy.exception;
 
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
-import static org.apache.commons.io.IOUtils.closeQuietly;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import static org.deegree.securityproxy.exception.ExceptionUtils.readExceptionBodyFromFile;
 
 /**
  * Wraps status code and exception bodys if the authentication and authorization failed.
@@ -57,8 +48,6 @@ import org.apache.log4j.Logger;
  * @version $Revision: $, $Date: $
  */
 public class ServiceExceptionWrapper {
-
-    private static final Logger LOG = Logger.getLogger( ServiceExceptionWrapper.class );
 
     public static final String DEFAULT_BODY = "Access Denied";
 
@@ -91,7 +80,7 @@ public class ServiceExceptionWrapper {
      */
     public ServiceExceptionWrapper( String pathToExceptionFile, int authenticationDeniedStatusCode,
                                     int authorizationDeniedStatusCode ) {
-        this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
+        this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile, DEFAULT_BODY );
         this.authenticationDeniedStatusCode = authenticationDeniedStatusCode;
         this.authorizationDeniedStatusCode = authorizationDeniedStatusCode;
     }
@@ -122,26 +111,6 @@ public class ServiceExceptionWrapper {
      */
     public String retrieveAuthorizationDeniedExceptionBody() {
         return exceptionBody;
-    }
-
-    private String readExceptionBodyFromFile( String pathToExceptionFile ) {
-        LOG.info( "Reading exception body from " + pathToExceptionFile );
-        if ( pathToExceptionFile != null && pathToExceptionFile.length() > 0 ) {
-            InputStream exceptionAsStream = null;
-            try {
-                File exceptionFile = new File( pathToExceptionFile );
-                exceptionAsStream = new FileInputStream( exceptionFile );
-                return IOUtils.toString( exceptionAsStream );
-            } catch ( FileNotFoundException e ) {
-                LOG.warn( "Could not read exception message from file: File not found! Defaulting to " + DEFAULT_BODY );
-            } catch ( IOException e ) {
-                LOG.warn( "Could not read exception message from file. Defaulting to " + DEFAULT_BODY + "Reason: "
-                          + e.getMessage() );
-            } finally {
-                closeQuietly( exceptionAsStream );
-            }
-        }
-        return DEFAULT_BODY;
     }
 
 }

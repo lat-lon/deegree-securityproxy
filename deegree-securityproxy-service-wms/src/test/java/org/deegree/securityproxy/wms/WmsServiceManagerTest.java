@@ -144,6 +144,15 @@ public class WmsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
+                            throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
+
+        assertThat( isSupported, is( false ) );
+    }
+
     private RequestAuthorizationManager mockRequestAuthorizationManager() {
         return mock( RequestAuthorizationManager.class );
     }

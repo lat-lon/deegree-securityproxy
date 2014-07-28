@@ -47,24 +47,32 @@
     <constructor-arg ref="serviceManagers" />
     <constructor-arg ref="log4JReportLogger" />
     <constructor-arg ref="log4JReportLogger" />
+    <constructor-arg ref="owsServiceExceptionHandler" />
   </bean>
 
   <util:list id="serviceManagers" list-class="java.util.LinkedList"
     value-type="org.deegree.securityproxy.filter.ServiceManager">
     <ref bean="wcsServiceManager" />
     <ref bean="wmsServiceManager" />
+    <ref bean="wpsServiceManager" />
   </util:list>
 
   <util:list id="exceptionManagers" list-class="java.util.LinkedList"
     value-type="org.deegree.securityproxy.ServiceExceptionManager">
     <ref bean="wcsServiceManager" />
     <ref bean="wmsServiceManager" />
+    <ref bean="wpsServiceManager" />
   </util:list>
 
   <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter">
     <constructor-arg value="${access_token_header_field_name}" />
     <property name="authenticationManager" ref="basicAuthenticationManager" />
     <property name="authenticationEntryPoint" ref="serviceExceptionHandler" />
+  </bean>
+  
+  <bean id="owsServiceExceptionHandler" class="org.deegree.securityproxy.exception.OwsServiceExceptionHandler">
+    <constructor-arg value="${common-exception-file-path}" />
+    <constructor-arg value="${common-exception-status-code}" />
   </bean>
 
 </beans>

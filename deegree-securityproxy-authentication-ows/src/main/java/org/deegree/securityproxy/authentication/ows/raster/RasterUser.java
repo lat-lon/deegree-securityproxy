@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.OwsUserDetails;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -43,7 +42,7 @@ public class RasterUser extends OwsUserDetails {
      *            may be <code>null</code> or empty
      */
     public RasterUser( String username, String password, String accessToken, List<RasterPermission> authorities,
-                    List<GeometryFilterInfo> filters ) {
+                       List<GeometryFilterInfo> filters ) {
         super( accessToken );
         this.username = username;
         this.password = password;
@@ -60,7 +59,7 @@ public class RasterUser extends OwsUserDetails {
     }
 
     @Override
-    public List<? extends GrantedAuthority> getAuthorities() {
+    public List<RasterPermission> getAuthorities() {
         return authorities;
     }
 
@@ -95,16 +94,9 @@ public class RasterUser extends OwsUserDetails {
     }
 
     /**
-     * @return authorities as list of {@link RasterPermission}s in a unmodifiable list, never <code>null</code>
-     */
-    public List<RasterPermission> getWcsPermissions() {
-        return authorities;
-    }
-
-    /**
      * @return all {@link GeometryFilterInfo}s in a unmodifiable list, never <code>null</code>
      */
-    public List<GeometryFilterInfo> getWcsGeometryFilterInfos() {
+    public List<GeometryFilterInfo> getRasterGeometryFilterInfos() {
         return filters;
     }
 
