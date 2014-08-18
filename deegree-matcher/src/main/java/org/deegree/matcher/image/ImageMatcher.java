@@ -144,7 +144,6 @@ public class ImageMatcher {
         if ( destinationGrabber.grabPixels() ) {
             int width = destinationGrabber.getWidth();
             int height = destinationGrabber.getHeight();
-            pixels = new int[width * height];
             pixels = (int[]) destinationGrabber.getPixels();
         }
         return pixels;
