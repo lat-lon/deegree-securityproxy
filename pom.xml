@@ -1,11 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
   <version>1.5-SNAPSHOT</version>
-  <name>deegree security component</name>
+  <name>deegree security proxy</name>
+  <description>deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services</description>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
+  <inceptionYear>2013</inceptionYear>
+  <licenses>
+    <license>
+      <name>AGPL</name>
+      <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <organization>
+    <name>deegree</name>
+    <url>http://www.deegree.org</url>
+  </organization>
 
   <properties>
     <maven.compiler.source>1.6</maven.compiler.source>
@@ -262,5 +276,15 @@
     <module>deegree-securityproxy-service-wps</module>
     <module>deegree-matcher</module>
   </modules>
+
+  <mailingLists>
+    <mailingList>
+      <name>deegree users mailing list</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/deegree-users</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/deegree-users</unsubscribe>
+      <post>deegree-users@lists.sourceforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=deegree-users</archive>
+    </mailingList>
+  </mailingLists>
 
 </project>
