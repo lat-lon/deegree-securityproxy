@@ -25,4 +25,4 @@ For community support, please use the deegree mailing-list. More information how
 Contributions are very welcome. Please get in contact with us via the mailing-list.
 
 # License
-deegree security proxy is distributed under the GNU Lesser General Public License (LGPL).
+deegree security proxy is distributed under the [GNU Affero General Public License, Version 3.0 (AGPL)](http://www.gnu.org/licenses/agpl-3.0.html).
