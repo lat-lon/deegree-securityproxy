@@ -47,13 +47,17 @@ public class OwsServiceVersionTest {
     @Test
     public void testCompareToLess() {
         OwsServiceVersion version = new OwsServiceVersion( 1, 6, 9 );
+        assertThat( version.compareTo( new OwsServiceVersion( 0, 6, 9 ) ), is( 1 ) );
         assertThat( version.compareTo( new OwsServiceVersion( 1, 3, 9 ) ), is( 1 ) );
+        assertThat( version.compareTo( new OwsServiceVersion( 1, 6, 5 ) ), is( 1 ) );
     }
 
     @Test
     public void testCompareToGreater() {
         OwsServiceVersion version = new OwsServiceVersion( 1, 6, 9 );
-        assertThat( version.compareTo( new OwsServiceVersion( 1, 7, 0 ) ), is( -1 ) );
+        assertThat( version.compareTo( new OwsServiceVersion( 2, 6, 9 ) ), is( -1 ) );
+        assertThat( version.compareTo( new OwsServiceVersion( 1, 7, 9 ) ), is( -1 ) );
+        assertThat( version.compareTo( new OwsServiceVersion( 1, 6, 10 ) ), is( -1 ) );
     }
 
 }

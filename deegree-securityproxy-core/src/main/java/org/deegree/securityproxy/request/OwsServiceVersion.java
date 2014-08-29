@@ -81,11 +81,11 @@ public class OwsServiceVersion implements Comparable<OwsServiceVersion> {
 
     @Override
     public int compareTo( OwsServiceVersion versionToCompare ) {
-        int compareToX = new Integer( versionX ).compareTo( versionToCompare.versionX );
+        int compareToX = Integer.valueOf( versionX ).compareTo( versionToCompare.versionX );
         if ( compareToX == 0 ) {
-            int compareToY = new Integer( versionY ).compareTo( versionToCompare.versionY );
-            if ( compareToX == 0 ) {
-                return new Integer( versionY ).compareTo( versionToCompare.versionY );
+            int compareToY = Integer.valueOf( versionY ).compareTo( versionToCompare.versionY );
+            if ( compareToY == 0 ) {
+                return Integer.valueOf( versionZ ).compareTo( versionToCompare.versionZ );
             }
             return compareToY;
         }

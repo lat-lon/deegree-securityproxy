@@ -182,14 +182,6 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
-    private boolean isFirstLayerNameAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
-        if ( !wmsRequest.getLayerNames().isEmpty() ) {
-            String firstLayer = wmsRequest.getLayerNames().get( 0 );
-            return firstLayer.equals( wmsPermission.getLayerName() );
-        }
-        return false;
-    }
-
     private boolean isServiceNameAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
         return wmsRequest.getServiceName() != null
                && wmsRequest.getServiceName().equals( wmsPermission.getServiceName() );
