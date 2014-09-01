@@ -34,7 +34,6 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
 import org.deegree.securityproxy.wps.request.WpsRequest;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -117,7 +116,6 @@ public class WpsCapabilitiesResponseFilterManagerTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wps_1_0_0-Filtered.xml" ) ) );
     }
 
-    @Ignore("Capabilities without ProcessOffering section of without processes are not allowed!")
     @Test
     public void testFilterResponseWithoutApplicablePermissionShouldFilterResponseCompletly()
                     throws Exception {

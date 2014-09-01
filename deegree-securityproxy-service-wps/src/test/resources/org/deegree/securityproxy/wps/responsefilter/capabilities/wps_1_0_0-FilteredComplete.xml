@@ -63,11 +63,7 @@
     </ows:Operation>
   </ows:OperationsMetadata>
   <wps:ProcessOfferings>
-    <wps:Process wps:processVersion="1.0.0">
-      <ows:Identifier>dummy</ows:Identifier>
-      <ows:Title>Dummy</ows:Title>
-      <ows:Abstract>Not allowed to request at least one layer!</ows:Abstract>
-    </wps:Process>
+    
   </wps:ProcessOfferings>
   <wps:Languages>
     <wps:Default>
