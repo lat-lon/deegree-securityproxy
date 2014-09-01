@@ -117,7 +117,7 @@ public class WpsCapabilitiesResponseFilterManagerTest {
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wps_1_0_0-Filtered.xml" ) ) );
     }
 
-    @Ignore
+    @Ignore("Capabilities without ProcessOffering section of without processes are not allowed!")
     @Test
     public void testFilterResponseWithoutApplicablePermissionShouldFilterResponseCompletly()
                     throws Exception {
@@ -306,8 +306,6 @@ public class WpsCapabilitiesResponseFilterManagerTest {
 
     private Source asXml( ByteArrayOutputStream bufferingStream ) {
         byte[] byteArray = bufferingStream.toByteArray();
-        String string = new String( byteArray );
-        System.out.println(string);
         return the( new StreamSource( new ByteArrayInputStream( byteArray ) ) );
     }
 
