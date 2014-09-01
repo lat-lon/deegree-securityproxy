@@ -79,7 +79,7 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
         return new XmlModificationManager( createDecisionMaker( authentication ) );
     }
 
-    private DecisionMaker createDecisionMaker( Authentication authentication ) {
+    DecisionMaker createDecisionMaker( Authentication authentication ) {
         List<String> layerNamesToPreserve = new ArrayList<String>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {

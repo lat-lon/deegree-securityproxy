@@ -93,6 +93,13 @@ public class ElementDecisionMaker implements DecisionMaker {
         return event.isStartElement() && atLeastOneElementRuleIsMatching( reader, event, visitedElements );
     }
 
+    /**
+     * @return the elementRules
+     */
+    public List<ElementRule> getElementRules() {
+        return elementRules;
+    }
+
     private boolean atLeastOneElementRuleIsMatching( BufferingXMLEventReader reader, XMLEvent event,
                                                      List<StartElement> visitedElements )
                     throws XMLStreamException {
