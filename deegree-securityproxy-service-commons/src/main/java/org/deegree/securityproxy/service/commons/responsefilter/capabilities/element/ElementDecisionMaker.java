@@ -89,13 +89,13 @@ public class ElementDecisionMaker implements DecisionMaker {
 
     @Override
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         return event.isStartElement() && atLeastOneElementRuleIsMatching( reader, event, visitedElements );
     }
 
     private boolean atLeastOneElementRuleIsMatching( BufferingXMLEventReader reader, XMLEvent event,
                                                      List<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         for ( ElementRule elementRule : elementRules ) {
             boolean matchesElementRule = matchesElementRule( reader, event, elementRule, visitedElements );
             if ( matchesElementRule )
@@ -106,7 +106,7 @@ public class ElementDecisionMaker implements DecisionMaker {
 
     private boolean matchesElementRule( BufferingXMLEventReader reader, XMLEvent event, ElementRule elementRule,
                                         List<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         StartElement startElement = event.asStartElement();
         QName ignoredQName = new QName( elementRule.getNamespace(), elementRule.getName() );
         final boolean isNameMatching = ignoredQName.equals( startElement.getName() );
@@ -115,9 +115,9 @@ public class ElementDecisionMaker implements DecisionMaker {
             return false;
 
         boolean isTextMatching = true;
-        if ( elementRule.getText() != null )
-            isTextMatching = isTextMatching( reader, event, elementRule );
-
+        if ( elementRule.getText() != null ) {
+            isTextMatching = isTextMatching( reader, event, elementRule ) == elementRule.isTextShouldMatch();
+        }
         if ( !isTextMatching )
             return false;
 
@@ -135,7 +135,7 @@ public class ElementDecisionMaker implements DecisionMaker {
     }
 
     private boolean isTextMatching( BufferingXMLEventReader reader, XMLEvent event, ElementRule rule )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         Iterator<XMLEvent> peekIterator = reader.retrievePeekIterator( event );
         XMLEvent peeked = skipCurrentEvent( event, peekIterator );
         while ( endElementIsNotReached( peeked ) ) {
@@ -149,7 +149,7 @@ public class ElementDecisionMaker implements DecisionMaker {
     }
 
     private boolean isSubRuleMatching( BufferingXMLEventReader reader, XMLEvent event, ElementRule elementRule )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         ElementRule subRule = elementRule.getSubRule();
         if ( subRule != null ) {
             Iterator<XMLEvent> peekIterator = reader.retrievePeekIterator( event );
@@ -172,7 +172,7 @@ public class ElementDecisionMaker implements DecisionMaker {
     }
 
     private boolean elementTextIsAsExpected( ElementRule rule, XMLEvent peeked ) {
-        return rule.getText().equals( peeked.asCharacters().getData() );
+        return rule.getText().contains( peeked.asCharacters().getData() );
     }
 
     private boolean endElementIsNotReached( XMLEvent peeked ) {

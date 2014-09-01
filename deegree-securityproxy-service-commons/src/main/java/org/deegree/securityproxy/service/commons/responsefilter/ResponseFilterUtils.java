@@ -68,13 +68,13 @@ public class ResponseFilterUtils {
      *             - access to response failed
      */
     public static boolean isException( StatusCodeResponseBodyWrapper servletResponse )
-                            throws IOException {
+                    throws IOException {
         if ( servletResponse.getStatus() != 200 )
             return true;
         InputStream bufferedStream = servletResponse.getBufferedStream();
         try {
             String bodyAsString = IOUtils.toString( bufferedStream );
-            return bodyAsString.contains( "ServiceExceptionReport" );
+            return bodyAsString.contains( "ServiceExceptionReport" ) || bodyAsString.contains( "ExceptionReport" );
         } finally {
             closeQuietly( bufferedStream );
         }
@@ -89,7 +89,7 @@ public class ResponseFilterUtils {
      *             - copying failed
      */
     public static void copyBufferedStream( StatusCodeResponseBodyWrapper servletResponse )
-                            throws ResponseFilterException {
+                    throws ResponseFilterException {
         try {
             servletResponse.copyBufferedStreamToRealStream();
         } catch ( IOException e ) {
