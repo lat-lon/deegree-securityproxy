@@ -45,3 +45,6 @@ INSERT INTO usertable(access_token, user_name, password, layer_service_type_name
   VALUES ('HEADER_SO','VALID_USER_SUBSCRIPTION_OK','PASSWORD', 'WCS', '2013-05-05', '2113-05-05');
 INSERT INTO usertable(access_token, user_name, password, layer_service_type_name, subscription_start, subscription_end ) 
   VALUES ('HEADER_SE','USEVALID_USER_SUBSCRIPTION_EXPIREDR','PASSWORD', 'WCS', '2013-05-05', '2013-09-05');
+  
+INSERT INTO usertable(access_token, user_name, password, serviceVersion, layerName, serviceName,  operationType, layer_service_type_name, subscription_start, subscription_end ) 
+ VALUES ('VALID_HEADER_EXECUTE','USER','PASSWORD', '<= 1.0.0', 'processId', 'serviceName', 'Execute', 'WPS', '2013-05-05', '2113-05-05');
