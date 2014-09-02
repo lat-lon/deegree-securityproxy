@@ -36,6 +36,7 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities;
 
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -57,7 +58,10 @@ public interface XmlModificationManagerCreator {
      * @param authentication
      *            containing the user rules to use as filters, never <code>null</code>
      * @return the {@link XmlModificationManager} or <code>null</code>, if filtering is not required
+     * @throws ResponseFilterException
+     *             - an error occurred during filtering
      */
-    XmlModificationManager createXmlModificationManager( OwsRequest owsRequest, Authentication authentication );
+    XmlModificationManager createXmlModificationManager( OwsRequest owsRequest, Authentication authentication )
+                    throws ResponseFilterException;
 
 }
