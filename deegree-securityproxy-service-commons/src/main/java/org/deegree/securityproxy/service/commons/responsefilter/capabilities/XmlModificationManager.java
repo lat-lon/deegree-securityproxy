@@ -54,9 +54,9 @@ import org.deegree.securityproxy.service.commons.responsefilter.capabilities.tex
  */
 public class XmlModificationManager {
 
-    private DecisionMaker decisionMaker;
+    private final DecisionMaker decisionMaker;
 
-    private AttributeModifier attributeModifier;
+    private final AttributeModifier attributeModifier;
 
     /**
      * Instantiates a {@link XmlModificationManager} without attributeModifier.
@@ -98,7 +98,7 @@ public class XmlModificationManager {
      */
     public String determineNewAttributeValue( BufferingXMLEventReader reader, StartElement startElement,
                                               Attribute attribute, LinkedList<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         if ( attributeModifier != null )
             return attributeModifier.determineNewAttributeValue( reader, startElement, attribute, visitedElements );
         return null;
@@ -110,7 +110,7 @@ public class XmlModificationManager {
      **/
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent currentEvent,
                            LinkedList<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         if ( decisionMaker != null )
             return decisionMaker.ignore( reader, currentEvent, visitedElements );
         return false;
@@ -122,6 +122,20 @@ public class XmlModificationManager {
      */
     public boolean isModificationRequired() {
         return decisionMaker != null || attributeModifier != null;
+    }
+
+    /**
+     * @return the decisionMaker may be <code>null</code>
+     */
+    public DecisionMaker getDecisionMaker() {
+        return decisionMaker;
+    }
+
+    /**
+     * @return the attributeModifier may be <code>null</code>
+     */
+    public AttributeModifier getAttributeModifier() {
+        return attributeModifier;
     }
 
 }

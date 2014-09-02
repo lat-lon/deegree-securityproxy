@@ -60,6 +60,8 @@ public class ElementRule {
 
     private final boolean textShouldMatch;
 
+    private boolean isApplied;
+
     /**
      * Use this if only the name of the element is interesting for filtering.
      * 
@@ -286,6 +288,21 @@ public class ElementRule {
      */
     public boolean isTextShouldMatch() {
         return textShouldMatch;
+    }
+
+    /**
+     * @return <code>true</code> if this rule was applied, <code>false</code> otherwise
+     */
+    public boolean isApplied() {
+        return isApplied;
+    }
+
+    /**
+     * @param isApplied
+     *            <code>true</code> if this rule was applied, <code>false</code> otherwise
+     */
+    public void setApplied( boolean isApplied ) {
+        this.isApplied = isApplied;
     }
 
     @Override

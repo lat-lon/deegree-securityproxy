@@ -45,6 +45,7 @@ import java.util.List;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AllowAllDecisonMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
@@ -80,17 +81,20 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
     }
 
     DecisionMaker createDecisionMaker( Authentication authentication ) {
+        List<String> authenticatedProcessIds = collectAuthenticatedProcessIds( authentication );
+        if ( authenticatedProcessIds.isEmpty() )
+            return new AllowAllDecisonMaker();
+        ElementRule elementRule = createElementRule( authenticatedProcessIds );
+        return new ElementDecisionMaker( elementRule );
+    }
+
+    private List<String> collectAuthenticatedProcessIds( Authentication authentication ) {
         List<String> layerNamesToPreserve = new ArrayList<String>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {
             addLayerNameRule( layerNamesToPreserve, grantedAuthority );
         }
-        if ( !layerNamesToPreserve.isEmpty() ) {
-            ElementRule elementRule = createElementRule( layerNamesToPreserve );
-            return new ElementDecisionMaker( elementRule );
-        }
-        return null;
-
+        return layerNamesToPreserve;
     }
 
     private void addLayerNameRule( List<String> layerNameRulesToPreserve, GrantedAuthority authority ) {

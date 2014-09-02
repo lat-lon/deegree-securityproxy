@@ -39,9 +39,9 @@ import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPRO
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.WPS_SERVICE;
 import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -54,6 +54,7 @@ import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVers
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AllowAllDecisonMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
@@ -79,9 +80,9 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     private final WpsCapabilitiesModificationManagerCreator decisionMakerCreator = new WpsCapabilitiesModificationManagerCreator();
 
     @Test
-    public void testCreateDecisionMakerForWmsOneGetMap()
+    public void testCreateDecisionMakerForWpsOneExecute()
                     throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneGetMap() );
+        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneExecute() );
 
         List<ElementRule> elementRules = ( (ElementDecisionMaker) decisionMaker ).getElementRules();
         assertThat( elementRules.size(), is( 1 ) );
@@ -90,9 +91,9 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     }
 
     @Test
-    public void testCreateDecisionMakerForWmsTwoGetMap()
+    public void testCreateDecisionMakerForWpsTwoExecute()
                     throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithTwoGetMapOneGetFeatureInfo() );
+        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithTwoExecuteOneDescribeProcess() );
 
         List<ElementRule> elementRules = ( (ElementDecisionMaker) decisionMaker ).getElementRules();
         assertThat( elementRules.size(), is( 1 ) );
@@ -101,18 +102,18 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     }
 
     @Test
-    public void testCreateDecisionMakerForWmsNoGetMap()
+    public void testCreateDecisionMakerForWpsNoExecute()
                     throws Exception {
         DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneUnknownRequest() );
 
-        assertThat( decisionMaker, is( nullValue() ) );
+        assertThat( decisionMaker, is( instanceOf( AllowAllDecisonMaker.class ) ) );
     }
 
     @Test
-    public void testCreateXmlModificationManagerForWmsNoGetMap()
+    public void testCreateXmlModificationManagerForWpsNoExecute()
                     throws Exception {
         XmlModificationManager xmlModificationManager = decisionMakerCreator.createXmlModificationManager( createWps100Request(),
-                                                                                                           createAuthenticationWithOneGetMap() );
+                                                                                                           createAuthenticationWithOneExecute() );
 
         assertThat( xmlModificationManager, is( notNullValue() ) );
     }
@@ -120,10 +121,10 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testCreateXmlModificationManagerForWps130ShouldFail()
                     throws Exception {
-        decisionMakerCreator.createXmlModificationManager( createWps130Request(), createAuthenticationWithOneGetMap() );
+        decisionMakerCreator.createXmlModificationManager( createWps130Request(), createAuthenticationWithOneExecute() );
     }
 
-    private Authentication createAuthenticationWithOneGetMap() {
+    private Authentication createAuthenticationWithOneExecute() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( EXECUTE, PROCESS_ID_1 ) );
         return mockAuthentication( authorities );
@@ -135,7 +136,7 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
         return mockAuthentication( authorities );
     }
 
-    private Authentication createAuthenticationWithTwoGetMapOneGetFeatureInfo() {
+    private Authentication createAuthenticationWithTwoExecuteOneDescribeProcess() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( EXECUTE, PROCESS_ID_1 ) );
         authorities.add( createRasterPermission( EXECUTE, PROCESS_ID_2 ) );

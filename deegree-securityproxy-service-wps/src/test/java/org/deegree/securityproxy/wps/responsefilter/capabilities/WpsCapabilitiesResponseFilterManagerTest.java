@@ -1,7 +1,6 @@
 package org.deegree.securityproxy.wps.responsefilter.capabilities;
 
 import static org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager.SERVICE_EXCEPTION_MSG;
-import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.FILTERING_NOT_REQUIRED_MESSAGE;
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager.SUCCESSFUL_FILTERING_MESSAGE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -70,8 +69,8 @@ public class WpsCapabilitiesResponseFilterManagerTest {
                                                                                            authentication );
 
         assertThat( filterReport, notNullValue() );
-        assertThat( filterReport.getMessage(), is( FILTERING_NOT_REQUIRED_MESSAGE ) );
-        assertThat( filterReport.isFiltered(), is( false ) );
+        assertThat( filterReport.getAuthorizationReport(), is( notNullValue() ) );
+        assertThat( filterReport.getAuthorizationReport().isAuthorized(), is( false ) );
     }
 
     @Test
@@ -130,16 +129,18 @@ public class WpsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithoutGetCoveragePermissionShouldNotFilterResponse()
+    public void testFilterResponseWithoutExecutePermissionShouldNotFilterResponse()
                     throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wps_1_0_0.xml" );
         WpsRequest wpsRequest = createWpsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithDescribeProcess();
-        createFilterManager().filterResponse( response, wpsRequest, authentication );
+        ResponseFilterReport filterReport = createFilterManager().filterResponse( response, wpsRequest, authentication );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wps_1_0_0.xml" ) ) );
+        assertThat( filterReport, notNullValue() );
+        assertThat( filterReport.getAuthorizationReport(), is( notNullValue() ) );
+        assertThat( filterReport.getAuthorizationReport().isAuthorized(), is( false ) );
     }
 
     @Test

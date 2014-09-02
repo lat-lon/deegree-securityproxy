@@ -105,8 +105,10 @@ public class ElementDecisionMaker implements DecisionMaker {
                     throws XMLStreamException {
         for ( ElementRule elementRule : elementRules ) {
             boolean matchesElementRule = matchesElementRule( reader, event, elementRule, visitedElements );
-            if ( matchesElementRule )
+            if ( matchesElementRule ) {
+                elementRule.setApplied( true );
                 return true;
+            }
         }
         return false;
     }
