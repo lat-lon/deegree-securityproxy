@@ -87,49 +87,49 @@ public class SecurityFilterTest {
      */
     @Before
     public void reset()
-                            throws Exception {
+                    throws Exception {
         logger = mockSecurityRequestResponseLogger();
         loggerResponseFilterReportMock = mockResponseFilterReportLogger();
         exceptionHandler = mock( OwsServiceExceptionHandler.class );
         List<ServiceManager> serviceManagersAuthorized = createServiceManagersWithOneServiceManager( IS_AUTHORIZED );
         filterAuthorized = new SecurityFilter( serviceManagersAuthorized, logger, loggerResponseFilterReportMock,
-                                               exceptionHandler );
+                        exceptionHandler );
         List<ServiceManager> serviceManagersUnauthorized = createServiceManagersWithOneServiceManager( IS_NOT_AUTHORIZED );
         filterUnauthorized = new SecurityFilter( serviceManagersUnauthorized, logger, loggerResponseFilterReportMock,
-                                                 exceptionHandler );
+                        exceptionHandler );
     }
 
     @Test
     public void testLoggingFilterShouldGenerateReportWithSerialUuid()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         filterAuthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( (SecurityReport) anyObject(), argThat( hasCorrectSerialUuid() ) );
     }
 
     @Test
     public void testLoggingFilterShouldGenerateReportWithCorrectIpAddress()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         filterAuthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectIpAddress() ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingShouldGenerateReportWithCorrectTargetUrl()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         filterAuthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrl() ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingShouldGenerateCorrectReportForSuccessfulResponse()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         filterAuthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_OK ) ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingOfResponseFilterReportShouldNeInvoked()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         filterAuthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject(),
                                                                           (String) anyObject() );
@@ -137,7 +137,7 @@ public class SecurityFilterTest {
 
     @Test
     public void testLoggingOfResponseFilterReportShouldGenerateReportWithSerialUuid()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         filterAuthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
         verify( loggerResponseFilterReportMock ).logResponseFilterReport( (ResponseFilterReport) anyObject(),
                                                                           argThat( hasCorrectSerialUuid() ) );
@@ -145,15 +145,15 @@ public class SecurityFilterTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testLoggingShouldGenerateCorrectReportForUnauthenticatedResponse()
-                            throws Exception {
-        filterUnauthorized.doFilter( generateMockRequest(), generateMockResponse(),
-                                     new FilterChainTestImpl( SC_UNAUTHORIZED ) );
+                    throws Exception {
+        filterUnauthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl(
+                        SC_UNAUTHORIZED ) );
         verify( logger ).logProxyReportInfo( argThat( hasResponse( SC_UNAUTHORIZED ) ), (String) anyObject() );
     }
 
     @Test
     public void testLoggingShouldGenerateCorrectReportNullQueryString()
-                            throws Exception {
+                    throws Exception {
         filterUnauthorized.doFilter( generateMockRequestNullQueryString(), generateMockResponse(),
                                      new FilterChainTestImpl( SC_BAD_REQUEST ) );
         verify( logger ).logProxyReportInfo( argThat( hasCorrectTargetUrlWithNullQueryString() ), (String) anyObject() );
@@ -164,14 +164,14 @@ public class SecurityFilterTest {
 
     @Test(expected = AccessDeniedException.class)
     public void testFilterShouldThrowExceptionOnUnauthorized()
-                            throws Exception {
-        filterUnauthorized.doFilter( generateMockRequest(), generateMockResponse(),
-                                     new FilterChainTestImpl( SC_UNAUTHORIZED ) );
+                    throws Exception {
+        filterUnauthorized.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl(
+                        SC_UNAUTHORIZED ) );
     }
 
     @Test
     public void testResponseShouldContainSerialUuidHeader()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         HttpServletResponse response = generateMockResponse();
         filterAuthorized.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
         filterAuthorized.doFilter( generateMockRequest(), response, new FilterChainTestImpl( SC_OK ) );
@@ -188,12 +188,12 @@ public class SecurityFilterTest {
 
     @Test
     public void testResponseShouldInvokeResponseFilterManager()
-                            throws Exception {
+                    throws Exception {
         List<ServiceManager> serviceManagers = new ArrayList<ServiceManager>();
         ServiceManager serviceManager = mockSupportedServiceManager( true );
         serviceManagers.add( serviceManager );
         SecurityFilter filter = new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock,
-                                                    exceptionHandler );
+                        exceptionHandler );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
         verify( serviceManager ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
@@ -202,7 +202,7 @@ public class SecurityFilterTest {
 
     @Test
     public void testRequestShouldContainServiceNameAttribute()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         HttpServletRequest request = generateMockRequest();
         filterAuthorized.doFilter( request, generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
@@ -211,7 +211,7 @@ public class SecurityFilterTest {
 
     @Test
     public void testDoFilterWithEmptyListOfServiceManagersShouldDenyAccess()
-                            throws Exception {
+                    throws Exception {
         SecurityFilter filter = createSecurityFilterWithEmptyListOfServiceManagers();
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
@@ -221,7 +221,7 @@ public class SecurityFilterTest {
 
     @Test
     public void testDoFilterWithNullServiceManagersShouldDenyAccess()
-                            throws Exception {
+                    throws Exception {
         SecurityFilter filter = createSecurityFilterWithNullServiceManagers();
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
@@ -231,12 +231,12 @@ public class SecurityFilterTest {
 
     @Test
     public void testDoFilterWithThreeServiceManagersShouldTakeTheFirstManager()
-                            throws Exception {
+                    throws Exception {
         ServiceManager serviceManager1 = mockSupportedServiceManager( true );
         ServiceManager serviceManager2 = mockSupportedServiceManager( true );
         ServiceManager serviceManager3 = mockSupportedServiceManager( true );
-        SecurityFilter filter = createSecurityFilterWithThreeServiceManagers( serviceManager1, serviceManager2,
-                                                                              serviceManager3 );
+        SecurityFilter filter = createSecurityFilterWithServiceManagers( serviceManager1, serviceManager2,
+                                                                         serviceManager3 );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
         verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
@@ -246,12 +246,12 @@ public class SecurityFilterTest {
 
     @Test
     public void testDoFilterWithThreeServiceManagersShouldTakeTheSecondManager()
-                            throws Exception {
+                    throws Exception {
         ServiceManager serviceManager1 = mockUnsupportedServiceManager();
         ServiceManager serviceManager2 = mockSupportedServiceManager( true );
         ServiceManager serviceManager3 = mockUnsupportedServiceManager();
-        SecurityFilter filter = createSecurityFilterWithThreeServiceManagers( serviceManager1, serviceManager2,
-                                                                              serviceManager3 );
+        SecurityFilter filter = createSecurityFilterWithServiceManagers( serviceManager1, serviceManager2,
+                                                                         serviceManager3 );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
         verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
@@ -261,17 +261,28 @@ public class SecurityFilterTest {
 
     @Test
     public void testDoFilterWithThreeServiceManagersShouldTakeTheThirdManager()
-                            throws Exception {
+                    throws Exception {
         ServiceManager serviceManager1 = mockUnsupportedServiceManager();
         ServiceManager serviceManager2 = mockUnsupportedServiceManager();
         ServiceManager serviceManager3 = mockSupportedServiceManager( true );
-        SecurityFilter filter = createSecurityFilterWithThreeServiceManagers( serviceManager1, serviceManager2,
-                                                                              serviceManager3 );
+        SecurityFilter filter = createSecurityFilterWithServiceManagers( serviceManager1, serviceManager2,
+                                                                         serviceManager3 );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
         verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
         verify( serviceManager2, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
         verify( serviceManager3, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
+    }
+
+    @Test(expected = AccessDeniedException.class)
+    public void testDoFilterWithFailedAuthorizationDuringFilteringShouldDenyAccess()
+                    throws Exception {
+        ServiceManager serviceManager = mockSupportedServiceManagerWithAuthorizationReportFiltering();
+        SecurityFilter filter = createSecurityFilterWithServiceManagers( serviceManager );
+        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
+
+        verify( serviceManager ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
+                                                 (Authentication) anyObject(), (OwsRequest) anyObject() );
     }
 
     private ServletRequest generateMockRequestNullQueryString() {
@@ -392,32 +403,26 @@ public class SecurityFilterTest {
         return new SecurityFilter( null, logger, loggerResponseFilterReportMock, exceptionHandler );
     }
 
-    private SecurityFilter createSecurityFilterWithThreeServiceManagers( ServiceManager serviceManager1,
-                                                                         ServiceManager serviceManager2,
-                                                                         ServiceManager serviceManager3 )
-                            throws Exception {
-        List<ServiceManager> serviceManagers = createServiceManagersWithThreeServiceManagers( serviceManager1,
-                                                                                              serviceManager2,
-                                                                                              serviceManager3 );
+    private SecurityFilter createSecurityFilterWithServiceManagers( ServiceManager... serviceManager )
+                    throws Exception {
+        List<ServiceManager> serviceManagers = createServiceManagersWithThreeServiceManagers( serviceManager );
         return new SecurityFilter( serviceManagers, logger, loggerResponseFilterReportMock, exceptionHandler );
     }
 
     private List<ServiceManager> createServiceManagersWithOneServiceManager( boolean isAuthorized )
-                            throws Exception {
+                    throws Exception {
         List<ServiceManager> serviceManagers = new ArrayList<ServiceManager>();
         ServiceManager serviceManager = mockSupportedServiceManager( isAuthorized );
         serviceManagers.add( serviceManager );
         return serviceManagers;
     }
 
-    private List<ServiceManager> createServiceManagersWithThreeServiceManagers( ServiceManager serviceManager1,
-                                                                                ServiceManager serviceManager2,
-                                                                                ServiceManager serviceManager3 ) {
-        List<ServiceManager> serviceManagers = new ArrayList<ServiceManager>();
-        serviceManagers.add( serviceManager1 );
-        serviceManagers.add( serviceManager2 );
-        serviceManagers.add( serviceManager3 );
-        return serviceManagers;
+    private List<ServiceManager> createServiceManagersWithThreeServiceManagers( ServiceManager... serviceManagers ) {
+        List<ServiceManager> serviceManagerList = new ArrayList<ServiceManager>();
+        for ( ServiceManager serviceManager : serviceManagers ) {
+            serviceManagerList.add( serviceManager );
+        }
+        return serviceManagerList;
     }
 
     private ResponseFilterReportLogger mockResponseFilterReportLogger() {
@@ -429,32 +434,47 @@ public class SecurityFilterTest {
     }
 
     private ServiceManager mockSupportedServiceManager( boolean isAuthorized )
-                            throws Exception {
+                    throws Exception {
         ServiceManager serviceManager = mockServiceManager();
         createDoReturnsForServiceManager( isAuthorized, true, serviceManager );
         return serviceManager;
     }
 
     private ServiceManager mockUnsupportedServiceManager()
-                            throws Exception {
+                    throws Exception {
         ServiceManager serviceManager = mockServiceManager();
         createDoReturnsForServiceManager( true, false, serviceManager );
         return serviceManager;
     }
 
+    private ServiceManager mockSupportedServiceManagerWithAuthorizationReportFiltering()
+                    throws Exception {
+        ServiceManager serviceManager = mockServiceManager();
+        ResponseFilterReport responseFilterReport = mockResponseFilterReportWithAuthorizationReport();
+        createDoReturnsForServiceManager( true, true, serviceManager, responseFilterReport );
+        return serviceManager;
+    }
+
     private void createDoReturnsForServiceManager( boolean isAuthorized, boolean isServiceSupported,
                                                    ServiceManager serviceManager )
-                            throws Exception {
+                    throws Exception {
+        ResponseFilterReport responseFilterReport = mockResponseFilterReport();
+        createDoReturnsForServiceManager( isAuthorized, isServiceSupported, serviceManager, responseFilterReport );
+    }
+
+    private void createDoReturnsForServiceManager( boolean isAuthorized, boolean isServiceSupported,
+                                                   ServiceManager serviceManager,
+                                                   ResponseFilterReport responseFilterReport )
+                    throws Exception {
         doReturn( isServiceSupported ).when( serviceManager ).isServiceTypeSupported( any( HttpServletRequest.class ) );
         Map<String, String[]> additionalKeyValuePairs = createAdditionalKeyValuePairs();
         AuthorizationReport authorizationReport = new AuthorizationReport( "message", isAuthorized, "url",
-                                                                           additionalKeyValuePairs );
+                        additionalKeyValuePairs );
         doReturn( authorizationReport ).when( serviceManager ).authorize( any( Authentication.class ),
                                                                           any( OwsRequest.class ) );
         OwsRequest owsRequest = mockOwsRequest();
         doReturn( owsRequest ).when( serviceManager ).parse( any( HttpServletRequest.class ) );
         doReturn( true ).when( serviceManager ).isResponseFilterEnabled( any( OwsRequest.class ) );
-        ResponseFilterReport responseFilterReport = mockResponseFilterReport();
         doReturn( responseFilterReport ).when( serviceManager ).filterResponse( any( StatusCodeResponseBodyWrapper.class ),
                                                                                 any( Authentication.class ),
                                                                                 any( OwsRequest.class ) );
@@ -466,6 +486,13 @@ public class SecurityFilterTest {
 
     private ResponseFilterReport mockResponseFilterReport() {
         return mock( ResponseFilterReport.class );
+    }
+
+    private ResponseFilterReport mockResponseFilterReportWithAuthorizationReport() {
+        ResponseFilterReport responseFilter = mock( ResponseFilterReport.class );
+        AuthorizationReport authorizationReport = new AuthorizationReport( "AccessDenied" );
+        doReturn( authorizationReport ).when( responseFilter ).getAuthorizationReport();
+        return responseFilter;
     }
 
     private OwsRequest mockOwsRequest() {

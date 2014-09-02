@@ -1,5 +1,7 @@
 package org.deegree.securityproxy.responsefilter.logging;
 
+import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
+
 /**
  * Encapsulates detailed information about the capabilities filtering.
  * 
@@ -15,6 +17,8 @@ public class DefaultResponseFilterReport implements ResponseFilterReport {
     private boolean isFiltered;
 
     private boolean isFailed;
+
+    private AuthorizationReport authorizationReport;
 
     /**
      * Instantiates a new {@link DefaultResponseFilterReport} with an error message, isFiltered is set to
@@ -34,7 +38,8 @@ public class DefaultResponseFilterReport implements ResponseFilterReport {
     }
 
     /**
-     * Instantiates a new {@link DefaultResponseFilterReport} with detailed information about the capabilities filtering.
+     * Instantiates a new {@link DefaultResponseFilterReport} with detailed information about the capabilities
+     * filtering.
      * 
      * @param message
      *            message gives information about the capabilities filtering, never <code>null</code>
@@ -49,6 +54,19 @@ public class DefaultResponseFilterReport implements ResponseFilterReport {
         this.message = message;
         this.isFiltered = isFiltered;
         this.isFailed = false;
+    }
+
+    /**
+     * Instantiates a new {@link DefaultResponseFilterReport} with changed {@link AuthorizationReport}.
+     * 
+     * @param authorizationReport
+     *            containing details about the authorization, never <code>null</code>
+     */
+    public DefaultResponseFilterReport( AuthorizationReport authorizationReport ) {
+        if ( authorizationReport == null )
+            throw new IllegalArgumentException( "authorizationReport must not be null!" );
+        this.message = authorizationReport.getMessage();
+        this.authorizationReport = authorizationReport;
     }
 
     @Override
@@ -69,6 +87,11 @@ public class DefaultResponseFilterReport implements ResponseFilterReport {
     @Override
     public String toString() {
         return getMessage();
+    }
+
+    @Override
+    public AuthorizationReport getAuthorizationReport() {
+        return authorizationReport;
     }
 
 }

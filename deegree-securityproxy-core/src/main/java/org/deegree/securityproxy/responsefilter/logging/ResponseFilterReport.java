@@ -35,6 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.responsefilter.logging;
 
+import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
+
 /**
  * Encapsulates information about the filtering step
  * 
@@ -59,5 +61,10 @@ public interface ResponseFilterReport {
      * @return <code>true</code> if filtering failed, <code>false</code> otherwise
      */
     boolean isFailed();
+
+    /**
+     * @return an {@link AuthorizationReport} if authorization changed, may be <code>null</code>
+     */
+    AuthorizationReport getAuthorizationReport();
 
 }
