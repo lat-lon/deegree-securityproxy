@@ -120,8 +120,7 @@ public class SecurityFilter implements Filter {
             KvpRequestWrapper wrappedRequest = new KvpRequestWrapper( httpRequest, additionalKeyValuePairs );
             chain.doFilter( wrappedRequest, wrappedResponse );
             if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
-                authorizationReport = filterResponse( wrappedResponse, uuid, authentication, owsRequest,
-                                                      serviceManager, authorizationReport );
+                filterResponse( wrappedResponse, uuid, authentication, owsRequest, serviceManager, authorizationReport );
             } else {
                 LOG.debug( "No filter configured for " + owsRequest.getClass() );
                 wrappedResponse.copyBufferedStreamToRealStream();
@@ -130,19 +129,15 @@ public class SecurityFilter implements Filter {
         handleAuthorizationReport( uuid, httpRequest, wrappedResponse, authorizationReport );
     }
 
-    private AuthorizationReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, String uuid,
-                                                Authentication authentication, OwsRequest owsRequest,
-                                                ServiceManager serviceManager, AuthorizationReport authorizationReport )
+    private void filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, String uuid,
+                                 Authentication authentication, OwsRequest owsRequest, ServiceManager serviceManager,
+                                 AuthorizationReport authorizationReport )
                     throws ServletException {
         try {
             ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
                                                                                  owsRequest );
             filterReportLogger.logResponseFilterReport( filterResponse, uuid );
             LOG.debug( "Filter was applied. Response: " + filterResponse.getMessage() );
-            AuthorizationReport authorizationReportFromResponseFilterReport = filterResponse.getAuthorizationReport();
-            if ( authorizationReportFromResponseFilterReport != null )
-                return authorizationReportFromResponseFilterReport;
-            return authorizationReport;
         } catch ( ResponseFilterException e ) {
             LOG.error( "Response filtering failed. " + e.getMessage() );
             LOG.trace( "Response filtering failed!", e );

@@ -274,17 +274,6 @@ public class SecurityFilterTest {
         verify( serviceManager3, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
     }
 
-    @Test(expected = AccessDeniedException.class)
-    public void testDoFilterWithFailedAuthorizationDuringFilteringShouldDenyAccess()
-                    throws Exception {
-        ServiceManager serviceManager = mockSupportedServiceManagerWithAuthorizationReportFiltering();
-        SecurityFilter filter = createSecurityFilterWithServiceManagers( serviceManager );
-        filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
-
-        verify( serviceManager ).filterResponse( (StatusCodeResponseBodyWrapper) anyObject(),
-                                                 (Authentication) anyObject(), (OwsRequest) anyObject() );
-    }
-
     private ServletRequest generateMockRequestNullQueryString() {
         HttpServletRequest mockRequest = mock( HttpServletRequest.class );
         when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
@@ -447,14 +436,6 @@ public class SecurityFilterTest {
         return serviceManager;
     }
 
-    private ServiceManager mockSupportedServiceManagerWithAuthorizationReportFiltering()
-                    throws Exception {
-        ServiceManager serviceManager = mockServiceManager();
-        ResponseFilterReport responseFilterReport = mockResponseFilterReportWithAuthorizationReport();
-        createDoReturnsForServiceManager( true, true, serviceManager, responseFilterReport );
-        return serviceManager;
-    }
-
     private void createDoReturnsForServiceManager( boolean isAuthorized, boolean isServiceSupported,
                                                    ServiceManager serviceManager )
                     throws Exception {
@@ -486,13 +467,6 @@ public class SecurityFilterTest {
 
     private ResponseFilterReport mockResponseFilterReport() {
         return mock( ResponseFilterReport.class );
-    }
-
-    private ResponseFilterReport mockResponseFilterReportWithAuthorizationReport() {
-        ResponseFilterReport responseFilter = mock( ResponseFilterReport.class );
-        AuthorizationReport authorizationReport = new AuthorizationReport( "AccessDenied" );
-        doReturn( authorizationReport ).when( responseFilter ).getAuthorizationReport();
-        return responseFilter;
     }
 
     private OwsRequest mockOwsRequest() {
