@@ -71,12 +71,12 @@ public class SecurityFilter implements Filter {
 
     @Override
     public void init( FilterConfig filterConfig )
-                            throws ServletException {
+                    throws ServletException {
     }
 
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
         StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
@@ -102,7 +102,7 @@ public class SecurityFilter implements Filter {
     private void handleAuthorization( FilterChain chain, HttpServletRequest httpRequest,
                                       StatusCodeResponseBodyWrapper wrappedResponse, String uuid,
                                       ServiceManager serviceManager )
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         AuthorizationReport authorizationReport;
         Authentication authentication = getContext().getAuthentication();
         OwsRequest owsRequest = null;
@@ -120,7 +120,7 @@ public class SecurityFilter implements Filter {
             KvpRequestWrapper wrappedRequest = new KvpRequestWrapper( httpRequest, additionalKeyValuePairs );
             chain.doFilter( wrappedRequest, wrappedResponse );
             if ( serviceManager.isResponseFilterEnabled( owsRequest ) ) {
-                filterResponse( wrappedResponse, uuid, authentication, owsRequest, serviceManager );
+                filterResponse( wrappedResponse, uuid, authentication, owsRequest, serviceManager, authorizationReport );
             } else {
                 LOG.debug( "No filter configured for " + owsRequest.getClass() );
                 wrappedResponse.copyBufferedStreamToRealStream();
@@ -130,8 +130,9 @@ public class SecurityFilter implements Filter {
     }
 
     private void filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, String uuid,
-                                 Authentication authentication, OwsRequest owsRequest, ServiceManager serviceManager )
-                            throws ServletException {
+                                 Authentication authentication, OwsRequest owsRequest, ServiceManager serviceManager,
+                                 AuthorizationReport authorizationReport )
+                    throws ServletException {
         try {
             ResponseFilterReport filterResponse = serviceManager.filterResponse( wrappedResponse, authentication,
                                                                                  owsRequest );
@@ -155,7 +156,6 @@ public class SecurityFilter implements Filter {
 
     private void generateAndLogProxyReport( AuthorizationReport authorizationReport, String uuid,
                                             HttpServletRequest request, StatusCodeResponseBodyWrapper response ) {
-
         String message = "";
         if ( authorizationReport.getMessage() != null ) {
             message = authorizationReport.getMessage();
@@ -188,7 +188,7 @@ public class SecurityFilter implements Filter {
     }
 
     private void checkServiceType( ServletRequest request )
-                            throws MissingParameterException {
+                    throws MissingParameterException {
         @SuppressWarnings("unchecked")
         Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
         String[] serviceTypes = kvpMap.get( "service" );
@@ -197,7 +197,7 @@ public class SecurityFilter implements Filter {
     }
 
     private ServiceManager detectServiceManager( HttpServletRequest request )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         if ( serviceManagers != null ) {
             for ( ServiceManager serviceManager : serviceManagers ) {
                 if ( serviceManager.isServiceTypeSupported( request ) )

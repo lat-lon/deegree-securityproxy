@@ -35,6 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities.element;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public class ElementRule {
 
     private final String namespace;
 
-    private final String text;
+    private final List<String> text;
 
     private final ElementRule subRule;
 
@@ -77,7 +78,7 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace ) {
-        this( name, namespace, (String) null );
+        this( name, namespace, (List<String>) null );
     }
 
     /**
@@ -92,6 +93,21 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace, String text ) {
+        this( name, namespace, ( text != null ? Collections.singletonList( text ) : (List<String>) null ) );
+    }
+
+    /**
+     * 
+     * Use this if name and namespace as well as the element text are interesting for filtering.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param text
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, List<String> text ) {
         this( name, namespace, text, (ElementRule) null );
     }
 
@@ -124,7 +140,7 @@ public class ElementRule {
      * @param subRule
      *            may be <code>null</code>
      */
-    public ElementRule( String name, String namespace, String text, ElementRule subRule ) {
+    public ElementRule( String name, String namespace, List<String> text, ElementRule subRule ) {
         this( name, namespace, text, subRule, null );
     }
 
@@ -143,6 +159,24 @@ public class ElementRule {
      *            may be <code>null</code>
      */
     public ElementRule( String name, String namespace, String text, List<ElementPathStep> path ) {
+        this( name, namespace, ( text != null ? Collections.singletonList( text ) : (List<String>) null ), null, path );
+    }
+
+    /**
+     * 
+     * Use this if name and namespace as well as the element text are interesting for filtering. Furthermore a sub
+     * element may be passed.
+     * 
+     * @param name
+     *            never <code>null</code>
+     * @param namespace
+     *            may be <code>null</code>
+     * @param text
+     *            may be <code>null</code>
+     * @param path
+     *            may be <code>null</code>
+     */
+    public ElementRule( String name, String namespace, List<String> text, List<ElementPathStep> path ) {
         this( name, namespace, text, null, path );
     }
 
@@ -162,7 +196,8 @@ public class ElementRule {
      * @param path
      *            may be <code>null</code>
      */
-    public ElementRule( String name, String namespace, String text, ElementRule subRule, List<ElementPathStep> path ) {
+    public ElementRule( String name, String namespace, List<String> text, ElementRule subRule,
+                        List<ElementPathStep> path ) {
         this.name = name;
         this.namespace = namespace;
         this.text = text;
@@ -187,7 +222,7 @@ public class ElementRule {
     /**
      * @return the text
      */
-    public String getText() {
+    public List<String> getText() {
         return text;
     }
 
@@ -257,7 +292,7 @@ public class ElementRule {
     @Override
     public String toString() {
         return "ElementRule [name=" + name + ", namespace=" + namespace + ", text=" + text + ", subRule=" + subRule
-               + "]";
+               + ", path=" + path + "]";
     }
 
 }
