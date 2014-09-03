@@ -157,7 +157,8 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wpsPermission = (RasterPermission) authority;
-                if ( wpsRequest.getIdentifiers().contains( wpsPermission.getLayerName() ) ) {
+                if ( wpsRequest.getOperationType().equalsIgnoreCase( wpsPermission.getOperationType() )
+                     && wpsRequest.getIdentifiers().contains( wpsPermission.getLayerName() ) ) {
                     return true;
                 }
             }
