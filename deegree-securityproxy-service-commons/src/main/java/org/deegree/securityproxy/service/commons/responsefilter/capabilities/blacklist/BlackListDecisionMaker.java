@@ -94,7 +94,7 @@ public class BlackListDecisionMaker implements DecisionMaker {
 
     @Override
     public boolean ignore( BufferingXMLEventReader reader, XMLEvent event, List<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         if ( event.isStartElement() ) {
             StartElement startElement = event.asStartElement();
 
@@ -121,13 +121,13 @@ public class BlackListDecisionMaker implements DecisionMaker {
     }
 
     private boolean elementTextIsNotBlacklisted( BufferingXMLEventReader reader, StartElement matchedSubElement )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         String elementText = retrieveElementText( reader, matchedSubElement );
         return !blackListTextValues.contains( elementText );
     }
 
     private String retrieveElementText( BufferingXMLEventReader reader, XMLEvent event )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         Iterator<XMLEvent> peekIterator = reader.retrievePeekIterator( event );
         XMLEvent peeked = skipCurrentEvent( event, peekIterator );
         while ( endElementIsNotReached( peeked ) ) {

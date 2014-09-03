@@ -58,10 +58,6 @@ public class ElementRule {
 
     private final List<ElementPathStep> path;
 
-    private final boolean textShouldMatch;
-
-    private boolean isApplied;
-
     /**
      * Use this if only the name of the element is interesting for filtering.
      * 
@@ -113,21 +109,6 @@ public class ElementRule {
      */
     public ElementRule( String name, String namespace, List<String> text ) {
         this( name, namespace, text, (ElementRule) null );
-    }
-
-    /**
-     * 
-     * Use this if name and namespace as well as the element text are interesting for filtering.
-     * 
-     * @param name
-     *            never <code>null</code>
-     * @param namespace
-     *            may be <code>null</code>
-     * @param text
-     *            may be <code>null</code>
-     */
-    public ElementRule( String name, String namespace, List<String> text, boolean textShouldMatch ) {
-        this( name, namespace, text, (ElementRule) null, null, textShouldMatch );
     }
 
     /**
@@ -217,35 +198,11 @@ public class ElementRule {
      */
     public ElementRule( String name, String namespace, List<String> text, ElementRule subRule,
                         List<ElementPathStep> path ) {
-        this( name, namespace, text, subRule, path, true );
-    }
-
-    /**
-     * 
-     * Use this if name and namespace as well as the element text are interesting for filtering. Furthermore a sub
-     * element may be passed.
-     * 
-     * @param name
-     *            never <code>null</code>
-     * @param namespace
-     *            may be <code>null</code>
-     * @param text
-     *            may be <code>null</code>
-     * @param subRule
-     *            may be <code>null</code>
-     * @param path
-     *            may be <code>null</code>
-     * @param textShouldMatch
-     *            - indicates if the passed text should match or not
-     */
-    public ElementRule( String name, String namespace, List<String> text, ElementRule subRule,
-                        List<ElementPathStep> path, boolean textShouldMatch ) {
         this.name = name;
         this.namespace = namespace;
         this.text = text;
         this.subRule = subRule;
         this.path = path;
-        this.textShouldMatch = textShouldMatch;
     }
 
     /**
@@ -283,28 +240,6 @@ public class ElementRule {
         return path;
     }
 
-    /**
-     * @return true if the text should match, false if not
-     */
-    public boolean isTextShouldMatch() {
-        return textShouldMatch;
-    }
-
-    /**
-     * @return <code>true</code> if this rule was applied, <code>false</code> otherwise
-     */
-    public boolean isApplied() {
-        return isApplied;
-    }
-
-    /**
-     * @param isApplied
-     *            <code>true</code> if this rule was applied, <code>false</code> otherwise
-     */
-    public void setApplied( boolean isApplied ) {
-        this.isApplied = isApplied;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -314,7 +249,6 @@ public class ElementRule {
         result = prime * result + ( ( path == null ) ? 0 : path.hashCode() );
         result = prime * result + ( ( subRule == null ) ? 0 : subRule.hashCode() );
         result = prime * result + ( ( text == null ) ? 0 : text.hashCode() );
-        result = prime * result + ( textShouldMatch ? 1231 : 1237 );
         return result;
     }
 
@@ -352,15 +286,13 @@ public class ElementRule {
                 return false;
         } else if ( !text.equals( other.text ) )
             return false;
-        if ( textShouldMatch != other.textShouldMatch )
-            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return "ElementRule [name=" + name + ", namespace=" + namespace + ", text=" + text + ", subRule=" + subRule
-               + ", path=" + path + ", textShouldMatch=" + textShouldMatch + "]";
+               + ", path=" + path + "]";
     }
 
 }

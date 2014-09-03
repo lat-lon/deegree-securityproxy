@@ -38,8 +38,7 @@ package org.deegree.securityproxy.wps.responsefilter.capabilities;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.WPS_SERVICE;
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -54,13 +53,10 @@ import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVers
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AllowAllDecisonMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
 import org.deegree.securityproxy.wps.request.WpsRequest;
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -84,10 +80,9 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
                     throws Exception {
         DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneExecute() );
 
-        List<ElementRule> elementRules = ( (ElementDecisionMaker) decisionMaker ).getElementRules();
-        assertThat( elementRules.size(), is( 1 ) );
-        ElementRule subRule = elementRules.get( 0 ).getSubRule();
-        assertThat( subRule.getText(), hasItem( PROCESS_ID_1 ) );
+        List<String> blackListTextValues = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListTextValues.size(), is( 1 ) );
+        assertThat( blackListTextValues, hasItems( PROCESS_ID_1 ) );
     }
 
     @Test
@@ -95,10 +90,9 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
                     throws Exception {
         DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithTwoExecuteOneDescribeProcess() );
 
-        List<ElementRule> elementRules = ( (ElementDecisionMaker) decisionMaker ).getElementRules();
-        assertThat( elementRules.size(), is( 1 ) );
-        ElementRule subRule = elementRules.get( 0 ).getSubRule();
-        assertThat( subRule.getText(), CoreMatchers.hasItems( PROCESS_ID_1, PROCESS_ID_2 ) );
+        List<String> blackListTextValues = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListTextValues.size(), is( 2 ) );
+        assertThat( blackListTextValues, hasItems( PROCESS_ID_1, PROCESS_ID_2 ) );
     }
 
     @Test
@@ -106,7 +100,8 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
                     throws Exception {
         DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneUnknownRequest() );
 
-        assertThat( decisionMaker, is( instanceOf( AllowAllDecisonMaker.class ) ) );
+        List<String> blackListTextValues = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListTextValues.size(), is( 0 ) );
     }
 
     @Test

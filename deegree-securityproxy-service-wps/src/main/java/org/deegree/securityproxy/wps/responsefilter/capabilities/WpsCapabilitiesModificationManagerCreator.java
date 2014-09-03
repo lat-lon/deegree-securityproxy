@@ -45,12 +45,10 @@ import java.util.List;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AllowAllDecisonMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -82,10 +80,8 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
 
     DecisionMaker createDecisionMaker( Authentication authentication ) {
         List<String> authenticatedProcessIds = collectAuthenticatedProcessIds( authentication );
-        if ( authenticatedProcessIds.isEmpty() )
-            return new AllowAllDecisonMaker();
-        ElementRule elementRule = createElementRule( authenticatedProcessIds );
-        return new ElementDecisionMaker( elementRule );
+        return new BlackListDecisionMaker( ELEMENT_TO_SKIP, WPS_1_0_0_NS_URI, SUB_ELEMENT_NAME, OWS_1_1_NS_URI,
+                        authenticatedProcessIds );
     }
 
     private List<String> collectAuthenticatedProcessIds( Authentication authentication ) {
@@ -104,11 +100,6 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
                 layerNameRulesToPreserve.add( permission.getLayerName() );
             }
         }
-    }
-
-    private ElementRule createElementRule( List<String> layerNameRulesToPreserve ) {
-        ElementRule subRule = new ElementRule( SUB_ELEMENT_NAME, OWS_1_1_NS_URI, layerNameRulesToPreserve, false );
-        return new ElementRule( ELEMENT_TO_SKIP, WPS_1_0_0_NS_URI, subRule );
     }
 
     private boolean isWps100ExecutePermission( RasterPermission permission ) {

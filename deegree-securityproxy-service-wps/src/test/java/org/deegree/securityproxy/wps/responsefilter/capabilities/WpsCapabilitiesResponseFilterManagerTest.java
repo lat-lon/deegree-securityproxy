@@ -60,20 +60,6 @@ public class WpsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithFilteringNotRequiredShouldReturnFilterReport()
-                    throws Exception {
-        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
-        WpsRequest wpsRequest = createWpsGetCapabilitiesRequest();
-        Authentication authentication = createAuthenticationWithDescribeProcess();
-        ResponseFilterReport filterReport = createFilterManagerWithMocks().filterResponse( response, wpsRequest,
-                                                                                           authentication );
-
-        assertThat( filterReport, notNullValue() );
-        assertThat( filterReport.getAuthorizationReport(), is( notNullValue() ) );
-        assertThat( filterReport.getAuthorizationReport().isAuthorized(), is( false ) );
-    }
-
-    @Test
     public void testFilterResponseWithExceptionShouldReturnFilterReport()
                     throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
@@ -116,31 +102,29 @@ public class WpsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
-    public void testFilterResponseWithoutApplicablePermissionShouldFilterResponseCompletly()
+    public void testFilterResponseWithoutApplicablePermissionShouldFilterAllProcesses()
                     throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wps_1_0_0.xml" );
         WpsRequest wpsRequest = createWpsGetCapabilitiesRequest();
-        Authentication authentication = createAuthenticationWithoutKnownProcessIds();
+        Authentication authentication = createAuthenticationWithUnknownProcessIds();
         createFilterManager().filterResponse( response, wpsRequest, authentication );
 
         assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wps_1_0_0-FilteredComplete.xml" ) ) );
     }
 
     @Test
-    public void testFilterResponseWithoutExecutePermissionShouldNotFilterResponse()
+    public void testFilterResponseWithoutExecutePermissionShouldFilterAllProcesses()
                     throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wps_1_0_0.xml" );
         WpsRequest wpsRequest = createWpsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithDescribeProcess();
-        ResponseFilterReport filterReport = createFilterManager().filterResponse( response, wpsRequest, authentication );
+        createFilterManager().filterResponse( response, wpsRequest, authentication );
 
-        assertThat( filterReport, notNullValue() );
-        assertThat( filterReport.getAuthorizationReport(), is( notNullValue() ) );
-        assertThat( filterReport.getAuthorizationReport().isAuthorized(), is( false ) );
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wps_1_0_0-FilteredComplete.xml" ) ) );
     }
 
     @Test
@@ -261,7 +245,7 @@ public class WpsCapabilitiesResponseFilterManagerTest {
         return mockAuthentication( authorities );
     }
 
-    private Authentication createAuthenticationWithoutKnownProcessIds() {
+    private Authentication createAuthenticationWithUnknownProcessIds() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
         authorities.add( createRasterPermission( "Execute", "UNKNOWN" ) );
         return mockAuthentication( authorities );

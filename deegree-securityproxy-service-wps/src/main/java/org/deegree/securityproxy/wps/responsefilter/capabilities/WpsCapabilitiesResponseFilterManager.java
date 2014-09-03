@@ -37,21 +37,12 @@ package org.deegree.securityproxy.wps.responsefilter.capabilities;
 
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
 
-import java.util.List;
-
-import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
-import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AbstractCapabilitiesResponseFilterManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.AllowAllDecisonMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementDecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementRule;
 import org.deegree.securityproxy.wps.request.WpsRequest;
 
 /**
@@ -83,26 +74,6 @@ public class WpsCapabilitiesResponseFilterManager extends AbstractCapabilitiesRe
     @Override
     protected boolean isCorrectRequestParameter( OwsRequest request ) {
         return GETCAPABILITIES.equals( request.getOperationType() );
-    }
-
-    @Override
-    protected ResponseFilterReport createResponseAfterModification( XmlModificationManager modificationManager ) {
-        boolean allProcessesFiltered = false;
-        DecisionMaker decisionMaker = modificationManager.getDecisionMaker();
-        if ( decisionMaker instanceof ElementDecisionMaker ) {
-            List<ElementRule> elementRules = ( (ElementDecisionMaker) decisionMaker ).getElementRules();
-            for ( ElementRule elementRule : elementRules ) {
-                if ( elementRule.isApplied() )
-                    allProcessesFiltered = true;
-            }
-        } else if ( decisionMaker instanceof AllowAllDecisonMaker ) {
-            allProcessesFiltered = true;
-        }
-        if ( !allProcessesFiltered )
-            return super.createResponseAfterModification( modificationManager );
-        String message = "User is not authorized to at least one layer!";
-        AuthorizationReport authorizationReport = new AuthorizationReport( message );
-        return new DefaultResponseFilterReport( authorizationReport );
     }
 
 }

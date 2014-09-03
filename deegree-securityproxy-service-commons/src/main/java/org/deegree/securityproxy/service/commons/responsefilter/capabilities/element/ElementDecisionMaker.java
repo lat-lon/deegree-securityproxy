@@ -105,10 +105,8 @@ public class ElementDecisionMaker implements DecisionMaker {
                     throws XMLStreamException {
         for ( ElementRule elementRule : elementRules ) {
             boolean matchesElementRule = matchesElementRule( reader, event, elementRule, visitedElements );
-            if ( matchesElementRule ) {
-                elementRule.setApplied( true );
+            if ( matchesElementRule )
                 return true;
-            }
         }
         return false;
     }
@@ -125,7 +123,7 @@ public class ElementDecisionMaker implements DecisionMaker {
 
         boolean isTextMatching = true;
         if ( elementRule.getText() != null ) {
-            isTextMatching = isTextMatching( reader, event, elementRule ) == elementRule.isTextShouldMatch();
+            isTextMatching = isTextMatching( reader, event, elementRule );
         }
         if ( !isTextMatching )
             return false;
