@@ -91,12 +91,16 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
 
     private AuthorizationReport authorizeExecute( WpsRequest wpsRequest,
                                                   Collection<? extends GrantedAuthority> authorities ) {
-        return authorizeBaseParams( wpsRequest, authorities, EXECUTE_UNAUTHORIZED_MSG );
+        AuthorizationReport authorizationReport = authorizeBaseParams( wpsRequest, authorities,
+                                                                       EXECUTE_UNAUTHORIZED_MSG );
+        return authorizeProcessIds( wpsRequest, authorities, authorizationReport, EXECUTE_UNAUTHORIZED_MSG );
     }
 
     private AuthorizationReport authorizeDescribeProcess( WpsRequest wpsRequest,
                                                           Collection<? extends GrantedAuthority> authorities ) {
-        return authorizeBaseParams( wpsRequest, authorities, DESCRIBEPROCESS_UNAUTHORIZED_MSG );
+        AuthorizationReport authorizationReport = authorizeBaseParams( wpsRequest, authorities,
+                                                                       DESCRIBEPROCESS_UNAUTHORIZED_MSG );
+        return authorizeProcessIds( wpsRequest, authorities, authorizationReport, DESCRIBEPROCESS_UNAUTHORIZED_MSG );
     }
 
     private AuthorizationReport authorizeBaseParams( WpsRequest wpsRequest,
@@ -107,12 +111,22 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
                 RasterPermission wpsPermission = (RasterPermission) authority;
                 if ( areBaseParamsAuthorized( wpsRequest, wpsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
-                                                    wpsPermission.getInternalServiceUrl(),
-                                                    wpsPermission.getAdditionalKeyValuePairs() );
+                                    wpsPermission.getInternalServiceUrl(), wpsPermission.getAdditionalKeyValuePairs() );
                 }
             }
         }
         return new AuthorizationReport( unauthorisedMsg );
+    }
+
+    private AuthorizationReport authorizeProcessIds( WpsRequest wpsRequest,
+                                                     Collection<? extends GrantedAuthority> authorities,
+                                                     AuthorizationReport authorizationReport, String unauthorisedMsg ) {
+        if ( authorizationReport.isAuthorized() ) {
+            boolean isProcessIdAuthorized = isProcessIdAuthorized( wpsRequest, authorities );
+            if ( !isProcessIdAuthorized )
+                return new AuthorizationReport( unauthorisedMsg );
+        }
+        return authorizationReport;
     }
 
     private boolean areBaseParamsAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
@@ -137,6 +151,18 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
             return false;
         LimitedOwsServiceVersion serviceVersionLimit = wpsPermission.getServiceVersion();
         return serviceVersionLimit.contains( requestedServiceVersion );
+    }
+
+    private boolean isProcessIdAuthorized( WpsRequest wpsRequest, Collection<? extends GrantedAuthority> authorities ) {
+        for ( GrantedAuthority authority : authorities ) {
+            if ( authority instanceof RasterPermission ) {
+                RasterPermission wpsPermission = (RasterPermission) authority;
+                if ( wpsRequest.getIdentifiers().contains( wpsPermission.getLayerName() ) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
