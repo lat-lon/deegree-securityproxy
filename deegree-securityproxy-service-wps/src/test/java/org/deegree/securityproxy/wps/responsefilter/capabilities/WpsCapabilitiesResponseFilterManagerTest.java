@@ -241,7 +241,7 @@ public class WpsCapabilitiesResponseFilterManagerTest {
 
     private Authentication createAuthenticationWithDescribeProcess() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        authorities.add( createRasterPermission( "DescribeProcess", "st_vectormean" ) );
+        authorities.add( createRasterPermission( "DescribeProcess", "Buffer" ) );
         return mockAuthentication( authorities );
     }
 

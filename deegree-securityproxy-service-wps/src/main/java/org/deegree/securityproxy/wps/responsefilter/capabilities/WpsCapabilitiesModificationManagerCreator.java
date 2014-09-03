@@ -35,12 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.responsefilter.capabilities;
 
+import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wps.request.WpsRequestParser.WPS_SERVICE;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -85,27 +89,32 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
     }
 
     private List<String> collectAuthenticatedProcessIds( Authentication authentication ) {
-        List<String> layerNamesToPreserve = new ArrayList<String>();
+        Set<String> layerNamesToPreserve = new HashSet<String>();
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for ( GrantedAuthority grantedAuthority : authorities ) {
             addLayerNameRule( layerNamesToPreserve, grantedAuthority );
         }
-        return layerNamesToPreserve;
+        return new ArrayList<String>( layerNamesToPreserve );
     }
 
-    private void addLayerNameRule( List<String> layerNameRulesToPreserve, GrantedAuthority authority ) {
+    private void addLayerNameRule( Set<String> layerNameRulesToPreserve, GrantedAuthority authority ) {
         if ( authority instanceof RasterPermission ) {
             RasterPermission permission = (RasterPermission) authority;
-            if ( isWps100ExecutePermission( permission ) ) {
+            if ( isWps100Permission( permission ) ) {
                 layerNameRulesToPreserve.add( permission.getLayerName() );
             }
         }
     }
 
-    private boolean isWps100ExecutePermission( RasterPermission permission ) {
+    private boolean isWps100Permission( RasterPermission permission ) {
         return WPS_SERVICE.equalsIgnoreCase( permission.getServiceType() )
-               && permission.getServiceVersion().contains( VERSION_1_0_0 )
-               && EXECUTE.equalsIgnoreCase( permission.getOperationType() );
+               && permission.getServiceVersion().contains( VERSION_1_0_0 ) && isValidOperation( permission );
+    }
+
+    private boolean isValidOperation( RasterPermission permission ) {
+        return EXECUTE.equalsIgnoreCase( permission.getOperationType() )
+               || DESCRIBEPROCESS.equalsIgnoreCase( permission.getOperationType() )
+               || GETCAPABILITIES.equalsIgnoreCase( permission.getOperationType() );
     }
 
     private void checkVersion( OwsRequest owsRequest ) {
