@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -41,25 +42,27 @@ public class WpsRequestAuthorizationManagerTest {
 
     private static final String SERVICE_NAME = "serviceName";
 
+    private static final String PROCESS_ID = "processId";
+
     private final RequestAuthorizationManager authorizationManager = new WpsRequestAuthorizationManager();
 
     @Test
     public void testSupportsWpsRequestShouldBeSupported()
-                            throws Exception {
+                    throws Exception {
         boolean isSupported = authorizationManager.supports( WpsRequest.class );
         assertThat( isSupported, is( true ) );
     }
 
     @Test
     public void testSupportsHttpServletRequestShouldBeUnsupported()
-                            throws Exception {
+                    throws Exception {
         boolean isSupported = authorizationManager.supports( HttpServletRequest.class );
         assertThat( isSupported, is( false ) );
     }
 
     @Test
     public void testDecideAnonymous()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mock( AnonymousAuthenticationToken.class );
         WpsRequest request = mockGetCapabilitiesRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -68,7 +71,7 @@ public class WpsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideValidGetCapabilities()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithAllPermissions();
         WpsRequest request = mockGetCapabilitiesRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -77,7 +80,7 @@ public class WpsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideValidGetCapabilitiesWithUnsupportedVersion()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithAllPermissions();
         WpsRequest request = mockGetCapabilitiesRequestWithUnsupportedVersion();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -86,7 +89,7 @@ public class WpsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideValidExecute()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithAllPermissions();
         WpsRequest request = mockExecuteRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -95,7 +98,7 @@ public class WpsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideValidExecuteNotGrantedUser()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithCapabilitiesPermissions();
         WpsRequest request = mockExecuteRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -103,8 +106,26 @@ public class WpsRequestAuthorizationManagerTest {
     }
 
     @Test
+    public void testDecideValidExecuteInvalidProcessIdShouldBeUnauthorized()
+                    throws Exception {
+        Authentication authentication = mockDefaultAuthenticationWithAllPermissionsButInvalidProcessId();
+        WpsRequest request = mockExecuteRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( false ) );
+    }
+
+    @Test
+    public void testDecideValidDescribeProcessProcessIdInvalidExecuteAndValidDescribeProcess()
+                    throws Exception {
+        Authentication authentication = mockDefaultAuthentication( DESCRIBEPROCESS, EXECUTE );
+        WpsRequest request = mockExecuteRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( false ) );
+    }
+
+    @Test
     public void testDecideValidDescribeProcess()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithAllPermissions();
         WpsRequest request = mockDescribeProcessRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
@@ -113,8 +134,26 @@ public class WpsRequestAuthorizationManagerTest {
 
     @Test
     public void testDecideValidDescribeProcessNotGrantedUser()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockDefaultAuthenticationWithCapabilitiesPermissions();
+        WpsRequest request = mockDescribeProcessRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( false ) );
+    }
+
+    @Test
+    public void testDecideValidDescribeProcessInvalidProcessIdShouldBeUnauthorized()
+                    throws Exception {
+        Authentication authentication = mockDefaultAuthenticationWithAllPermissionsButInvalidProcessId();
+        WpsRequest request = mockDescribeProcessRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+        assertThat( report.isAuthorized(), is( false ) );
+    }
+
+    @Test
+    public void testDecideValidDescribeProcessProcessIdInvalidDescribeProcessAndValidExecuteShouldBeUnauthorized()
+                    throws Exception {
+        Authentication authentication = mockDefaultAuthentication( EXECUTE, DESCRIBEPROCESS );
         WpsRequest request = mockDescribeProcessRequest();
         AuthorizationReport report = authorizationManager.decide( authentication, request );
         assertThat( report.isAuthorized(), is( false ) );
@@ -125,11 +164,11 @@ public class WpsRequestAuthorizationManagerTest {
     }
 
     private WpsRequest mockExecuteRequest() {
-        return mockRequest( null, EXECUTE, SERVICE_NAME, VERSION_100 );
+        return mockRequest( PROCESS_ID, EXECUTE, SERVICE_NAME, VERSION_100 );
     }
 
     private WpsRequest mockDescribeProcessRequest() {
-        return mockRequest( null, DESCRIBEPROCESS, SERVICE_NAME, VERSION_100 );
+        return mockRequest( PROCESS_ID, DESCRIBEPROCESS, SERVICE_NAME, VERSION_100 );
     }
 
     private WpsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
@@ -143,6 +182,10 @@ public class WpsRequestAuthorizationManagerTest {
         when( mock.getServiceVersion() ).thenReturn( version );
         when( mock.getServiceName() ).thenReturn( serviceName );
         when( mock.getServiceType() ).thenReturn( SERVICE_TYPE );
+        if ( layerName == null )
+            when( mock.getIdentifiers() ).thenReturn( Collections.<String>emptyList() );
+        else
+            when( mock.getIdentifiers() ).thenReturn( Collections.singletonList( layerName ) );
         return mock;
     }
 
@@ -150,10 +193,36 @@ public class WpsRequestAuthorizationManagerTest {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
         authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
-                                               null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, null, null, null, null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, null, null, null,
-                                               null ) );
+                        null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, null, null,
+                        null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID, null,
+                        null, null ) );
+        doReturn( authorities ).when( authentication ).getAuthorities();
+        return authentication;
+    }
+
+    private Authentication mockDefaultAuthenticationWithAllPermissionsButInvalidProcessId() {
+        Authentication authentication = mock( Authentication.class );
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
+                        null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, "invalidProcessId", null,
+                        null, null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100,
+                        "invalidProcessId", null, null, null ) );
+        doReturn( authorities ).when( authentication ).getAuthorities();
+        return authentication;
+    }
+
+    private Authentication mockDefaultAuthentication( String operationNameWithValidProcessId,
+                                                      String operationNameWithInvalidProcessId ) {
+        Authentication authentication = mock( Authentication.class );
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( SERVICE_TYPE, operationNameWithValidProcessId, VERSION_LESS_EQUAL_100,
+                        PROCESS_ID, null, null, null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, operationNameWithInvalidProcessId, VERSION_LESS_EQUAL_100,
+                        "invalidProcessId", null, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -162,7 +231,7 @@ public class WpsRequestAuthorizationManagerTest {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
         authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
-                                               null ) );
+                        null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }

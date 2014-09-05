@@ -16,7 +16,7 @@ import org.junit.Test;
 public class DefaultResponseFilterReportTest {
     @Test
     public void testGetMessage()
-                            throws Exception {
+                    throws Exception {
         String message = "Message";
         DefaultResponseFilterReport report = new DefaultResponseFilterReport( message, true );
 
@@ -26,7 +26,7 @@ public class DefaultResponseFilterReportTest {
 
     @Test
     public void testGetMessageWithFailure()
-                            throws Exception {
+                    throws Exception {
         String failureMessage = "An error occurred";
         DefaultResponseFilterReport report = new DefaultResponseFilterReport( failureMessage );
 
@@ -36,14 +36,14 @@ public class DefaultResponseFilterReportTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetMessageWithNullShouldFail()
-                            throws Exception {
+                    throws Exception {
         new DefaultResponseFilterReport( null, false );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetMessageWithNullFailureShouldFail()
-                            throws Exception {
-        new DefaultResponseFilterReport( null );
+                    throws Exception {
+        new DefaultResponseFilterReport( (String) null );
     }
 
 }

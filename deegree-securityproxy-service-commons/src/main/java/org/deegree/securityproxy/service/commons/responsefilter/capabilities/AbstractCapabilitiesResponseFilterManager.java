@@ -69,6 +69,12 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
 
     private final XmlModificationManagerCreator xmlModificationManagerCreator;
 
+    /**
+     * @param capabilitiesFilter
+     *            never <code>null</code>
+     * @param xmlModificationManagerCreator
+     *            never <code>null</code>
+     */
     public AbstractCapabilitiesResponseFilterManager( XmlFilter capabilitiesFilter,
                                                       XmlModificationManagerCreator xmlModificationManagerCreator ) {
         this.capabilitiesFilter = capabilitiesFilter;
@@ -78,13 +84,13 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
     @Override
     protected ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest owsRequest,
                                                 Authentication auth )
-                            throws ResponseFilterException, IOException {
+                    throws ResponseFilterException, IOException {
         XmlModificationManager xmlModificationManager = xmlModificationManagerCreator.createXmlModificationManager( owsRequest,
                                                                                                                     auth );
         if ( xmlModificationManager.isModificationRequired() ) {
             try {
                 capabilitiesFilter.filterXml( servletResponse, xmlModificationManager );
-                return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
+                return createResponseAfterModification( xmlModificationManager );
             } catch ( XMLStreamException e ) {
                 throw new ResponseFilterException( e );
             }
@@ -96,8 +102,24 @@ public abstract class AbstractCapabilitiesResponseFilterManager extends Abstract
 
     @Override
     protected ResponseFilterReport handleIOException( StatusCodeResponseBodyWrapper response, IOException e )
-                            throws ResponseFilterException {
+                    throws ResponseFilterException {
         throw new ResponseFilterException( e );
+    }
+
+    /**
+     * @return the xmlModificationManagerCreator, never <code>null</code>
+     */
+    public XmlModificationManagerCreator getXmlModificationManagerCreator() {
+        return xmlModificationManagerCreator;
+    }
+
+    /**
+     * @param xmlModificationManager
+     *            used for modification, never <code>null</code>
+     * @return a {@link DefaultResponseFilterReport}, may be overwritten by subclasses, never return <code>null</code>
+     */
+    protected ResponseFilterReport createResponseAfterModification( XmlModificationManager xmlModificationManager ) {
+        return new DefaultResponseFilterReport( SUCCESSFUL_FILTERING_MESSAGE, true );
     }
 
 }

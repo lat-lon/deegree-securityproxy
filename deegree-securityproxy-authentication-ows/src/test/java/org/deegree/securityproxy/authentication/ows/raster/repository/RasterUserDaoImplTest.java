@@ -323,6 +323,18 @@ public class RasterUserDaoImplTest {
         assertThat( wcsUser, nullValue() );
     }
 
+    @Test
+    public void testRetrieveUserByIdValidHeaderShouldReturnUserDetailWithExecutePermission() {
+        UserDetails details = source.retrieveUserById( "VALID_HEADER_EXECUTE" );
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        RasterPermission firstAuthority = (RasterPermission) authorities.iterator().next();
+        assertThat( firstAuthority.getOperationType(), is( "Execute" ) );
+        assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
+        assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
+        assertThat( firstAuthority.getLayerName(), is( "processId" ) );
+    }
+
     @After
     public void tearDown() {
         db.shutdown();

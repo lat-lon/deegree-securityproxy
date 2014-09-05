@@ -34,7 +34,8 @@ public class DefaultResponseFilterReport implements ResponseFilterReport {
     }
 
     /**
-     * Instantiates a new {@link DefaultResponseFilterReport} with detailed information about the capabilities filtering.
+     * Instantiates a new {@link DefaultResponseFilterReport} with detailed information about the capabilities
+     * filtering.
      * 
      * @param message
      *            message gives information about the capabilities filtering, never <code>null</code>
