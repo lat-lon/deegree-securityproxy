@@ -24,10 +24,13 @@ import org.hamcrest.Matcher;
  */
 public class ImageMatcher {
 
+    private static boolean INVERTED = true;
+    private static boolean NOT_INVERTED = false;
+
     /**
      * Matcher to check whether image has same dimension as source file.
      * 
-     * @param sourceFile
+     * @param sourceFile source file to compare with
      * @return a {@link Matcher}
      * @throws IOException
      */
@@ -38,35 +41,13 @@ public class ImageMatcher {
         final int heightSource = sourceImage.getHeight();
         final int widthSource = sourceImage.getWidth();
 
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    int heightDestination = destinationImage.getHeight();
-                    int widthDestination = destinationImage.getWidth();
-
-                    return heightDestination == heightSource && widthDestination == widthSource;
-                } catch ( IOException e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should have the same width and heigth as the source ( " + widthSource + " * "
-                                        + heightSource + ")!" );
-            }
-        };
+        return new DimensionMatcher<File>(heightSource, widthSource);
     }
 
     /**
      * Matcher to check whether image has same pixels as source file.
      * 
-     * @param sourceFile
+     * @param sourceFile source file to compare with
      * @return a {@link Matcher}
      * @throws Exception
      */
@@ -103,7 +84,7 @@ public class ImageMatcher {
     /**
      * Matcher to check whether image has not same pixels as source file.
      * 
-     * @param sourceFile
+     * @param sourceFile to compare with
      * @return a {@link Matcher}
      * @throws Exception
      */
@@ -115,38 +96,84 @@ public class ImageMatcher {
 
         final int[] sourcePixelsToCompare = calculatePixels( sourceGrabber );
 
-        return new BaseMatcher<File>() {
-
-            @Override
-            public boolean matches( Object item ) {
-                BufferedImage destinationImage;
-                try {
-                    destinationImage = read( (File) item );
-                    PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
-                    int[] destinationPixels = calculatePixels( destinationGrabber );
-                    return !Arrays.equals( destinationPixels, sourcePixelsToCompare );
-                } catch ( Exception e ) {
-                    e.printStackTrace();
-                }
-                return false;
-            }
-
-            @Override
-            public void describeTo( Description description ) {
-                description.appendText( "Should not contain the same pixels as the source!" );
-            }
-        };
+        return new PixelMatcher<File>(sourcePixelsToCompare, INVERTED);
     }
 
     private static int[] calculatePixels( PixelGrabber destinationGrabber )
                             throws InterruptedException {
         int[] pixels = null;
         if ( destinationGrabber.grabPixels() ) {
-            int width = destinationGrabber.getWidth();
-            int height = destinationGrabber.getHeight();
             pixels = (int[]) destinationGrabber.getPixels();
         }
         return pixels;
     }
 
+    /**
+     * Matcher to compare dimensions
+     *
+     * @param <T>
+     */
+    private static class DimensionMatcher <T> extends BaseMatcher <T> {
+
+        private final int heightSource ;
+        private final int widthSource;
+
+        DimensionMatcher(int heightSource, int widthSource) {
+            this.heightSource = heightSource;
+            this.widthSource = widthSource;
+        }
+
+        @Override
+        public boolean matches( Object item ) {
+            BufferedImage destinationImage;
+            try {
+                destinationImage = read( (File) item );
+                int heightDestination = destinationImage.getHeight();
+                int widthDestination = destinationImage.getWidth();
+
+                return heightDestination == heightSource && widthDestination == widthSource;
+            } catch ( IOException e ) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        public void describeTo( Description description ) {
+            description.appendText( "Should have the same width and height as the source ( " + widthSource + " * "
+                    + heightSource + ")!" );
+        }
+    };
+
+    private static class PixelMatcher<T> extends BaseMatcher<T> {
+
+        private int[] sourcePixelsToCompare;
+        private boolean inverse;
+
+        PixelMatcher( int[] getSourcePixelsToCompare, boolean inverse) {
+            this.sourcePixelsToCompare = sourcePixelsToCompare;
+            this.inverse = inverse;
+        }
+
+        @Override
+        public boolean matches( Object item ) {
+            BufferedImage destinationImage;
+            try {
+                destinationImage = read( (File) item );
+                PixelGrabber destinationGrabber = new PixelGrabber( destinationImage, 0, 0, -1, -1, false );
+                int[] destinationPixels = calculatePixels( destinationGrabber );
+                boolean matching = Arrays.equals(destinationPixels, sourcePixelsToCompare);
+
+                return inverse ? !matching : matching;
+            } catch ( Exception e ) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        @Override
+        public void describeTo( Description description ) {
+            description.appendText( "Should not contain the same pixels as the source!" );
+        }
+    };
 }
