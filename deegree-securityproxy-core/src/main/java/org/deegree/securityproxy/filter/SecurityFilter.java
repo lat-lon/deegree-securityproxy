@@ -28,6 +28,7 @@ import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.MissingParameterException;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.RequestParsingException;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -112,6 +113,8 @@ public class SecurityFilter implements Filter {
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG );
         } catch ( IllegalArgumentException e ) {
+            authorizationReport = new AuthorizationReport( e.getMessage() );
+        } catch ( RequestParsingException e ) {
             authorizationReport = new AuthorizationReport( e.getMessage() );
         }
         if ( authorizationReport.isAuthorized() ) {

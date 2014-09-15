@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.RequestParsingException;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -28,9 +29,10 @@ public interface ServiceManager {
      * @return
      * @throws UnsupportedRequestTypeException
      *             when the given request does not have the correct service type.
+     * @throws RequestParsingException
      */
     OwsRequest parse( HttpServletRequest httpRequest )
-                            throws UnsupportedRequestTypeException;
+                    throws UnsupportedRequestTypeException, RequestParsingException;
 
     /**
      * Authorize a given request.
@@ -67,7 +69,7 @@ public interface ServiceManager {
      */
     ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, Authentication authentication,
                                          OwsRequest owsRequest )
-                            throws ResponseFilterException;
+                    throws ResponseFilterException;
 
     /**
      * Check if a given request is supported by the {@link ServiceManager}.

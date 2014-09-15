@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.PostOrGetOwsRequestParser;
+import org.deegree.securityproxy.request.RequestParsingException;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 /**
@@ -57,7 +58,7 @@ public class WfsRequestParser implements OwsRequestParser {
 
     @Override
     public OwsRequest parse( HttpServletRequest request )
-                    throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException, RequestParsingException {
         checkIfRequestIsNotNull( request );
         OwsRequestParser parser = createParser( request );
         return parser.parse( request );

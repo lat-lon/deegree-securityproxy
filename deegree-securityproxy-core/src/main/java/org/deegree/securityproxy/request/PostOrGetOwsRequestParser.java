@@ -64,7 +64,7 @@ public class PostOrGetOwsRequestParser implements OwsRequestParser {
 
     @Override
     public OwsRequest parse( HttpServletRequest request )
-                    throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException, RequestParsingException {
         checkIfRequestIsNotNull( request );
         OwsRequestParser parser = createParser( request );
         return parser.parse( request );

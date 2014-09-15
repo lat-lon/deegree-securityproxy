@@ -1,5 +1,10 @@
 package org.deegree.securityproxy.wfs;
 
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.exception.ServiceExceptionManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
@@ -8,16 +13,13 @@ import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.RequestParsingException;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This is an implementation of a {@link ServiceManager} for wfs requests. It contains a wfs specific parser, filter
@@ -80,7 +82,7 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     @Override
     public OwsRequest parse( HttpServletRequest httpRequest )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException, RequestParsingException {
         return parser.parse( httpRequest );
     }
 

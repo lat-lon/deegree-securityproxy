@@ -57,8 +57,10 @@ public interface OwsRequestParser {
      * @return {@link OwsRequest}. Never <code>null</code>
      * @throws UnsupportedRequestTypeException
      *             when the given request does not have the correct service type
+     * @throws RequestParsingException
+     *             - an error occurred during parsing
      */
     OwsRequest parse( HttpServletRequest request )
-                            throws UnsupportedRequestTypeException;
+                    throws UnsupportedRequestTypeException, RequestParsingException;
 
 }

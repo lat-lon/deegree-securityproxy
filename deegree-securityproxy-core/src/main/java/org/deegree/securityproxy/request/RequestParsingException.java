@@ -33,47 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-
-package org.deegree.securityproxy.wfs.request;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.deegree.securityproxy.request.OwsRequestParser;
-import org.junit.Test;
+package org.deegree.securityproxy.request;
 
 /**
- * Tests for {@link WfsRequestParser}.
+ * Indicates an error during parsing.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
- * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class WfsRequestParserTest {
+public class RequestParsingException extends Exception {
 
-    private final OwsRequestParser parser = new WfsRequestParser();
+    private static final long serialVersionUID = -6669926938157625497L;
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testParsePutRequestShouldThrowException()
-                    throws Exception {
-        HttpServletRequest putRequest = mockPutRequest();
-        parser.parse( putRequest );
+    public RequestParsingException() {
+        super();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testParseWithNullShouldThrowException()
-                    throws Exception {
-        parser.parse( null );
-    }
-
-    private HttpServletRequest mockPutRequest() {
-        HttpServletRequest request = mock( HttpServletRequest.class );
-        doReturn( "PUT" ).when( request ).getMethod();
-        return request;
+    public RequestParsingException( Throwable cause ) {
+        super( cause );
     }
 
 }
