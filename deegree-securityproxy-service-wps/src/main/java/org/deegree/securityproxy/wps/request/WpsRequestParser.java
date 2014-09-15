@@ -3,9 +3,10 @@ package org.deegree.securityproxy.wps.request;
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateServiceName;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-import static org.deegree.securityproxy.wps.request.WpsRequestParserUtils.evaluateServiceName;
+import static org.deegree.securityproxy.wps.request.WpsRequestParserUtils.parseServiceName;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.deegree.securityproxy.request.GetOwsRequestParserUtils;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;

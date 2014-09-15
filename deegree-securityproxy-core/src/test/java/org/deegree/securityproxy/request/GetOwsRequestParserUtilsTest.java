@@ -2,16 +2,21 @@ package org.deegree.securityproxy.request;
 
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateServiceName;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSet;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSingle;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.throwException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
+import org.mockito.Mockito;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -36,6 +41,10 @@ public class GetOwsRequestParserUtilsTest {
     private static final String[] NULL_VALUE = null;
 
     private Map<String, String[]> normalizedParameterMap = createTestParameterMap();
+
+    private static final String SERVICE_NAME = "serviceName";
+
+    private static final String SERVICE_NAME_WITH_PATH = "path/" + SERVICE_NAME;
 
     @Test
     public void testCheckSingleRequiredParameter() {
@@ -109,6 +118,37 @@ public class GetOwsRequestParserUtilsTest {
     public void testIsNotSingleFromNullValueShouldFail() {
         boolean isNotSingle = isNotSingle( NULL_VALUE );
         assertThat( isNotSingle, is( true ) );
+    }
+
+    @Test
+    public void testEvaluateServiceName()
+                    throws Exception {
+        HttpServletRequest request = mockRequest( SERVICE_NAME_WITH_PATH );
+
+        String serviceName = evaluateServiceName( request );
+        assertThat( serviceName, is( SERVICE_NAME ) );
+    }
+
+    @Test
+    public void testEvaluateServiceNameWithExtendedPath()
+                    throws Exception {
+        HttpServletRequest request = mockRequest( SERVICE_NAME );
+
+        String serviceName = evaluateServiceName( request );
+        assertThat( serviceName, is( SERVICE_NAME ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEvaluateServiceNameWithoutServiceName()
+                    throws Exception {
+        HttpServletRequest request = mockRequest( null );
+        evaluateServiceName( request );
+    }
+
+    private HttpServletRequest mockRequest( String serviceName ) {
+        HttpServletRequest servletRequest = Mockito.mock( HttpServletRequest.class );
+        when( servletRequest.getServletPath() ).thenReturn( serviceName );
+        return servletRequest;
     }
 
     private Map<String, String[]> createTestParameterMap() {
