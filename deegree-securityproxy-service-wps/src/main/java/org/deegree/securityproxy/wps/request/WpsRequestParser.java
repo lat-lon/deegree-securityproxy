@@ -5,6 +5,7 @@ import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRe
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
 import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
+import static org.deegree.securityproxy.wps.request.WpsRequestParserUtils.evaluateServiceName;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,7 +50,7 @@ public class WpsRequestParser implements OwsRequestParser {
     @Override
     @SuppressWarnings("unchecked")
     public WpsRequest parse( HttpServletRequest request )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         if ( request == null )
             throw new IllegalArgumentException( "Request must not be null!" );
         String serviceName = evaluateServiceName( request );
@@ -59,7 +60,7 @@ public class WpsRequestParser implements OwsRequestParser {
     }
 
     private WpsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         String type = normalizedParameterMap.get( REQUEST )[0];
         if ( GETCAPABILITIES.equalsIgnoreCase( type ) )
             return parseGetCapabilitiesRequest( serviceName, normalizedParameterMap );
@@ -71,7 +72,7 @@ public class WpsRequestParser implements OwsRequestParser {
     }
 
     private WpsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
         return new WpsRequest( GETCAPABILITIES, version, serviceName );
     }
@@ -90,25 +91,14 @@ public class WpsRequestParser implements OwsRequestParser {
         return new WpsRequest( EXECUTE, version, serviceName, extractedIdentifier );
     }
 
-    private String evaluateServiceName( HttpServletRequest request ) {
-        String servletPath = request.getServletPath();
-        if ( servletPath == null )
-            throw new IllegalArgumentException( "Service name must not be null!" );
-        if ( servletPath.contains( "/" ) ) {
-            String[] splittedServletPath = servletPath.split( "/" );
-            return splittedServletPath[splittedServletPath.length - 1];
-        }
-        return servletPath;
-    }
-
     private void checkParameters( Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         checkServiceParameter( normalizedParameterMap );
         checkRequestParameter( normalizedParameterMap );
     }
 
     private void checkServiceParameter( Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         String serviceType = checkSingleRequiredParameter( normalizedParameterMap, SERVICE );
         if ( !"wps".equalsIgnoreCase( serviceType ) ) {
             String msg = "Request must contain a \"service\" parameter with value \"wps\"";
