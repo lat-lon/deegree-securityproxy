@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2014 by:
+ Copyright (C) 2001-2011 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,27 +33,34 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wfs.request;
+package org.deegree.securityproxy.request;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.request.PostOrGetOwsRequestParser;
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
-
 /**
- * Parses an incoming {@link HttpServletRequest} of all supported request methods into a {@link WfsRequest}.
+ * Common parser for get and post requests, deciding which parser should be invoked by request method.
  * 
- * @deprecated use {@link PostOrGetOwsRequestParser} instead
+ * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
+ * @author last edited by: $Author: lyn $
  * 
- * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
- * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
- * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-@Deprecated
-public class WfsRequestParser implements OwsRequestParser {
+public class PostOrGetOwsRequestParser implements OwsRequestParser {
+
+    private final OwsRequestParser postParser;
+
+    private final OwsRequestParser getParser;
+
+    /**
+     * @param postParser
+     *            used to parse post request, never <code>null</code>
+     * @param getParser
+     *            used to parse get request, never <code>null</code>
+     */
+    public PostOrGetOwsRequestParser( OwsRequestParser postParser, OwsRequestParser getParser ) {
+        this.postParser = postParser;
+        this.getParser = getParser;
+    }
 
     @Override
     public OwsRequest parse( HttpServletRequest request )
@@ -66,9 +73,9 @@ public class WfsRequestParser implements OwsRequestParser {
     private OwsRequestParser createParser( HttpServletRequest request ) {
         String method = request.getMethod();
         if ( "GET".equals( method ) )
-            return new WfsGetRequestParser();
+            return getParser;
         else if ( "POST".equals( method ) )
-            return new WfsPostRequestParser();
+            return postParser;
         throw new IllegalArgumentException( "Could not find a parser for request method!" );
     }
 
