@@ -1,26 +1,24 @@
 package org.deegree.securityproxy.wcs;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.exception.ServiceExceptionManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.RequestParsingException;
+import org.deegree.securityproxy.request.ServiceTypeParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * This is an implementation of a {@link ServiceManager} for wcs-requests. It contains wcs specific parser,
@@ -87,13 +85,9 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
     }
 
     @Override
-    public boolean isServiceTypeSupported( HttpServletRequest request ) {
-        @SuppressWarnings("unchecked")
-        Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
-        String[] serviceTypes = kvpMap.get( "service" );
-        if ( serviceTypes == null || serviceTypes.length < 1 )
-            return false;
-        return "wcs".equalsIgnoreCase( serviceTypes[0] );
+    public boolean isServiceTypeSupported( HttpServletRequest request )  {
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        return "wcs".equalsIgnoreCase( serviceType );
     }
 
     @Override

@@ -53,12 +53,12 @@ public class WcsServiceManagerTest {
         filterManagers = mockResponseFilterManagers();
         serviceExceptionWrapper = mockServiceExceptionWrapper();
         wcsServiceManager = new WcsServiceManager( parser, requestAuthorizationManager, filterManagers,
-                                                   serviceExceptionWrapper );
+                        serviceExceptionWrapper );
     }
 
     @Test
     public void testParse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
         wcsServiceManager.parse( request );
 
@@ -67,7 +67,7 @@ public class WcsServiceManagerTest {
 
     @Test
     public void testAuthorize()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wcsServiceManager.authorize( authentication, owsRequest );
@@ -77,7 +77,7 @@ public class WcsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabled()
-                            throws Exception {
+                    throws Exception {
         ResponseFilterManager filterManager1 = mockEnabledResponseFilterManager();
         ResponseFilterManager filterManager2 = mockEnabledResponseFilterManager();
         ServiceManager wcsServiceManager = createWcsServiceManagerWithTwoFilterManager( filterManager1, filterManager2 );
@@ -91,7 +91,7 @@ public class WcsServiceManagerTest {
 
     @Test
     public void testFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ResponseFilterManager filterManager1 = mockEnabledResponseFilterManager();
         ResponseFilterManager filterManager2 = mockEnabledResponseFilterManager();
         ServiceManager wcsServiceManager = createWcsServiceManagerWithTwoFilterManager( filterManager1, filterManager2 );
@@ -106,7 +106,7 @@ public class WcsServiceManagerTest {
 
     @Test
     public void testRetrieveServiceExceptionWrapper()
-                            throws Exception {
+                    throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wcsServiceManager.retrieveServiceExceptionWrapper();
 
         assertThat( retrievedServiceExceptionWrapper, CoreMatchers.is( serviceExceptionWrapper ) );
@@ -114,7 +114,7 @@ public class WcsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnTrue()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
@@ -123,20 +123,18 @@ public class WcsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
         boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );
     }
 
-    @Test
-    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
-                            throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldThrowException()
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
-
-        assertThat( isSupported, is( false ) );
+        wcsServiceManager.isServiceTypeSupported( request );
     }
 
     @SuppressWarnings("unchecked")
@@ -190,6 +188,7 @@ public class WcsServiceManagerTest {
         HttpServletRequest request = mock( HttpServletRequest.class );
         Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( serviceValue );
         doReturn( kvpMap ).when( request ).getParameterMap();
+        doReturn( "GET" ).when( request ).getMethod();
         return request;
     }
 

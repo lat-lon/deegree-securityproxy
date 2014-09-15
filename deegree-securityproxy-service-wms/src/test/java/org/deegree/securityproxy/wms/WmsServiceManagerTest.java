@@ -53,12 +53,12 @@ public class WmsServiceManagerTest {
         requestAuthorizationManager = mockRequestAuthorizationManager();
         List<ResponseFilterManager> filterManagers = emptyList();
         wmsServiceManager = new WmsServiceManager( parser, requestAuthorizationManager, filterManagers,
-                                                   serviceExceptionWrapper );
+                        serviceExceptionWrapper );
     }
 
     @Test
     public void testParse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
         wmsServiceManager.parse( request );
 
@@ -67,7 +67,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testAuthorize()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wmsServiceManager.authorize( authentication, owsRequest );
@@ -77,7 +77,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabledWithoutFilterManagers()
-                            throws Exception {
+                    throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = wmsServiceManager.isResponseFilterEnabled( owsRequest );
 
@@ -86,7 +86,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testFilterResponseWithoutFilterManagers()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
@@ -98,7 +98,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabledWithFilterManager()
-                            throws Exception {
+                    throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = createWmsServiceMangerWithFilterManagers().isResponseFilterEnabled( owsRequest );
 
@@ -107,7 +107,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testFilterResponseWithFilterManager()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
@@ -120,7 +120,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testRetrieveServiceExceptionWrapper()
-                            throws Exception {
+                    throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wmsServiceManager.retrieveServiceExceptionWrapper();
 
         assertThat( retrievedServiceExceptionWrapper, is( serviceExceptionWrapper ) );
@@ -128,7 +128,7 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnTrue()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
         boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
 
@@ -137,20 +137,18 @@ public class WmsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
         boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );
     }
 
-    @Test
-    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
-                            throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldThrowException()
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
-
-        assertThat( isSupported, is( false ) );
+        wmsServiceManager.isServiceTypeSupported( request );
     }
 
     private RequestAuthorizationManager mockRequestAuthorizationManager() {
@@ -189,6 +187,7 @@ public class WmsServiceManagerTest {
         HttpServletRequest request = mock( HttpServletRequest.class );
         Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( serviceValue );
         doReturn( kvpMap ).when( request ).getParameterMap();
+        doReturn( "GET" ).when( request ).getMethod();
         return request;
     }
 
@@ -200,14 +199,14 @@ public class WmsServiceManagerTest {
     }
 
     private WmsServiceManager createWmsServiceMangerWithFilterManagers()
-                            throws IllegalArgumentException, ResponseFilterException {
+                    throws IllegalArgumentException, ResponseFilterException {
         List<ResponseFilterManager> filterManagers = asList( mockEnabledResponseFilterManager(),
                                                              mockDisabledResponseFilterManager() );
         return new WmsServiceManager( parser, requestAuthorizationManager, filterManagers, serviceExceptionWrapper );
     }
 
     private ResponseFilterManager mockEnabledResponseFilterManager()
-                            throws IllegalArgumentException, ResponseFilterException {
+                    throws IllegalArgumentException, ResponseFilterException {
         ResponseFilterManager responseFilterManager = mock( ResponseFilterManager.class );
         doReturn( true ).when( responseFilterManager ).canBeFiltered( Matchers.any( OwsRequest.class ) );
         doReturn( response ).when( responseFilterManager ).filterResponse( Mockito.any( StatusCodeResponseBodyWrapper.class ),

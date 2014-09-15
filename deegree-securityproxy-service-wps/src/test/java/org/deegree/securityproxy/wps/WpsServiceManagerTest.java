@@ -8,7 +8,6 @@ import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -52,12 +51,12 @@ public class WpsServiceManagerTest {
         reset( serviceExceptionWrapper, parser, requestAuthorizationManager );
         List<ResponseFilterManager> filterManagers = emptyList();
         wpsServiceManager = new WpsServiceManager( parser, requestAuthorizationManager, filterManagers,
-                                                   serviceExceptionWrapper );
+                        serviceExceptionWrapper );
     }
 
     @Test
     public void testParse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
         wpsServiceManager.parse( request );
 
@@ -66,7 +65,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testAuthorize()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         wpsServiceManager.authorize( authentication, owsRequest );
@@ -76,7 +75,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabledWithoutFilterManagers()
-                            throws Exception {
+                    throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = wpsServiceManager.isResponseFilterEnabled( owsRequest );
 
@@ -85,7 +84,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabledWithFilterManager()
-                            throws Exception {
+                    throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = createWpsServiceMangerWithFilterManagers().isResponseFilterEnabled( owsRequest );
 
@@ -94,7 +93,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testFilterResponseWithoutFilterManagers()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
@@ -106,7 +105,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testFilterResponseWithFilterManager()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
@@ -119,7 +118,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testRetrieveServiceExceptionWrapper()
-                            throws Exception {
+                    throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wpsServiceManager.retrieveServiceExceptionWrapper();
 
         assertThat( retrievedServiceExceptionWrapper, is( serviceExceptionWrapper ) );
@@ -127,7 +126,7 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWpsServiceParameterShouldReturnTrue()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wps" );
         boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
 
@@ -136,20 +135,18 @@ public class WpsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wms" );
         boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
 
         assertThat( isSupported, is( false ) );
     }
 
-    @Test
-    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
-                            throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldThrowException()
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
-
-        MatcherAssert.assertThat( isSupported, is( false ) );
+        wpsServiceManager.isServiceTypeSupported( request );
     }
 
     private HttpServletRequest mockHttpServletRequest() {
@@ -169,14 +166,14 @@ public class WpsServiceManagerTest {
     }
 
     private WpsServiceManager createWpsServiceMangerWithFilterManagers()
-                            throws IllegalArgumentException, ResponseFilterException {
+                    throws IllegalArgumentException, ResponseFilterException {
         List<ResponseFilterManager> filterManagers = asList( mockEnabledResponseFilterManager(),
                                                              mockDisabledResponseFilterManager() );
         return new WpsServiceManager( parser, requestAuthorizationManager, filterManagers, serviceExceptionWrapper );
     }
 
     private ResponseFilterManager mockEnabledResponseFilterManager()
-                            throws IllegalArgumentException, ResponseFilterException {
+                    throws IllegalArgumentException, ResponseFilterException {
         ResponseFilterManager responseFilterManager = mock( ResponseFilterManager.class );
         doReturn( true ).when( responseFilterManager ).canBeFiltered( Matchers.any( OwsRequest.class ) );
         doReturn( response ).when( responseFilterManager ).filterResponse( Mockito.any( StatusCodeResponseBodyWrapper.class ),
@@ -195,6 +192,7 @@ public class WpsServiceManagerTest {
         HttpServletRequest request = mock( HttpServletRequest.class );
         Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( serviceParameter );
         doReturn( kvpMap ).when( request ).getParameterMap();
+        doReturn( "GET" ).when( request ).getMethod();
         return request;
     }
 
