@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 /**

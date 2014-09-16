@@ -1,10 +1,10 @@
 package org.deegree.securityproxy.wps.request;
 
 import static java.util.Arrays.asList;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateServiceName;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkRequiredParameter;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.evaluateServiceName;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;

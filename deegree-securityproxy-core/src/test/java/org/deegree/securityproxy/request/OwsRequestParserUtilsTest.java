@@ -1,11 +1,11 @@
 package org.deegree.securityproxy.request;
 
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateServiceName;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSet;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.isNotSingle;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.throwException;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkRequiredParameter;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.evaluateServiceName;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.isNotSet;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.isNotSingle;
+import static org.deegree.securityproxy.request.OwsRequestParserUtils.throwException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -24,7 +24,7 @@ import org.mockito.Mockito;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetOwsRequestParserUtilsTest {
+public class OwsRequestParserUtilsTest {
 
     private static final String SINGLE = "single";
 

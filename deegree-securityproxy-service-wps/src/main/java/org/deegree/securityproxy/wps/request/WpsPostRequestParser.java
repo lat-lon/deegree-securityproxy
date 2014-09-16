@@ -48,7 +48,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.securityproxy.request.GetOwsRequestParserUtils;
+import org.deegree.securityproxy.request.OwsRequestParserUtils;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
@@ -88,7 +88,7 @@ public class WpsPostRequestParser implements OwsRequestParser {
 
     private OwsRequest parseRequest( HttpServletRequest request, XMLStreamReader reader )
                     throws XMLStreamException {
-        String serviceName = GetOwsRequestParserUtils.evaluateServiceName( request );
+        String serviceName = OwsRequestParserUtils.evaluateServiceName( request );
         OwsServiceVersion version = parseVersion( reader );
 
         List<String> identifiers = parseIdentifiers( reader );

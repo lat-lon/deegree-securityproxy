@@ -51,9 +51,9 @@ import javax.servlet.http.HttpServletRequest;
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetOwsRequestParserUtils {
+public class OwsRequestParserUtils {
 
-    private GetOwsRequestParserUtils() {
+    private OwsRequestParserUtils() {
     }
 
     public static String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap,
