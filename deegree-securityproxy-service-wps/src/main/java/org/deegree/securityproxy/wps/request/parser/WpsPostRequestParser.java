@@ -35,19 +35,6 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.request.parser;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
@@ -55,6 +42,17 @@ import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.request.parser.OwsRequestParserUtils;
 import org.deegree.securityproxy.request.parser.RequestParsingException;
 import org.deegree.securityproxy.wps.request.WpsRequest;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.createReader;
 
 /**
  * Parses wps post requests.
@@ -127,22 +125,6 @@ public class WpsPostRequestParser implements OwsRequestParser {
         QName rootElementName = parser.getName();
         if ( !EXECUTE_NAME.equals( rootElementName ) )
             throw new IllegalArgumentException( "Request is not Execute request!" );
-    }
-
-    private XMLStreamReader createReader( HttpServletRequest request )
-                    throws IOException, FactoryConfigurationError, XMLStreamException {
-        ServletInputStream inputStream = request.getInputStream();
-        XMLInputFactory factory = XMLInputFactory.newInstance();
-        XMLStreamReader reader = factory.createXMLStreamReader( inputStream );
-        forwardToRootElement( reader );
-        return reader;
-    }
-
-    private void forwardToRootElement( XMLStreamReader parser )
-                    throws XMLStreamException {
-        while ( !parser.isStartElement() ) {
-            parser.nextTag();
-        }
     }
 
 }
