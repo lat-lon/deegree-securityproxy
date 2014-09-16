@@ -1,6 +1,5 @@
 package org.deegree.securityproxy.request.parser;
 
-import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -9,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -33,11 +33,13 @@ public class ServiceTypeParserTest {
         assertThat( determinedServiceType, is( serviceType ) );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDetermineServiceTypeWithGetRequestWithMissingServiceParameterShouldThrowException()
+    @Test
+    public void testDetermineServiceTypeWithGetRequestWithMissingServiceParameterShouldReturnNull()
                     throws Exception {
         HttpServletRequest getRequest = mockGetRequest( null );
-        new ServiceTypeParser().determineServiceType( getRequest );
+        String determinedServiceType = new ServiceTypeParser().determineServiceType( getRequest );
+
+        assertThat( determinedServiceType, nullValue() );
     }
 
     @Ignore("Has not been implemented, yet")

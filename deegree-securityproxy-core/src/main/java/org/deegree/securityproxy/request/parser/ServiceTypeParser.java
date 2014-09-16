@@ -16,11 +16,12 @@ import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 public class ServiceTypeParser {
 
     /**
-     * Determines service type of given {@link javax.servlet.http.HttpServletRequest}.
+     * Determines service type of given {@link javax.servlet.http.HttpServletRequest}. GET and POST requests are
+     * supported.
      * 
      * @param request
      *            never <code>null</code>
-     * @return service type
+     * @return service type, <code>null</code> if no service type was found
      */
     public String determineServiceType( HttpServletRequest request ) {
         String method = request.getMethod();
@@ -29,8 +30,7 @@ public class ServiceTypeParser {
         } else if ( "POST".equals( method ) )
             // TODO: Implement parsing of POST requests.
             return null;
-        // TODO: Improve exception handling.
-        throw new IllegalArgumentException( "Cannot parse other request methods than GET or POST!" );
+        return null;
     }
 
     private String handleGetRequest( HttpServletRequest request ) {
@@ -38,7 +38,7 @@ public class ServiceTypeParser {
         Map<String, String[]> kvpMap = normalizeKvpMap( request.getParameterMap() );
         String[] serviceTypes = kvpMap.get( "service" );
         if ( serviceTypes == null || serviceTypes.length < 1 )
-            throw new IllegalArgumentException( "GET request does not contain a service parameter!" );
+            return null;
         return serviceTypes[0];
     }
 
