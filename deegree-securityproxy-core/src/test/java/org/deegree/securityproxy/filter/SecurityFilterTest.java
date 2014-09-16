@@ -292,6 +292,7 @@ public class SecurityFilterTest {
         parameterMap.put( "service", new String[] { "WMS" } );
         parameterMap.put( "request", new String[] { "GetCapabilities" } );
         when( mockRequest.getParameterMap() ).thenReturn( parameterMap );
+        doReturn( "GET" ).when( mockRequest ).getMethod();
         return mockRequest;
     }
 
