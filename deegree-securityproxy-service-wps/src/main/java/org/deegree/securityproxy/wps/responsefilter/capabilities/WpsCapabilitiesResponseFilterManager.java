@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.responsefilter.capabilities;
 
-import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
 
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;

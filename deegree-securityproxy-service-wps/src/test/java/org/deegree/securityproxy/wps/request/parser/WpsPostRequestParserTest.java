@@ -110,7 +110,7 @@ public class WpsPostRequestParserTest {
                     throws IOException {
         HttpServletRequest servletRequest = mock( HttpServletRequest.class );
         when( servletRequest.getServletPath() ).thenReturn( "serviceName" );
-        final InputStream requestStream = WpsRequestParserTest.class.getResourceAsStream( reqestResource );
+        final InputStream requestStream = WpsGetRequestParserTest.class.getResourceAsStream( reqestResource );
         ServletInputStream servletInputStream = new ServletInputStream() {
             @Override
             public int read()

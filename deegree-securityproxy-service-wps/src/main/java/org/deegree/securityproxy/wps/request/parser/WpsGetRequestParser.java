@@ -26,7 +26,7 @@ import org.deegree.securityproxy.wps.request.WpsRequest;
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-public class WpsRequestParser implements OwsRequestParser {
+public class WpsGetRequestParser implements OwsRequestParser {
 
     public static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( 1, 0, 0 );
 

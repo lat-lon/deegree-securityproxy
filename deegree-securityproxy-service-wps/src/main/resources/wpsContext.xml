@@ -20,7 +20,7 @@
     <constructor-arg name="getParser" ref="wpsGetRequestParser" />
   </bean>
 
-  <bean id="wpsGetRequestParser" class="org.deegree.securityproxy.wps.request.parser.WpsRequestParser" />
+  <bean id="wpsGetRequestParser" class="org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser" />
 
   <bean id="wpsPostRequestParser" class="org.deegree.securityproxy.wps.request.parser.WpsPostRequestParser" />
 

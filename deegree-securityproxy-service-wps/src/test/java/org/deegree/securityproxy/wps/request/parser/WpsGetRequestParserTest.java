@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.request.parser;
 
-import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.GETCAPABILITIES;
-import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.VERSION_100;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -56,13 +56,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Tests for {@link WpsRequestParser}.
+ * Tests for {@link WpsGetRequestParser}.
  * 
  * @author <a href="mailto:wanhoff@lat-lon.de">Jeronimo Wanhoff</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-public class WpsRequestParserTest {
+public class WpsGetRequestParserTest {
 
     private static final String REQUEST_PARAM = "REQUEST";
 
@@ -80,7 +80,7 @@ public class WpsRequestParserTest {
 
     private static final String IDENTIFIER_2 = "process2";
 
-    private final WpsRequestParser parser = new WpsRequestParser();
+    private final WpsGetRequestParser parser = new WpsGetRequestParser();
 
     /* Tests for valid requests for WMS GetCapabilities */
     @Test
