@@ -21,6 +21,11 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-core</artifactId>
+      <type>test-jar</type>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
