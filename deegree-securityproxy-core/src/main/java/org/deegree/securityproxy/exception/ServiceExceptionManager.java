@@ -58,10 +58,10 @@ public interface ServiceExceptionManager {
      * Check if a given request is supported by the {@link ServiceManager}.
      *
      * @param serviceType
-     *            may be <code>null</code>. If <code>null</code>, request parameter can be used to determine if service
-     *            type is supported.
+     *            may be <code>null</code>. If <code>null</code>, request parameter is used to determine if service type
+     *            is supported.
      * @param request
-     *            never <code>null</code>. If serviceType parameter is <code>null</code>, this parameter can be used to
+     *            never <code>null</code>. If serviceType parameter is <code>null</code>, this parameter is used to
      *            determine if service type is supported.
      * @return <code>true</code> if this {@link ServiceManager} can handle the requested {@link HttpServletRequest},
      *         <code>false</code> otherwise.
