@@ -25,6 +25,7 @@ import org.deegree.securityproxy.exception.OwsServiceExceptionHandler;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
+import org.deegree.securityproxy.request.HttpServletRequestBodyWrapper;
 import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.MissingParameterException;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -78,21 +79,20 @@ public class SecurityFilter implements Filter {
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
                     throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
-        String uuid = createUuidHeader( wrappedResponse );
+        HttpServletRequest httpRequest = wrapRequest( servletRequest );
+        StatusCodeResponseBodyWrapper response = wrapResponse( servletResponse );
+        String uuid = createUuidHeader( response );
 
         try {
             checkServiceType( servletRequest );
             ServiceManager serviceManager = detectServiceManager( httpRequest );
-            handleAuthorization( chain, httpRequest, wrappedResponse, uuid, serviceManager );
+            handleAuthorization( chain, httpRequest, response, uuid, serviceManager );
         } catch ( UnsupportedRequestTypeException e ) {
-            owsServiceExceptionHandler.writeException( wrappedResponse, INVALID_PARAMETER, "service" );
-            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, wrappedResponse );
+            owsServiceExceptionHandler.writeException( response, INVALID_PARAMETER, "service" );
+            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, response );
         } catch ( MissingParameterException e ) {
-            owsServiceExceptionHandler.writeException( wrappedResponse, MISSING_PARAMETER, e.getParameterName() );
-            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, wrappedResponse );
+            owsServiceExceptionHandler.writeException( response, MISSING_PARAMETER, e.getParameterName() );
+            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, response );
         }
     }
 
@@ -208,6 +208,18 @@ public class SecurityFilter implements Filter {
             }
         }
         throw new UnsupportedRequestTypeException( UNSUPPORTED_REQUEST_ERROR_MSG );
+    }
+
+    private HttpServletRequest wrapRequest( ServletRequest servletRequest )
+                    throws IOException {
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        return new HttpServletRequestBodyWrapper( httpRequest );
+    }
+
+    private StatusCodeResponseBodyWrapper wrapResponse( ServletResponse servletResponse ) {
+        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+        StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
+        return wrappedResponse;
     }
 
 }
