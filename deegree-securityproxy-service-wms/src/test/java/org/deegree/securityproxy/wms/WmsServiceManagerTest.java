@@ -145,11 +145,13 @@ public class WmsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIsServiceTypeSupportedWithNoServiceParameterShouldThrowException()
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        wmsServiceManager.isServiceTypeSupported( request );
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( request );
+
+        assertThat( isSupported, is( false ) );
     }
 
     private RequestAuthorizationManager mockRequestAuthorizationManager() {

@@ -8,6 +8,7 @@ import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -15,7 +16,6 @@ import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,11 +143,13 @@ public class WpsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIsServiceTypeSupportedWithNoServiceParameterShouldThrowException()
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        wpsServiceManager.isServiceTypeSupported( request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
+
+        MatcherAssert.assertThat( isSupported, is( false ) );
     }
 
     private HttpServletRequest mockHttpServletRequest() {

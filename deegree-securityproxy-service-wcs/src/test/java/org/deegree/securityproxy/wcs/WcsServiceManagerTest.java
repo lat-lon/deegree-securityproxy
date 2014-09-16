@@ -131,11 +131,13 @@ public class WcsServiceManagerTest {
         assertThat( isSupported, is( false ) );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIsServiceTypeSupportedWithNoServiceParameterShouldThrowException()
+    @Test
+    public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        wcsServiceManager.isServiceTypeSupported( request );
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( request );
+
+        assertThat( isSupported, is( false ) );
     }
 
     @SuppressWarnings("unchecked")
