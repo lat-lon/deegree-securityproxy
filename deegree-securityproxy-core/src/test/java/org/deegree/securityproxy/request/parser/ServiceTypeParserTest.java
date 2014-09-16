@@ -1,9 +1,11 @@
 package org.deegree.securityproxy.request.parser;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,6 +14,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link org.deegree.securityproxy.request.parser.ServiceTypeParser}
@@ -42,15 +45,22 @@ public class ServiceTypeParserTest {
         assertThat( determinedServiceType, nullValue() );
     }
 
-    @Ignore("Has not been implemented, yet")
     @Test
     public void testDetermineServiceTypeWithPostRequest()
                     throws Exception {
-        final String serviceType = "wps";
-        HttpServletRequest postRequest = mockPostRequest();
+        HttpServletRequest postRequest = mockPostRequest( "GetCapabilities.xml" );
         String determinedServiceType = new ServiceTypeParser().determineServiceType( postRequest );
 
-        assertThat( determinedServiceType, is( serviceType ) );
+        assertThat( determinedServiceType, is( "WPS" ) );
+    }
+
+    @Test
+    public void testDetermineServiceTypeWithPostRequestWithMissingServiceParameterShouldReturnNull()
+                    throws Exception {
+        HttpServletRequest postRequest = mockPostRequest( "GetCapabilities-MissingServiceParameter.xml" );
+        String determinedServiceType = new ServiceTypeParser().determineServiceType( postRequest );
+
+        assertThat( determinedServiceType, nullValue() );
     }
 
     private HttpServletRequest mockGetRequest( String serviceParameter ) {
@@ -70,8 +80,19 @@ public class ServiceTypeParserTest {
         return kvpMap;
     }
 
-    private HttpServletRequest mockPostRequest() {
+    private HttpServletRequest mockPostRequest( String requestResource )
+                    throws IOException {
         HttpServletRequest request = mock( HttpServletRequest.class );
+        when( request.getServletPath() ).thenReturn( "serviceName" );
+        final InputStream requestStream = ServiceTypeParserTest.class.getResourceAsStream( requestResource );
+        ServletInputStream servletInputStream = new ServletInputStream() {
+            @Override
+            public int read()
+                            throws IOException {
+                return requestStream.read();
+            }
+        };
+        when( request.getInputStream() ).thenReturn( servletInputStream );
         doReturn( "POST" ).when( request ).getMethod();
         return request;
     }
