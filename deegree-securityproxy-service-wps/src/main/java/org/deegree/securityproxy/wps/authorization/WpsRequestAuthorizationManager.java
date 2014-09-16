@@ -1,8 +1,8 @@
 package org.deegree.securityproxy.wps.authorization;
 
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.GETCAPABILITIES;
 
 import java.util.Collection;
 

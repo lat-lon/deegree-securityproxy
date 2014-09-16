@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wps.request;
+package org.deegree.securityproxy.wps.request.parser;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,6 +48,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.junit.Test;
 
 /**

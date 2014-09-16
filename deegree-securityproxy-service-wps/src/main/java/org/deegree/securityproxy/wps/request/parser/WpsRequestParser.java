@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.wps.request;
+package org.deegree.securityproxy.wps.request.parser;
 
 import static java.util.Arrays.asList;
 import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkRequiredParameter;
@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.wps.request.WpsRequest;
 
 /**
  * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a {@link WpsRequest}.

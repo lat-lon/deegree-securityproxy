@@ -35,10 +35,10 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.responsefilter.capabilities;
 
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.WPS_SERVICE;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.WPS_SERVICE;
 
 import java.util.ArrayList;
 import java.util.Collection;

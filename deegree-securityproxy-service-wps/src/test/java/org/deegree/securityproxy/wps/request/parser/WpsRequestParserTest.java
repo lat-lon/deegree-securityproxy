@@ -33,12 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wps.request;
+package org.deegree.securityproxy.wps.request.parser;
 
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.VERSION_100;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
@@ -51,6 +51,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -84,7 +85,7 @@ public class WpsRequestParserTest {
     /* Tests for valid requests for WMS GetCapabilities */
     @Test
     public void testParseFromGetCapabilitiesRequestShouldIgnoreIdentifiers()
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWpsGetCapabilitiesRequest();
         WpsRequest wpsRequest = parser.parse( request );
         assertThat( wpsRequest.getIdentifiers().isEmpty(), is( true ) );
@@ -92,7 +93,7 @@ public class WpsRequestParserTest {
 
     @Test
     public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWpsGetCapabilitiesRequest();
         WpsRequest wmsRequest = parser.parse( request );
         assertThat( wmsRequest.getOperationType(), is( GETCAPABILITIES ) );
@@ -102,7 +103,7 @@ public class WpsRequestParserTest {
 
     @Test
     public void testParseFromGetCapabilitiesRequestWithExtendedPathShouldParseServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWpsGetCapabilitiesRequestWithExtendedPath();
         WpsRequest wpsRequest = parser.parse( request );
         assertThat( wpsRequest.getOperationType(), is( GETCAPABILITIES ) );
@@ -113,7 +114,7 @@ public class WpsRequestParserTest {
     /* Test for valid requests for WPS DescribeProcess */
     @Test
     public void testParseFromDescribeProcessRequestShouldParseIdentifiersAndOperationTypeAndVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWpsDescribeProceessRequest();
         WpsRequest wpsRequest = parser.parse( request );
         List<String> identifiers = wpsRequest.getIdentifiers();
@@ -128,7 +129,7 @@ public class WpsRequestParserTest {
     /* Test for valid requests for WPS Execute */
     @Test
     public void testParseFromGetMapRequestShouldParseIdentifierAndOperationTypeAndServiceVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         HttpServletRequest request = mockWpsExecuteRequest();
         WpsRequest wpsRequest = parser.parse( request );
         List<String> identifiers = wpsRequest.getIdentifiers();
@@ -140,7 +141,7 @@ public class WpsRequestParserTest {
     }
 
     public void testParse()
-                            throws Exception {
+                    throws Exception {
 
     }
 

@@ -1,9 +1,9 @@
 package org.deegree.securityproxy.wps.authorization;
 
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.GETCAPABILITIES;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.VERSION_100;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsRequestParser.VERSION_100;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;

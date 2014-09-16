@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.wps.request;
+package org.deegree.securityproxy.wps.request.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +54,7 @@ import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.request.parser.OwsRequestParserUtils;
 import org.deegree.securityproxy.request.parser.RequestParsingException;
+import org.deegree.securityproxy.wps.request.WpsRequest;
 
 /**
  * Parses wps post requests.
