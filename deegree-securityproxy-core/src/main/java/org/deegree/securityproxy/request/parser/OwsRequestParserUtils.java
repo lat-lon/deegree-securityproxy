@@ -33,7 +33,7 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
 
 import static java.lang.String.format;
 
@@ -42,6 +42,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 
 /**
  * Contains some useful methods to parse {@link OwsRequest}.

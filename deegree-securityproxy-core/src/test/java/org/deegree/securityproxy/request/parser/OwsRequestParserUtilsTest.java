@@ -1,11 +1,11 @@
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
 
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkRequiredParameter;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.evaluateServiceName;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.isNotSet;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.isNotSingle;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.throwException;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkRequiredParameter;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.evaluateServiceName;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.isNotSet;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.isNotSingle;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.throwException;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;

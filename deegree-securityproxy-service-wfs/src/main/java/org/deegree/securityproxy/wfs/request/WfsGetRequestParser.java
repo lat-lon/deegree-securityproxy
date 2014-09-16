@@ -1,16 +1,17 @@
 package org.deegree.securityproxy.wfs.request;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 /**

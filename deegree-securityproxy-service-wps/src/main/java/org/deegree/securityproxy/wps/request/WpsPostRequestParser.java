@@ -48,12 +48,12 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.deegree.securityproxy.request.OwsRequestParserUtils;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.request.RequestParsingException;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.OwsRequestParserUtils;
+import org.deegree.securityproxy.request.parser.RequestParsingException;
 
 /**
  * Parses wps post requests.

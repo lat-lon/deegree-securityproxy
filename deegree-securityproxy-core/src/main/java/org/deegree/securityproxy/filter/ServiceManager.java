@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.RequestParsingException;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.RequestParsingException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;

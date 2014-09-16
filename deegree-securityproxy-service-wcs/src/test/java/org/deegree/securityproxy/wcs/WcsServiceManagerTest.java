@@ -5,7 +5,7 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -14,6 +14,7 @@ import org.mockito.Matchers;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

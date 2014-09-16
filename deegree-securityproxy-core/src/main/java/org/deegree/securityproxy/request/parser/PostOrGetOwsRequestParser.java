@@ -33,9 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 /**
  * Common parser for get and post requests, deciding which parser should be invoked by request method.

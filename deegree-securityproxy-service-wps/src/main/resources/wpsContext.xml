@@ -15,7 +15,7 @@
 
   <bean id="wpsRequestAuthorizationManager" class="org.deegree.securityproxy.wps.authorization.WpsRequestAuthorizationManager" />
 
-  <bean id="wpsRequestParser" class="org.deegree.securityproxy.request.PostOrGetOwsRequestParser">
+  <bean id="wpsRequestParser" class="org.deegree.securityproxy.request.parser.PostOrGetOwsRequestParser">
     <constructor-arg name="postParser" ref="wpsPostRequestParser" />
     <constructor-arg name="getParser" ref="wpsGetRequestParser" />
   </bean>

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.junit.Test;
 
 /**

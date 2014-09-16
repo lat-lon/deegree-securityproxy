@@ -1,10 +1,10 @@
 package org.deegree.securityproxy.wcs.request;
 
 import static java.util.Arrays.asList;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.isNotSet;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.isNotSingle;
-import static org.deegree.securityproxy.request.OwsRequestParserUtils.throwException;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.isNotSet;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.isNotSingle;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.throwException;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;
@@ -14,9 +14,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
 
 /**
  * Parses an incoming {@link HttpServletRequest} into a {@link WcsRequest}.

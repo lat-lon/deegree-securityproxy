@@ -1,7 +1,7 @@
 //$HeadURL$
 /*----------------------------------------------------------------------------
  This file is part of deegree, http://deegree.org/
- Copyright (C) 2001-2011 by:
+ Copyright (C) 2001-2014 by:
  - Department of Geography, University of Bonn -
  and
  - lat/lon GmbH -
@@ -33,34 +33,26 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
-
-import javax.servlet.http.HttpServletRequest;
+package org.deegree.securityproxy.request.parser;
 
 /**
- * Parsing of {@link OwsRequest}s from a {@link HttpServletRequest}
+ * Indicates an error during parsing.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public interface OwsRequestParser {
+public class RequestParsingException extends Exception {
 
-    /**
-     * Parses an incoming {@link HttpServletRequest} into a {@link OwsRequest}.
-     * 
-     * @param request
-     *            never <code>null</code>. Must contain the following parameters exactly once ignoring the casing:
-     *            "request" and "service". Must contain the following parameter not more than once: "coverage". May
-     *            contain the following parameter not more than once: "version".
-     * @return {@link OwsRequest}. Never <code>null</code>
-     * @throws UnsupportedRequestTypeException
-     *             when the given request does not have the correct service type
-     * @throws RequestParsingException
-     *             - an error occurred during parsing
-     */
-    OwsRequest parse( HttpServletRequest request )
-                    throws UnsupportedRequestTypeException, RequestParsingException;
+    private static final long serialVersionUID = -6669926938157625497L;
+
+    public RequestParsingException() {
+        super();
+    }
+
+    public RequestParsingException( Throwable cause ) {
+        super( cause );
+    }
 
 }
