@@ -35,21 +35,16 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.request.parser;
 
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsServiceVersion;
+import static java.lang.String.format;
 
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
+import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 
 /**
  * Contains some useful methods to parse {@link OwsRequest}.
@@ -168,33 +163,6 @@ public class OwsRequestParserUtils {
             return splittedServletPath[splittedServletPath.length - 1];
         }
         return servletPath;
-    }
-
-    /**
-     * Creates {@link javax.xml.stream.XMLStreamReader} of a {@link javax.servlet.http.HttpServletRequest}. Can be used
-     * to read the body of a POST request.
-     * 
-     * @param request
-     *            never <code>null</code>
-     * @return reader
-     * @throws IOException
-     * @throws FactoryConfigurationError
-     * @throws XMLStreamException
-     */
-    public static XMLStreamReader createReader( HttpServletRequest request )
-                    throws IOException, FactoryConfigurationError, XMLStreamException {
-        ServletInputStream inputStream = request.getInputStream();
-        XMLInputFactory factory = XMLInputFactory.newInstance();
-        XMLStreamReader reader = factory.createXMLStreamReader( inputStream );
-        skipStartDocument( reader );
-        return reader;
-    }
-
-    private static void skipStartDocument( XMLStreamReader parser )
-                    throws XMLStreamException {
-        while ( !parser.isStartElement() ) {
-            parser.nextTag();
-        }
     }
 
     private static String parseVersion( Map<String, String[]> normalizedParameterMap, String parameterName ) {

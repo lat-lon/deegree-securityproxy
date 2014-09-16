@@ -1,19 +1,20 @@
 package org.deegree.securityproxy.request.parser;
 
-import org.apache.log4j.Logger;
+import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
+import static org.deegree.securityproxy.xml.XmlStreamUtils.createReader;
+
+import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.IOException;
-import java.util.Map;
 
-import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
-import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.createReader;
+import org.apache.log4j.Logger;
 
 /**
  * Simple parser to determine the service type of a request. Currently this parser supports GET and POST requests.
- *
+ * 
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * 
@@ -52,7 +53,7 @@ public class ServiceTypeParser {
 
     private String handlePostRequest( HttpServletRequest request ) {
         try {
-            XMLStreamReader reader = createReader( request );
+            XMLStreamReader reader = createReader( request.getInputStream() );
             return reader.getAttributeValue( null, "service" );
         } catch ( IOException e ) {
             return handleExceptionOfReader( e );
