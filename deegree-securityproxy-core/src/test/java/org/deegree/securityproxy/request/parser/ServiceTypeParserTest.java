@@ -1,5 +1,6 @@
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
 
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link org.deegree.securityproxy.request.ServiceTypeParser}
+ * Tests for {@link org.deegree.securityproxy.request.parser.ServiceTypeParser}
  *
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $

@@ -1,4 +1,4 @@
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;

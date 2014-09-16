@@ -7,7 +7,7 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.ServiceTypeParser;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.request.parser.RequestParsingException;
