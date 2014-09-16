@@ -7,7 +7,6 @@ import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
 import org.deegree.securityproxy.request.HttpServletRequestBodyWrapper;
-import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.MissingParameterException;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
@@ -84,7 +83,7 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( response );
 
         try {
-            checkServiceType( servletRequest );
+            checkServiceType( httpRequest );
             ServiceManager serviceManager = detectServiceManager( httpRequest );
             handleAuthorization( chain, httpRequest, response, uuid, serviceManager );
         } catch ( UnsupportedRequestTypeException e ) {
@@ -190,12 +189,10 @@ public class SecurityFilter implements Filter {
             httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
     }
 
-    private void checkServiceType( ServletRequest request )
+    private void checkServiceType( HttpServletRequest request )
                     throws MissingParameterException {
-        @SuppressWarnings("unchecked")
-        Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
-        String[] serviceTypes = kvpMap.get( "service" );
-        if ( serviceTypes == null || serviceTypes.length < 1 )
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        if ( serviceType == null )
             throw new MissingParameterException( "service" );
     }
 
