@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
   <version>1.6-SNAPSHOT</version>
   <name>deegree security proxy</name>
-  <description>deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services</description>
+  <description>deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services
+  </description>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
   <inceptionYear>2013</inceptionYear>
   <licenses>
@@ -29,6 +31,25 @@
     <j2ep.version>1.2-securityproxy-master</j2ep.version>
     <geotools.version>9.5</geotools.version>
   </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.5</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <dependencyManagement>
     <dependencies>
@@ -71,6 +92,13 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-matcher</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-core</artifactId>
+        <type>test-jar</type>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
