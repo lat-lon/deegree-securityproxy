@@ -35,21 +35,20 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.request.parser;
 
+import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.wps.request.WpsRequest;
+import org.junit.Test;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-
-import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.wps.request.WpsRequest;
-import org.junit.Test;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -90,27 +89,27 @@ public class WpsPostRequestParserTest {
 
     private HttpServletRequest mockGetCapabilitiesRequest()
                     throws IOException {
-        String reqestResource = "GetCapabilities.xml";
-        return mockPostRequest( reqestResource );
+        String requestResource = "GetCapabilities.xml";
+        return mockPostRequest( requestResource );
     }
 
     private HttpServletRequest mockExecuteRequest()
                     throws IOException {
-        String reqestResource = "Execute.xml";
-        return mockPostRequest( reqestResource );
+        String requestResource = "Execute.xml";
+        return mockPostRequest( requestResource );
     }
 
     private HttpServletRequest mockGetCapabilitiesWfsRequest()
                     throws IOException {
-        String reqestResource = "GetCapabilities-WFS.xml";
-        return mockPostRequest( reqestResource );
+        String requestResource = "GetCapabilities-WFS.xml";
+        return mockPostRequest( requestResource );
     }
 
-    private HttpServletRequest mockPostRequest( String reqestResource )
+    private HttpServletRequest mockPostRequest( String requestResource )
                     throws IOException {
         HttpServletRequest servletRequest = mock( HttpServletRequest.class );
         when( servletRequest.getServletPath() ).thenReturn( "serviceName" );
-        final InputStream requestStream = WpsGetRequestParserTest.class.getResourceAsStream( reqestResource );
+        final InputStream requestStream = WpsGetRequestParserTest.class.getResourceAsStream( requestResource );
         ServletInputStream servletInputStream = new ServletInputStream() {
             @Override
             public int read()
