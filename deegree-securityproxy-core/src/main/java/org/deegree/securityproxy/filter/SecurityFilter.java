@@ -83,8 +83,8 @@ public class SecurityFilter implements Filter {
         String uuid = createUuidHeader( response );
 
         try {
-            checkServiceType( httpRequest );
-            ServiceManager serviceManager = detectServiceManager( httpRequest );
+            String serviceType = retrieveAndCheckServiceType( httpRequest );
+            ServiceManager serviceManager = detectServiceManager( serviceType, httpRequest );
             handleAuthorization( chain, httpRequest, response, uuid, serviceManager );
         } catch ( UnsupportedRequestTypeException e ) {
             owsServiceExceptionHandler.writeException( response, INVALID_PARAMETER, "service" );
@@ -189,17 +189,17 @@ public class SecurityFilter implements Filter {
             httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
     }
 
-    private void checkServiceType( HttpServletRequest request )
+    private String retrieveAndCheckServiceType( HttpServletRequest request )
                     throws MissingParameterException {
         String serviceType = new ServiceTypeParser().determineServiceType( request );
-        if ( serviceType == null )
+        if ( serviceType == null && "GET".equals( request.getMethod() ) )
             throw new MissingParameterException( "service" );
+        return serviceType;
     }
 
-    private ServiceManager detectServiceManager( HttpServletRequest request )
+    private ServiceManager detectServiceManager( String serviceType, HttpServletRequest request )
                     throws UnsupportedRequestTypeException {
         if ( serviceManagers != null ) {
-            String serviceType = new ServiceTypeParser().determineServiceType( request );
             for ( ServiceManager serviceManager : serviceManagers ) {
                 if ( serviceManager.isServiceTypeSupported( serviceType, request ) )
                     return serviceManager;
