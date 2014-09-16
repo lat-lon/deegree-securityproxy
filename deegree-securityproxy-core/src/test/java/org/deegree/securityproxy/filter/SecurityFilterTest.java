@@ -280,6 +280,7 @@ public class SecurityFilterTest {
         when( mockRequest.getRequestURL() ).thenReturn( new StringBuffer( TARGET_URL ) );
         when( mockRequest.getQueryString() ).thenReturn( null );
         when( mockRequest.getParameterMap() ).thenReturn( new HashMap<String, String[]>() );
+        doReturn( "GET" ).when( mockRequest ).getMethod();
         return mockRequest;
     }
 
