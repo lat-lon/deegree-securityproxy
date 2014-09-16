@@ -218,8 +218,7 @@ public class SecurityFilter implements Filter {
 
     private StatusCodeResponseBodyWrapper wrapResponse( ServletResponse servletResponse ) {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
-        return wrappedResponse;
+        return new StatusCodeResponseBodyWrapper( httpResponse );
     }
 
 }
