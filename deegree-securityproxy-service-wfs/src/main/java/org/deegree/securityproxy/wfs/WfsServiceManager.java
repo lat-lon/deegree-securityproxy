@@ -9,6 +9,7 @@ import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.request.parser.RequestParsingException;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
@@ -116,6 +117,8 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     @Override
     public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
+        if ( serviceType == null )
+            serviceType = new ServiceTypeParser().determineServiceType( request );
         return "wfs".equalsIgnoreCase( serviceType );
     }
 
