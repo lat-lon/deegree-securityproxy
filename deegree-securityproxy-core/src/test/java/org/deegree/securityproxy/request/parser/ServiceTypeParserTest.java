@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link org.deegree.securityproxy.request.parser.ServiceTypeParser}
+ * Tests for {@link org.deegree.securityproxy.request.parser.ServiceTypeParser}.
  *
  * @author <a href="mailto:stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $

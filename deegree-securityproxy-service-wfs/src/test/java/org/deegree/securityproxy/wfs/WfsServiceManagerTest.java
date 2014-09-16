@@ -5,6 +5,7 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -131,7 +132,8 @@ public class WfsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWfsServiceParameterShouldReturnTrue()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWfsServiceParameter();
-        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( true ) );
     }
@@ -140,7 +142,8 @@ public class WfsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
-        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( false ) );
     }
@@ -149,7 +152,8 @@ public class WfsServiceManagerTest {
     public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( false ) );
     }

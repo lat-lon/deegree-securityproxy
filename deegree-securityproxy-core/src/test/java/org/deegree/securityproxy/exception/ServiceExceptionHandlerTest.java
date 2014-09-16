@@ -1,5 +1,19 @@
 package org.deegree.securityproxy.exception;
 
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_AUTHENTICATION_DENIED_STATUS_CODE;
 import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_AUTHORIZATION_DENIED_STATUS_CODE;
 import static org.deegree.securityproxy.exception.ServiceExceptionWrapper.DEFAULT_BODY;
@@ -7,20 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 
 /**
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
@@ -55,7 +55,7 @@ public class ServiceExceptionHandlerTest {
 
     @Test
     public void testCommenceWithResponsibleManager()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         HttpServletRequest request = mockRequest;
         ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithManager( request );
 
@@ -67,7 +67,7 @@ public class ServiceExceptionHandlerTest {
 
     @Test
     public void testCommenceWithoutResponsibleManagers()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutResponibleManager();
 
         entryPoint.commence( mockRequest, mockResponse, mockException );
@@ -78,7 +78,7 @@ public class ServiceExceptionHandlerTest {
 
     @Test
     public void testCommenceWithoutManagers()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutManagers();
 
         entryPoint.commence( mockRequest, mockResponse, mockException );
@@ -89,7 +89,7 @@ public class ServiceExceptionHandlerTest {
 
     @Test
     public void testHandleWithResponsibleManager()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         HttpServletRequest request = mockRequest;
         ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithManager( request );
 
@@ -101,7 +101,7 @@ public class ServiceExceptionHandlerTest {
 
     @Test
     public void testHandleWithoutResponsibleManagers()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutResponibleManager();
 
         entryPoint.handle( mockRequest, mockResponse, mockAccessDeniedException );
@@ -112,7 +112,7 @@ public class ServiceExceptionHandlerTest {
 
     @Test
     public void testHandleWithoutManagers()
-                            throws IOException, ServletException {
+                    throws IOException, ServletException {
         ServiceExceptionHandler entryPoint = createServiceExceptionHandlerWithoutManagers();
 
         entryPoint.handle( mockRequest, mockResponse, mockAccessDeniedException );
@@ -138,7 +138,8 @@ public class ServiceExceptionHandlerTest {
                                                                    boolean isSupported ) {
         List<ServiceExceptionManager> serviceExceptionManagers = new ArrayList<ServiceExceptionManager>();
         ServiceExceptionManager serviceExceptionManager = mock( ServiceExceptionManager.class );
-        when( serviceExceptionManager.isServiceTypeSupported( httpServletRequest ) ).thenReturn( isSupported );
+        String serviceType = new ServiceTypeParser().determineServiceType( httpServletRequest );
+        when( serviceExceptionManager.isServiceTypeSupported( serviceType, httpServletRequest ) ).thenReturn( isSupported );
         ServiceExceptionWrapper serviceExceptionWrapper = mockServiceExceptionWrapper();
         when( serviceExceptionManager.retrieveServiceExceptionWrapper() ).thenReturn( serviceExceptionWrapper );
         serviceExceptionManagers.add( serviceExceptionManager );

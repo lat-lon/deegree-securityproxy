@@ -5,6 +5,7 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -129,7 +130,8 @@ public class WpsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWpsServiceParameterShouldReturnTrue()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wps" );
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( true ) );
     }
@@ -138,7 +140,8 @@ public class WpsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wms" );
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( false ) );
     }
@@ -147,7 +150,8 @@ public class WpsServiceManagerTest {
     public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( serviceType, request );
 
         MatcherAssert.assertThat( isSupported, is( false ) );
     }

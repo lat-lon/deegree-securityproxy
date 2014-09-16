@@ -6,7 +6,6 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.deegree.securityproxy.request.parser.RequestParsingException;
@@ -17,7 +16,6 @@ import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
 import java.util.Map;
 
@@ -117,8 +115,7 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
     }
 
     @Override
-    public boolean isServiceTypeSupported( HttpServletRequest request ) {
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
+    public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
         return "wfs".equalsIgnoreCase( serviceType );
     }
 
