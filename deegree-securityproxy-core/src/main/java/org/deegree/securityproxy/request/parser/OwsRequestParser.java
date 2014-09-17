@@ -33,9 +33,12 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
 
 /**
  * Parsing of {@link OwsRequest}s from a {@link HttpServletRequest}
@@ -57,8 +60,10 @@ public interface OwsRequestParser {
      * @return {@link OwsRequest}. Never <code>null</code>
      * @throws UnsupportedRequestTypeException
      *             when the given request does not have the correct service type
+     * @throws RequestParsingException
+     *             - an error occurred during parsing
      */
     OwsRequest parse( HttpServletRequest request )
-                            throws UnsupportedRequestTypeException;
+                    throws UnsupportedRequestTypeException, RequestParsingException;
 
 }

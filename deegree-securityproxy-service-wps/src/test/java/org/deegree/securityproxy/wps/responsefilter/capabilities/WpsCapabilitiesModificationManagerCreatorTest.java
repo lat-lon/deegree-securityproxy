@@ -35,9 +35,9 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wps.responsefilter.capabilities;
 
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.WpsRequestParser.WPS_SERVICE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.WPS_SERVICE;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;

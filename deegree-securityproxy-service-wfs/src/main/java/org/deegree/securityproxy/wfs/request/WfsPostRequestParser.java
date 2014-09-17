@@ -3,8 +3,8 @@ package org.deegree.securityproxy.wfs.request;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
 
 /**
  * Parses an incoming HTTP POST request into a {@link WfsRequest}.

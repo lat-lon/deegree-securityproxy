@@ -25,10 +25,11 @@ import org.deegree.securityproxy.exception.OwsServiceExceptionHandler;
 import org.deegree.securityproxy.logger.ResponseFilterReportLogger;
 import org.deegree.securityproxy.logger.SecurityRequestResponseLogger;
 import org.deegree.securityproxy.report.SecurityReport;
-import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.MissingParameterException;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.RequestParsingException;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.access.AccessDeniedException;
@@ -77,21 +78,20 @@ public class SecurityFilter implements Filter {
     @Override
     public void doFilter( ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain )
                     throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        StatusCodeResponseBodyWrapper wrappedResponse = new StatusCodeResponseBodyWrapper( httpResponse );
-        String uuid = createUuidHeader( wrappedResponse );
+        HttpServletRequest httpRequest = wrapRequest( servletRequest );
+        StatusCodeResponseBodyWrapper response = wrapResponse( servletResponse );
+        String uuid = createUuidHeader( response );
 
         try {
-            checkServiceType( servletRequest );
-            ServiceManager serviceManager = detectServiceManager( httpRequest );
-            handleAuthorization( chain, httpRequest, wrappedResponse, uuid, serviceManager );
+            String serviceType = retrieveAndCheckServiceType( httpRequest );
+            ServiceManager serviceManager = detectServiceManager( serviceType, httpRequest );
+            handleAuthorization( chain, httpRequest, response, uuid, serviceManager );
         } catch ( UnsupportedRequestTypeException e ) {
-            owsServiceExceptionHandler.writeException( wrappedResponse, INVALID_PARAMETER, "service" );
-            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, wrappedResponse );
+            owsServiceExceptionHandler.writeException( response, INVALID_PARAMETER, "service" );
+            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, response );
         } catch ( MissingParameterException e ) {
-            owsServiceExceptionHandler.writeException( wrappedResponse, MISSING_PARAMETER, e.getParameterName() );
-            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, wrappedResponse );
+            owsServiceExceptionHandler.writeException( response, MISSING_PARAMETER, e.getParameterName() );
+            generateAndLogProxyReport( e.getMessage(), uuid, httpRequest, response );
         }
     }
 
@@ -112,6 +112,8 @@ public class SecurityFilter implements Filter {
         } catch ( UnsupportedRequestTypeException e ) {
             authorizationReport = new AuthorizationReport( UNSUPPORTED_REQUEST_ERROR_MSG );
         } catch ( IllegalArgumentException e ) {
+            authorizationReport = new AuthorizationReport( e.getMessage() );
+        } catch ( RequestParsingException e ) {
             authorizationReport = new AuthorizationReport( e.getMessage() );
         }
         if ( authorizationReport.isAuthorized() ) {
@@ -187,24 +189,34 @@ public class SecurityFilter implements Filter {
             httpRequest.setAttribute( REQUEST_ATTRIBUTE_SERVICE_URL, serviceUrl );
     }
 
-    private void checkServiceType( ServletRequest request )
+    private String retrieveAndCheckServiceType( HttpServletRequest request )
                     throws MissingParameterException {
-        @SuppressWarnings("unchecked")
-        Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
-        String[] serviceTypes = kvpMap.get( "service" );
-        if ( serviceTypes == null || serviceTypes.length < 1 )
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        if ( serviceType == null && "GET".equals( request.getMethod() ) )
             throw new MissingParameterException( "service" );
+        return serviceType;
     }
 
-    private ServiceManager detectServiceManager( HttpServletRequest request )
+    private ServiceManager detectServiceManager( String serviceType, HttpServletRequest request )
                     throws UnsupportedRequestTypeException {
         if ( serviceManagers != null ) {
             for ( ServiceManager serviceManager : serviceManagers ) {
-                if ( serviceManager.isServiceTypeSupported( request ) )
+                if ( serviceManager.isServiceTypeSupported( serviceType, request ) )
                     return serviceManager;
             }
         }
         throw new UnsupportedRequestTypeException( UNSUPPORTED_REQUEST_ERROR_MSG );
+    }
+
+    private HttpServletRequest wrapRequest( ServletRequest servletRequest )
+                    throws IOException {
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        return new RequestBodyWrapper( httpRequest );
+    }
+
+    private StatusCodeResponseBodyWrapper wrapResponse( ServletResponse servletResponse ) {
+        HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+        return new StatusCodeResponseBodyWrapper( httpResponse );
     }
 
 }

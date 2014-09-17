@@ -4,9 +4,10 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.5</version>
+  <version>1.6</version>
   <name>deegree security proxy</name>
-  <description>deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services</description>
+  <description>deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services
+  </description>
   <url>https://github.com/lat-lon/deegree-securityproxy</url>
   <inceptionYear>2013</inceptionYear>
   <licenses>
@@ -29,6 +30,25 @@
     <j2ep.version>1.2-securityproxy-master</j2ep.version>
     <geotools.version>9.5</geotools.version>
   </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.5</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>test-jar</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <dependencyManagement>
     <dependencies>
@@ -71,6 +91,13 @@
       <dependency>
         <groupId>org.deegree</groupId>
         <artifactId>deegree-matcher</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.deegree</groupId>
+        <artifactId>deegree-securityproxy-core</artifactId>
+        <type>test-jar</type>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>

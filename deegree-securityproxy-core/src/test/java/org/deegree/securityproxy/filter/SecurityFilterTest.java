@@ -12,6 +12,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -239,9 +242,9 @@ public class SecurityFilterTest {
                                                                          serviceManager3 );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
-        verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        verify( serviceManager2, never() ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        verify( serviceManager3, never() ).isServiceTypeSupported( any( HttpServletRequest.class ) );
+        verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
+        verify( serviceManager2, never() ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
+        verify( serviceManager3, never() ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
     }
 
     @Test
@@ -254,9 +257,9 @@ public class SecurityFilterTest {
                                                                          serviceManager3 );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
-        verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        verify( serviceManager2, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        verify( serviceManager3, never() ).isServiceTypeSupported( any( HttpServletRequest.class ) );
+        verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
+        verify( serviceManager2, times( 1 ) ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
+        verify( serviceManager3, never() ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
     }
 
     @Test
@@ -269,21 +272,25 @@ public class SecurityFilterTest {
                                                                          serviceManager3 );
         filter.doFilter( generateMockRequest(), generateMockResponse(), new FilterChainTestImpl( SC_OK ) );
 
-        verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        verify( serviceManager2, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
-        verify( serviceManager3, times( 1 ) ).isServiceTypeSupported( any( HttpServletRequest.class ) );
+        verify( serviceManager1, times( 1 ) ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
+        verify( serviceManager2, times( 1 ) ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
+        verify( serviceManager3, times( 1 ) ).isServiceTypeSupported( anyString(), any( HttpServletRequest.class ) );
     }
 
-    private ServletRequest generateMockRequestNullQueryString() {
+    private ServletRequest generateMockRequestNullQueryString()
+                    throws IOException {
         HttpServletRequest mockRequest = mock( HttpServletRequest.class );
         when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
         when( mockRequest.getRequestURL() ).thenReturn( new StringBuffer( TARGET_URL ) );
         when( mockRequest.getQueryString() ).thenReturn( null );
         when( mockRequest.getParameterMap() ).thenReturn( new HashMap<String, String[]>() );
+        when( mockRequest.getInputStream() ).thenReturn( createServletStream() );
+        doReturn( "GET" ).when( mockRequest ).getMethod();
         return mockRequest;
     }
 
-    private HttpServletRequest generateMockRequest() {
+    private HttpServletRequest generateMockRequest()
+                    throws IOException {
         HttpServletRequest mockRequest = mock( HttpServletRequest.class );
         when( mockRequest.getRemoteAddr() ).thenReturn( CLIENT_IP_ADDRESS );
         when( mockRequest.getRequestURL() ).thenReturn( new StringBuffer( TARGET_URL ) );
@@ -292,7 +299,21 @@ public class SecurityFilterTest {
         parameterMap.put( "service", new String[] { "WMS" } );
         parameterMap.put( "request", new String[] { "GetCapabilities" } );
         when( mockRequest.getParameterMap() ).thenReturn( parameterMap );
+        doReturn( "GET" ).when( mockRequest ).getMethod();
+        when( mockRequest.getInputStream() ).thenReturn( createServletStream() );
         return mockRequest;
+    }
+
+    private ServletInputStream createServletStream() {
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream( new byte[] {} );
+        return new ServletInputStream() {
+
+            @Override
+            public int read()
+                            throws IOException {
+                return byteArrayInputStream.read();
+            }
+        };
     }
 
     private HttpServletResponse generateMockResponse() {
@@ -447,7 +468,8 @@ public class SecurityFilterTest {
                                                    ServiceManager serviceManager,
                                                    ResponseFilterReport responseFilterReport )
                     throws Exception {
-        doReturn( isServiceSupported ).when( serviceManager ).isServiceTypeSupported( any( HttpServletRequest.class ) );
+        doReturn( isServiceSupported ).when( serviceManager ).isServiceTypeSupported( anyString(),
+                                                                                      any( HttpServletRequest.class ) );
         Map<String, String[]> additionalKeyValuePairs = createAdditionalKeyValuePairs();
         AuthorizationReport authorizationReport = new AuthorizationReport( "message", isAuthorized, "url",
                         additionalKeyValuePairs );

@@ -67,7 +67,7 @@ public class WpsRequest extends OwsRequest {
      *            the name of the service, never <code>null</code>
      */
     public WpsRequest( String operationType, OwsServiceVersion serviceVersion, String serviceName ) {
-        this( operationType, serviceVersion, serviceName, Collections.<String> emptyList() );
+        this( operationType, serviceVersion, serviceName, Collections.<String>emptyList() );
     }
 
     /**

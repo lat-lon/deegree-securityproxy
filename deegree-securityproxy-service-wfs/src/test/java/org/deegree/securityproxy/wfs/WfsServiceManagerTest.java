@@ -4,7 +4,8 @@ import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,12 +54,12 @@ public class WfsServiceManagerTest {
         reset( serviceExceptionWrapper );
         List<ResponseFilterManager> filterManagers = emptyList();
         wfsServiceManager = new WfsServiceManager( parser, filterManagers, serviceExceptionWrapper,
-                                                   additionalKeyValuePairs );
+                        additionalKeyValuePairs );
     }
 
     @Test
     public void testParse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
         wfsServiceManager.parse( request );
 
@@ -66,7 +68,7 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testAuthorize()
-                            throws Exception {
+                    throws Exception {
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
         AuthorizationReport report = wfsServiceManager.authorize( authentication, owsRequest );
@@ -77,7 +79,7 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabledWithoutFilterManagers()
-                            throws Exception {
+                    throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = wfsServiceManager.isResponseFilterEnabled( owsRequest );
 
@@ -86,7 +88,7 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testFilterResponseWithoutFilterManagers()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
@@ -98,7 +100,7 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testIsResponseFilterEnabledWithFilterManager()
-                            throws Exception {
+                    throws Exception {
         OwsRequest owsRequest = mockOwsRequest();
         boolean isEnabled = createWfsServiceMangerWithFilterManagers().isResponseFilterEnabled( owsRequest );
 
@@ -107,7 +109,7 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testFilterResponseWithFilterManager()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper wrappedResponse = mockStatusCodeResponseBodyWrapper();
         Authentication authentication = mockAuthentication();
         OwsRequest owsRequest = mockOwsRequest();
@@ -120,7 +122,7 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testRetrieveServiceExceptionWrapper()
-                            throws Exception {
+                    throws Exception {
         ServiceExceptionWrapper retrievedServiceExceptionWrapper = wfsServiceManager.retrieveServiceExceptionWrapper();
 
         assertThat( retrievedServiceExceptionWrapper, is( serviceExceptionWrapper ) );
@@ -128,27 +130,30 @@ public class WfsServiceManagerTest {
 
     @Test
     public void testIsServiceTypeSupportedWithWfsServiceParameterShouldReturnTrue()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWfsServiceParameter();
-        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( true ) );
     }
 
     @Test
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
-        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( false ) );
     }
 
     @Test
     public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        boolean isSupported = wfsServiceManager.isServiceTypeSupported( request );
+        String serviceType = new ServiceTypeParser().determineServiceType( request );
+        boolean isSupported = wfsServiceManager.isServiceTypeSupported( serviceType, request );
 
         assertThat( isSupported, is( false ) );
     }
@@ -185,6 +190,7 @@ public class WfsServiceManagerTest {
         HttpServletRequest request = mock( HttpServletRequest.class );
         Map<String, String[]> kvpMap = createKvpMapWithServiceParameter( serviceValue );
         doReturn( kvpMap ).when( request ).getParameterMap();
+        doReturn( "GET" ).when( request ).getMethod();
         return request;
     }
 
@@ -196,14 +202,14 @@ public class WfsServiceManagerTest {
     }
 
     private WfsServiceManager createWfsServiceMangerWithFilterManagers()
-                            throws IllegalArgumentException, ResponseFilterException {
+                    throws IllegalArgumentException, ResponseFilterException {
         List<ResponseFilterManager> filterManagers = asList( mockEnabledResponseFilterManager(),
                                                              mockDisabledResponseFilterManager() );
         return new WfsServiceManager( parser, filterManagers, serviceExceptionWrapper, additionalKeyValuePairs );
     }
 
     private ResponseFilterManager mockEnabledResponseFilterManager()
-                            throws IllegalArgumentException, ResponseFilterException {
+                    throws IllegalArgumentException, ResponseFilterException {
         ResponseFilterManager responseFilterManager = mock( ResponseFilterManager.class );
         doReturn( true ).when( responseFilterManager ).canBeFiltered( any( OwsRequest.class ) );
         doReturn( response ).when( responseFilterManager ).filterResponse( any( StatusCodeResponseBodyWrapper.class ),

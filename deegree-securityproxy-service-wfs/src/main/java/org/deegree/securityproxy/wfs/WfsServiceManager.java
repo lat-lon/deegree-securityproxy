@@ -5,10 +5,11 @@ import org.deegree.securityproxy.exception.ServiceExceptionManager;
 import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.request.KvpNormalizer;
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.RequestParsingException;
+import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
@@ -80,7 +81,7 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     @Override
     public OwsRequest parse( HttpServletRequest httpRequest )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException, RequestParsingException {
         return parser.parse( httpRequest );
     }
 
@@ -101,7 +102,7 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
     @Override
     public ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse,
                                                 Authentication authentication, OwsRequest owsRequest )
-                            throws ResponseFilterException {
+                    throws ResponseFilterException {
         for ( ResponseFilterManager filterManager : filterManagers ) {
             if ( filterManager.canBeFiltered( owsRequest ) )
                 return filterManager.filterResponse( wrappedResponse, owsRequest, authentication );
@@ -115,13 +116,10 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
     }
 
     @Override
-    public boolean isServiceTypeSupported( HttpServletRequest request ) {
-        @SuppressWarnings("unchecked")
-        Map<String, String[]> kvpMap = KvpNormalizer.normalizeKvpMap( request.getParameterMap() );
-        String[] serviceTypes = kvpMap.get( "service" );
-        if ( serviceTypes == null || serviceTypes.length < 1 )
-            return false;
-        return "wfs".equalsIgnoreCase( serviceTypes[0] );
+    public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
+        if ( serviceType == null )
+            serviceType = new ServiceTypeParser().determineServiceType( request );
+        return "wfs".equalsIgnoreCase( serviceType );
     }
 
     private ResponseFilterReport createEmptyFilterReport() {

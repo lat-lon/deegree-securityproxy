@@ -33,23 +33,31 @@
 
  e-mail: info@deegree.org
  ----------------------------------------------------------------------------*/
-package org.deegree.securityproxy.request;
+package org.deegree.securityproxy.request.parser;
+
+import static java.lang.String.format;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
+import javax.servlet.http.HttpServletRequest;
+
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsServiceVersion;
 
 /**
- * Contains some useful methods to parse {@link OwsRequest} send with method GET.
+ * Contains some useful methods to parse {@link OwsRequest}.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class GetOwsRequestParserUtils {
+public class OwsRequestParserUtils {
+
+    private OwsRequestParserUtils() {
+    }
 
     public static String checkSingleRequiredParameter( Map<String, String[]> normalizedParameterMap,
                                                        String parameterName ) {
@@ -135,6 +143,26 @@ public class GetOwsRequestParserUtils {
                 return version;
         }
         throw new IllegalArgumentException( "Unrecognized version " + versionParam );
+    }
+
+    /**
+     * Parses the service name (last step of the query).
+     * 
+     * @param request
+     *            to evaluate the service name from
+     * @return the service name, never <code>null</code>
+     * @throws IllegalArgumentException
+     *             - if service name is not available
+     */
+    public static String evaluateServiceName( HttpServletRequest request ) {
+        String servletPath = request.getServletPath();
+        if ( servletPath == null )
+            throw new IllegalArgumentException( "Service name must not be null!" );
+        if ( servletPath.contains( "/" ) ) {
+            String[] splittedServletPath = servletPath.split( "/" );
+            return splittedServletPath[splittedServletPath.length - 1];
+        }
+        return servletPath;
     }
 
     private static String parseVersion( Map<String, String[]> normalizedParameterMap, String parameterName ) {
