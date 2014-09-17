@@ -38,22 +38,27 @@ package org.deegree.securityproxy.wfs.request;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.request.parser.PostOrGetOwsRequestParser;
+import org.deegree.securityproxy.request.parser.RequestParsingException;
 
 /**
  * Parses an incoming {@link HttpServletRequest} of all supported request methods into a {@link WfsRequest}.
+ * 
+ * @deprecated use {@link PostOrGetOwsRequestParser} instead
  * 
  * @author <a href="goltz@lat-lon.de">Lyn Goltz</a>
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
+@Deprecated
 public class WfsRequestParser implements OwsRequestParser {
 
     @Override
     public OwsRequest parse( HttpServletRequest request )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException, RequestParsingException {
         checkIfRequestIsNotNull( request );
         OwsRequestParser parser = createParser( request );
         return parser.parse( request );

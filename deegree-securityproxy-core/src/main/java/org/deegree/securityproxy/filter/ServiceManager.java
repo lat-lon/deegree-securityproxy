@@ -1,13 +1,14 @@
 package org.deegree.securityproxy.filter;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.RequestParsingException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * A {@link ServiceManager} encapsulates one service type. A {@link ServiceManager} contains all information to filter a
@@ -28,9 +29,10 @@ public interface ServiceManager {
      * @return
      * @throws UnsupportedRequestTypeException
      *             when the given request does not have the correct service type.
+     * @throws RequestParsingException
      */
     OwsRequest parse( HttpServletRequest httpRequest )
-                            throws UnsupportedRequestTypeException;
+                    throws UnsupportedRequestTypeException, RequestParsingException;
 
     /**
      * Authorize a given request.
@@ -67,16 +69,20 @@ public interface ServiceManager {
      */
     ResponseFilterReport filterResponse( StatusCodeResponseBodyWrapper wrappedResponse, Authentication authentication,
                                          OwsRequest owsRequest )
-                            throws ResponseFilterException;
+                    throws ResponseFilterException;
 
     /**
      * Check if a given request is supported by the {@link ServiceManager}.
-     * 
+     *
+     * @param serviceType
+     *            may be <code>null</code>. If <code>null</code>, request parameter is used to determine if service type
+     *            is supported.
      * @param request
-     *            never <code>null</code>.
+     *            never <code>null</code>. If serviceType parameter is <code>null</code>, this parameter is used to
+     *            determine if service type is supported.
      * @return <code>true</code> if this {@link ServiceManager} can handle the requested {@link HttpServletRequest},
      *         <code>false</code> otherwise.
      */
-    boolean isServiceTypeSupported( HttpServletRequest request );
+    boolean isServiceTypeSupported( String serviceType, HttpServletRequest request );
 
 }

@@ -15,7 +15,14 @@
 
   <bean id="wpsRequestAuthorizationManager" class="org.deegree.securityproxy.wps.authorization.WpsRequestAuthorizationManager" />
 
-  <bean id="wpsRequestParser" class="org.deegree.securityproxy.wps.request.WpsRequestParser" />
+  <bean id="wpsRequestParser" class="org.deegree.securityproxy.request.parser.PostOrGetOwsRequestParser">
+    <constructor-arg name="postParser" ref="wpsPostRequestParser" />
+    <constructor-arg name="getParser" ref="wpsGetRequestParser" />
+  </bean>
+
+  <bean id="wpsGetRequestParser" class="org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser" />
+
+  <bean id="wpsPostRequestParser" class="org.deegree.securityproxy.wps.request.parser.WpsPostRequestParser" />
 
   <bean id="wpsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
     <constructor-arg value="${wps_exception_file_path}" />

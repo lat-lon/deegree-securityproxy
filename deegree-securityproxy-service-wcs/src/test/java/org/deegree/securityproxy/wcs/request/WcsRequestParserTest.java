@@ -50,8 +50,7 @@ import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
-import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -109,7 +108,7 @@ public class WcsRequestParserTest {
     /* Tests for valid requests for WCS GetCapabilities */
     @Test
     public void testParseFromGetCapabilitiesRequestShouldIgnoreCoverageName()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCapabilitiesRequest();
         WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         assertThat( wcsRequest.getCoverageNames().isEmpty(), is( true ) );
@@ -117,7 +116,7 @@ public class WcsRequestParserTest {
 
     @Test
     public void testParseFromGetCapabilitiesRequestShouldParseOperationTypeAndServiceVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCapabilitiesRequest();
         WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( GETCAPABILITIES ) );
@@ -127,7 +126,7 @@ public class WcsRequestParserTest {
 
     @Test
     public void testParseFromGetCapabilitiesRequestWithExtendedPathShouldParseServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCapabilitiesRequestWithExtendedPath();
         WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         assertThat( wcsRequest.getOperationType(), is( GETCAPABILITIES ) );
@@ -138,7 +137,7 @@ public class WcsRequestParserTest {
     /* Test for valid requests for WCS DescribeCoverage */
     @Test
     public void testParseFromDescribeCoverageRequestShouldParseCoverageOperationTypeAndServiceVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsDescribeCoverageRequest();
         WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         List<String> coverageNames = wcsRequest.getCoverageNames();
@@ -153,7 +152,7 @@ public class WcsRequestParserTest {
     /* Test for valid requests for WCS GetCoverage */
     @Test
     public void testParseFromGetCoverageRequestShouldParseCoverageOperationTypeAndServiceVersionAndServiceName()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequest();
         WcsRequest wcsRequest = (WcsRequest) parser.parse( request );
         List<String> coverageNames = wcsRequest.getCoverageNames();
@@ -167,170 +166,170 @@ public class WcsRequestParserTest {
     /* Test for invalid requests */
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCapabilitiesRequestMissingServiceNameShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCapabilitiesRequestMissingServiceName();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMultipleCoveragesShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestMultipleCoverageParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoCoveragesShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoCoverageParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMissingCoverageShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestMissingCoverageParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoCrsShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoCrsParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMissingCrsShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestMissingCrsParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoBboxShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoBboxParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoTimeShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoTimeParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMissingBboxAndTimeShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestMissingBboxAndTimeParameter();
         parser.parse( request );
     }
 
     @Test
     public void testParseFromGetCoverageRequestBboxAndMissingTime()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestBboxAndMissingTimeParameter();
         parser.parse( request );
     }
 
     @Test
     public void testParseFromGetCoverageRequestTimeAndMissingBbox()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTimeAndMissingBboxParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoResxShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoResxParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoResyShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoResyParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMissingResxAndResyAndWitdthAndHeightShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestMissingResxAndResyAndWitdthAndHeightParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestResxAndMissingResyAndWitdthAndHeightShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestResxAndMissingResyAndWitdthAndHeightParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestResyAndMissingResxAndWitdthAndHeightShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestResyAndMissingResxAndWitdthAndHeightParameters();
         parser.parse( request );
     }
 
     @Test
     public void testParseFromGetCoverageRequestResxAndResyAndMissingWitdthAndHeight()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestResxAndResyAndMissingWitdthAndHeightParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestTwoFormatShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestTwoFormatParameters();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseFromGetCoverageRequestMissingFormatShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         HttpServletRequest request = mockWcsGetCoverageRequestMissingFormatParameter();
         parser.parse( request );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithNullRequestShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         parser.parse( null );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingRequestParameterShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         parser.parse( mockInvalidWcsRequestMissingRequestParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithMissingServiceParameterShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         parser.parse( mockInvalidWcsRequestMissingServiceParameter() );
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testParseWithDoubleServiceParameterShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         parser.parse( mockInvalidWcsRequestDoubleServiceParameter( "wcs" ) );
     }
 
-    @Test(expected = UnsupportedRequestTypeException.class)
+    @Test(expected = Exception.class)
     public void testParseWmsRequestShouldFail()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         parser.parse( mockWmsGetRequest() );
     }
 
     @Test
     public void testParseWithMissingVersionParameter()
-                            throws UnsupportedRequestTypeException {
+                    throws Exception {
         parser.parse( mockValidWcsRequestMissingVersionParameter() );
     }
 

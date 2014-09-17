@@ -1,9 +1,10 @@
-package org.deegree.securityproxy.wps.request;
+package org.deegree.securityproxy.wps.request.parser;
 
 import static java.util.Arrays.asList;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.checkSingleRequiredParameter;
-import static org.deegree.securityproxy.request.GetOwsRequestParserUtils.evaluateVersion;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkRequiredParameter;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.checkSingleRequiredParameter;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.evaluateServiceName;
+import static org.deegree.securityproxy.request.parser.OwsRequestParserUtils.evaluateVersion;
 import static org.deegree.securityproxy.request.KvpNormalizer.normalizeKvpMap;
 
 import java.util.ArrayList;
@@ -13,9 +14,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.request.OwsRequestParser;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
+import org.deegree.securityproxy.request.parser.OwsRequestParser;
+import org.deegree.securityproxy.wps.request.WpsRequest;
 
 /**
  * Parses an incoming {@link javax.servlet.http.HttpServletRequest} into a {@link WpsRequest}.
@@ -24,7 +26,7 @@ import org.deegree.securityproxy.request.UnsupportedRequestTypeException;
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-public class WpsRequestParser implements OwsRequestParser {
+public class WpsGetRequestParser implements OwsRequestParser {
 
     public static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( 1, 0, 0 );
 
@@ -49,7 +51,7 @@ public class WpsRequestParser implements OwsRequestParser {
     @Override
     @SuppressWarnings("unchecked")
     public WpsRequest parse( HttpServletRequest request )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         if ( request == null )
             throw new IllegalArgumentException( "Request must not be null!" );
         String serviceName = evaluateServiceName( request );
@@ -59,7 +61,7 @@ public class WpsRequestParser implements OwsRequestParser {
     }
 
     private WpsRequest parseRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         String type = normalizedParameterMap.get( REQUEST )[0];
         if ( GETCAPABILITIES.equalsIgnoreCase( type ) )
             return parseGetCapabilitiesRequest( serviceName, normalizedParameterMap );
@@ -71,7 +73,7 @@ public class WpsRequestParser implements OwsRequestParser {
     }
 
     private WpsRequest parseGetCapabilitiesRequest( String serviceName, Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         OwsServiceVersion version = evaluateVersion( VERSION, normalizedParameterMap, supportedVersion );
         return new WpsRequest( GETCAPABILITIES, version, serviceName );
     }
@@ -90,25 +92,14 @@ public class WpsRequestParser implements OwsRequestParser {
         return new WpsRequest( EXECUTE, version, serviceName, extractedIdentifier );
     }
 
-    private String evaluateServiceName( HttpServletRequest request ) {
-        String servletPath = request.getServletPath();
-        if ( servletPath == null )
-            throw new IllegalArgumentException( "Service name must not be null!" );
-        if ( servletPath.contains( "/" ) ) {
-            String[] splittedServletPath = servletPath.split( "/" );
-            return splittedServletPath[splittedServletPath.length - 1];
-        }
-        return servletPath;
-    }
-
     private void checkParameters( Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         checkServiceParameter( normalizedParameterMap );
         checkRequestParameter( normalizedParameterMap );
     }
 
     private void checkServiceParameter( Map<String, String[]> normalizedParameterMap )
-                            throws UnsupportedRequestTypeException {
+                    throws UnsupportedRequestTypeException {
         String serviceType = checkSingleRequiredParameter( normalizedParameterMap, SERVICE );
         if ( !"wps".equalsIgnoreCase( serviceType ) ) {
             String msg = "Request must contain a \"service\" parameter with value \"wps\"";
