@@ -1,11 +1,5 @@
 package org.deegree.securityproxy.wps.authorization;
 
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
-
-import java.util.Collection;
-
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
@@ -16,6 +10,12 @@ import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
+
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
 
 /**
  * Checks if a authenticated User is permitted to perform an incoming {@link javax.servlet.http.HttpServletRequest}
@@ -132,7 +132,8 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
     private boolean areBaseParamsAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
         return isServiceTypeAuthorized( wpsRequest, wpsPermission )
                && isOperationTypeAuthorized( wpsRequest, wpsPermission )
-               && isServiceVersionAuthorized( wpsRequest, wpsPermission );
+               && isServiceVersionAuthorized( wpsRequest, wpsPermission )
+               && isServiceNameAuthorized( wpsRequest, wpsPermission );
     }
 
     private boolean isServiceTypeAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
@@ -153,11 +154,16 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
+    private boolean isServiceNameAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
+        return wpsRequest.getServiceName() != null
+               && wpsRequest.getServiceName().equals( wpsPermission.getServiceName() );
+    }
+
     private boolean isProcessIdAuthorized( WpsRequest wpsRequest, Collection<? extends GrantedAuthority> authorities ) {
         for ( GrantedAuthority authority : authorities ) {
             if ( authority instanceof RasterPermission ) {
                 RasterPermission wpsPermission = (RasterPermission) authority;
-                if ( wpsRequest.getOperationType().equalsIgnoreCase( wpsPermission.getOperationType() )
+                if ( areBaseParamsAuthorized( wpsRequest, wpsPermission )
                      && wpsRequest.getIdentifiers().contains( wpsPermission.getLayerName() ) ) {
                     return true;
                 }

@@ -1,21 +1,5 @@
 package org.deegree.securityproxy.wps.authorization;
 
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.VERSION_100;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
@@ -25,6 +9,21 @@ import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.junit.Test;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.VERSION_100;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -41,6 +40,8 @@ public class WpsRequestAuthorizationManagerTest {
     private static final LimitedOwsServiceVersion VERSION_LESS_EQUAL_100 = new LimitedOwsServiceVersion( "<= 1.0.0" );
 
     private static final String SERVICE_NAME = "serviceName";
+
+    private static final String SERVICE_NAME_2 = "serviceName2";
 
     private static final String PROCESS_ID = "processId";
 
@@ -159,6 +160,24 @@ public class WpsRequestAuthorizationManagerTest {
         assertThat( report.isAuthorized(), is( false ) );
     }
 
+    @Test
+    public void testDecideDescribeProcessWithWrongServiceNameInSecondPermissionShouldBeUnauthorized() {
+        Authentication authentication = mockDefaultAuthenticationWithTwoServiceNames();
+        WpsRequest request = mockDescribeProcessRequest();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+
+        assertThat( report.isAuthorized(), is( false ) );
+    }
+
+    @Test
+    public void testDecideDescribeProcessWithCorrectServiceNameInSecondPermissionShouldBeAuthorized() {
+        Authentication authentication = mockDefaultAuthenticationWithTwoServiceNames();
+        WpsRequest request = mockDescribeProcessRequestWithAlternativeServiceName();
+        AuthorizationReport report = authorizationManager.decide( authentication, request );
+
+        assertThat( report.isAuthorized(), is( true ) );
+    }
+
     private WpsRequest mockGetCapabilitiesRequest() {
         return mockRequest( null, GETCAPABILITIES, SERVICE_NAME, VERSION_100 );
     }
@@ -169,6 +188,10 @@ public class WpsRequestAuthorizationManagerTest {
 
     private WpsRequest mockDescribeProcessRequest() {
         return mockRequest( PROCESS_ID, DESCRIBEPROCESS, SERVICE_NAME, VERSION_100 );
+    }
+
+    private WpsRequest mockDescribeProcessRequestWithAlternativeServiceName() {
+        return mockRequest( PROCESS_ID, DESCRIBEPROCESS, SERVICE_NAME_2, VERSION_100 );
     }
 
     private WpsRequest mockGetCapabilitiesRequestWithUnsupportedVersion() {
@@ -192,12 +215,12 @@ public class WpsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthenticationWithAllPermissions() {
         Authentication authentication = mock( Authentication.class );
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
-                        null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, null, null,
-                        null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID, null,
+        authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null,
+                        SERVICE_NAME, null, null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, SERVICE_NAME,
                         null, null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID,
+                        SERVICE_NAME, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
@@ -232,6 +255,17 @@ public class WpsRequestAuthorizationManagerTest {
         Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
         authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
                         null ) );
+        doReturn( authorities ).when( authentication ).getAuthorities();
+        return authentication;
+    }
+
+    private Authentication mockDefaultAuthenticationWithTwoServiceNames() {
+        Authentication authentication = mock( Authentication.class );
+        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, SERVICE_NAME,
+                        null, null ) );
+        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID,
+                        SERVICE_NAME_2, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
     }
