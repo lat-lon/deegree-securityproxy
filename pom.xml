@@ -4,7 +4,7 @@
   <groupId>org.deegree</groupId>
   <artifactId>deegree-securityproxy</artifactId>
   <packaging>pom</packaging>
-  <version>1.7-SNAPSHOT</version>
+  <version>1.6.1</version>
   <name>deegree security proxy</name>
   <description>deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services
   </description>
