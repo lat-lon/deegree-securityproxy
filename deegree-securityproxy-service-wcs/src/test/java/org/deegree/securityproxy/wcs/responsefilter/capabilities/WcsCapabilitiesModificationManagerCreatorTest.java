@@ -78,9 +78,10 @@ public class WcsCapabilitiesModificationManagerCreatorTest {
                     throws Exception {
         WcsCapabilitiesModificationManagerCreator elementRuleCreator = new WcsCapabilitiesModificationManagerCreator(
                         "getDcpUrl", null );
-        AttributeModifier attributeModifier = elementRuleCreator.createAttributeModifier();
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) elementRuleCreator.createAttributeModifier();
 
-        assertThat( attributeModifier, is( notNullValue() ) );
+        List<AttributeModificationRule> attributeModificationRules = attributeModifier.getAttributeModificationRules();
+        assertThat( attributeModificationRules.size(), is( 3 ) );
     }
 
     @Test
@@ -88,9 +89,10 @@ public class WcsCapabilitiesModificationManagerCreatorTest {
                     throws Exception {
         WcsCapabilitiesModificationManagerCreator elementRuleCreator = new WcsCapabilitiesModificationManagerCreator(
                         null, "postDcpUrl" );
-        AttributeModifier attributeModifier = elementRuleCreator.createAttributeModifier();
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) elementRuleCreator.createAttributeModifier();
 
-        assertThat( attributeModifier, is( notNullValue() ) );
+        List<AttributeModificationRule> attributeModificationRules = attributeModifier.getAttributeModificationRules();
+        assertThat( attributeModificationRules.size(), is( 3 ) );
     }
 
     @Test
