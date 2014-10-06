@@ -1,22 +1,5 @@
 package org.deegree.securityproxy.wms.responsefilter.capabilities;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.request.OwsServiceVersion;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
-import org.deegree.securityproxy.wms.request.WmsRequest;
-import org.junit.Test;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE;
@@ -27,6 +10,24 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.request.OwsServiceVersion;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
+import org.deegree.securityproxy.wms.request.WmsRequest;
+import org.junit.Test;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
@@ -92,17 +93,6 @@ public class WmsCapabilitiesModificationManagerCreatorTest {
     }
 
     @Test
-    public void testCreateXmlModificationManagerWithDcpUrls() {
-        WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
-                        getDcpUrl, postDcpUrl );
-        XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
-                                                                                                                 mock( Authentication.class ) );
-        AttributeModifier attributeModifier = xmlModificationManager.getAttributeModifier();
-
-        assertThat( attributeModifier, notNullValue() );
-    }
-
-    @Test
     public void testCreateXmlModificationManagerWithoutDcpUrls() {
         WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
                         null, null );
@@ -114,14 +104,25 @@ public class WmsCapabilitiesModificationManagerCreatorTest {
     }
 
     @Test
+    public void testCreateXmlModificationManagerWithDcpUrls() {
+        WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
+                        getDcpUrl, postDcpUrl );
+        XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                                 mock( Authentication.class ) );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) xmlModificationManager.getAttributeModifier();
+
+        assertThat( attributeModifier.getAttributeModificationRules().size(), is( 6 ) );
+    }
+
+    @Test
     public void testCreateXmlModificationManagerWithGetDcpUrl() {
         WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
                         getDcpUrl, null );
         XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
                                                                                                                  mock( Authentication.class ) );
-        AttributeModifier attributeModifier = xmlModificationManager.getAttributeModifier();
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) xmlModificationManager.getAttributeModifier();
 
-        assertThat( attributeModifier, notNullValue() );
+        assertThat( attributeModifier.getAttributeModificationRules().size(), is( 3 ) );
     }
 
     @Test
@@ -130,9 +131,9 @@ public class WmsCapabilitiesModificationManagerCreatorTest {
                         null, postDcpUrl );
         XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
                                                                                                                  mock( Authentication.class ) );
-        AttributeModifier attributeModifier = xmlModificationManager.getAttributeModifier();
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) xmlModificationManager.getAttributeModifier();
 
-        assertThat( attributeModifier, notNullValue() );
+        assertThat( attributeModifier.getAttributeModificationRules().size(), is( 3 ) );
     }
 
     private Authentication createAuthenticationWithOneGetMap() {
