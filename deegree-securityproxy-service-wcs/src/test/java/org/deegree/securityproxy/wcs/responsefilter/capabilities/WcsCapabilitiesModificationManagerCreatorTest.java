@@ -17,6 +17,9 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModificationRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,7 +40,7 @@ public class WcsCapabilitiesModificationManagerCreatorTest {
 
     @Test
     public void testCreateXmlModificationManagerForWcs100OneGetCoverage()
-                            throws Exception {
+                    throws Exception {
         DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
                                                                               createAuthenticationWithOneGetCoverage() );
 
@@ -46,7 +49,7 @@ public class WcsCapabilitiesModificationManagerCreatorTest {
 
     @Test
     public void testCreateXmlModificationManagerForWcs100TwoGetCoverageOneDescribeCoverage()
-                            throws Exception {
+                    throws Exception {
         DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
                                                                               createAuthenticationWithTwoGetCoverageOneDescribeCoverage() );
 
@@ -55,16 +58,55 @@ public class WcsCapabilitiesModificationManagerCreatorTest {
 
     @Test
     public void testCreateXmlModificationManagerForWcs100OneDescribeCoverage()
-                            throws Exception {
+                    throws Exception {
         DecisionMaker decisionMaker = elementRuleCreator.createDecisionMaker( mockOwsRequest(),
                                                                               createAuthenticationWithOneDescribeCoverage() );
 
         assertThat( decisionMaker, is( nullValue() ) );
     }
 
+    @Test
+    public void testCreateAttributeModifierWithoutDcpUrls()
+                    throws Exception {
+        AttributeModifier attributeModifier = elementRuleCreator.createAttributeModifier();
+
+        assertThat( attributeModifier, is( nullValue() ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifierWithGetDcpUrl()
+                    throws Exception {
+        WcsCapabilitiesModificationManagerCreator elementRuleCreator = new WcsCapabilitiesModificationManagerCreator(
+                        "getDcpUrl", null );
+        AttributeModifier attributeModifier = elementRuleCreator.createAttributeModifier();
+
+        assertThat( attributeModifier, is( notNullValue() ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifierWithPostDcpUrl()
+                    throws Exception {
+        WcsCapabilitiesModificationManagerCreator elementRuleCreator = new WcsCapabilitiesModificationManagerCreator(
+                        null, "postDcpUrl" );
+        AttributeModifier attributeModifier = elementRuleCreator.createAttributeModifier();
+
+        assertThat( attributeModifier, is( notNullValue() ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifierWithDcpUrls()
+                    throws Exception {
+        WcsCapabilitiesModificationManagerCreator elementRuleCreator = new WcsCapabilitiesModificationManagerCreator(
+                        "getDcpUrl", "postDcpUrl" );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) elementRuleCreator.createAttributeModifier();
+
+        List<AttributeModificationRule> attributeModificationRules = attributeModifier.getAttributeModificationRules();
+        assertThat( attributeModificationRules.size(), is( 6 ) );
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testCreateXmlModificationManagerForWcs130ShouldFail()
-                            throws Exception {
+                    throws Exception {
         elementRuleCreator.createXmlModificationManager( mockOwsRequest130(),
                                                          createAuthenticationWithOneDescribeCoverage() );
     }
@@ -91,7 +133,7 @@ public class WcsCapabilitiesModificationManagerCreatorTest {
 
     private RasterPermission createRasterPermission( String operationType, String coverageName ) {
         return new RasterPermission( "wcs", operationType, new LimitedOwsServiceVersion( "<= 1.1.0" ), coverageName,
-                                     "serviceName", "internalServiceUrl", null );
+                        "serviceName", "internalServiceUrl", null );
     }
 
     private Authentication mockAuthentication( Collection<? extends GrantedAuthority> authorities ) {

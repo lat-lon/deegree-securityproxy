@@ -62,23 +62,26 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private final XmlModificationManagerCreator modificationManagerCreator = new WcsCapabilitiesModificationManagerCreator();
 
+    private final XmlModificationManagerCreator modificationManagerCreatorWithDcpUrls = new WcsCapabilitiesModificationManagerCreator(
+                    "htt://getUrl", "http://postUrl" );
+
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManagerWithMock = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                                                mockedCapabilitiesFilter,
-                                                                                                                                                modificationManagerCreator );
+                    mockedCapabilitiesFilter, modificationManagerCreator );
 
     private final XmlFilter capabilitiesFilter = new XmlFilter();
 
     private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                                        capabilitiesFilter,
-                                                                                                                                        modificationManagerCreator );
+                    capabilitiesFilter, modificationManagerCreator );
+
+    private final WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManagerWithDcpUrls = new WcsCapabilitiesResponseFilterManager(
+                    capabilitiesFilter, modificationManagerCreatorWithDcpUrls );
 
     @Test
     public void testFilterResponseShouldCallFilterCapabilities()
-                            throws Exception {
+                    throws Exception {
         XmlFilter capabilitiesFilter = mockCapabilitiesFilter();
         WcsCapabilitiesResponseFilterManager wcsCapabilitiesResponseFilterManager = new WcsCapabilitiesResponseFilterManager(
-                                                                                                                              capabilitiesFilter,
-                                                                                                                              modificationManagerCreator );
+                        capabilitiesFilter, modificationManagerCreator );
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
         WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithKnownCoverage();
@@ -89,7 +92,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseShouldReturnFilterReport()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
         WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithKnownCoverage();
@@ -104,7 +107,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithFilteringNotRequiredShouldReturnFilterReport()
-                            throws Exception {
+                    throws Exception {
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper();
         WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
         Authentication authentication = createAuthenticationWithDescribeCoverage();
@@ -119,7 +122,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithExceptionShouldReturnFilterReport()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "../service_exception.xml" );
@@ -136,7 +139,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithAllPermissionShouldNotFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wcs_1_0_0.xml" );
@@ -149,7 +152,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithApplicablePermissionShouldFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wcs_1_0_0.xml" );
@@ -162,7 +165,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithoutApplicablePermissionShouldFilterResponseCompletly()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wcs_1_0_0.xml" );
@@ -175,7 +178,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithoutGetCoveragePermissionShouldNotFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wcs_1_0_0.xml" );
@@ -187,8 +190,21 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
+    public void testFilterResponseWithDcpUrlsShouldBeFiltered()
+                    throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "wcs_1_0_0.xml" );
+        WcsRequest wcsRequest = createWcsGetCapabilitiesRequest();
+        Authentication authentication = createAuthenticationWithDescribeCoverage();
+        wcsCapabilitiesResponseFilterManagerWithDcpUrls.filterResponse( response, wcsRequest, authentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0_dcpUrls.xml" ) ) );
+    }
+
+    @Test
     public void testFilterResponseWithExceptionShouldReturnExceptionResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "../service_exception.xml" );
@@ -266,7 +282,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private RasterPermission createRasterPermission( String operationType, String coverageName ) {
         return new RasterPermission( "wcs", operationType, new LimitedOwsServiceVersion( "<= 1.1.0" ), coverageName,
-                                     "serviceName", "internalServiceUrl", null );
+                        "serviceName", "internalServiceUrl", null );
     }
 
     private Authentication mockAuthentication( Collection<? extends GrantedAuthority> authorities ) {
@@ -276,7 +292,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
     }
 
     private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper()
-                            throws IOException {
+                    throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
         when( mockedServletResponse.getStatus() ).thenReturn( 200 );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( new ByteArrayInputStream( new byte[] {} ) );
@@ -287,7 +303,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
 
     private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper( ByteArrayOutputStream filteredStream,
                                                                              String originalXmlFileName )
-                            throws IOException {
+                    throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
         when( mockedServletResponse.getStatus() ).thenReturn( 200 );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( retrieveResourceAsStream( originalXmlFileName ),
@@ -313,7 +329,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         ServletOutputStream stream = new ServletOutputStream() {
             @Override
             public void write( int b )
-                                    throws IOException {
+                            throws IOException {
                 bufferingStream.write( b );
             }
         };
