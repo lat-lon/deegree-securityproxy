@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wps:Capabilities xmlns:wps="http://www.opengis.net/wps/1.0.0" xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:ogc="http://www.opengis.net/ogc" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" service="WPS" version="1.0.0" xml:lang="en"
+  xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsGetCapabilities_response.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>deegree 3 demo service</ows:Title>
+    <ows:Abstract>This is the default deegree 3 service configuration. Change it as you like!
+    </ows:Abstract>
+    <ows:ServiceType>WPS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.0.0</ows:ServiceTypeVersion>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName>lat/lon GmbH</ows:ProviderName>
+    <ows:ProviderSite xlink:href="http://www.lat-lon.de" />
+    <ows:ServiceContact>
+      <ows:IndividualName>Sebastian Goerke</ows:IndividualName>
+      <ows:PositionName>Product Owner</ows:PositionName>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice>0228/18496-0</ows:Voice>
+          <ows:Facsimile>0228/18496-29</ows:Facsimile>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint>Aennchenstr. 19</ows:DeliveryPoint>
+          <ows:City>Bonn</ows:City>
+          <ows:AdministrativeArea>NRW</ows:AdministrativeArea>
+          <ows:PostalCode>53177</ows:PostalCode>
+          <ows:Country>Germany</ows:Country>
+          <ows:ElectronicMailAddress>goerke@lat-lon.de</ows:ElectronicMailAddress>
+        </ows:Address>
+        <ows:OnlineResource xlink:href="http://www.deegree.org" />
+        <ows:HoursOfService>24x7</ows:HoursOfService>
+        <ows:ContactInstructions>Do not hesitate to call</ows:ContactInstructions>
+      </ows:ContactInfo>
+      <ows:Role>PointOfContact</ows:Role>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://getDcpUrl" />
+          <ows:Post xlink:href="http://postDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="DescribeProcess">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://getDcpUrl" />
+          <ows:Post xlink:href="http://postDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+    <ows:Operation name="Execute">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://getDcpUrl" />
+          <ows:Post xlink:href="http://postDcpUrl" />
+        </ows:HTTP>
+      </ows:DCP>
+    </ows:Operation>
+  </ows:OperationsMetadata>
+  <wps:ProcessOfferings>
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>st_snappoints</ows:Identifier>
+      <ows:Title>Snap points to layer</ows:Title>
+      <ows:Abstract>This algorithm snaps points in a given layer to the lines in a second one
+      </ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>st_groupnearfeatures</ows:Identifier>
+      <ows:Title>Group near features</ows:Title>
+      <ows:Abstract>Este algoritmo agrupa (clasifica) entidades a una distancia proxima. Para ello,
+        crea una copia de la capa vectorial de entrada y asigna a cada entidad un numero en el
+        atributo 'GROUP_ID' dependiendo de su pertenencia a un grupo u otro. El algoritmo requiere
+        como parametro de entrada un valor de tolerancia que determinaran la zona de influencia de
+        las agrupaciones. El numero resultante de grupos (clases) no es un parametro seleccionable
+        por el usuario, sino que el algoritmo lo calcula de forma dinamica en tiempo de ejecucion.
+      </ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>st_vectormean</ows:Identifier>
+      <ows:Title>Directional mean</ows:Title>
+      <ows:Abstract>This algorithm computes the directional mean of a set of lines in a vector
+        layer. Each segment of the input lines is treated as a vector. Summing up all those vector,
+        a new one showing the directional mean is obtained. This vector is represented as a
+        single-segment line in the resulting vector layerThe modulus of the resulting vector
+        provides information about the directional variance. Uniform directions will yield longer
+        vectors.
+      </ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>st_boundingbox</ows:Identifier>
+      <ows:Title>Bounding Box</ows:Title>
+      <ows:Abstract>This algorithm generates a new vector layer with a single polygon representing the bounding box of an input vector layer.
+      </ows:Abstract>
+    </wps:Process>
+    <wps:Process wps:processVersion="1.0.0">
+      <ows:Identifier>Union</ows:Identifier>
+      <ows:Title>Calculates the union of two GML Geometries.</ows:Title>
+      <ows:Abstract>The union of two Geometries A and B is the set of all points which lie in A or B.</ows:Abstract>
+    </wps:Process>
+  </wps:ProcessOfferings>
+  <wps:Languages>
+    <wps:Default>
+      <ows:Language>en</ows:Language>
+    </wps:Default>
+    <wps:Supported>
+      <ows:Language>en</ows:Language>
+    </wps:Supported>
+  </wps:Languages>
+</wps:Capabilities>

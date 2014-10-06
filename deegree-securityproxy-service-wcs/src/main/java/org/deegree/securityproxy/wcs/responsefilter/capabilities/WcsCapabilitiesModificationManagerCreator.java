@@ -122,10 +122,8 @@ public class WcsCapabilitiesModificationManagerCreator implements XmlModificatio
         List<AttributeModificationRule> postRules = createPostRules();
         if ( !getRules.isEmpty() || !postRules.isEmpty() ) {
             List<AttributeModificationRule> rules = new LinkedList<AttributeModificationRule>();
-            if ( getRules != null )
-                rules.addAll( getRules );
-            if ( postRules != null )
-                rules.addAll( postRules );
+            rules.addAll( getRules );
+            rules.addAll( postRules );
             return new StaticAttributeModifier( rules, "href", "http://www.w3.org/1999/xlink" );
         }
         return null;
