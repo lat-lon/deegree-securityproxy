@@ -1,5 +1,27 @@
 package org.deegree.securityproxy.wms.responsefilter.capabilities;
 
+import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
+import org.deegree.securityproxy.wms.request.WmsRequest;
+import org.junit.Test;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+
+import javax.servlet.ServletOutputStream;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETCAPABILITIES;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETFEATUREINFO;
 import static org.deegree.securityproxy.wms.request.WmsRequestParser.GETMAP;
@@ -14,29 +36,6 @@ import static org.mockito.Mockito.when;
 import static org.xmlmatchers.XmlMatchers.isEquivalentTo;
 import static org.xmlmatchers.transform.XmlConverters.the;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import javax.servlet.ServletOutputStream;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter;
-import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
-import org.deegree.securityproxy.wms.request.WmsRequest;
-import org.junit.Test;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-
 /**
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
@@ -49,7 +48,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithAllPermissionShouldNotFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
@@ -62,7 +61,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithGetMapPermissionShouldFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
@@ -75,7 +74,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithGetMapAndGetFeatureinfoPermissionShouldFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
@@ -88,7 +87,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithoutPermissionOnSubLayerShouldFilterResponse()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
@@ -101,7 +100,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithUnknownGetMapLayerPermissionsShouldFilterAllLayers()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
@@ -114,7 +113,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testFilterResponseWithGetCapabilitiesPermissionsShouldFilterAllLayers()
-                            throws Exception {
+                    throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
         StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
                                                                                     "wms_1_3_0.xml" );
@@ -127,7 +126,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testIsCorrectRequestType()
-                            throws Exception {
+                    throws Exception {
         boolean isCorrectRequestType = filterManager.isCorrectServiceType( createWms130CapabilitiesRequest() );
 
         assertThat( isCorrectRequestType, is( true ) );
@@ -135,7 +134,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testIsCorrectRequestTypeWithUnknownRequestShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         boolean isCorrectRequestType = filterManager.isCorrectServiceType( mockUnknownRequest() );
 
         assertThat( isCorrectRequestType, is( false ) );
@@ -143,7 +142,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testIsGetCapabilitiesRequestRequestType()
-                            throws Exception {
+                    throws Exception {
         boolean isCorrectRequestType = filterManager.isCorrectRequestParameter( createWms130CapabilitiesRequest() );
 
         assertThat( isCorrectRequestType, is( true ) );
@@ -151,15 +150,35 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     @Test
     public void testIsGetCapabilitiesRequestRequestTypeWithGetMapRequestShouldReturnFalse()
-                            throws Exception {
+                    throws Exception {
         boolean isCorrectRequestType = filterManager.isCorrectRequestParameter( createWms130GetMapRequest() );
 
         assertThat( isCorrectRequestType, is( false ) );
     }
 
+    @Test
+    public void testFilterResponseShouldReplaceDcpUrls()
+                    throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "wms_1_3_0.xml" );
+        WmsRequest wmsRequest = createWms130CapabilitiesRequest();
+        Authentication authentication = createAuthenticationAllLayersGetMap();
+        createFilterManagerWithAttributeModifier().filterResponse( response, wmsRequest, authentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wms_1_3_0-ReplacedDcpUrls.xml" ) ) );
+    }
+
     private WmsCapabilitiesResponseFilterManager createFilterManager() {
         XmlFilter capabilitiesFilter = new XmlFilter();
         XmlModificationManagerCreator decisionMakerCreator = new WmsCapabilitiesModificationManagerCreator();
+        return new WmsCapabilitiesResponseFilterManager( capabilitiesFilter, decisionMakerCreator );
+    }
+
+    private WmsCapabilitiesResponseFilterManager createFilterManagerWithAttributeModifier() {
+        XmlFilter capabilitiesFilter = new XmlFilter();
+        XmlModificationManagerCreator decisionMakerCreator = new WmsCapabilitiesModificationManagerCreator(
+                        "http://getDcpUrl.org", "http://postDcpUrl.org" );
         return new WmsCapabilitiesResponseFilterManager( capabilitiesFilter, decisionMakerCreator );
     }
 
@@ -230,7 +249,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     private RasterPermission createRasterPermission( String operationType, String layerName ) {
         return new RasterPermission( WMS_SERVICE, operationType, new LimitedOwsServiceVersion( "<= 1.3.0" ), layerName,
-                                     "serviceName", "internalServiceUrl", null );
+                        "serviceName", "internalServiceUrl", null );
     }
 
     private Authentication mockAuthentication( Collection<? extends GrantedAuthority> authorities ) {
@@ -241,7 +260,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
 
     private StatusCodeResponseBodyWrapper mockStatusCodeResponseBodyWrapper( ByteArrayOutputStream filteredStream,
                                                                              String originalXmlFileName )
-                            throws IOException {
+                    throws IOException {
         StatusCodeResponseBodyWrapper mockedServletResponse = mock( StatusCodeResponseBodyWrapper.class );
         when( mockedServletResponse.getStatus() ).thenReturn( 200 );
         when( mockedServletResponse.getBufferedStream() ).thenReturn( retrieveResourceAsStream( originalXmlFileName ),
@@ -268,7 +287,7 @@ public class WmsCapabilitiesResponseFilterManagerTest {
         ServletOutputStream stream = new ServletOutputStream() {
             @Override
             public void write( int b )
-                                    throws IOException {
+                            throws IOException {
                 bufferingStream.write( b );
             }
         };
