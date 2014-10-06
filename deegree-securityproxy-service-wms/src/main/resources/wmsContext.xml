@@ -26,7 +26,10 @@
   <bean id="wmsCapabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter" />
 
   <bean id="wmsCapabilitiesModificationManagerCreator" 
-      class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsCapabilitiesModificationManagerCreator" />
+      class="org.deegree.securityproxy.wms.responsefilter.capabilities.WmsCapabilitiesModificationManagerCreator" >
+    <constructor-arg name="getDcpUrl" value="${wms_dcp_url_get}" />
+    <constructor-arg name="postDcpUrl" value="${wms_dcp_url_post}" />
+  </bean>
 
   <bean id="simpleRasterClipper" class="org.deegree.securityproxy.wms.responsefilter.clipping.SimpleRasterClipper" />
 

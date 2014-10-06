@@ -34,7 +34,10 @@
   <bean id="wcsCapabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter"/>
 
   <bean id="wcsCapabilitiesModificationManagerCreator" 
-      class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesModificationManagerCreator"/>
+      class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesModificationManagerCreator" >
+    <constructor-arg name="getDcpUrl" value="${wcs_dcp_url_get}" />
+    <constructor-arg name="postDcpUrl" value="${wcs_dcp_url_post}" />
+  </bean>
   
   <bean name="capabilitiesResponseFilterManager"
         class="org.deegree.securityproxy.wcs.responsefilter.capabilities.WcsCapabilitiesResponseFilterManager">
