@@ -199,7 +199,7 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         Authentication authentication = createAuthenticationWithDescribeCoverage();
         wcsCapabilitiesResponseFilterManagerWithDcpUrls.filterResponse( response, wcsRequest, authentication );
 
-        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0_dcpUrls.xml" ) ) );
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wcs_1_0_0_ReplacedDcpUrls.xml" ) ) );
     }
 
     @Test
