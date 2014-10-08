@@ -54,7 +54,7 @@ import org.deegree.securityproxy.request.OwsServiceVersion;
  * 
  * @version $Revision: $, $Date: $
  */
-public class OwsRequestParserUtils {
+public final class OwsRequestParserUtils {
 
     private OwsRequestParserUtils() {
     }

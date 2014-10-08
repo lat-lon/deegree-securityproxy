@@ -49,7 +49,10 @@ import javax.xml.stream.events.StartElement;
  * 
  * @version $Revision: $, $Date: $
  */
-public class PathUtils {
+public final class PathUtils {
+
+    private PathUtils() {
+    }
 
     /**
      * Checks if the passed path matches.
@@ -126,13 +129,22 @@ public class PathUtils {
 
     private static boolean isSameAttributeName( Attribute attribute, String attributeName ) {
         String localPart = attribute.getName().getLocalPart();
-        return localPart != null && localPart.equals( attributeName ) || attributeName == null && localPart == null;
+        if ( localPart != null && localPart.equals( attributeName ) )
+            return true;
+        if ( attributeName == null && localPart == null )
+            return true;
+        return false;
     }
 
     private static boolean isSameAttributeNamespace( Attribute attribute, String attributeNamespace ) {
         String namespaceUri = attribute.getName().getNamespaceURI();
-        return namespaceUri.isEmpty() && attributeNamespace == null || namespaceUri != null
-               && namespaceUri.equals( attributeNamespace ) || attributeNamespace == null && namespaceUri == null;
+        if ( namespaceUri != null && namespaceUri.isEmpty() && attributeNamespace == null )
+            return true;
+        if ( namespaceUri != null && namespaceUri.equals( attributeNamespace ) )
+            return true;
+        if ( attributeNamespace == null && namespaceUri == null )
+            return true;
+        return false;
     }
 
 }

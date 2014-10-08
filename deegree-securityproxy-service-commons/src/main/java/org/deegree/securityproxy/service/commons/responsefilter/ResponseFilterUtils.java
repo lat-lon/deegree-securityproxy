@@ -52,7 +52,7 @@ import org.deegree.securityproxy.responsefilter.ResponseFilterException;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ResponseFilterUtils {
+public final class ResponseFilterUtils {
 
     private ResponseFilterUtils() {
     }

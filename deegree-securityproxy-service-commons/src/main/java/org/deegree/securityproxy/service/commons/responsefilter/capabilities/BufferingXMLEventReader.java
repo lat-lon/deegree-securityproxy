@@ -79,7 +79,7 @@ public class BufferingXMLEventReader implements XMLEventReader {
 
     @Override
     public XMLEvent nextEvent()
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         if ( !events.isEmpty() )
             return events.pollFirst();
         return reader.nextEvent();
@@ -92,31 +92,31 @@ public class BufferingXMLEventReader implements XMLEventReader {
 
     @Override
     public XMLEvent peek()
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String getElementText()
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public XMLEvent nextTag()
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Object getProperty( String name )
-                            throws IllegalArgumentException {
+                    throws IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void close()
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         reader.close();
     }
 
@@ -132,7 +132,7 @@ public class BufferingXMLEventReader implements XMLEventReader {
      *             - iteration has no more elements.
      */
     public XMLEvent peekNextEvent()
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         XMLEvent nextEvent = reader.nextEvent();
         events.add( nextEvent );
         return nextEvent;
@@ -176,8 +176,8 @@ public class BufferingXMLEventReader implements XMLEventReader {
             try {
                 return peekNextEvent();
             } catch ( XMLStreamException e ) {
+                throw new NoSuchElementException();
             }
-            throw new NoSuchElementException();
         }
 
         @Override
