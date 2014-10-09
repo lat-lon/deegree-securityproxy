@@ -42,14 +42,17 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
 /**
- * TODO add class documentation here
+ * Contains some useful methods to check path and attributes.
  * 
  * @author <a href="mailto:goltz@lat-lon.de">Lyn Goltz</a>
  * @author last edited by: $Author: lyn $
  * 
  * @version $Revision: $, $Date: $
  */
-public class PathUtils {
+public final class PathUtils {
+
+    private PathUtils() {
+    }
 
     /**
      * Checks if the passed path matches.
@@ -65,6 +68,28 @@ public class PathUtils {
             return evaluatePath( path, visitedElements );
         }
         return false;
+    }
+
+    /**
+     * Checks if the attribute has the same name and namespace uri as the passed values.
+     * 
+     * @param attribute
+     *            never <code>null</code>
+     * @param attributeName
+     *            expected name of the attribute, never <code>null</code>
+     * @param attributeNamespace
+     *            expected namespace of the attribute, may be <code>null</code>
+     * @return <code>true</code> if name and namespace are the same as the attributes name and namespace,
+     *         <code>false</code> otherwise
+     * @throws {@link IllegalArgumentException} - attribute Name or attribute is <code>null</code>
+     */
+    public static boolean isAttributeMatching( Attribute attribute, String attributeName, String attributeNamespace ) {
+        if ( attribute == null )
+            throw new IllegalArgumentException( "attribute must not be null!" );
+        if ( attributeName == null )
+            throw new IllegalArgumentException( "attributeName must not be null!" );
+        return isSameAttributeName( attribute, attributeName )
+               && isSameAttributeNamespace( attribute, attributeNamespace );
     }
 
     private static boolean evaluatePath( List<ElementPathStep> path, List<StartElement> visitedElements ) {
@@ -100,6 +125,26 @@ public class PathUtils {
         if ( ruleElementPathStep.getAttributeValue() != null )
             return ruleElementPathStep.getAttributeValue().equals( attributeByName.getValue() );
         return true;
+    }
+
+    private static boolean isSameAttributeName( Attribute attribute, String attributeName ) {
+        String localPart = attribute.getName().getLocalPart();
+        if ( localPart != null && localPart.equals( attributeName ) )
+            return true;
+        if ( attributeName == null && localPart == null )
+            return true;
+        return false;
+    }
+
+    private static boolean isSameAttributeNamespace( Attribute attribute, String attributeNamespace ) {
+        String namespaceUri = attribute.getName().getNamespaceURI();
+        if ( namespaceUri != null && namespaceUri.isEmpty() && attributeNamespace == null )
+            return true;
+        if ( namespaceUri != null && namespaceUri.equals( attributeNamespace ) )
+            return true;
+        if ( attributeNamespace == null && namespaceUri == null )
+            return true;
+        return false;
     }
 
 }

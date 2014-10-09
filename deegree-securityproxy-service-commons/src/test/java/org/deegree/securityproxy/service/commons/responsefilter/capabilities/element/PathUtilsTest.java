@@ -36,6 +36,7 @@
 package org.deegree.securityproxy.service.commons.responsefilter.capabilities.element;
 
 import static java.util.Collections.singletonList;
+import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.PathUtils.isAttributeMatching;
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.PathUtils.isPathMatching;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,6 +47,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 
 import org.junit.Test;
@@ -64,7 +66,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithSimpleMatchingPath()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = PathUtils.isPathMatching( createSimplePath(), createLongerVisitedElements() );
 
         assertThat( isMatching, is( false ) );
@@ -72,7 +74,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithNotMatchingPath()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePath(), createSimpleVisitedElements() );
 
         assertThat( isMatching, is( true ) );
@@ -80,7 +82,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithMatchingLongPath()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createLongerPath(), createLongerVisitedElements() );
 
         assertThat( isMatching, is( true ) );
@@ -88,7 +90,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithMatchingPathWithNamespace()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithNamespace(),
                                              createSimpleVisitedElementsWithNamespace() );
 
@@ -97,7 +99,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithNotMatchingPathWithNamespace()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithNamespace(), createSimpleVisitedElements() );
 
         assertThat( isMatching, is( false ) );
@@ -105,7 +107,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithMatchingPathAttribute()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithAttribute(),
                                              createSimpleVisitedElementsWithAttribute() );
 
@@ -114,7 +116,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithNotMatchingPathWithAttribute()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithAttribute(), createSimpleVisitedElements() );
 
         assertThat( isMatching, is( false ) );
@@ -122,7 +124,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithMatchingPathAttributeWithouValue()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithAttributeWithoutValue(),
                                              createSimpleVisitedElementsWithAttribute( "xValue" ) );
 
@@ -131,7 +133,7 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithMatchingPathNamespaceAndAttribute()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithNamespaceAndAttribute(),
                                              createSimpleVisitedElementsWithNamespaceAndAttribute() );
 
@@ -140,10 +142,48 @@ public class PathUtilsTest {
 
     @Test
     public void testIsPathMatchingWithNotMatchingPathWithNamespaceAndAttribute()
-                            throws Exception {
+                    throws Exception {
         boolean isMatching = isPathMatching( createSimplePathWithNamespaceAndAttribute(), createSimpleVisitedElements() );
 
         assertThat( isMatching, is( false ) );
+    }
+
+    @Test
+    public void testIsAttributeMatchingShouldNotMatch()
+                    throws Exception {
+        boolean isAttributeMatching = isAttributeMatching( createAttribute( "zAtt", "http://zUri" ), "aAtt",
+                                                           "http://aUri" );
+
+        assertThat( isAttributeMatching, is( false ) );
+    }
+
+    @Test
+    public void testIsAttributeMatchingShouldMatch()
+                    throws Exception {
+        boolean isAttributeMatching = isAttributeMatching( createAttribute( "aAtt", "http://aUri" ), "aAtt",
+                                                           "http://aUri" );
+
+        assertThat( isAttributeMatching, is( true ) );
+    }
+
+    @Test
+    public void testIsAttributeMatchingWithoutNamespaceShouldMatch()
+                    throws Exception {
+        boolean isAttributeMatching = isAttributeMatching( createAttribute( "aAtt", null ), "aAtt", null );
+
+        assertThat( isAttributeMatching, is( true ) );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsAttributeMatchingNullAttributeShouldFail()
+                    throws Exception {
+        isAttributeMatching( null, "aAtt", "http://aUri" );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIsAttributeMatchingNullAttributeNameShouldFail()
+                    throws Exception {
+        isAttributeMatching( createAttribute( "aAtt", "http://aUri" ), null, "http://aUri" );
     }
 
     private List<ElementPathStep> createSimplePath() {
@@ -213,6 +253,10 @@ public class PathUtilsTest {
         Iterator<?> attributes = singletonList( EVENT_FACTORY.createAttribute( "zAtt", "zValue" ) ).iterator();
         startElements.add( EVENT_FACTORY.createStartElement( new QName( NS_URL, "A" ), attributes, null ) );
         return startElements;
+    }
+
+    private Attribute createAttribute( String name, String namespace ) {
+        return EVENT_FACTORY.createAttribute( new QName( namespace, name ), "value" );
     }
 
     private List<StartElement> createLongerVisitedElements() {

@@ -37,6 +37,7 @@ package org.deegree.securityproxy.service.commons.responsefilter.capabilities.te
 
 import static org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.PathUtils.isPathMatching;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import javax.xml.stream.events.StartElement;
 
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.BufferingXMLEventReader;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.PathUtils;
 
 /**
  * returns a static text if one of the {@link ElementPathStep} matches
@@ -59,18 +61,43 @@ public class StaticAttributeModifier implements AttributeModifier {
 
     private final List<AttributeModificationRule> attributeModificationRules;
 
+    private final String attributeName;
+
+    private final String attributeNamespace;
+
+    /**
+     * Instantiates a new {@link StaticAttributeModifier} which does not check the attribute.
+     * 
+     * @param attributeModificationRules
+     *            never <code>null</code>
+     */
     public StaticAttributeModifier( List<AttributeModificationRule> attributeModificationRules ) {
+        this( attributeModificationRules, null, null );
+    }
+
+    /**
+     * @param attributeModificationRules
+     *            never <code>null</code>
+     * @param attributeName
+     *            , must not be <code>null</code> (if <code>null</code> the attribute is not checked)
+     * @param attributeNamespace
+     *            may be <code>null</code> for attributes without namespace
+     */
+    public StaticAttributeModifier( List<AttributeModificationRule> attributeModificationRules, String attributeName,
+                                    String attributeNamespace ) {
         this.attributeModificationRules = attributeModificationRules;
+        this.attributeName = attributeName;
+        this.attributeNamespace = attributeNamespace;
     }
 
     @Override
     public String determineNewAttributeValue( BufferingXMLEventReader reader, StartElement currentStartElement,
                                               Attribute attribute, LinkedList<StartElement> visitedElements )
-                            throws XMLStreamException {
+                    throws XMLStreamException {
         LinkedList<StartElement> extendedPath = extendPathByCurrentStartElement( currentStartElement, visitedElements );
         for ( AttributeModificationRule rule : attributeModificationRules ) {
             boolean isPathMatching = isPathMatching( rule.getPath(), extendedPath );
-            if ( isPathMatching )
+            if ( isPathMatching && isAttributeMatching( attribute ) )
                 return rule.getValue();
         }
         return null;
@@ -81,6 +108,17 @@ public class StaticAttributeModifier implements AttributeModifier {
         LinkedList<StartElement> extendedPath = new LinkedList<StartElement>( visitedElements );
         extendedPath.add( currentStartElement );
         return extendedPath;
+    }
+
+    private boolean isAttributeMatching( Attribute attribute ) {
+        return attributeName == null || PathUtils.isAttributeMatching( attribute, attributeName, attributeNamespace );
+    }
+
+    /**
+     * @return the attributeModificationRules, never <code>null</code>
+     */
+    public List<AttributeModificationRule> getAttributeModificationRules() {
+        return Collections.unmodifiableList( attributeModificationRules );
     }
 
 }

@@ -54,9 +54,12 @@ import org.apache.log4j.Logger;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ExceptionUtils {
+public final class ExceptionUtils {
 
     private static final Logger LOG = Logger.getLogger( ServiceExceptionWrapper.class );
+
+    private ExceptionUtils() {
+    }
 
     /**
      * Reads the exception from a file, if the exception is not available the default body is returned.

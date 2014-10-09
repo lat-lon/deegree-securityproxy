@@ -49,7 +49,10 @@ import javax.xml.stream.XMLStreamReader;
  * 
  * @version $Revision: $, $Date: $
  */
-public class XmlStreamUtils {
+public final class XmlStreamUtils {
+
+    private XmlStreamUtils() {
+    }
 
     /**
      * Creates {@link javax.xml.stream.XMLStreamReader} of a {@link InputStream}. The start document is already skipped.

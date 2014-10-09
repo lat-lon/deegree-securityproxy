@@ -41,6 +41,7 @@ import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.W
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -56,6 +57,9 @@ import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModificationRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -78,7 +82,7 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     @Test
     public void testCreateDecisionMakerForWpsOneExecute()
                     throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneExecute() );
+        DecisionMaker decisionMaker = retrieveDecisionMaker( createAuthenticationWithOneExecute() );
 
         List<String> blackListTextValues = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
         assertThat( blackListTextValues.size(), is( 1 ) );
@@ -88,7 +92,7 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     @Test
     public void testCreateDecisionMakerForWpsTwoExecute()
                     throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithTwoExecuteOneDescribeProcess() );
+        DecisionMaker decisionMaker = retrieveDecisionMaker( createAuthenticationWithTwoExecuteOneDescribeProcess() );
 
         List<String> blackListTextValues = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
         assertThat( blackListTextValues.size(), is( 2 ) );
@@ -98,7 +102,7 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
     @Test
     public void testCreateDecisionMakerForWpsNoExecute()
                     throws Exception {
-        DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createAuthenticationWithOneUnknownRequest() );
+        DecisionMaker decisionMaker = retrieveDecisionMaker( createAuthenticationWithOneUnknownRequest() );
 
         List<String> blackListTextValues = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
         assertThat( blackListTextValues.size(), is( 0 ) );
@@ -111,6 +115,48 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
                                                                                                            createAuthenticationWithOneExecute() );
 
         assertThat( xmlModificationManager, is( notNullValue() ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifier()
+                    throws Exception {
+        WpsCapabilitiesModificationManagerCreator decisionMakerCreator = new WpsCapabilitiesModificationManagerCreator();
+        AttributeModifier attributeModifier = retrieveAttributeModifier( decisionMakerCreator );
+
+        assertThat( attributeModifier, is( nullValue() ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifierWithGetDcpUrl()
+                    throws Exception {
+        WpsCapabilitiesModificationManagerCreator decisionMakerCreator = new WpsCapabilitiesModificationManagerCreator(
+                        "http://getDcpUrl", null );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) retrieveAttributeModifier( decisionMakerCreator );
+
+        List<AttributeModificationRule> attributeModificationRules = attributeModifier.getAttributeModificationRules();
+        assertThat( attributeModificationRules.size(), is( 1 ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifierWithPostDcpUrl()
+                    throws Exception {
+        WpsCapabilitiesModificationManagerCreator decisionMakerCreator = new WpsCapabilitiesModificationManagerCreator(
+                        null, "http://postDcpUrl" );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) retrieveAttributeModifier( decisionMakerCreator );
+
+        List<AttributeModificationRule> attributeModificationRules = attributeModifier.getAttributeModificationRules();
+        assertThat( attributeModificationRules.size(), is( 1 ) );
+    }
+
+    @Test
+    public void testCreateAttributeModifierWithDcpUrls()
+                    throws Exception {
+        WpsCapabilitiesModificationManagerCreator decisionMakerCreator = new WpsCapabilitiesModificationManagerCreator(
+                        "http://getDcpUrl", "http://postDcpUrl" );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) retrieveAttributeModifier( decisionMakerCreator );
+
+        List<AttributeModificationRule> attributeModificationRules = attributeModifier.getAttributeModificationRules();
+        assertThat( attributeModificationRules.size(), is( 2 ) );
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -161,6 +207,16 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
 
     private OwsRequest createWpsRequest( String version ) {
         return new WpsRequest( EXECUTE, new OwsServiceVersion( version ), "serviceName" );
+    }
+
+    private DecisionMaker retrieveDecisionMaker( Authentication authentication ) {
+        return decisionMakerCreator.createXmlModificationManager( createWps100Request(), authentication ).getDecisionMaker();
+    }
+
+    private AttributeModifier
+                    retrieveAttributeModifier( WpsCapabilitiesModificationManagerCreator decisionMakerCreator ) {
+        return decisionMakerCreator.createXmlModificationManager( createWps100Request(),
+                                                                  createAuthenticationWithOneExecute() ).getAttributeModifier();
     }
 
 }

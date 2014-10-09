@@ -22,11 +22,14 @@ import org.hamcrest.Matcher;
  * 
  * @version $Revision: $, $Date: $
  */
-public class ImageMatcher {
+public final class ImageMatcher {
 
     private static boolean INVERTED = true;
 
     private static boolean NOT_INVERTED = false;
+
+    private ImageMatcher() {
+    }
 
     /**
      * Matcher to check whether image has same dimension as source file.
@@ -37,7 +40,7 @@ public class ImageMatcher {
      * @throws IOException
      */
     public static Matcher<File> hasSameDimension( File sourceFile )
-                            throws IOException {
+                    throws IOException {
 
         BufferedImage sourceImage = read( sourceFile );
         final int heightSource = sourceImage.getHeight();
@@ -55,7 +58,7 @@ public class ImageMatcher {
      * @throws Exception
      */
     public static Matcher<File> hasSamePixels( File sourceFile )
-                            throws Exception {
+                    throws Exception {
         BufferedImage sourceImage = ImageIO.read( sourceFile );
         PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
 
@@ -73,7 +76,7 @@ public class ImageMatcher {
      * @throws Exception
      */
     public static Matcher<File> hasNotSamePixels( File sourceFile )
-                            throws Exception {
+                    throws Exception {
 
         BufferedImage sourceImage = ImageIO.read( sourceFile );
         PixelGrabber sourceGrabber = new PixelGrabber( sourceImage, 0, 0, -1, -1, false );
@@ -84,7 +87,7 @@ public class ImageMatcher {
     }
 
     private static int[] calculatePixels( PixelGrabber destinationGrabber )
-                            throws InterruptedException {
+                    throws InterruptedException {
         int[] pixels = null;
         if ( destinationGrabber.grabPixels() ) {
             pixels = (int[]) destinationGrabber.getPixels();
@@ -94,7 +97,7 @@ public class ImageMatcher {
 
     /**
      * Matcher to compare dimensions
-     *
+     * 
      * @param <T>
      */
     private static class DimensionMatcher<T> extends BaseMatcher<T> {
@@ -128,7 +131,7 @@ public class ImageMatcher {
             description.appendText( "Should have the same width and height as the source ( " + widthSource + " * "
                                     + heightSource + ")!" );
         }
-    };
+    }
 
     private static class PixelMatcher<T> extends BaseMatcher<T> {
 
@@ -160,7 +163,8 @@ public class ImageMatcher {
         @Override
         public void describeTo( Description description ) {
             String inverseString = inverse ? "not " : "";
-            description.appendText( "Should "+ inverseString + "contain the same pixels as the source!" );
+            description.appendText( "Should " + inverseString + "contain the same pixels as the source!" );
         }
-    };
+    }
+
 }

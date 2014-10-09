@@ -128,6 +128,19 @@ public class WpsCapabilitiesResponseFilterManagerTest {
     }
 
     @Test
+    public void testFilterResponseShouldReplaceDcpUrls()
+                    throws Exception {
+        ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
+        StatusCodeResponseBodyWrapper response = mockStatusCodeResponseBodyWrapper( filteredCapabilities,
+                                                                                    "wps_1_0_0.xml" );
+        WpsRequest wpsRequest = createWpsGetCapabilitiesRequest();
+        Authentication authentication = createAuthenticationWithAllProcessIds();
+        createFilterManagerWithAttributeModifier().filterResponse( response, wpsRequest, authentication );
+
+        assertThat( asXml( filteredCapabilities ), isEquivalentTo( expectedXml( "wps_1_0_0-ReplacedDcpUrls.xml" ) ) );
+    }
+
+    @Test
     public void testFilterResponseWithExceptionShouldReturnExceptionResponse()
                     throws Exception {
         ByteArrayOutputStream filteredCapabilities = new ByteArrayOutputStream();
@@ -202,6 +215,13 @@ public class WpsCapabilitiesResponseFilterManagerTest {
     private WpsCapabilitiesResponseFilterManager createFilterManager() {
         XmlFilter capabilitiesFilter = new XmlFilter();
         XmlModificationManagerCreator xmlModificationManagerCreator = new WpsCapabilitiesModificationManagerCreator();
+        return new WpsCapabilitiesResponseFilterManager( capabilitiesFilter, xmlModificationManagerCreator );
+    }
+
+    private WpsCapabilitiesResponseFilterManager createFilterManagerWithAttributeModifier() {
+        XmlFilter capabilitiesFilter = new XmlFilter();
+        XmlModificationManagerCreator xmlModificationManagerCreator = new WpsCapabilitiesModificationManagerCreator(
+                        "http://getDcpUrl", "http://postDcpUrl" );
         return new WpsCapabilitiesResponseFilterManager( capabilitiesFilter, xmlModificationManagerCreator );
     }
 
@@ -289,6 +309,7 @@ public class WpsCapabilitiesResponseFilterManagerTest {
 
     private Source asXml( ByteArrayOutputStream bufferingStream ) {
         byte[] byteArray = bufferingStream.toByteArray();
+        System.out.println( new String( byteArray ) );
         return the( new StreamSource( new ByteArrayInputStream( byteArray ) ) );
     }
 

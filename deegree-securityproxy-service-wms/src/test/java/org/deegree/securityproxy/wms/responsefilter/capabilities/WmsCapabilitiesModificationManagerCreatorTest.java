@@ -6,6 +6,7 @@ import static org.deegree.securityproxy.wms.request.WmsRequestParser.WMS_SERVICE
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -19,7 +20,10 @@ import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.deegree.securityproxy.wms.request.WmsRequest;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
@@ -37,49 +41,100 @@ public class WmsCapabilitiesModificationManagerCreatorTest {
 
     private static final String LAYER_NAME_2 = "layer2";
 
+    private static final String getDcpUrl = "http://getDcpUrl.org";
+
+    private static final String postDcpUrl = "http://postDcpUrl.org";
+
     private final WmsCapabilitiesModificationManagerCreator decisionMakerCreator = new WmsCapabilitiesModificationManagerCreator();
 
     @Test
-        public void testCreateXmlModificationManagerForWmsOneGetMap()
-                                throws Exception {
-            DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                    createAuthenticationWithOneGetMap() );
-    
-            assertThat( decisionMaker, is( notNullValue() ) );
-            List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
-            assertThat( blackListLayers.size(), is( 1 ) );
-            assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
-        }
+    public void testCreateXmlModificationManagerForWmsOneGetMap()
+                    throws Exception {
+        XmlModificationManager xmlModificationManager = decisionMakerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                           createAuthenticationWithOneGetMap() );
+        DecisionMaker decisionMaker = xmlModificationManager.getDecisionMaker();
+
+        assertThat( decisionMaker, is( notNullValue() ) );
+        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListLayers.size(), is( 1 ) );
+        assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
+    }
 
     @Test
-        public void testCreateXmlModificationManagerForWmsTwoGetMap()
-                                throws Exception {
-            DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                    createAuthenticationWithTwoGetMapOneGetFeatureInfo() );
-    
-            assertThat( decisionMaker, is( notNullValue() ) );
-            List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
-            assertThat( blackListLayers.size(), is( 2 ) );
-            assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
-            assertThat( blackListLayers, hasItem( LAYER_NAME_2 ) );
-        }
+    public void testCreateXmlModificationManagerForWmsTwoGetMap()
+                    throws Exception {
+        XmlModificationManager xmlModificationManager = decisionMakerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                           createAuthenticationWithTwoGetMapOneGetFeatureInfo() );
+        DecisionMaker decisionMaker = xmlModificationManager.getDecisionMaker();
+
+        assertThat( decisionMaker, is( notNullValue() ) );
+        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListLayers.size(), is( 2 ) );
+        assertThat( blackListLayers, hasItem( LAYER_NAME_1 ) );
+        assertThat( blackListLayers, hasItem( LAYER_NAME_2 ) );
+    }
 
     @Test
-        public void testCreateXmlModificationManagerForWmsNoGetMap()
-                                throws Exception {
-            DecisionMaker decisionMaker = decisionMakerCreator.createDecisionMaker( createWms130Request(),
-                                                                                    createAuthenticationWithOneUnknownRequest() );
-    
-            assertThat( decisionMaker, is( notNullValue() ) );
-            List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
-            assertThat( blackListLayers.size(), is( 0 ) );
-        }
+    public void testCreateXmlModificationManagerForWmsNoGetMap()
+                    throws Exception {
+        XmlModificationManager xmlModificationManager = decisionMakerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                           createAuthenticationWithOneUnknownRequest() );
+        DecisionMaker decisionMaker = xmlModificationManager.getDecisionMaker();
+
+        assertThat( decisionMaker, is( notNullValue() ) );
+        List<String> blackListLayers = ( (BlackListDecisionMaker) decisionMaker ).getBlackListTextValues();
+        assertThat( blackListLayers.size(), is( 0 ) );
+    }
 
     @Test(expected = IllegalArgumentException.class)
-        public void testCreateXmlModificationManagerForWms110ShouldFail()
-                                throws Exception {
-            decisionMakerCreator.createXmlModificationManager( createWms110Request(), createAuthenticationWithOneGetMap() );
-        }
+    public void testCreateXmlModificationManagerForWms110ShouldFail()
+                    throws Exception {
+        decisionMakerCreator.createXmlModificationManager( createWms110Request(), createAuthenticationWithOneGetMap() );
+    }
+
+    @Test
+    public void testCreateXmlModificationManagerWithoutDcpUrls() {
+        WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
+                        null, null );
+        XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                                 mock( Authentication.class ) );
+        AttributeModifier attributeModifier = xmlModificationManager.getAttributeModifier();
+
+        assertThat( attributeModifier, nullValue() );
+    }
+
+    @Test
+    public void testCreateXmlModificationManagerWithDcpUrls() {
+        WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
+                        getDcpUrl, postDcpUrl );
+        XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                                 mock( Authentication.class ) );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) xmlModificationManager.getAttributeModifier();
+
+        assertThat( attributeModifier.getAttributeModificationRules().size(), is( 6 ) );
+    }
+
+    @Test
+    public void testCreateXmlModificationManagerWithGetDcpUrl() {
+        WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
+                        getDcpUrl, null );
+        XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                                 mock( Authentication.class ) );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) xmlModificationManager.getAttributeModifier();
+
+        assertThat( attributeModifier.getAttributeModificationRules().size(), is( 3 ) );
+    }
+
+    @Test
+    public void testCreateXmlModificationManagerWithPostDcpUrl() {
+        WmsCapabilitiesModificationManagerCreator modificationManagerCreator = new WmsCapabilitiesModificationManagerCreator(
+                        null, postDcpUrl );
+        XmlModificationManager xmlModificationManager = modificationManagerCreator.createXmlModificationManager( createWms130Request(),
+                                                                                                                 mock( Authentication.class ) );
+        StaticAttributeModifier attributeModifier = (StaticAttributeModifier) xmlModificationManager.getAttributeModifier();
+
+        assertThat( attributeModifier.getAttributeModificationRules().size(), is( 3 ) );
+    }
 
     private Authentication createAuthenticationWithOneGetMap() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
@@ -104,7 +159,7 @@ public class WmsCapabilitiesModificationManagerCreatorTest {
 
     private RasterPermission createRasterPermission( String operationType, String layerName ) {
         return new RasterPermission( WMS_SERVICE, operationType, new LimitedOwsServiceVersion( "<= 1.3.0" ), layerName,
-                                     "serviceName", "internalServiceUrl", null );
+                        "serviceName", "internalServiceUrl", null );
     }
 
     private Authentication mockAuthentication( Collection<? extends GrantedAuthority> authorities ) {

@@ -43,8 +43,11 @@ import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.W
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import javax.xml.namespace.QName;
 
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -53,6 +56,10 @@ import org.deegree.securityproxy.service.commons.responsefilter.capabilities.Dec
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManager;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlModificationManagerCreator;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.blacklist.BlackListDecisionMaker;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.element.ElementPathStep;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModificationRule;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.AttributeModifier;
+import org.deegree.securityproxy.service.commons.responsefilter.capabilities.text.StaticAttributeModifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -76,16 +83,54 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
 
     private static final String SUB_ELEMENT_NAME = "Identifier";
 
+    private final String getDcpUrl;
+
+    private final String postDcpUrl;
+
+    /**
+     * Instantiates a new {@link WpsCapabilitiesModificationManagerCreator}. DCP url is not replaced!
+     */
+    public WpsCapabilitiesModificationManagerCreator() {
+        this( null, null );
+    }
+
+    /**
+     * @param getDcpUrl
+     *            the new HTTP GET DCP URL replacing all DCP urls in the capabilities document, if <code>null</code>
+     *            nothing is replaced
+     * @param postDcpUrl
+     *            the new HTTP POST DCP URL replacing all DCP urls in the capabilities document, if <code>null</code>
+     *            nothing is replaced
+     */
+    public WpsCapabilitiesModificationManagerCreator( String getDcpUrl, String postDcpUrl ) {
+        this.getDcpUrl = getDcpUrl;
+        this.postDcpUrl = postDcpUrl;
+    }
+
     @Override
     public XmlModificationManager createXmlModificationManager( OwsRequest owsRequest, Authentication authentication ) {
         checkVersion( owsRequest );
-        return new XmlModificationManager( createDecisionMaker( authentication ) );
+        return new XmlModificationManager( createDecisionMaker( authentication ), createAttributeModifier() );
     }
 
-    DecisionMaker createDecisionMaker( Authentication authentication ) {
+    private DecisionMaker createDecisionMaker( Authentication authentication ) {
         List<String> authenticatedProcessIds = collectAuthenticatedProcessIds( authentication );
         return new BlackListDecisionMaker( ELEMENT_TO_SKIP, WPS_1_0_0_NS_URI, SUB_ELEMENT_NAME, OWS_1_1_NS_URI,
                         authenticatedProcessIds );
+    }
+
+    private AttributeModifier createAttributeModifier() {
+        AttributeModificationRule getRule = createGetRule();
+        AttributeModificationRule postRule = createPostRule();
+        if ( getRule != null || postRule != null ) {
+            List<AttributeModificationRule> rules = new LinkedList<AttributeModificationRule>();
+            if ( getRule != null )
+                rules.add( getRule );
+            if ( postRule != null )
+                rules.add( postRule );
+            return new StaticAttributeModifier( rules, "href", "http://www.w3.org/1999/xlink" );
+        }
+        return null;
     }
 
     private List<String> collectAuthenticatedProcessIds( Authentication authentication ) {
@@ -121,6 +166,32 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
         if ( !VERSION_1_0_0.equals( owsRequest.getServiceVersion() ) )
             throw new IllegalArgumentException( "Capabilities request for version " + owsRequest.getServiceVersion()
                                                 + " is not supported yet!" );
+    }
+
+    private AttributeModificationRule createGetRule() {
+        return createRule( getDcpUrl, "Get" );
+    }
+
+    private AttributeModificationRule createPostRule() {
+        return createRule( postDcpUrl, "Post" );
+    }
+
+    private AttributeModificationRule createRule( String url, String method ) {
+        if ( url != null ) {
+            return new AttributeModificationRule( url, createPath( method ) );
+        }
+        return null;
+    }
+
+    private LinkedList<ElementPathStep> createPath( String method ) {
+        LinkedList<ElementPathStep> path = new LinkedList<ElementPathStep>();
+        path.add( new ElementPathStep( new QName( WPS_1_0_0_NS_URI, "Capabilities" ) ) );
+        path.add( new ElementPathStep( new QName( OWS_1_1_NS_URI, "OperationsMetadata" ) ) );
+        path.add( new ElementPathStep( new QName( OWS_1_1_NS_URI, "Operation" ) ) );
+        path.add( new ElementPathStep( new QName( OWS_1_1_NS_URI, "DCP" ) ) );
+        path.add( new ElementPathStep( new QName( OWS_1_1_NS_URI, "HTTP" ) ) );
+        path.add( new ElementPathStep( new QName( OWS_1_1_NS_URI, method ) ) );
+        return path;
     }
 
 }
