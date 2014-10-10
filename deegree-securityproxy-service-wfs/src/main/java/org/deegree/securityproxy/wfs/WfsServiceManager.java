@@ -117,8 +117,12 @@ public class WfsServiceManager implements ServiceManager, ServiceExceptionManage
 
     @Override
     public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
-        if ( serviceType == null )
-            serviceType = new ServiceTypeParser().determineServiceType( request );
+        if ( serviceType != null )
+            return doesEqualWfs( serviceType );
+        return doesEqualWfs( new ServiceTypeParser().determineServiceType( request ) );
+    }
+
+    private boolean doesEqualWfs( String serviceType ) {
         return "wfs".equalsIgnoreCase( serviceType );
     }
 
