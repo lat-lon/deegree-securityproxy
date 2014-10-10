@@ -1,9 +1,9 @@
 package org.deegree.securityproxy.authorization.logging;
 
-import static java.util.Collections.unmodifiableMap;
-
 import java.util.Collections;
 import java.util.Map;
+
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * 
@@ -30,7 +30,7 @@ public class AuthorizationReport {
      * 
      */
     public AuthorizationReport() {
-        this( "Authorization is disabled.", true, null, unmodifiableMap( Collections.<String, String[]> emptyMap() ) );
+        this( "Authorization is disabled.", true, null, unmodifiableMap( Collections.<String, String[]>emptyMap() ) );
     }
 
     /**
@@ -40,7 +40,7 @@ public class AuthorizationReport {
      *            containing the reason why the authorization failed, never <code>null</code>
      */
     public AuthorizationReport( String message ) {
-        this( message, false, null, unmodifiableMap( Collections.<String, String[]> emptyMap() ) );
+        this( message, false, null, unmodifiableMap( Collections.<String, String[]>emptyMap() ) );
     }
 
     /**
@@ -79,7 +79,7 @@ public class AuthorizationReport {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]> emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
     }
 
     /**

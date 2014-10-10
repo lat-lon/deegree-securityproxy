@@ -89,8 +89,12 @@ class WmsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     @Override
     public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
-        if ( serviceType == null )
-            serviceType = new ServiceTypeParser().determineServiceType( request );
+        if ( serviceType != null )
+            return doesEqualWms( serviceType );
+        return doesEqualWms( new ServiceTypeParser().determineServiceType( request ) );
+    }
+
+    private boolean doesEqualWms( String serviceType ) {
         return "wms".equalsIgnoreCase( serviceType );
     }
 

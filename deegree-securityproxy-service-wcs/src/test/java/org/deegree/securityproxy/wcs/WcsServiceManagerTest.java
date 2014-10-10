@@ -6,7 +6,6 @@ import org.deegree.securityproxy.filter.ServiceManager;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
-import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -117,8 +116,7 @@ public class WcsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnTrue()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wcsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( null, request );
 
         assertThat( isSupported, is( true ) );
     }
@@ -127,8 +125,7 @@ public class WcsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wcsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( null, request );
 
         assertThat( isSupported, is( false ) );
     }
@@ -137,8 +134,25 @@ public class WcsServiceManagerTest {
     public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wcsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( null, request );
+
+        assertThat( isSupported, is( false ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithStringServiceParameterShouldReturnTrue()
+                    throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( "wcs", request );
+
+        assertThat( isSupported, is( true ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithStringServiceParameterShouldReturnFalse()
+                    throws Exception {
+        HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wcs" );
+        boolean isSupported = wcsServiceManager.isServiceTypeSupported( "wms", request );
 
         assertThat( isSupported, is( false ) );
     }

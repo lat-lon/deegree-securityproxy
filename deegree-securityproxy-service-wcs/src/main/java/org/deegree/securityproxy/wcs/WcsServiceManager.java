@@ -86,8 +86,12 @@ class WcsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     @Override
     public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
-        if ( serviceType == null )
-            serviceType = new ServiceTypeParser().determineServiceType( request );
+        if ( serviceType != null )
+            return doesEqualWcs( serviceType );
+        return doesEqualWcs( new ServiceTypeParser().determineServiceType( request ) );
+    }
+
+    private boolean doesEqualWcs( String serviceType ) {
         return "wcs".equalsIgnoreCase( serviceType );
     }
 
