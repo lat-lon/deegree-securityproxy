@@ -29,6 +29,11 @@
       <groupId>org.deegree</groupId>
       <artifactId>deegree-securityproxy-service-wps</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.deegree</groupId>
+      <artifactId>deegree-securityproxy-service-wfs</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
