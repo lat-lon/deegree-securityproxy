@@ -5,7 +5,6 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
-import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -16,7 +15,6 @@ import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -132,8 +130,7 @@ public class WmsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWmsServiceParameterShouldReturnTrue()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wmsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( null, request );
 
         assertThat( isSupported, is( true ) );
     }
@@ -142,8 +139,7 @@ public class WmsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithWcsServiceParameter();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wmsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( null, request );
 
         assertThat( isSupported, is( false ) );
     }
@@ -152,8 +148,25 @@ public class WmsServiceManagerTest {
     public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wmsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( null, request );
+
+        assertThat( isSupported, is( false ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithStringServiceParameterShouldReturnTrue()
+                    throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( "wms", request );
+
+        assertThat( isSupported, is( true ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithStringServiceParameterShouldReturnFalse()
+                    throws Exception {
+        HttpServletRequest request = mockHttpServletRequestWithWmsServiceParameter();
+        boolean isSupported = wmsServiceManager.isServiceTypeSupported( "wfs", request );
 
         assertThat( isSupported, is( false ) );
     }

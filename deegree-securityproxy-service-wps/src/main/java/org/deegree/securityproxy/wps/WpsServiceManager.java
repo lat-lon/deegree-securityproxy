@@ -101,8 +101,12 @@ class WpsServiceManager implements ServiceManager, ServiceExceptionManager {
 
     @Override
     public boolean isServiceTypeSupported( String serviceType, HttpServletRequest request ) {
-        if ( serviceType == null )
-            serviceType = new ServiceTypeParser().determineServiceType( request );
+        if ( serviceType != null )
+            return doesEqualWps( serviceType );
+        return doesEqualWps( new ServiceTypeParser().determineServiceType( request ) );
+    }
+
+    private boolean doesEqualWps( String serviceType ) {
         return "wps".equalsIgnoreCase( serviceType );
     }
 

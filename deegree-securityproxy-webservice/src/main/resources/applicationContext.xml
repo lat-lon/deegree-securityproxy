@@ -55,6 +55,7 @@
     <ref bean="wcsServiceManager" />
     <ref bean="wmsServiceManager" />
     <ref bean="wpsServiceManager" />
+    <ref bean="wfsServiceManager" />
   </util:list>
 
   <util:list id="exceptionManagers" list-class="java.util.LinkedList"
@@ -62,6 +63,7 @@
     <ref bean="wcsServiceManager" />
     <ref bean="wmsServiceManager" />
     <ref bean="wpsServiceManager" />
+    <ref bean="wfsServiceManager" />
   </util:list>
 
   <bean id="basicAuthenticationFilter" class="org.deegree.securityproxy.authentication.basic.AddHeaderBasicAuthenticationFilter">

@@ -5,11 +5,9 @@ import org.deegree.securityproxy.exception.ServiceExceptionWrapper;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.parser.OwsRequestParser;
-import org.deegree.securityproxy.request.parser.ServiceTypeParser;
 import org.deegree.securityproxy.responsefilter.ResponseFilterException;
 import org.deegree.securityproxy.responsefilter.ResponseFilterManager;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -25,7 +23,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -130,8 +128,7 @@ public class WpsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWpsServiceParameterShouldReturnTrue()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wps" );
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( null, request );
 
         assertThat( isSupported, is( true ) );
     }
@@ -140,8 +137,7 @@ public class WpsServiceManagerTest {
     public void testIsServiceTypeSupportedWithWcsServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wms" );
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( null, request );
 
         assertThat( isSupported, is( false ) );
     }
@@ -150,10 +146,27 @@ public class WpsServiceManagerTest {
     public void testIsServiceTypeSupportedWithNoServiceParameterShouldReturnFalse()
                     throws Exception {
         HttpServletRequest request = mockHttpServletRequest();
-        String serviceType = new ServiceTypeParser().determineServiceType( request );
-        boolean isSupported = wpsServiceManager.isServiceTypeSupported( serviceType, request );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( null, request );
 
-        MatcherAssert.assertThat( isSupported, is( false ) );
+        assertThat( isSupported, is( false ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithStringServiceParameterShouldReturnTrue()
+                    throws Exception {
+        HttpServletRequest request = mockHttpServletRequest();
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( "wps", request );
+
+        assertThat( isSupported, is( true ) );
+    }
+
+    @Test
+    public void testIsServiceTypeSupportedWithStringServiceParameterShouldReturnFalse()
+                    throws Exception {
+        HttpServletRequest request = mockHttpServletRequestWithServiceParameter( "wps" );
+        boolean isSupported = wpsServiceManager.isServiceTypeSupported( "wms", request );
+
+        assertThat( isSupported, is( false ) );
     }
 
     private HttpServletRequest mockHttpServletRequest() {

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <bean id="wfsServiceManager" class="org.deegree.securityproxy.wfs.WfsServiceManager">
+    <constructor-arg ref="wfsRequestParser"/>
+    <constructor-arg ref="wfsResponseFilterManagers"/>
+    <constructor-arg ref="additionalKeyValuePairs"/>
+  </bean>
+
+  <bean id="wfsRequestParser" class="org.deegree.securityproxy.wfs.request.WfsRequestParser"/>
+
+  <util:list id="wfsResponseFilterManagers" list-class="java.util.LinkedList"
+             value-type="org.deegree.securityproxy.responsefilter.ResponseFilterManager">
+    <ref bean="wfsCapabilitiesResponseFilterManager"/>
+  </util:list>
+
+  <util:map id="additionalKeyValuePairs"/>
+
+  <bean name="wfsCapabilitiesResponseFilterManager"
+        class="org.deegree.securityproxy.wfs.responsefilter.capabilities.WfsCapabilitiesResponseFilterManager">
+    <constructor-arg ref="wfsXmlFilter"/>
+    <constructor-arg ref="wfsCapabilitiesModificationManagerCreator"/>
+  </bean>
+
+  <bean id="wfsXmlFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter"/>
+
+  <bean id="wfsCapabilitiesModificationManagerCreator"
+        class="org.deegree.securityproxy.wfs.responsefilter.capabilities.WfsCapabilitiesModificationManagerCreator">
+    <constructor-arg value="${wfs_dcp_url_get}"/>
+    <constructor-arg value="${wfs_dcp_url_post}"/>
+  </bean>
+
+</beans>

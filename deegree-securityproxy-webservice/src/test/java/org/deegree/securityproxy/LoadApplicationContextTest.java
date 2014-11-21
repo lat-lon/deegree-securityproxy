@@ -1,17 +1,17 @@
 package org.deegree.securityproxy;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import static java.io.File.createTempFile;
+import static org.apache.commons.io.IOUtils.copy;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static java.io.File.createTempFile;
-import static org.apache.commons.io.IOUtils.copy;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Checks if the applicationContext.xml could be loaded successful.
@@ -50,7 +50,8 @@ public class LoadApplicationContextTest {
     @Test
     public void testLoadApplicationContext() {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext( "applicationContext.xml",
-                        "authenticationContext.xml", "wmsContext.xml", "wcsContext.xml", "wpsContext.xml" );
+                        "authenticationContext.xml", "wmsContext.xml", "wcsContext.xml", "wpsContext.xml",
+                        "wfsContext.xml" );
         ctx.close();
     }
 
