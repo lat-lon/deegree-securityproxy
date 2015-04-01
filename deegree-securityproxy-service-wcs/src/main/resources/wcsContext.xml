@@ -20,7 +20,7 @@
 
   <bean id="wcsRequestParser" class="org.deegree.securityproxy.wcs.request.WcsRequestParser"/>
 
-  <bean name="geometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetrieverImpl"/>
+  <bean name="wcsGeometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetrieverImpl"/>
 
   <bean name="imageClipper" class="org.deegree.securityproxy.wcs.responsefilter.clipping.GeotiffClipper"/>
 
@@ -29,6 +29,7 @@
     <constructor-arg value="${wcs_clipping_exception_file_path}"/>
     <constructor-arg value="${wcs_clipping_failed_status_code}"/>
     <constructor-arg ref="imageClipper"/>
+    <constructor-arg ref="wcsGeometryRetriever"/>
   </bean>
 
   <bean id="wcsCapabilitiesFilter" class="org.deegree.securityproxy.service.commons.responsefilter.capabilities.XmlFilter"/>

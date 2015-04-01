@@ -15,6 +15,8 @@
 
   <bean id="wmsRequestAuthorizationManager" class="org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager" />
 
+  <bean name="wmsGeometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetrieverImpl"/>
+
   <bean id="wmsRequestParser" class="org.deegree.securityproxy.wms.request.WmsRequestParser" />
 
   <bean id="wmsServiceExceptionWrapper" class="org.deegree.securityproxy.exception.ServiceExceptionWrapper">
@@ -44,6 +46,7 @@
     <constructor-arg value="${wms_clipping_exception_file_path}" />
     <constructor-arg value="${wms_clipping_failed_status_code}" />
     <constructor-arg ref="simpleRasterClipper" />
+    <constructor-arg ref="wmsGeometryRetriever" />
   </bean>
 
   <util:list id="wmsResponseFilterManagers" list-class="java.util.LinkedList"
