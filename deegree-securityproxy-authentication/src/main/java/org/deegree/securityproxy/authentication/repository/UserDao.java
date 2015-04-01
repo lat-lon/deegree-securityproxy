@@ -26,13 +26,13 @@ public interface UserDao {
     UserDetails retrieveUserById( String headerValue );
 
     /**
-     * Verify an user name against the encapsulated data source.
+     * Verify an name against the encapsulated data source.
      * 
-     * @param userName
-     *            the name of the user used for authentication, may be <code>null</code> or empty
-     * @return the user details that match the given user name, <code>null</code> if the user name is <code>null</code>
-     *         or empty or if no matching user could be found
+     * @param name
+     *            the name used for authentication, may be <code>null</code> or empty
+     * @return the user details that match the given name, <code>null</code> if the name is <code>null</code> or empty
+     *         or if no matching name could be found
      */
-    UserDetails retrieveUserByName( String userName );
+    UserDetails retrieveUserByName( String name );
 
 }

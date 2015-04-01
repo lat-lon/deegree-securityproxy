@@ -32,7 +32,8 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class RasterUserDaoImpl implements UserDao {
 
-    private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS", "WPS" } );
+    private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS", "WPS", "WFS",
+                                                                                      "CSW", "WMTS" } );
 
     @Autowired
     private DataSource source;
@@ -43,7 +44,7 @@ public class RasterUserDaoImpl implements UserDao {
 
     private final String headerColumn;
 
-    private final String userNameColumn;
+    private final String nameColumn;
 
     private final String passwordColumn;
 
@@ -59,33 +60,125 @@ public class RasterUserDaoImpl implements UserDao {
 
     private final String layerNameColumn;
 
-    private final String subscriptionStart;
+    private final String subscriptionStartColumn;
 
-    private final String subscriptionEnd;
+    private final String subscriptionEndColumn;
 
     private final String geometryLimitColumn;
 
-    private List<String> additionalRequestParameters;
+    private List<String> additionalRequestParametersColumns;
 
-    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
-                              String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
-                              String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
-                              String layerNameColumn, String subscriptionStart, String subscriptionEnd,
-                              String geometryLimitColumn ) {
-        this( schemaName, tableName, headerColumn, userNameColumn, passwordColumn, serviceTypeColumn,
-              serviceVersionColumn, operationTypeColumn, serviceNameColumn, internalServiceUrlColumn, layerNameColumn,
-              subscriptionStart, subscriptionEnd, geometryLimitColumn, null );
+    /**
+     *
+     * @param schemaName
+     *            may be <code>null</code> or empty
+     * @param tableName
+     *            never <code>null</code>
+     * @param nameColumn
+     *            may be <code>null</code> or empty
+     * @param passwordColumn
+     *            may be <code>null</code> or empty
+     * @param layerNameColumn
+     *            may be <code>null</code> or empty
+     * @param serviceTypeColumn
+     *            never <code>null</code>
+     * @param operationTypeColumn
+     *            may be <code>null</code> or empty
+     * @param serviceNameColumn
+     *            may be <code>null</code> or empty
+     * @param internalServiceUrlColumn
+     *            may be <code>null</code> or empty
+     */
+    public RasterUserDaoImpl( String schemaName, String tableName, String nameColumn, String passwordColumn,
+                              String layerNameColumn, String serviceTypeColumn, String operationTypeColumn,
+                              String serviceNameColumn, String internalServiceUrlColumn ) {
+        this( schemaName, tableName, null, nameColumn, passwordColumn, serviceTypeColumn, null, operationTypeColumn,
+              serviceNameColumn, internalServiceUrlColumn, layerNameColumn, null, null, null, null );
     }
 
-    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String userNameColumn,
+    /**
+     *
+     * @param schemaName
+     *            may be <code>null</code> or empty
+     * @param tableName
+     *            never <code>null</code>
+     * @param headerColumn
+     *            may be <code>null</code> or empty
+     * @param nameColumn
+     *            may be <code>null</code> or empty
+     * @param passwordColumn
+     *            may be <code>null</code> or empty
+     * @param serviceTypeColumn
+     *            never <code>null</code>
+     * @param serviceVersionColumn
+     *            may be <code>null</code> or empty
+     * @param operationTypeColumn
+     *            may be <code>null</code> or empty
+     * @param serviceNameColumn
+     *            may be <code>null</code> or empty
+     * @param internalServiceUrlColumn
+     *            may be <code>null</code> or empty
+     * @param layerNameColumn
+     *            may be <code>null</code> or empty
+     * @param subscriptionStartColumn
+     *            may be <code>null</code> or empty
+     * @param subscriptionEndColumn
+     *            may be <code>null</code> or empty
+     * @param geometryLimitColumn
+     *            may be <code>null</code> or empty
+     */
+    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String nameColumn,
                               String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                               String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
-                              String layerNameColumn, String subscriptionStart, String subscriptionEnd,
-                              String geometryLimitColumn, String[] additionalRequestParameters ) {
+                              String layerNameColumn, String subscriptionStartColumn, String subscriptionEndColumn,
+                              String geometryLimitColumn ) {
+        this( schemaName, tableName, headerColumn, nameColumn, passwordColumn, serviceTypeColumn, serviceVersionColumn,
+              operationTypeColumn, serviceNameColumn, internalServiceUrlColumn, layerNameColumn,
+              subscriptionStartColumn, subscriptionEndColumn, geometryLimitColumn, null );
+    }
+
+    /**
+     * 
+     * @param schemaName
+     *            may be <code>null</code> or empty
+     * @param tableName
+     *            never <code>null</code>
+     * @param headerColumn
+     *            may be <code>null</code> or empty
+     * @param nameColumn
+     *            may be <code>null</code> or empty
+     * @param passwordColumn
+     *            may be <code>null</code> or empty
+     * @param serviceTypeColumn
+     *            never <code>null</code>
+     * @param serviceVersionColumn
+     *            may be <code>null</code> or empty
+     * @param operationTypeColumn
+     *            may be <code>null</code> or empty
+     * @param serviceNameColumn
+     *            may be <code>null</code> or empty
+     * @param internalServiceUrlColumn
+     *            may be <code>null</code> or empty
+     * @param layerNameColumn
+     *            may be <code>null</code> or empty
+     * @param subscriptionStartColumn
+     *            may be <code>null</code> or empty
+     * @param subscriptionEndColumn
+     *            may be <code>null</code> or empty
+     * @param geometryLimitColumn
+     *            may be <code>null</code> or empty
+     * @param additionalRequestParametersColumns
+     *            may be <code>null</code> or empty
+     */
+    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String nameColumn,
+                              String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
+                              String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
+                              String layerNameColumn, String subscriptionStartColumn, String subscriptionEndColumn,
+                              String geometryLimitColumn, String[] additionalRequestParametersColumns ) {
         this.schemaName = schemaName;
         this.tableName = tableName;
         this.headerColumn = headerColumn;
-        this.userNameColumn = userNameColumn;
+        this.nameColumn = nameColumn;
         this.passwordColumn = passwordColumn;
         this.serviceTypeColumn = serviceTypeColumn;
         this.serviceVersionColumn = serviceVersionColumn;
@@ -93,77 +186,102 @@ public class RasterUserDaoImpl implements UserDao {
         this.serviceNameColumn = serviceNameColumn;
         this.internalServiceUrlColumn = internalServiceUrlColumn;
         this.layerNameColumn = layerNameColumn;
-        this.subscriptionStart = subscriptionStart;
-        this.subscriptionEnd = subscriptionEnd;
+        this.subscriptionStartColumn = subscriptionStartColumn;
+        this.subscriptionEndColumn = subscriptionEndColumn;
         this.geometryLimitColumn = geometryLimitColumn;
-        if ( additionalRequestParameters != null )
-            this.additionalRequestParameters = asList( additionalRequestParameters );
+        if ( additionalRequestParametersColumns != null )
+            this.additionalRequestParametersColumns = asList( additionalRequestParametersColumns );
         else
-            this.additionalRequestParameters = Collections.emptyList();
+            this.additionalRequestParametersColumns = Collections.emptyList();
     }
 
     @Override
     public RasterUser retrieveUserById( String headerValue ) {
-        if ( !checkParameterNotNullOrEmpty( headerValue ) )
+        if ( !checkIfNotNullOrEmpty( headerValue ) )
             return null;
         String jdbcString = generateSelectUserByHeaderSqlQuery();
         return retrieveUser( headerValue, jdbcString );
     }
 
     @Override
-    public RasterUser retrieveUserByName( String userName ) {
-        if ( !checkParameterNotNullOrEmpty( userName ) )
+    public RasterUser retrieveUserByName( String name ) {
+        if ( !checkIfNotNullOrEmpty( name ) )
             return null;
-        String jdbcString = generateSelectByUserNameSqlQuery();
-        return retrieveUser( userName, jdbcString );
+        String jdbcString = generateSelectByNameSqlQuery();
+        return retrieveUser( name, jdbcString );
     }
 
     private RasterUser retrieveUser( String selectByValue, String jdbcString ) {
         JdbcTemplate template = new JdbcTemplate( source );
         try {
-            Date now = new Date();
-            List<Map<String, Object>> rows = template.queryForList( jdbcString, selectByValue, now );
+            List<Map<String, Object>> rows;
+            if ( checkIfNotNullOrEmpty( subscriptionStartColumn ) && checkIfNotNullOrEmpty( subscriptionEndColumn ) ) {
+                Date now = new Date();
+                rows = template.queryForList( jdbcString, selectByValue, now );
+            } else
+                rows = template.queryForList( jdbcString, selectByValue );
             return createUserForRows( rows );
         } catch ( DataAccessException e ) {
             return null;
         }
     }
 
-    private boolean checkParameterNotNullOrEmpty( String headerValue ) {
-        return !( headerValue == null || "".equals( headerValue ) );
+    private boolean checkIfNotNullOrEmpty( String parameterValue ) {
+        return !( parameterValue == null || "".equals( parameterValue ) );
     }
 
     private String generateSelectUserByHeaderSqlQuery() {
         return generateSqlQuery( headerColumn );
     }
 
-    private String generateSelectByUserNameSqlQuery() {
-        return generateSqlQuery( userNameColumn );
+    private String generateSelectByNameSqlQuery() {
+        return generateSqlQuery( nameColumn );
     }
 
     private String generateSqlQuery( String whereClauseColumn ) {
         StringBuilder builder = new StringBuilder();
         builder.append( "SELECT " );
-        builder.append( userNameColumn ).append( "," );
-        builder.append( passwordColumn ).append( "," );
-        builder.append( headerColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( nameColumn ) )
+            builder.append( nameColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( passwordColumn ) )
+            builder.append( passwordColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( headerColumn ) )
+            builder.append( headerColumn ).append( "," );
         builder.append( serviceTypeColumn ).append( "," );
-        builder.append( serviceNameColumn ).append( "," );
-        builder.append( internalServiceUrlColumn ).append( "," );
-        builder.append( serviceVersionColumn ).append( "," );
-        builder.append( operationTypeColumn ).append( "," );
-        builder.append( layerNameColumn ).append( "," );
-        builder.append( geometryLimitColumn );
-        for ( String additionalRequestParameter : additionalRequestParameters ) {
-            builder.append( "," );
-            builder.append( additionalRequestParameter );
+        if ( checkIfNotNullOrEmpty( serviceNameColumn ) )
+            builder.append( serviceNameColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( internalServiceUrlColumn ) )
+            builder.append( internalServiceUrlColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( serviceVersionColumn ) )
+            builder.append( serviceVersionColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( operationTypeColumn ) )
+            builder.append( operationTypeColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( layerNameColumn ) )
+            builder.append( layerNameColumn ).append( "," );
+        if ( checkIfNotNullOrEmpty( geometryLimitColumn ) )
+            builder.append( geometryLimitColumn );
+        removeLastCharIfNecessary( builder );
+        if ( additionalRequestParametersColumns != null && !additionalRequestParametersColumns.isEmpty() ) {
+            for ( String additionalRequestParameter : additionalRequestParametersColumns ) {
+                builder.append( "," );
+                builder.append( additionalRequestParameter );
+            }
         }
         appendFrom( builder );
         builder.append( " WHERE " );
-        builder.append( whereClauseColumn ).append( " = ? AND ? BETWEEN " );
-        builder.append( subscriptionStart ).append( " AND " );
-        builder.append( subscriptionEnd );
+        builder.append( whereClauseColumn ).append( " = ?" );
+        if ( checkIfNotNullOrEmpty( subscriptionStartColumn ) && checkIfNotNullOrEmpty( subscriptionEndColumn ) ) {
+            builder.append( " AND ? BETWEEN " );
+            builder.append( subscriptionStartColumn ).append( " AND " );
+            builder.append( subscriptionEndColumn );
+        }
         return builder.toString();
+    }
+
+    private void removeLastCharIfNecessary( StringBuilder builder ) {
+        if ( builder.toString().endsWith( "," ) )
+            if ( builder.length() > 0 )
+                builder.deleteCharAt( builder.length() - 1 );
     }
 
     private void appendFrom( StringBuilder builder ) {
@@ -174,7 +292,7 @@ public class RasterUserDaoImpl implements UserDao {
     }
 
     private RasterUser createUserForRows( List<Map<String, Object>> rows ) {
-        String username = null;
+        String name = null;
         String password = null;
         String accessToken = null;
         List<RasterPermission> authorities = new ArrayList<RasterPermission>();
@@ -182,15 +300,15 @@ public class RasterUserDaoImpl implements UserDao {
         for ( Map<String, Object> row : rows ) {
             String serviceType = getAsString( row, serviceTypeColumn );
             if ( checkIfServiceTypeisSupported( serviceType ) ) {
-                username = getAsString( row, userNameColumn );
+                name = getAsString( row, nameColumn );
                 password = getAsString( row, passwordColumn );
                 accessToken = getAsString( row, headerColumn );
                 authorities.add( createAuthority( serviceType, row ) );
                 createGeometryFilter( geometrieFilter, row );
             }
         }
-        if ( username != null && password != null )
-            return new RasterUser( username, password, accessToken, authorities, geometrieFilter );
+        if ( name != null )
+            return new RasterUser( name, password, accessToken, authorities, geometrieFilter );
         return null;
     }
 
@@ -202,12 +320,12 @@ public class RasterUserDaoImpl implements UserDao {
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
         return new RasterPermission( serviceType, operationType, serviceVersion, layerName, serviceName,
-                                     internalServiceUrl, userRequestParameters );
+                        internalServiceUrl, userRequestParameters );
     }
 
     private Map<String, String[]> retrieveAdditionalRequestParams( Map<String, Object> row ) {
         Map<String, String[]> userRequestParameters = new HashMap<String, String[]>();
-        for ( String additionalRequestParam : additionalRequestParameters ) {
+        for ( String additionalRequestParam : additionalRequestParametersColumns ) {
             String paramValue = getAsString( row, additionalRequestParam );
             if ( paramValue != null && !paramValue.isEmpty() )
                 userRequestParameters.put( additionalRequestParam, new String[] { paramValue } );
@@ -216,10 +334,10 @@ public class RasterUserDaoImpl implements UserDao {
     }
 
     private void createGeometryFilter( List<GeometryFilterInfo> geometryFilter, Map<String, Object> row ) {
-        String coverageName = getAsString( row, layerNameColumn );
-        if ( coverageName != null && !coverageName.isEmpty() ) {
+        String layerName = getAsString( row, layerNameColumn );
+        if ( layerName != null && !layerName.isEmpty() ) {
             String geometryLimit = getAsString( row, geometryLimitColumn );
-            GeometryFilterInfo wcsGeometryFilter = new GeometryFilterInfo( coverageName, geometryLimit );
+            GeometryFilterInfo wcsGeometryFilter = new GeometryFilterInfo( layerName, geometryLimit );
             geometryFilter.add( wcsGeometryFilter );
         }
     }
