@@ -47,7 +47,7 @@ public class RasterUserDaoImplTest {
     private static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( "1.0.0" );
 
     private static final LimitedOwsServiceVersion LESSTHAN_VERSION_100 = new LimitedOwsServiceVersion( "<=",
-                                                                                                       VERSION_100 );
+                    VERSION_100 );
 
     private EmbeddedDatabase db;
 
@@ -131,8 +131,44 @@ public class RasterUserDaoImplTest {
     }
 
     @Test
-    public void testRetrieveUserByIdWithNotRasterPermissionFails() {
+    public void testRetrieveUserByIdWithWfsPermissionsShouldHaveCorrectAuthority() {
+        UserDetails details = source.retrieveUserById( "WFS_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wfs" ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithCswPermissionsShouldHaveCorrectAuthority() {
         UserDetails details = source.retrieveUserById( "CSW_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "csw" ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithWmtsPermissionsShouldHaveCorrectAuthority() {
+        UserDetails details = source.retrieveUserById( "WMTS_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wmts" ) );
+    }
+
+    @Test
+    public void testLoadUserDetailsForMinimalUser() {
+        UserDetails details = source.retrieveUserByName( "VALID_MINIMAL_USER" );
+        assertThat( details, notNullValue() );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithUnknownServiceTypeFails() {
+        UserDetails details = source.retrieveUserById( "UNKNOWNTYPE_VALID_HEADER" );
         assertThat( details, nullValue() );
     }
 
