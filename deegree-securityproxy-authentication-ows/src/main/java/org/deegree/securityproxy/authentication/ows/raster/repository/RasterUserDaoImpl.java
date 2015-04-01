@@ -2,14 +2,13 @@ package org.deegree.securityproxy.authentication.ows.raster.repository;
 
 import static java.util.Arrays.asList;
 
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.sql.DataSource;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
@@ -75,7 +74,7 @@ public class RasterUserDaoImpl implements UserDao {
      * @param tableName
      *            never <code>null</code>
      * @param nameColumn
-     *            may be <code>null</code> or empty
+     *            never <code>null</code>
      * @param passwordColumn
      *            may be <code>null</code> or empty
      * @param layerNameColumn
@@ -105,7 +104,7 @@ public class RasterUserDaoImpl implements UserDao {
      * @param headerColumn
      *            may be <code>null</code> or empty
      * @param nameColumn
-     *            may be <code>null</code> or empty
+     *            never <code>null</code>
      * @param passwordColumn
      *            may be <code>null</code> or empty
      * @param serviceTypeColumn
@@ -146,7 +145,7 @@ public class RasterUserDaoImpl implements UserDao {
      * @param headerColumn
      *            may be <code>null</code> or empty
      * @param nameColumn
-     *            may be <code>null</code> or empty
+     *            never <code>null</code>
      * @param passwordColumn
      *            may be <code>null</code> or empty
      * @param serviceTypeColumn
@@ -241,8 +240,7 @@ public class RasterUserDaoImpl implements UserDao {
     private String generateSqlQuery( String whereClauseColumn ) {
         StringBuilder builder = new StringBuilder();
         builder.append( "SELECT " );
-        if ( checkIfNotNullOrEmpty( nameColumn ) )
-            builder.append( nameColumn ).append( "," );
+        builder.append( nameColumn ).append( "," );
         if ( checkIfNotNullOrEmpty( passwordColumn ) )
             builder.append( passwordColumn ).append( "," );
         if ( checkIfNotNullOrEmpty( headerColumn ) )
