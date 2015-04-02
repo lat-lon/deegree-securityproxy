@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -80,8 +80,8 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         String internalServiceUrl = null;
         Map<String, String[]> additionalKeyValuePairs = null;
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wmsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wmsPermission = (OwsPermission) authority;
                 if ( areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     grantedLayers.add( wmsPermission.getLayerName() );
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
@@ -108,8 +108,8 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         String internalServiceUrl = null;
         Map<String, String[]> additionalKeyValuePairs = null;
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wmsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wmsPermission = (OwsPermission) authority;
                 if ( areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     grantedLayers.add( wmsPermission.getLayerName() );
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
@@ -129,8 +129,8 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
     private AuthorizationReport authorizeGetCapabilities( WmsRequest wmsRequest,
                                                           Collection<? extends GrantedAuthority> authorities ) {
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wmsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wmsPermission = (OwsPermission) authority;
                 if ( areCommonParamsAuthorized( wmsRequest, wmsPermission ) ) {
                     return createAuthorizedReport( wmsPermission );
                 }
@@ -139,13 +139,13 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         return new AuthorizationReport( GETCAPABILITIES_UNAUTHORIZED_MSG );
     }
 
-    private AuthorizationReport createAuthorizedReport( RasterPermission wmsPermission ) {
+    private AuthorizationReport createAuthorizedReport( OwsPermission wmsPermission ) {
         String internalServiceUrl = wmsPermission.getInternalServiceUrl();
         Map<String, String[]> additionalKVPs = wmsPermission.getAdditionalKeyValuePairs();
         return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED, internalServiceUrl, additionalKVPs );
     }
 
-    private boolean areCommonParamsAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+    private boolean areCommonParamsAuthorized( WmsRequest wmsRequest, OwsPermission wmsPermission ) {
         return isServiceTypeAuthorized( wmsRequest, wmsPermission )
                && isOperationTypeAuthorized( wmsRequest, wmsPermission )
                && isServiceVersionAuthorized( wmsRequest, wmsPermission )
@@ -164,17 +164,17 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         return GETCAPABILITIES.equals( wmsRequest.getOperationType() );
     }
 
-    private boolean isServiceTypeAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+    private boolean isServiceTypeAuthorized( WmsRequest wmsRequest, OwsPermission wmsPermission ) {
         return wmsRequest.getServiceType() != null
                && wmsRequest.getServiceType().equalsIgnoreCase( wmsPermission.getServiceType() );
     }
 
-    private boolean isOperationTypeAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+    private boolean isOperationTypeAuthorized( WmsRequest wmsRequest, OwsPermission wmsPermission ) {
         return wmsRequest.getOperationType() != null
                && wmsRequest.getOperationType().equalsIgnoreCase( wmsPermission.getOperationType() );
     }
 
-    private boolean isServiceVersionAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+    private boolean isServiceVersionAuthorized( WmsRequest wmsRequest, OwsPermission wmsPermission ) {
         OwsServiceVersion requestedServiceVersion = wmsRequest.getServiceVersion();
         if ( requestedServiceVersion == null )
             return false;
@@ -182,7 +182,7 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
-    private boolean isServiceNameAuthorized( WmsRequest wmsRequest, RasterPermission wmsPermission ) {
+    private boolean isServiceNameAuthorized( WmsRequest wmsRequest, OwsPermission wmsPermission ) {
         return wmsRequest.getServiceName() != null
                && wmsRequest.getServiceName().equals( wmsPermission.getServiceName() );
     }

@@ -52,7 +52,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @author last edited by: $Author: erben $
  * @version $Revision: $, $Date: $
  */
-public class RasterPermission implements GrantedAuthority {
+public class OwsPermission implements GrantedAuthority {
 
     private static final long serialVersionUID = 5184855468635810194L;
 
@@ -70,7 +70,7 @@ public class RasterPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public RasterPermission( String serviceType, String operationType, LimitedServiceVersion serviceVersion,
+    public OwsPermission( String serviceType, String operationType, LimitedServiceVersion serviceVersion,
                              String coverageName, String serviceName, String internalServiceUrl,
                              Map<String, String[]> additionalKeyValuePairs ) {
         this.serviceType = serviceType;
@@ -83,7 +83,7 @@ public class RasterPermission implements GrantedAuthority {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]> emptyMap() );
     }
 
     @Override

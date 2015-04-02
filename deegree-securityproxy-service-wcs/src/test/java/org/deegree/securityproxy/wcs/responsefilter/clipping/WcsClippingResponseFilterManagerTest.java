@@ -69,8 +69,8 @@ import java.util.List;
 import javax.servlet.ServletOutputStream;
 
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
@@ -531,8 +531,8 @@ public class WcsClippingResponseFilterManagerTest {
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_FAILURE, GEOMETRY_FAILURE ) );
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_EMPTY, GEOMETRY_EMPTY ) );
         filters.add( new GeometryFilterInfo( COVERAGE_NAME_NO_GEOM ) );
-        RasterUser wcsUser = new RasterUser( "user", "password", "accessToken",
-                                             Collections.<RasterPermission> emptyList(), filters );
+        OwsUser wcsUser = new OwsUser( "user", "password", "accessToken",
+                                             Collections.<OwsPermission> emptyList(), filters );
         when( mockedAuthentication.getPrincipal() ).thenReturn( wcsUser );
         return mockedAuthentication;
     }

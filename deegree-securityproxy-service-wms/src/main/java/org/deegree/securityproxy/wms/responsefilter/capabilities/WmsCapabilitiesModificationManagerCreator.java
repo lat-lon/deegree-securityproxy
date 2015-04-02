@@ -35,7 +35,7 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.wms.responsefilter.capabilities;
 
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
@@ -138,20 +138,20 @@ public class WmsCapabilitiesModificationManagerCreator implements XmlModificatio
     }
 
     private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority authority ) {
-        if ( authority instanceof RasterPermission ) {
-            RasterPermission permission = (RasterPermission) authority;
+        if ( authority instanceof OwsPermission ) {
+            OwsPermission permission = (OwsPermission) authority;
             if ( isWms130GetMapPermission( permission ) && !blackListTextValues.contains( permission.getLayerName() ) ) {
                 blackListTextValues.add( permission.getLayerName() );
             }
         }
     }
 
-    private boolean isWms130GetMapPermission( RasterPermission permission ) {
+    private boolean isWms130GetMapPermission( OwsPermission permission ) {
         return WMS_SERVICE.equalsIgnoreCase( permission.getServiceType() )
                && permission.getServiceVersion().contains( VERSION_130 ) && isGetMapOrFeatureInfo( permission );
     }
 
-    private boolean isGetMapOrFeatureInfo( RasterPermission permission ) {
+    private boolean isGetMapOrFeatureInfo( OwsPermission permission ) {
         return GETMAP.equalsIgnoreCase( permission.getOperationType() )
                || GETFEATUREINFO.equalsIgnoreCase( permission.getOperationType() );
     }

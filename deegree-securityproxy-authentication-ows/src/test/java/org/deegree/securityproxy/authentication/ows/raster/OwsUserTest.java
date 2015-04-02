@@ -16,7 +16,7 @@ import org.junit.Test;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RasterUserTest {
+public class OwsUserTest {
 
     private static final int EMPTY = 0;
 
@@ -29,17 +29,17 @@ public class RasterUserTest {
     @Test
     public void testConstructorWithNullAuthoritiesShouldReturnEmptyLists()
                             throws Exception {
-        RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, null, createEmptyFilterList() );
+        OwsUser wcsUser = new OwsUser( USERNAME, PASSWORD, ACCESSTOKEN, null, createEmptyFilterList() );
         assertThat( wcsUser.getAuthorities().size(), is( EMPTY ) );
     }
 
     @Test
     public void testGetPermissionsShouldReturnInsertedPermissions()
                             throws Exception {
-        List<RasterPermission> insertedPermissionsList = createPermissionsList();
-        RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, insertedPermissionsList,
+        List<OwsPermission> insertedPermissionsList = createPermissionsList();
+        OwsUser wcsUser = new OwsUser( USERNAME, PASSWORD, ACCESSTOKEN, insertedPermissionsList,
                                              createEmptyFilterList() );
-        List<RasterPermission> authorities = wcsUser.getAuthorities();
+        List<OwsPermission> authorities = wcsUser.getAuthorities();
         assertThat( authorities, is( insertedPermissionsList ) );
     }
 
@@ -47,7 +47,7 @@ public class RasterUserTest {
     public void testGetPermissionsShouldReturnInsertedFilters()
                             throws Exception {
         List<GeometryFilterInfo> insertedFilterList = createFilterList();
-        RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
+        OwsUser wcsUser = new OwsUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
                                              insertedFilterList );
         List<GeometryFilterInfo> filters = wcsUser.getRasterGeometryFilterInfos();
         assertThat( filters, is( insertedFilterList ) );
@@ -56,22 +56,22 @@ public class RasterUserTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testGetPermissionsShouldReturnUnmodifiableWcsPermissionList()
                             throws Exception {
-        RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, createPermissionsList(),
+        OwsUser wcsUser = new OwsUser( USERNAME, PASSWORD, ACCESSTOKEN, createPermissionsList(),
                                              createEmptyFilterList() );
-        List<RasterPermission> authorities = wcsUser.getAuthorities();
+        List<OwsPermission> authorities = wcsUser.getAuthorities();
         authorities.add( mockWcsPermission() );
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testGetPermissionsShouldReturnUnmodifiableFilterList()
                             throws Exception {
-        RasterUser wcsUser = new RasterUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
+        OwsUser wcsUser = new OwsUser( USERNAME, PASSWORD, ACCESSTOKEN, createEmptyPermissionsList(),
                                              createFilterList() );
         List<GeometryFilterInfo> filters = wcsUser.getRasterGeometryFilterInfos();
         filters.add( mockFilter() );
     }
 
-    private List<RasterPermission> createEmptyPermissionsList() {
+    private List<OwsPermission> createEmptyPermissionsList() {
         return emptyList();
     }
 
@@ -79,7 +79,7 @@ public class RasterUserTest {
         return emptyList();
     }
 
-    private List<RasterPermission> createPermissionsList() {
+    private List<OwsPermission> createPermissionsList() {
         return Collections.singletonList( mockWcsPermission() );
     }
 
@@ -87,8 +87,8 @@ public class RasterUserTest {
         return singletonList( mockFilter() );
     }
 
-    private RasterPermission mockWcsPermission() {
-        return mock( RasterPermission.class );
+    private OwsPermission mockWcsPermission() {
+        return mock( OwsPermission.class );
     }
 
     private GeometryFilterInfo mockFilter() {

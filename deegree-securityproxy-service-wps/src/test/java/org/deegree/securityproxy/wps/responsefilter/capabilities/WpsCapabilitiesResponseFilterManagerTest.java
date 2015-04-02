@@ -25,7 +25,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
@@ -294,8 +294,8 @@ public class WpsCapabilitiesResponseFilterManagerTest {
         return authenticationMock;
     }
 
-    private RasterPermission createRasterPermission( String operationType, String processId ) {
-        return new RasterPermission( "wps", operationType, new LimitedOwsServiceVersion( "<= 1.0.0" ), processId,
+    private OwsPermission createRasterPermission( String operationType, String processId ) {
+        return new OwsPermission( "wps", operationType, new LimitedOwsServiceVersion( "<= 1.0.0" ), processId,
                         "serviceName", "internalServiceUrl", null );
     }
 
