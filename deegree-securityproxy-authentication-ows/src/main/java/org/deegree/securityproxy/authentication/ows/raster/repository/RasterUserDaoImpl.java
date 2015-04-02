@@ -2,7 +2,6 @@ package org.deegree.securityproxy.authentication.ows.raster.repository;
 
 import static java.util.Arrays.asList;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -10,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
@@ -30,6 +32,8 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @version $Revision: $, $Date: $
  */
 public class RasterUserDaoImpl implements UserDao {
+
+    private static final Logger LOG = Logger.getLogger( RasterUserDaoImpl.class );
 
     private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS", "WPS", "WFS",
                                                                                       "CSW", "WMTS" } );
@@ -68,7 +72,7 @@ public class RasterUserDaoImpl implements UserDao {
     private List<String> additionalRequestParametersColumns;
 
     /**
-     *
+     * 
      * @param schemaName
      *            may be <code>null</code> or empty
      * @param tableName
@@ -96,7 +100,7 @@ public class RasterUserDaoImpl implements UserDao {
     }
 
     /**
-     *
+     * 
      * @param schemaName
      *            may be <code>null</code> or empty
      * @param tableName
@@ -196,17 +200,23 @@ public class RasterUserDaoImpl implements UserDao {
 
     @Override
     public RasterUser retrieveUserById( String headerValue ) {
-        if ( !checkIfNotNullOrEmpty( headerValue ) )
+        if ( !checkIfNotNullOrEmpty( headerValue ) ) {
+            LOG.info( "Could not find user: header value is null or empty!" );
             return null;
+        }
         String jdbcString = generateSelectUserByHeaderSqlQuery();
+        LOG.debug( "SQL-Statement to query user by id: '" + jdbcString + "'" );
         return retrieveUser( headerValue, jdbcString );
     }
 
     @Override
     public RasterUser retrieveUserByName( String name ) {
-        if ( !checkIfNotNullOrEmpty( name ) )
+        if ( !checkIfNotNullOrEmpty( name ) ) {
+            LOG.info( "Could not find user: name is null or empty!" );
             return null;
+        }
         String jdbcString = generateSelectByNameSqlQuery();
+        LOG.debug( "SQL-Statement to query user by name: '" + jdbcString + "'" );
         return retrieveUser( name, jdbcString );
     }
 
@@ -221,6 +231,7 @@ public class RasterUserDaoImpl implements UserDao {
                 rows = template.queryForList( jdbcString, selectByValue );
             return createUserForRows( rows );
         } catch ( DataAccessException e ) {
+            LOG.error( "An error occured during retrieving the user:", e );
             return null;
         }
     }
@@ -241,31 +252,39 @@ public class RasterUserDaoImpl implements UserDao {
         StringBuilder builder = new StringBuilder();
         builder.append( "SELECT " );
         builder.append( nameColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( passwordColumn ) )
-            builder.append( passwordColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( headerColumn ) )
-            builder.append( headerColumn ).append( "," );
-        builder.append( serviceTypeColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( serviceNameColumn ) )
-            builder.append( serviceNameColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( internalServiceUrlColumn ) )
-            builder.append( internalServiceUrlColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( serviceVersionColumn ) )
-            builder.append( serviceVersionColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( operationTypeColumn ) )
-            builder.append( operationTypeColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( layerNameColumn ) )
-            builder.append( layerNameColumn ).append( "," );
-        if ( checkIfNotNullOrEmpty( geometryLimitColumn ) )
-            builder.append( geometryLimitColumn );
+        appendIfNotNull( builder, passwordColumn );
+        appendIfNotNull( builder, headerColumn );
+        appendIfNotNull( builder, serviceTypeColumn );
+        appendIfNotNull( builder, serviceNameColumn );
+        appendIfNotNull( builder, internalServiceUrlColumn );
+        appendIfNotNull( builder, serviceVersionColumn );
+        appendIfNotNull( builder, operationTypeColumn );
+        appendIfNotNull( builder, layerNameColumn );
+        appendIfNotNull( builder, geometryLimitColumn );
         removeLastCharIfNecessary( builder );
+        appendAdditionaRequestParameters( builder );
+        appendFrom( builder );
+        appendWhere( whereClauseColumn, builder );
+        return builder.toString();
+    }
+
+    private void appendAdditionaRequestParameters( StringBuilder builder ) {
         if ( additionalRequestParametersColumns != null && !additionalRequestParametersColumns.isEmpty() ) {
             for ( String additionalRequestParameter : additionalRequestParametersColumns ) {
                 builder.append( "," );
                 builder.append( additionalRequestParameter );
             }
         }
-        appendFrom( builder );
+    }
+
+    private void appendFrom( StringBuilder builder ) {
+        builder.append( " FROM " );
+        if ( schemaName != null && !"".equals( schemaName ) )
+            builder.append( schemaName ).append( "." );
+        builder.append( tableName );
+    }
+
+    private void appendWhere( String whereClauseColumn, StringBuilder builder ) {
         builder.append( " WHERE " );
         builder.append( whereClauseColumn ).append( " = ?" );
         if ( checkIfNotNullOrEmpty( subscriptionStartColumn ) && checkIfNotNullOrEmpty( subscriptionEndColumn ) ) {
@@ -273,7 +292,6 @@ public class RasterUserDaoImpl implements UserDao {
             builder.append( subscriptionStartColumn ).append( " AND " );
             builder.append( subscriptionEndColumn );
         }
-        return builder.toString();
     }
 
     private void removeLastCharIfNecessary( StringBuilder builder ) {
@@ -282,11 +300,9 @@ public class RasterUserDaoImpl implements UserDao {
                 builder.deleteCharAt( builder.length() - 1 );
     }
 
-    private void appendFrom( StringBuilder builder ) {
-        builder.append( " FROM " );
-        if ( schemaName != null && !"".equals( schemaName ) )
-            builder.append( schemaName ).append( "." );
-        builder.append( tableName );
+    private void appendIfNotNull( StringBuilder builder, String column ) {
+        if ( checkIfNotNullOrEmpty( column ) )
+            builder.append( column ).append( "," );
     }
 
     private RasterUser createUserForRows( List<Map<String, Object>> rows ) {
