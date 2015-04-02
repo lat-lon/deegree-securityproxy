@@ -11,13 +11,13 @@ import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVers
 import org.junit.Test;
 
 /**
- * Tests for {@link RasterPermission}.
+ * Tests for {@link OwsPermission}.
  * 
  * @author <a href="stenger@lat-lon.de">Dirk Stenger</a>
  * @author last edited by: $Author: stenger $
  * @version $Revision: $, $Date: $
  */
-public class RasterPermissionTest {
+public class OwsPermissionTest {
 
     private static final String SERVICE_TYPE = "wms";
 
@@ -35,7 +35,7 @@ public class RasterPermissionTest {
     public void testGetAdditionalKeyValuePairs()
                             throws Exception {
         Map<String, String[]> requestParametersMap = createRequestParametersMap();
-        RasterPermission wcsPermission = new RasterPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
+        OwsPermission wcsPermission = new OwsPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
                                                                SERVICE_NAME, INTERNAL_SERVICE_URL, requestParametersMap );
         Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
 
@@ -45,7 +45,7 @@ public class RasterPermissionTest {
     @Test
     public void testGetAdditionalKeyValuePairsWithNull()
                             throws Exception {
-        RasterPermission wcsPermission = new RasterPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
+        OwsPermission wcsPermission = new OwsPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
                                                                SERVICE_NAME, INTERNAL_SERVICE_URL, null );
         Map<String, String[]> emptyRequestParametersMap = createEmptyRequestParametersMap();
         Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
@@ -57,7 +57,7 @@ public class RasterPermissionTest {
     public void testGetAdditionalKeyValuePairsWithEmptyMap()
                             throws Exception {
         Map<String, String[]> emptyRequestParametersMap = createEmptyRequestParametersMap();
-        RasterPermission wcsPermission = new RasterPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
+        OwsPermission wcsPermission = new OwsPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
                                                                SERVICE_NAME, INTERNAL_SERVICE_URL,
                                                                emptyRequestParametersMap );
         Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();
@@ -68,7 +68,7 @@ public class RasterPermissionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testGetAdditionalKeyValuePairsShouldReturnUnmodifiableFilterList()
                             throws Exception {
-        RasterPermission wcsPermission = new RasterPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
+        OwsPermission wcsPermission = new OwsPermission( SERVICE_TYPE, OPERATION_TYPE, VERSION, COVERAGE_NAME,
                                                                SERVICE_NAME, INTERNAL_SERVICE_URL,
                                                                createRequestParametersMap() );
         Map<String, String[]> requestParameters = wcsPermission.getAdditionalKeyValuePairs();

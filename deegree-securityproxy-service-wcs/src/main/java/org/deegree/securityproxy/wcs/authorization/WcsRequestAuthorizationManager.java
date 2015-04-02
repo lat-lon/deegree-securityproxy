@@ -12,7 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -84,8 +84,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         String internalServiceUrl = null;
         Map<String, String[]> additionalKeyValuePairs = null;
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wcsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wcsPermission = (OwsPermission) authority;
                 if ( areBaseParamsAuthorized( wcsRequest, wcsPermission ) ) {
                     grantedCoverages.add( wcsPermission.getLayerName() );
                     // If there are data inconsistencies and a service-name is mapped to different internal-urls, the
@@ -106,8 +106,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     private AuthorizationReport authorizeGetCoverage( WcsRequest wcsRequest,
                                                       Collection<? extends GrantedAuthority> authorities ) {
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wcsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wcsPermission = (OwsPermission) authority;
                 if ( isFirstCoverageNameAuthorized( wcsRequest, wcsPermission )
                      && areBaseParamsAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
@@ -122,8 +122,8 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
     private AuthorizationReport authorizeGetCapabilities( WcsRequest wcsRequest,
                                                           Collection<? extends GrantedAuthority> authorities ) {
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wcsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wcsPermission = (OwsPermission) authority;
                 if ( areBaseParamsAuthorized( wcsRequest, wcsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
                                                     wcsPermission.getInternalServiceUrl(),
@@ -146,24 +146,24 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         return GETCAPABILITIES.equals( wcsRequest.getOperationType() );
     }
 
-    private boolean areBaseParamsAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+    private boolean areBaseParamsAuthorized( WcsRequest wcsRequest, OwsPermission wcsPermission ) {
         return isServiceTypeAuthorized( wcsRequest, wcsPermission )
                && isOperationTypeAuthorized( wcsRequest, wcsPermission )
                && isServiceVersionAuthorized( wcsRequest, wcsPermission )
                && isServiceNameAuthorized( wcsRequest, wcsPermission );
     }
 
-    private boolean isServiceTypeAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+    private boolean isServiceTypeAuthorized( WcsRequest wcsRequest, OwsPermission wcsPermission ) {
         return wcsRequest.getServiceType() != null
                && wcsRequest.getServiceType().equalsIgnoreCase( wcsPermission.getServiceType() );
     }
 
-    private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+    private boolean isOperationTypeAuthorized( WcsRequest wcsRequest, OwsPermission wcsPermission ) {
         return wcsRequest.getOperationType() != null
                && wcsRequest.getOperationType().equalsIgnoreCase( wcsPermission.getOperationType() );
     }
 
-    private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+    private boolean isServiceVersionAuthorized( WcsRequest wcsRequest, OwsPermission wcsPermission ) {
         OwsServiceVersion requestedServiceVersion = wcsRequest.getServiceVersion();
         if ( requestedServiceVersion == null )
             return false;
@@ -171,7 +171,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
-    private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+    private boolean isFirstCoverageNameAuthorized( WcsRequest wcsRequest, OwsPermission wcsPermission ) {
         if ( !wcsRequest.getCoverageNames().isEmpty() ) {
             String firstCoverage = wcsRequest.getCoverageNames().get( 0 );
             return firstCoverage.equals( wcsPermission.getLayerName() );
@@ -179,7 +179,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         return false;
     }
 
-    private boolean isServiceNameAuthorized( WcsRequest wcsRequest, RasterPermission wcsPermission ) {
+    private boolean isServiceNameAuthorized( WcsRequest wcsRequest, OwsPermission wcsPermission ) {
         return wcsRequest.getServiceName() != null
                && wcsRequest.getServiceName().equals( wcsPermission.getServiceName() );
     }

@@ -49,7 +49,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
@@ -143,20 +143,20 @@ public class WpsCapabilitiesModificationManagerCreator implements XmlModificatio
     }
 
     private void addLayerNameRule( Set<String> layerNameRulesToPreserve, GrantedAuthority authority ) {
-        if ( authority instanceof RasterPermission ) {
-            RasterPermission permission = (RasterPermission) authority;
+        if ( authority instanceof OwsPermission ) {
+            OwsPermission permission = (OwsPermission) authority;
             if ( isWps100Permission( permission ) ) {
                 layerNameRulesToPreserve.add( permission.getLayerName() );
             }
         }
     }
 
-    private boolean isWps100Permission( RasterPermission permission ) {
+    private boolean isWps100Permission( OwsPermission permission ) {
         return WPS_SERVICE.equalsIgnoreCase( permission.getServiceType() )
                && permission.getServiceVersion().contains( VERSION_1_0_0 ) && isValidOperation( permission );
     }
 
-    private boolean isValidOperation( RasterPermission permission ) {
+    private boolean isValidOperation( OwsPermission permission ) {
         return EXECUTE.equalsIgnoreCase( permission.getOperationType() )
                || DESCRIBEPROCESS.equalsIgnoreCase( permission.getOperationType() )
                || GETCAPABILITIES.equalsIgnoreCase( permission.getOperationType() );

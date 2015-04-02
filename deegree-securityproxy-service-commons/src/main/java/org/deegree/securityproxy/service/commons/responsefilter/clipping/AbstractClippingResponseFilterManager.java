@@ -50,7 +50,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
+import org.deegree.securityproxy.authentication.ows.raster.OwsUser;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
@@ -179,18 +179,18 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
 
     private Geometry retrieveGeometryUsedForClipping( Authentication auth, OwsRequest request )
                     throws IllegalArgumentException, ParseException {
-        RasterUser rasterUser = retrieveRasterUser( auth );
+        OwsUser rasterUser = retrieveRasterUser( auth );
         List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getRasterGeometryFilterInfos();
         List<String> layerNames = retrieveLayerNames( request );
         return geometryRetriever.retrieveGeometry( layerNames, geometryFilterInfos );
     }
 
-    private RasterUser retrieveRasterUser( Authentication auth ) {
+    private OwsUser retrieveRasterUser( Authentication auth ) {
         Object principal = auth.getPrincipal();
-        if ( !( principal instanceof RasterUser ) ) {
+        if ( !( principal instanceof OwsUser ) ) {
             throw new IllegalArgumentException( "Principal is not a RasterUser!" );
         }
-        return (RasterUser) principal;
+        return (OwsUser) principal;
     }
 
     private void addHeaderInfoIfNoFailureOccurred( StatusCodeResponseBodyWrapper servletResponse,

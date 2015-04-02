@@ -59,7 +59,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsServiceVersion;
@@ -262,8 +262,8 @@ public class WcsRequestAuthorizationManagerTest {
 
     private Authentication mockGetCoverageAuthentication() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( WCS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( WCS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
                                                SERVICE_NAME, INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -271,10 +271,10 @@ public class WcsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( WCS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( WCS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
                                                SERVICE_NAME, INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WCS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+        authorities.add( new OwsPermission( WCS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -282,12 +282,12 @@ public class WcsRequestAuthorizationManagerTest {
 
     private Authentication mockAllAuthenticationsWithNonWcsPermission() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( WMS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( WMS_TYPE, GETCOVERAGE, VERSION_LESS_EQUAL_100, COVERAGE_NAME,
                                                SERVICE_NAME, INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+        authorities.add( new OwsPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WMS_TYPE, DESCRIBECOVERAGE, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
+        authorities.add( new OwsPermission( WMS_TYPE, DESCRIBECOVERAGE, VERSION_LESS_EQUAL_100, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;

@@ -51,7 +51,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
@@ -186,8 +186,8 @@ public class WpsCapabilitiesModificationManagerCreatorTest {
         return mockAuthentication( authorities );
     }
 
-    private RasterPermission createRasterPermission( String operationType, String layerName ) {
-        return new RasterPermission( WPS_SERVICE, operationType, new LimitedOwsServiceVersion( "<= 1.3.0" ), layerName,
+    private OwsPermission createRasterPermission( String operationType, String layerName ) {
+        return new OwsPermission( WPS_SERVICE, operationType, new LimitedOwsServiceVersion( "<= 1.3.0" ), layerName,
                         "serviceName", "internalServiceUrl", null );
     }
 

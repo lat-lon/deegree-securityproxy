@@ -14,8 +14,8 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -31,9 +31,9 @@ import org.springframework.security.core.userdetails.UserDetails;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RasterUserDaoImpl implements UserDao {
+public class UserDaoImpl implements UserDao {
 
-    private static final Logger LOG = Logger.getLogger( RasterUserDaoImpl.class );
+    private static final Logger LOG = Logger.getLogger( UserDaoImpl.class );
 
     private static final List<String> SUPPORTED_SERVICE_NAMES = asList( new String[] { "WCS", "WMS", "WPS", "WFS",
                                                                                       "CSW", "WMTS" } );
@@ -92,7 +92,7 @@ public class RasterUserDaoImpl implements UserDao {
      * @param internalServiceUrlColumn
      *            may be <code>null</code> or empty
      */
-    public RasterUserDaoImpl( String schemaName, String tableName, String nameColumn, String passwordColumn,
+    public UserDaoImpl( String schemaName, String tableName, String nameColumn, String passwordColumn,
                               String layerNameColumn, String serviceTypeColumn, String operationTypeColumn,
                               String serviceNameColumn, String internalServiceUrlColumn ) {
         this( schemaName, tableName, null, nameColumn, passwordColumn, serviceTypeColumn, null, operationTypeColumn,
@@ -130,7 +130,7 @@ public class RasterUserDaoImpl implements UserDao {
      * @param geometryLimitColumn
      *            may be <code>null</code> or empty
      */
-    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String nameColumn,
+    public UserDaoImpl( String schemaName, String tableName, String headerColumn, String nameColumn,
                               String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                               String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
                               String layerNameColumn, String subscriptionStartColumn, String subscriptionEndColumn,
@@ -173,7 +173,7 @@ public class RasterUserDaoImpl implements UserDao {
      * @param additionalRequestParametersColumns
      *            may be <code>null</code> or empty
      */
-    public RasterUserDaoImpl( String schemaName, String tableName, String headerColumn, String nameColumn,
+    public UserDaoImpl( String schemaName, String tableName, String headerColumn, String nameColumn,
                               String passwordColumn, String serviceTypeColumn, String serviceVersionColumn,
                               String operationTypeColumn, String serviceNameColumn, String internalServiceUrlColumn,
                               String layerNameColumn, String subscriptionStartColumn, String subscriptionEndColumn,
@@ -199,7 +199,7 @@ public class RasterUserDaoImpl implements UserDao {
     }
 
     @Override
-    public RasterUser retrieveUserById( String headerValue ) {
+    public OwsUser retrieveUserById( String headerValue ) {
         if ( !checkIfNotNullOrEmpty( headerValue ) ) {
             LOG.info( "Could not find user: header value is null or empty!" );
             return null;
@@ -210,7 +210,7 @@ public class RasterUserDaoImpl implements UserDao {
     }
 
     @Override
-    public RasterUser retrieveUserByName( String name ) {
+    public OwsUser retrieveUserByName( String name ) {
         if ( !checkIfNotNullOrEmpty( name ) ) {
             LOG.info( "Could not find user: name is null or empty!" );
             return null;
@@ -220,7 +220,7 @@ public class RasterUserDaoImpl implements UserDao {
         return retrieveUser( name, jdbcString );
     }
 
-    private RasterUser retrieveUser( String selectByValue, String jdbcString ) {
+    private OwsUser retrieveUser( String selectByValue, String jdbcString ) {
         JdbcTemplate template = new JdbcTemplate( source );
         try {
             List<Map<String, Object>> rows;
@@ -305,11 +305,11 @@ public class RasterUserDaoImpl implements UserDao {
             builder.append( column ).append( "," );
     }
 
-    private RasterUser createUserForRows( List<Map<String, Object>> rows ) {
+    private OwsUser createUserForRows( List<Map<String, Object>> rows ) {
         String name = null;
         String password = null;
         String accessToken = null;
-        List<RasterPermission> authorities = new ArrayList<RasterPermission>();
+        List<OwsPermission> authorities = new ArrayList<OwsPermission>();
         List<GeometryFilterInfo> geometrieFilter = new ArrayList<GeometryFilterInfo>();
         for ( Map<String, Object> row : rows ) {
             String serviceType = getAsString( row, serviceTypeColumn );
@@ -322,18 +322,18 @@ public class RasterUserDaoImpl implements UserDao {
             }
         }
         if ( name != null )
-            return new RasterUser( name, password, accessToken, authorities, geometrieFilter );
+            return new OwsUser( name, password, accessToken, authorities, geometrieFilter );
         return null;
     }
 
-    private RasterPermission createAuthority( String serviceType, Map<String, Object> row ) {
+    private OwsPermission createAuthority( String serviceType, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
         LimitedOwsServiceVersion serviceVersion = parseServiceVersion( row );
         String operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
         Map<String, String[]> userRequestParameters = retrieveAdditionalRequestParams( row );
-        return new RasterPermission( serviceType, operationType, serviceVersion, layerName, serviceName,
+        return new OwsPermission( serviceType, operationType, serviceVersion, layerName, serviceName,
                         internalServiceUrl, userRequestParameters );
     }
 
