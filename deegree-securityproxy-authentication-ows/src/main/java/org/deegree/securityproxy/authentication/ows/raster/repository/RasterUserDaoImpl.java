@@ -13,6 +13,8 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.UnlimitedServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
@@ -328,7 +330,7 @@ public class RasterUserDaoImpl implements UserDao {
 
     private RasterPermission createAuthority( String serviceType, Map<String, Object> row ) {
         String serviceName = getAsString( row, serviceNameColumn );
-        LimitedOwsServiceVersion serviceVersion = parseServiceVersion( row );
+        LimitedServiceVersion serviceVersion = parseServiceVersion( row );
         String operationType = retrieveOperationType( row );
         String layerName = getAsString( row, layerNameColumn );
         String internalServiceUrl = getAsString( row, internalServiceUrlColumn );
@@ -364,10 +366,13 @@ public class RasterUserDaoImpl implements UserDao {
         return getAsString( row, operationTypeColumn );
     }
 
-    private LimitedOwsServiceVersion parseServiceVersion( Map<String, Object> row ) {
-        String asString = getAsString( row, serviceVersionColumn );
-        if ( asString != null && !asString.isEmpty() )
-            return new LimitedOwsServiceVersion( asString );
+    private LimitedServiceVersion parseServiceVersion( Map<String, Object> row ) {
+        if ( serviceVersionColumn == null )
+            return new UnlimitedServiceVersion();
+        String serviceVersion = getAsString( row, serviceVersionColumn );
+        if ( serviceVersion != null && !serviceVersion.isEmpty() ) {
+            return new LimitedOwsServiceVersion( serviceVersion );
+        }
         return null;
     }
 

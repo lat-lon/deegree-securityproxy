@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
@@ -46,7 +47,7 @@ public class RasterUserDaoImplTest {
 
     private static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( "1.0.0" );
 
-    private static final LimitedOwsServiceVersion LESSTHAN_VERSION_100 = new LimitedOwsServiceVersion( "<=",
+    private static final LimitedServiceVersion LESSTHAN_VERSION_100 = new LimitedOwsServiceVersion( "<=",
                     VERSION_100 );
 
     private EmbeddedDatabase db;

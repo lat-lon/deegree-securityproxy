@@ -40,7 +40,7 @@ import static java.util.Collections.unmodifiableMap;
 import java.util.Collections;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -60,7 +60,7 @@ public class RasterPermission implements GrantedAuthority {
 
     private final String operationType;
 
-    private final LimitedOwsServiceVersion serviceVersion;
+    private final LimitedServiceVersion serviceVersion;
 
     private final String layerName;
 
@@ -70,7 +70,7 @@ public class RasterPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public RasterPermission( String serviceType, String operationType, LimitedOwsServiceVersion serviceVersion,
+    public RasterPermission( String serviceType, String operationType, LimitedServiceVersion serviceVersion,
                              String coverageName, String serviceName, String internalServiceUrl,
                              Map<String, String[]> additionalKeyValuePairs ) {
         this.serviceType = serviceType;
@@ -83,7 +83,7 @@ public class RasterPermission implements GrantedAuthority {
         if ( additionalKeyValuePairs != null )
             this.additionalKeyValuePairs = unmodifiableMap( additionalKeyValuePairs );
         else
-            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]> emptyMap() );
+            this.additionalKeyValuePairs = unmodifiableMap( Collections.<String, String[]>emptyMap() );
     }
 
     @Override
@@ -110,7 +110,7 @@ public class RasterPermission implements GrantedAuthority {
     /**
      * @return the serviceVersion
      */
-    public LimitedOwsServiceVersion getServiceVersion() {
+    public LimitedServiceVersion getServiceVersion() {
         return serviceVersion;
     }
 

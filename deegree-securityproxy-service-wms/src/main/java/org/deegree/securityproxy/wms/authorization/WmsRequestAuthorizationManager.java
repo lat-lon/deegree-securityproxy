@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
@@ -178,7 +178,7 @@ public class WmsRequestAuthorizationManager implements RequestAuthorizationManag
         OwsServiceVersion requestedServiceVersion = wmsRequest.getServiceVersion();
         if ( requestedServiceVersion == null )
             return false;
-        LimitedOwsServiceVersion serviceVersionLimit = wmsPermission.getServiceVersion();
+        LimitedServiceVersion serviceVersionLimit = wmsPermission.getServiceVersion();
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 

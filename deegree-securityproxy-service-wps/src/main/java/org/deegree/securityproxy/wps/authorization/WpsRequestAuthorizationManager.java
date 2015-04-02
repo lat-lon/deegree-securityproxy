@@ -1,6 +1,12 @@
 package org.deegree.securityproxy.wps.authorization;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
+
+import java.util.Collection;
+
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
@@ -10,12 +16,6 @@ import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
-
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
 
 /**
  * Checks if a authenticated User is permitted to perform an incoming {@link javax.servlet.http.HttpServletRequest}
@@ -150,7 +150,7 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
         OwsServiceVersion requestedServiceVersion = wpsRequest.getServiceVersion();
         if ( requestedServiceVersion == null )
             return false;
-        LimitedOwsServiceVersion serviceVersionLimit = wpsPermission.getServiceVersion();
+        LimitedServiceVersion serviceVersionLimit = wpsPermission.getServiceVersion();
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 

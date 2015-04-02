@@ -11,7 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
@@ -167,7 +167,7 @@ public class WcsRequestAuthorizationManager implements RequestAuthorizationManag
         OwsServiceVersion requestedServiceVersion = wcsRequest.getServiceVersion();
         if ( requestedServiceVersion == null )
             return false;
-        LimitedOwsServiceVersion serviceVersionLimit = wcsPermission.getServiceVersion();
+        LimitedServiceVersion serviceVersionLimit = wcsPermission.getServiceVersion();
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
