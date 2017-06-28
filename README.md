@@ -1,7 +1,7 @@
 deegree security proxy
 ======================
 
-The deegree security proxy is lightweight security framework for protecting OGC Web Services against unauthorised access using the [Spring Security](http://projects.spring.io/spring-security/) framework. 
+The deegree security proxy (DSP) is lightweight security framework for protecting OGC Web Services against unauthorised access using the [Spring Security](http://projects.spring.io/spring-security/) framework. 
 
 # Continuous Integration
 We are using the travis bot to build the software frequently and to verify each pull request. The current status for the master branch is:
