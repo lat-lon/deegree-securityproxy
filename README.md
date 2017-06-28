@@ -8,7 +8,7 @@ We are using the travis bot to build the software frequently and to verify each 
 [![Build Status](https://travis-ci.org/tfr42/deegree-securityproxy.png?branch=master)](https://travis-ci.org/tfr42/deegree-securityproxy)
 
 # Support
-There is commercial and community support available. For commercial support, please contact [lat/lon] (http://www.lat-lon.de/en) the company which employs the people who wrote the deegree security proxy, and lead the development of the project. For community support, please use the github issue tracker.
+There is commercial and community support available. For commercial support, please contact [lat/lon](http://www.lat-lon.de/en) the company which employs the people who wrote the deegree security proxy, and lead the development of the project. For community support, please use the github issue tracker.
 
 # Contributing
 Contributions are very welcome. Please get in contact with us via pull requests and the github issue tracker.
