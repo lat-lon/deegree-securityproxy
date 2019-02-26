@@ -21,3 +21,8 @@ The deegree security proxy requires Spring 3.2 with Spring Security 3.1 as a min
 
 # Developer documentation
 To build the DSP use Apache Maven with `mvn clean install`.
+
+# Run the DSP docker container
+`
+docker run -p 8088:8080 --name dsp tfr42/deegree-security-proxy:latest
+`

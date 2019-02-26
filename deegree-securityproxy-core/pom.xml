@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-securityproxy-core</artifactId>
-  <packaging>jar</packaging>
   <name>deegree security core component</name>
 
   <parent>
@@ -41,7 +40,7 @@
     </dependency>
     <!-- JDBC -->
     <dependency>
-      <groupId>postgresql</groupId>
+      <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
     </dependency>
     <!-- Logging -->
@@ -114,7 +113,6 @@
     <dependency>
       <groupId>hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
-      <scope>compile</scope>
     </dependency>
   </dependencies>
 
