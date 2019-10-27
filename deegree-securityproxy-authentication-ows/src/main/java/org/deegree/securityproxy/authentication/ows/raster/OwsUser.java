@@ -9,7 +9,7 @@ import java.util.List;
 import static java.util.Collections.unmodifiableList;
 
 /**
- * {@link UserDetails} implementation encapsulating username, password, authorities ({@link RasterPermission}s) and
+ * {@link UserDetails} implementation encapsulating username, password, authorities ({@link OwsPermission}s) and
  * {@link GeometryFilterInfo}s.
  * 
  * @author <a href="erben@lat-lon.de">Alexander Erben</a>
@@ -19,7 +19,7 @@ import static java.util.Collections.unmodifiableList;
  * 
  * @version $Revision: $, $Date: $
  */
-public class RasterUser extends OwsUserDetails {
+public class OwsUser extends OwsUserDetails {
 
     private static final long serialVersionUID = 1264359266739783359L;
 
@@ -27,7 +27,7 @@ public class RasterUser extends OwsUserDetails {
 
     private final String password;
 
-    private final List<RasterPermission> authorities;
+    private final List<OwsPermission> authorities;
 
     private final List<GeometryFilterInfo> filters;
 
@@ -41,7 +41,7 @@ public class RasterUser extends OwsUserDetails {
      * @param filters
      *            may be <code>null</code> or empty
      */
-    public RasterUser( String username, String password, String accessToken, List<RasterPermission> authorities,
+    public OwsUser( String username, String password, String accessToken, List<OwsPermission> authorities,
                        List<GeometryFilterInfo> filters ) {
         super( accessToken );
         this.username = username;
@@ -50,7 +50,7 @@ public class RasterUser extends OwsUserDetails {
         if ( authorities != null )
             this.authorities = unmodifiableList( authorities );
         else
-            this.authorities = unmodifiableList( Collections.<RasterPermission>emptyList() );
+            this.authorities = unmodifiableList( Collections.<OwsPermission>emptyList() );
 
         if ( filters != null )
             this.filters = unmodifiableList( filters );
@@ -59,7 +59,7 @@ public class RasterUser extends OwsUserDetails {
     }
 
     @Override
-    public List<RasterPermission> getAuthorities() {
+    public List<OwsPermission> getAuthorities() {
         return authorities;
     }
 

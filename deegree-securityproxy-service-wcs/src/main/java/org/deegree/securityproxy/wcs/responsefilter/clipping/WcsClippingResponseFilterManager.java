@@ -42,6 +42,7 @@ import java.util.List;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.AbstractClippingResponseFilterManager;
 import org.deegree.securityproxy.service.commons.responsefilter.clipping.ImageClipper;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
 import org.deegree.securityproxy.wcs.request.WcsRequest;
 
 /**
@@ -60,8 +61,8 @@ public class WcsClippingResponseFilterManager extends AbstractClippingResponseFi
      * Instantiates a new {@link WcsClippingResponseFilterManager} with default exception body (DEFAULT_BODY) and status
      * code (DEFAULT_STATUS_CODE).
      */
-    public WcsClippingResponseFilterManager( ImageClipper imageClipper ) {
-        super( imageClipper );
+    public WcsClippingResponseFilterManager( ImageClipper imageClipper, GeometryRetriever geometryRetriever ) {
+        super( imageClipper, geometryRetriever );
     }
 
     /**
@@ -73,8 +74,8 @@ public class WcsClippingResponseFilterManager extends AbstractClippingResponseFi
      *            the exception status code
      */
     public WcsClippingResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode,
-                                             ImageClipper imageClipper ) {
-        super( pathToExceptionFile, exceptionStatusCode, imageClipper );
+                                             ImageClipper imageClipper, GeometryRetriever geometryRetriever ) {
+        super( pathToExceptionFile, exceptionStatusCode, imageClipper, geometryRetriever );
     }
 
     @Override

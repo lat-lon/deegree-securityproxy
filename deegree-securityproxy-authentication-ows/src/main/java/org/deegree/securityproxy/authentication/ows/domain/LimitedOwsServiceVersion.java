@@ -50,7 +50,7 @@ import org.deegree.securityproxy.request.OwsServiceVersion;
  * 
  * @version $Revision: $, $Date: $
  */
-public class LimitedOwsServiceVersion {
+public class LimitedOwsServiceVersion implements LimitedServiceVersion {
 
     private static final String GREATER_EQUAL = ">=";
 
@@ -136,6 +136,7 @@ public class LimitedOwsServiceVersion {
         return limitType;
     }
 
+    @Override
     public boolean contains( OwsServiceVersion requestedServiceVersion ) {
         int compareTo = requestedServiceVersion.compareTo( version );
         if ( compareTo > 0 ) {

@@ -1,7 +1,13 @@
 package org.deegree.securityproxy.wps.authorization;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
+import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
+
+import java.util.Collection;
+
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsRequest;
@@ -10,12 +16,6 @@ import org.deegree.securityproxy.wps.request.WpsRequest;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-
-import java.util.Collection;
-
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.DESCRIBEPROCESS;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.EXECUTE;
-import static org.deegree.securityproxy.wps.request.parser.WpsGetRequestParser.GETCAPABILITIES;
 
 /**
  * Checks if a authenticated User is permitted to perform an incoming {@link javax.servlet.http.HttpServletRequest}
@@ -107,8 +107,8 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
                                                      Collection<? extends GrantedAuthority> authorities,
                                                      String unauthorisedMsg ) {
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wpsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wpsPermission = (OwsPermission) authority;
                 if ( areBaseParamsAuthorized( wpsRequest, wpsPermission ) ) {
                     return new AuthorizationReport( ACCESS_GRANTED_MSG, AUTHORIZED,
                                     wpsPermission.getInternalServiceUrl(), wpsPermission.getAdditionalKeyValuePairs() );
@@ -129,40 +129,40 @@ public class WpsRequestAuthorizationManager implements RequestAuthorizationManag
         return authorizationReport;
     }
 
-    private boolean areBaseParamsAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
+    private boolean areBaseParamsAuthorized( WpsRequest wpsRequest, OwsPermission wpsPermission ) {
         return isServiceTypeAuthorized( wpsRequest, wpsPermission )
                && isOperationTypeAuthorized( wpsRequest, wpsPermission )
                && isServiceVersionAuthorized( wpsRequest, wpsPermission )
                && isServiceNameAuthorized( wpsRequest, wpsPermission );
     }
 
-    private boolean isServiceTypeAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
+    private boolean isServiceTypeAuthorized( WpsRequest wpsRequest, OwsPermission wpsPermission ) {
         return wpsRequest.getServiceType() != null
                && wpsRequest.getServiceType().equalsIgnoreCase( wpsPermission.getServiceType() );
     }
 
-    private boolean isOperationTypeAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
+    private boolean isOperationTypeAuthorized( WpsRequest wpsRequest, OwsPermission wpsPermission ) {
         return wpsRequest.getOperationType() != null
                && wpsRequest.getOperationType().equalsIgnoreCase( wpsPermission.getOperationType() );
     }
 
-    private boolean isServiceVersionAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
+    private boolean isServiceVersionAuthorized( WpsRequest wpsRequest, OwsPermission wpsPermission ) {
         OwsServiceVersion requestedServiceVersion = wpsRequest.getServiceVersion();
         if ( requestedServiceVersion == null )
             return false;
-        LimitedOwsServiceVersion serviceVersionLimit = wpsPermission.getServiceVersion();
+        LimitedServiceVersion serviceVersionLimit = wpsPermission.getServiceVersion();
         return serviceVersionLimit.contains( requestedServiceVersion );
     }
 
-    private boolean isServiceNameAuthorized( WpsRequest wpsRequest, RasterPermission wpsPermission ) {
+    private boolean isServiceNameAuthorized( WpsRequest wpsRequest, OwsPermission wpsPermission ) {
         return wpsRequest.getServiceName() != null
                && wpsRequest.getServiceName().equals( wpsPermission.getServiceName() );
     }
 
     private boolean isProcessIdAuthorized( WpsRequest wpsRequest, Collection<? extends GrantedAuthority> authorities ) {
         for ( GrantedAuthority authority : authorities ) {
-            if ( authority instanceof RasterPermission ) {
-                RasterPermission wpsPermission = (RasterPermission) authority;
+            if ( authority instanceof OwsPermission ) {
+                OwsPermission wpsPermission = (OwsPermission) authority;
                 if ( areBaseParamsAuthorized( wpsRequest, wpsPermission )
                      && wpsRequest.getIdentifiers().contains( wpsPermission.getLayerName() ) ) {
                     return true;

@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-securityproxy</artifactId>
-    <version>1.6.5</version>
+    <version>1.7-SNAPSHOT</version>
   </parent>
 
   <dependencies>
@@ -59,5 +59,29 @@
   <build>
     <finalName>deegree-securityproxy-webservice</finalName>
   </build>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>fabric8-maven-plugin</artifactId>
+            <version>3.5.42</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>build</goal>
+                </goals>
+                <phase>install</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

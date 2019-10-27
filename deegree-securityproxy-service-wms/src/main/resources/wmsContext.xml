@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:util="http://www.springframework.org/schema/util"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd 
-  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+                      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <bean id="wmsServiceManager" class="org.deegree.securityproxy.wms.WmsServiceManager">
     <constructor-arg ref="wmsRequestParser" />
@@ -14,6 +13,8 @@
   </bean>
 
   <bean id="wmsRequestAuthorizationManager" class="org.deegree.securityproxy.wms.authorization.WmsRequestAuthorizationManager" />
+
+  <bean name="wmsGeometryRetriever" class="org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetrieverImpl"/>
 
   <bean id="wmsRequestParser" class="org.deegree.securityproxy.wms.request.WmsRequestParser" />
 
@@ -44,6 +45,7 @@
     <constructor-arg value="${wms_clipping_exception_file_path}" />
     <constructor-arg value="${wms_clipping_failed_status_code}" />
     <constructor-arg ref="simpleRasterClipper" />
+    <constructor-arg ref="wmsGeometryRetriever" />
   </bean>
 
   <util:list id="wmsResponseFilterManagers" list-class="java.util.LinkedList"

@@ -40,7 +40,7 @@ import static java.util.Collections.unmodifiableMap;
 import java.util.Collections;
 import java.util.Map;
 
-import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
@@ -52,7 +52,7 @@ import org.springframework.security.core.GrantedAuthority;
  * @author last edited by: $Author: erben $
  * @version $Revision: $, $Date: $
  */
-public class RasterPermission implements GrantedAuthority {
+public class OwsPermission implements GrantedAuthority {
 
     private static final long serialVersionUID = 5184855468635810194L;
 
@@ -60,7 +60,7 @@ public class RasterPermission implements GrantedAuthority {
 
     private final String operationType;
 
-    private final LimitedOwsServiceVersion serviceVersion;
+    private final LimitedServiceVersion serviceVersion;
 
     private final String layerName;
 
@@ -70,7 +70,7 @@ public class RasterPermission implements GrantedAuthority {
 
     private final Map<String, String[]> additionalKeyValuePairs;
 
-    public RasterPermission( String serviceType, String operationType, LimitedOwsServiceVersion serviceVersion,
+    public OwsPermission( String serviceType, String operationType, LimitedServiceVersion serviceVersion,
                              String coverageName, String serviceName, String internalServiceUrl,
                              Map<String, String[]> additionalKeyValuePairs ) {
         this.serviceType = serviceType;
@@ -110,7 +110,7 @@ public class RasterPermission implements GrantedAuthority {
     /**
      * @return the serviceVersion
      */
-    public LimitedOwsServiceVersion getServiceVersion() {
+    public LimitedServiceVersion getServiceVersion() {
         return serviceVersion;
     }
 

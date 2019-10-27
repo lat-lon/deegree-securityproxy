@@ -35,23 +35,8 @@
  ----------------------------------------------------------------------------*/
 package org.deegree.securityproxy.service.commons.responsefilter.clipping;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTWriter;
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
-import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
-import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
-import org.deegree.securityproxy.request.OwsRequest;
-import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
-import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
-import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
-import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
-import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
+import static org.apache.commons.io.IOUtils.closeQuietly;
+import static org.apache.commons.io.IOUtils.write;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -62,8 +47,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import static org.apache.commons.io.IOUtils.closeQuietly;
-import static org.apache.commons.io.IOUtils.write;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
+import org.deegree.securityproxy.authentication.ows.raster.OwsUser;
+import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
+import org.deegree.securityproxy.request.OwsRequest;
+import org.deegree.securityproxy.responsefilter.logging.DefaultResponseFilterReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseClippingReport;
+import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
+import org.deegree.securityproxy.service.commons.responsefilter.AbstractResponseFilterManager;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.exception.ClippingException;
+import org.deegree.securityproxy.service.commons.responsefilter.clipping.geometry.GeometryRetriever;
+import org.springframework.security.core.Authentication;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Provides filtering of {@link OwsRequest}s.
@@ -89,17 +89,15 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
 
     private final ImageClipper imageClipper;
 
-    @Autowired
-    private GeometryRetriever geometryRetriever;
+    private final GeometryRetriever geometryRetriever;
 
     /**
      * Instantiates a new {@link AbstractClippingResponseFilterManager} with default exception body (DEFAULT_BODY) and
      * status code (DEFAULT_STATUS_CODE).
      */
-    public AbstractClippingResponseFilterManager( ImageClipper imageClipper ) {
-        this.exceptionBody = DEFAULT_BODY;
-        this.exceptionStatusCode = DEFAULT_STATUS_CODE;
-        this.imageClipper = imageClipper;
+    public AbstractClippingResponseFilterManager( ImageClipper imageClipper, GeometryRetriever geometryRetriever ) {
+        this( DEFAULT_BODY, DEFAULT_STATUS_CODE, imageClipper, geometryRetriever );
+
     }
 
     /**
@@ -111,16 +109,17 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
      *            the exception status code
      */
     public AbstractClippingResponseFilterManager( String pathToExceptionFile, int exceptionStatusCode,
-                                                  ImageClipper imageClipper ) {
+                                                  ImageClipper imageClipper, GeometryRetriever geometryRetriever ) {
         this.exceptionBody = readExceptionBodyFromFile( pathToExceptionFile );
         this.exceptionStatusCode = exceptionStatusCode;
         this.imageClipper = imageClipper;
+        this.geometryRetriever = geometryRetriever;
     }
 
     @Override
     protected ResponseFilterReport applyFilter( StatusCodeResponseBodyWrapper servletResponse, OwsRequest request,
                                                 Authentication auth )
-                            throws IOException {
+                    throws IOException {
         try {
             Geometry clippingGeometry = retrieveGeometryUsedForClipping( auth, request );
             return processClippingAndAddHeaderInfo( servletResponse, clippingGeometry, request );
@@ -149,7 +148,7 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
 
     private DefaultResponseFilterReport processClippingAndAddHeaderInfo( StatusCodeResponseBodyWrapper servletResponse,
                                                                          Geometry clippingGeometry, OwsRequest request )
-                            throws IOException, ClippingException {
+                    throws IOException, ClippingException {
         InputStream imageAsStream = servletResponse.getBufferedStream();
         ByteArrayOutputStream destination = new ByteArrayOutputStream();
         ResponseClippingReport clippedImageReport = imageClipper.calculateClippedImage( imageAsStream,
@@ -173,25 +172,25 @@ public abstract class AbstractClippingResponseFilterManager extends AbstractResp
 
     private void writeExceptionBodyAndSetExceptionStatusCode( StatusCodeResponseBodyWrapper servletResponse,
                                                               OutputStream destination )
-                            throws IOException {
+                    throws IOException {
         servletResponse.setStatus( exceptionStatusCode );
         write( exceptionBody, destination );
     }
 
     private Geometry retrieveGeometryUsedForClipping( Authentication auth, OwsRequest request )
-                            throws IllegalArgumentException, ParseException {
-        RasterUser rasterUser = retrieveRasterUser( auth );
+                    throws IllegalArgumentException, ParseException {
+        OwsUser rasterUser = retrieveRasterUser( auth );
         List<GeometryFilterInfo> geometryFilterInfos = rasterUser.getRasterGeometryFilterInfos();
         List<String> layerNames = retrieveLayerNames( request );
         return geometryRetriever.retrieveGeometry( layerNames, geometryFilterInfos );
     }
 
-    private RasterUser retrieveRasterUser( Authentication auth ) {
+    private OwsUser retrieveRasterUser( Authentication auth ) {
         Object principal = auth.getPrincipal();
-        if ( !( principal instanceof RasterUser ) ) {
+        if ( !( principal instanceof OwsUser ) ) {
             throw new IllegalArgumentException( "Principal is not a RasterUser!" );
         }
-        return (RasterUser) principal;
+        return (OwsUser) principal;
     }
 
     private void addHeaderInfoIfNoFailureOccurred( StatusCodeResponseBodyWrapper servletResponse,

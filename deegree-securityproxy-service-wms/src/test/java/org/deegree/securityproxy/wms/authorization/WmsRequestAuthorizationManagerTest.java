@@ -52,7 +52,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsServiceVersion;
@@ -319,10 +319,10 @@ public class WmsRequestAuthorizationManagerTest {
 
     private Authentication mockGetMapAuthentication() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
+        authorities.add( new OwsPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -330,18 +330,18 @@ public class WmsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithMultiplePermissions() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
+        authorities.add( new OwsPermission( WMS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
+        authorities.add( new OwsPermission( WMS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         authorities
-              .add( new RasterPermission( WMS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+              .add( new OwsPermission( WMS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                           INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         authorities
-              .add( new RasterPermission( WMS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
+              .add( new OwsPermission( WMS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, LAYER_NAME_2, SERVICE_NAME,
                                           INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -349,12 +349,12 @@ public class WmsRequestAuthorizationManagerTest {
 
     private Authentication mockAllAuthenticationWithNonWmsPermissions() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( WCS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( WCS_TYPE, GETMAP, VERSION_LESS_EQUAL_130, LAYER_NAME, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WCS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
+        authorities.add( new OwsPermission( WCS_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
-        authorities.add( new RasterPermission( WCS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
+        authorities.add( new OwsPermission( WCS_TYPE, GETFEATUREINFO, VERSION_LESS_EQUAL_130, null, SERVICE_NAME,
                                                INTERNAL_SERVICE_URL, ADDITIONAL_KEY_VALUE_PAIRS ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;

@@ -1,7 +1,7 @@
 package org.deegree.securityproxy.wps.authorization;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.authorization.RequestAuthorizationManager;
 import org.deegree.securityproxy.authorization.logging.AuthorizationReport;
 import org.deegree.securityproxy.request.OwsServiceVersion;
@@ -214,12 +214,12 @@ public class WpsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithAllPermissions() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null,
                         SERVICE_NAME, null, null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, SERVICE_NAME,
+        authorities.add( new OwsPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, SERVICE_NAME,
                         null, null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID,
+        authorities.add( new OwsPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID,
                         SERVICE_NAME, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -227,12 +227,12 @@ public class WpsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithAllPermissionsButInvalidProcessId() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
                         null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, "invalidProcessId", null,
+        authorities.add( new OwsPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, "invalidProcessId", null,
                         null, null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100,
+        authorities.add( new OwsPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100,
                         "invalidProcessId", null, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -241,10 +241,10 @@ public class WpsRequestAuthorizationManagerTest {
     private Authentication mockDefaultAuthentication( String operationNameWithValidProcessId,
                                                       String operationNameWithInvalidProcessId ) {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( SERVICE_TYPE, operationNameWithValidProcessId, VERSION_LESS_EQUAL_100,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( SERVICE_TYPE, operationNameWithValidProcessId, VERSION_LESS_EQUAL_100,
                         PROCESS_ID, null, null, null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, operationNameWithInvalidProcessId, VERSION_LESS_EQUAL_100,
+        authorities.add( new OwsPermission( SERVICE_TYPE, operationNameWithInvalidProcessId, VERSION_LESS_EQUAL_100,
                         "invalidProcessId", null, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -252,8 +252,8 @@ public class WpsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithCapabilitiesPermissions() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( SERVICE_TYPE, GETCAPABILITIES, VERSION_LESS_EQUAL_100, null, null, null,
                         null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;
@@ -261,10 +261,10 @@ public class WpsRequestAuthorizationManagerTest {
 
     private Authentication mockDefaultAuthenticationWithTwoServiceNames() {
         Authentication authentication = mock( Authentication.class );
-        Collection<RasterPermission> authorities = new ArrayList<RasterPermission>();
-        authorities.add( new RasterPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, SERVICE_NAME,
+        Collection<OwsPermission> authorities = new ArrayList<OwsPermission>();
+        authorities.add( new OwsPermission( SERVICE_TYPE, EXECUTE, VERSION_LESS_EQUAL_100, PROCESS_ID, SERVICE_NAME,
                         null, null ) );
-        authorities.add( new RasterPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID,
+        authorities.add( new OwsPermission( SERVICE_TYPE, DESCRIBEPROCESS, VERSION_LESS_EQUAL_100, PROCESS_ID,
                         SERVICE_NAME_2, null, null ) );
         doReturn( authorities ).when( authentication ).getAuthorities();
         return authentication;

@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
+import org.deegree.securityproxy.authentication.ows.domain.LimitedServiceVersion;
 import org.deegree.securityproxy.authentication.ows.raster.GeometryFilterInfo;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
-import org.deegree.securityproxy.authentication.ows.raster.RasterUser;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsUser;
 import org.deegree.securityproxy.authentication.repository.UserDao;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.junit.After;
@@ -38,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:org/deegree/securityproxy/authentication/ows/raster/repository/UserDaoTestContext.xml" })
-public class RasterUserDaoImplTest {
+public class UserDaoImplTest {
 
     private static final String GETCAPABILITIES = "GetCapabilities";
 
@@ -46,8 +47,8 @@ public class RasterUserDaoImplTest {
 
     private static final OwsServiceVersion VERSION_100 = new OwsServiceVersion( "1.0.0" );
 
-    private static final LimitedOwsServiceVersion LESSTHAN_VERSION_100 = new LimitedOwsServiceVersion( "<=",
-                                                                                                       VERSION_100 );
+    private static final LimitedServiceVersion LESSTHAN_VERSION_100 = new LimitedOwsServiceVersion( "<=",
+                    VERSION_100 );
 
     private EmbeddedDatabase db;
 
@@ -71,7 +72,7 @@ public class RasterUserDaoImplTest {
         UserDetails details = source.retrieveUserById( "VALID_HEADER_GETCAPABILITIES" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        RasterPermission firstAuthority = (RasterPermission) authorities.iterator().next();
+        OwsPermission firstAuthority = (OwsPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( GETCAPABILITIES ) );
         assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
@@ -83,7 +84,7 @@ public class RasterUserDaoImplTest {
         UserDetails details = source.retrieveUserById( "VALID_HEADER_GETCOVERAGE" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        RasterPermission firstAuthority = (RasterPermission) authorities.iterator().next();
+        OwsPermission firstAuthority = (OwsPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( GETCOVERAGE ) );
         assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
@@ -116,7 +117,7 @@ public class RasterUserDaoImplTest {
 
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        OwsPermission rasterPermission = (OwsPermission) authorities.iterator().next();
         assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wcs" ) );
     }
 
@@ -126,13 +127,49 @@ public class RasterUserDaoImplTest {
 
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        RasterPermission rasterPermission = (RasterPermission) authorities.iterator().next();
+        OwsPermission rasterPermission = (OwsPermission) authorities.iterator().next();
         assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wms" ) );
     }
 
     @Test
-    public void testRetrieveUserByIdWithNotRasterPermissionFails() {
+    public void testRetrieveUserByIdWithWfsPermissionsShouldHaveCorrectAuthority() {
+        UserDetails details = source.retrieveUserById( "WFS_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        OwsPermission rasterPermission = (OwsPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wfs" ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithCswPermissionsShouldHaveCorrectAuthority() {
         UserDetails details = source.retrieveUserById( "CSW_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        OwsPermission rasterPermission = (OwsPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "csw" ) );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithWmtsPermissionsShouldHaveCorrectAuthority() {
+        UserDetails details = source.retrieveUserById( "WMTS_VALID_HEADER" );
+
+        Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
+        assertThat( authorities.size(), is( 1 ) );
+        OwsPermission rasterPermission = (OwsPermission) authorities.iterator().next();
+        assertThat( rasterPermission.getServiceType().toLowerCase(), is( "wmts" ) );
+    }
+
+    @Test
+    public void testLoadUserDetailsForMinimalUser() {
+        UserDetails details = source.retrieveUserByName( "VALID_MINIMAL_USER" );
+        assertThat( details, notNullValue() );
+    }
+
+    @Test
+    public void testRetrieveUserByIdWithUnknownServiceTypeFails() {
+        UserDetails details = source.retrieveUserById( "UNKNOWNTYPE_VALID_HEADER" );
         assertThat( details, nullValue() );
     }
 
@@ -150,19 +187,19 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByIdShouldThrowExceptionOnEmptyHeader() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "" );
         assertThat( wcsUser, nullValue() );
     }
 
     @Test
     public void testRetrieveUserByIdShouldThrowExceptionOnNullArgument() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( null );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( null );
         assertThat( wcsUser, nullValue() );
     }
 
     @Test
     public void testRetrieveUserByIdValidHeaderWithGeometryLimitShouldReturnEmptyCollection() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_NULL_GEOMETRY_LIMIT" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_NULL_GEOMETRY_LIMIT" );
         List<GeometryFilterInfo> emptyList = Collections.emptyList();
         assertThat( wcsUser.getRasterGeometryFilterInfos(), is( emptyList ) );
     }
@@ -173,7 +210,7 @@ public class RasterUserDaoImplTest {
         String expectedCoverageName = "layer1";
         String expectedGeometryLimit = "SRID=4326;MULTIPOLYGON(((-89.739 20.864,-89.758 20.876,-89.765 20.894,-89.748 20.897,-89.73 20.91,-89.708 20.928,-89.704 20.948,-89.716 20.964,-89.729 20.99,-89.73 21.017,-89.712 21.021,-89.685 21.031,-89.667 21.025,-89.641 21.017,-89.62 21.019,-89.599 21.018,-89.575 20.995,-89.568 20.97,-89.562 20.934,-89.562 20.91,-89.577 20.89,-89.609 20.878,-89.636 20.877,-89.664 20.881,-89.683 20.904,-89.683 20.917,-89.664 20.941,-89.662 20.954,-89.674 20.965,-89.687 20.983,-89.705 20.989,-89.703 20.974,-89.696 20.961,-89.686 20.949,-89.683 20.935,-89.694 20.919,-89.705 20.901,-89.722 20.875,-89.727 20.869,-89.739 20.864),(-89.627 20.985,-89.603 20.962,-89.62 20.936,-89.634 20.943,-89.639 20.961,-89.649 20.975,-89.627 20.985)))";
 
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_GEOMETRY_LIMIT_ONE_RECORD" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_GEOMETRY_LIMIT_ONE_RECORD" );
         List<GeometryFilterInfo> responseFilters = wcsUser.getRasterGeometryFilterInfos();
         GeometryFilterInfo responseFilter = responseFilters.get( 0 );
         String coverageName = responseFilter.getLayerName();
@@ -192,7 +229,7 @@ public class RasterUserDaoImplTest {
         String expectedSecondCoverageName = "layer2";
         String expectedSecondGeometryLimit = "POLYGON";
 
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_GEOMETRY_LIMIT_TWO_RECORDS" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_GEOMETRY_LIMIT_TWO_RECORDS" );
         List<GeometryFilterInfo> responseFilters = wcsUser.getRasterGeometryFilterInfos();
         GeometryFilterInfo firstResponseFilter = responseFilters.get( 0 );
         GeometryFilterInfo secondResponseFilter = responseFilters.get( 1 );
@@ -213,7 +250,7 @@ public class RasterUserDaoImplTest {
         UserDetails wcsUser = source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
         List<String> internalServiceUrls = new ArrayList<String>();
         for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
-            String internalServiceUrl = ( (RasterPermission) authority ).getInternalServiceUrl();
+            String internalServiceUrl = ( (OwsPermission) authority ).getInternalServiceUrl();
             internalServiceUrls.add( internalServiceUrl );
         }
         assertThat( internalServiceUrls, hasItem( "serviceUrl" ) );
@@ -221,7 +258,7 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByIdWithoutAdditionalRequestParameters() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_INTERNAL_SERVICE_URL" );
         Map<String, String[]> additionalKeyValuePair = retrieveFirstAdditionalKeyValuePair( wcsUser );
 
         assertThat( additionalKeyValuePair.size(), is( 0 ) );
@@ -229,7 +266,7 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByIdWithOneAdditionalRequestParameters() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_ONE_EMPTY_REQUEST_PARAM" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_ONE_EMPTY_REQUEST_PARAM" );
         Map<String, String[]> additionalKeyValuePair = retrieveFirstAdditionalKeyValuePair( wcsUser );
 
         assertThat( additionalKeyValuePair.size(), is( 1 ) );
@@ -239,7 +276,7 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByIdWithAdditionalRequestParameters() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
         Map<String, String[]> additionalKeyValuePair = retrieveFirstAdditionalKeyValuePair( wcsUser );
 
         assertThat( additionalKeyValuePair.size(), is( 2 ) );
@@ -251,10 +288,10 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByIdWithMultiplePermissionsWithAdditionalRequestParameters() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
         List<Map<String, String[]>> additionalKeyValuePairsList = new ArrayList<Map<String, String[]>>();
         for ( GrantedAuthority authority : wcsUser.getAuthorities() ) {
-            Map<String, String[]> additionalKeyValuePairs = ( (RasterPermission) authority ).getAdditionalKeyValuePairs();
+            Map<String, String[]> additionalKeyValuePairs = ( (OwsPermission) authority ).getAdditionalKeyValuePairs();
             additionalKeyValuePairsList.add( additionalKeyValuePairs );
         }
         Map<String, String[]> firstAdditionalKeyValuePairs = additionalKeyValuePairsList.get( 0 );
@@ -273,7 +310,7 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByIdShouldHabeCorrectAccessToken() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserById( "VALID_HEADER_WITH_REQUEST_PARAMS" );
 
         assertThat( wcsUser.getAccessToken(), is( "VALID_HEADER_WITH_REQUEST_PARAMS" ) );
     }
@@ -289,7 +326,7 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByNameShouldHabeCorrectAccessToken() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserByName( "VALID_USER_GETCAPABILITIES" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserByName( "VALID_USER_GETCAPABILITIES" );
         assertThat( wcsUser.getAccessToken(), is( "HEADER_GC" ) );
     }
 
@@ -313,13 +350,13 @@ public class RasterUserDaoImplTest {
 
     @Test
     public void testRetrieveUserByNameEmptyNameShouldReturnNull() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserByName( "" );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserByName( "" );
         assertThat( wcsUser, nullValue() );
     }
 
     @Test
     public void testRetrieveUserByNameNullNameShouldReturnNull() {
-        RasterUser wcsUser = (RasterUser) source.retrieveUserByName( null );
+        OwsUser wcsUser = (OwsUser) source.retrieveUserByName( null );
         assertThat( wcsUser, nullValue() );
     }
 
@@ -328,7 +365,7 @@ public class RasterUserDaoImplTest {
         UserDetails details = source.retrieveUserById( "VALID_HEADER_EXECUTE" );
         Collection<? extends GrantedAuthority> authorities = details.getAuthorities();
         assertThat( authorities.size(), is( 1 ) );
-        RasterPermission firstAuthority = (RasterPermission) authorities.iterator().next();
+        OwsPermission firstAuthority = (OwsPermission) authorities.iterator().next();
         assertThat( firstAuthority.getOperationType(), is( "Execute" ) );
         assertThat( firstAuthority.getServiceVersion(), is( LESSTHAN_VERSION_100 ) );
         assertThat( firstAuthority.getServiceName(), is( "serviceName" ) );
@@ -340,9 +377,9 @@ public class RasterUserDaoImplTest {
         db.shutdown();
     }
 
-    private Map<String, String[]> retrieveFirstAdditionalKeyValuePair( RasterUser wcsUser ) {
+    private Map<String, String[]> retrieveFirstAdditionalKeyValuePair( OwsUser wcsUser ) {
         GrantedAuthority authority = wcsUser.getAuthorities().get( 0 );
-        return ( (RasterPermission) authority ).getAdditionalKeyValuePairs();
+        return ( (OwsPermission) authority ).getAdditionalKeyValuePairs();
     }
 
 }

@@ -2,13 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>deegree-securityproxy-service-commons</artifactId>
-  <packaging>jar</packaging>
   <name>deegree security service commons component</name>
 
   <parent>
     <groupId>org.deegree</groupId>
     <artifactId>deegree-securityproxy</artifactId>
-    <version>1.6.5</version>
+    <version>1.7-SNAPSHOT</version>
   </parent>
 
   <dependencies>

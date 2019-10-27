@@ -33,7 +33,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.deegree.securityproxy.authentication.ows.domain.LimitedOwsServiceVersion;
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.filter.StatusCodeResponseBodyWrapper;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.responsefilter.logging.ResponseFilterReport;
@@ -280,8 +280,8 @@ public class WcsCapabilitiesResponseFilterManagerTest {
         return mockAuthentication( authorities );
     }
 
-    private RasterPermission createRasterPermission( String operationType, String coverageName ) {
-        return new RasterPermission( "wcs", operationType, new LimitedOwsServiceVersion( "<= 1.1.0" ), coverageName,
+    private OwsPermission createRasterPermission( String operationType, String coverageName ) {
+        return new OwsPermission( "wcs", operationType, new LimitedOwsServiceVersion( "<= 1.1.0" ), coverageName,
                         "serviceName", "internalServiceUrl", null );
     }
 

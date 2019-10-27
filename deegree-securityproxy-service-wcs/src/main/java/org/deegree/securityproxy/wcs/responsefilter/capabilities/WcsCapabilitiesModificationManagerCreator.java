@@ -42,7 +42,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.deegree.securityproxy.authentication.ows.raster.RasterPermission;
+import org.deegree.securityproxy.authentication.ows.raster.OwsPermission;
 import org.deegree.securityproxy.request.OwsRequest;
 import org.deegree.securityproxy.request.OwsServiceVersion;
 import org.deegree.securityproxy.service.commons.responsefilter.capabilities.DecisionMaker;
@@ -136,15 +136,15 @@ public class WcsCapabilitiesModificationManagerCreator implements XmlModificatio
     }
 
     private void addBlackListValuesFromAuthorities( List<String> blackListTextValues, GrantedAuthority authority ) {
-        if ( authority instanceof RasterPermission ) {
-            RasterPermission permission = (RasterPermission) authority;
+        if ( authority instanceof OwsPermission ) {
+            OwsPermission permission = (OwsPermission) authority;
             if ( isWcs100GetCoveragePermission( permission ) ) {
                 blackListTextValues.add( permission.getLayerName() );
             }
         }
     }
 
-    private boolean isWcs100GetCoveragePermission( RasterPermission permission ) {
+    private boolean isWcs100GetCoveragePermission( OwsPermission permission ) {
         return "wcs".equalsIgnoreCase( permission.getServiceType() )
                && permission.getServiceVersion().contains( VERSION_1_0_0 )
                && "getcoverage".equalsIgnoreCase( permission.getOperationType() );
