@@ -25,7 +25,7 @@
   <properties>
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
-    <spring.version>3.2.3.RELEASE</spring.version>
+    <spring.version>6.0.0</spring.version>
     <spring.security.version>5.3.10.RELEASE</spring.security.version>
     <j2ep.version>1.2-securityproxy-master</j2ep.version>
     <geotools.version>9.5</geotools.version>
